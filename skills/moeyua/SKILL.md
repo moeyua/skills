@@ -13,5 +13,3 @@ Moeyua's personal coding conventions and tooling preferences.
 
 | Topic | Description | Reference |
 |-------|-------------|-----------|
-| Coding Style | General coding style and conventions | [core-coding-style](references/core-coding-style.md) |
-| Tooling | Preferred tools and configurations | [core-tooling](references/core-tooling.md) |
