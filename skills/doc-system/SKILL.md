@@ -7,7 +7,7 @@ metadata:
   source: Manual
 ---
 
-# Doc System — AI Agent 驱动开发的文档体系构建
+# Doc System — Documentation System for AI Agent-Driven Development
 
 Core philosophy: **every time you have to verbally correct an Agent, that correction should become documentation.**
 

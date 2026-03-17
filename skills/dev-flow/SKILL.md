@@ -3,7 +3,7 @@ name: dev-flow
 description: "Full development workflow for AI Agent-driven feature development. Handles the complete lifecycle: read spec → create branch/worktree → explore codebase → clarify requirements → design architecture → implement → quality review → lint/test → commit → push → create PR. Use this skill when the user wants to start developing a feature end-to-end, says things like 'implement this feature', 'start working on [feature]', 'develop [spec]', references a spec file, or asks to begin a development task. This wraps around the feature-dev agents (code-explorer, code-architect, code-reviewer) and adds pre-development setup and post-development finalization. Use this instead of feature-dev when you want the full lifecycle including git workflow."
 ---
 
-# Dev Flow — AI Agent 驱动的完整开发流程
+# Dev Flow — Full AI Agent-Driven Development Workflow
 
 This skill orchestrates the full development lifecycle from spec to merged PR. It wraps around the feature-dev agents for the implementation phase and adds the missing pre/post workflow.
 
