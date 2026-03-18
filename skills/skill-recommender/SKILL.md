@@ -122,10 +122,10 @@ If the user chooses option 2, update `recommendations.json` by adding the new en
 After the user confirms their selection, run the install commands:
 
 ```bash
-npx skills add <repo> -s <skills> --all -y
+npx skills add <repo> -s <skills> -a claude-code -a universal -y
 ```
 
-Use `--all -y` to install to all agents without prompting. If the user wants to install globally, add `-g`.
+Default to `-a claude-code -a universal` (install to `.agents/` with Claude Code symlink). Do NOT use `--all` — it installs to every detected agent directory and creates unwanted clutter. If the user wants to install globally, add `-g`.
 
 ---
 
