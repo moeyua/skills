@@ -12,6 +12,22 @@ description: Vue/Nuxt/Tailwind application conventions. Use when building web ap
 | SPA, client-only, library playgrounds | Vite + Vue |
 | SSR, SSG, SEO-critical, file-based routing, API routes | Nuxt |
 
+## Dev Server
+
+Use [portless](https://github.com/vercel-labs/portless) to wrap dev server commands with stable `.localhost` URLs. Configure in `package.json` scripts:
+
+```jsonc
+{
+  "scripts": {
+    "dev": "portless run next dev",        // instead of "next dev"
+    "dev": "portless run nuxi dev",        // instead of "nuxi dev"
+    "dev": "portless run vite",            // instead of "vite"
+  }
+}
+```
+
+When setting up or modifying `dev` scripts in app projects, always wrap the dev command with `portless run`.
+
 ## Vue Conventions
 
 | Convention | Preference |
