@@ -105,6 +105,33 @@ For detailed configuration options: [antfu-eslint-config](references/antfu-eslin
 }
 ```
 
+### Portless (Local Dev URLs)
+
+Use [portless](https://github.com/vercel-labs/portless) to replace port numbers with stable `.localhost` URLs during development. Install globally:
+
+```bash
+npm install -g portless
+```
+
+```bash
+# Start proxy (once)
+portless proxy start
+
+# Run dev server with named URL
+portless run next dev        # → http://<project>.localhost:1355
+portless myapp next dev      # → http://myapp.localhost:1355
+
+# Multi-app / monorepo
+portless api.myapp pnpm start   # → http://api.myapp.localhost:1355
+portless docs.myapp next dev    # → http://docs.myapp.localhost:1355
+```
+
+Key points:
+- Never install as a project dependency — global only
+- Most frameworks auto-detect `PORT` env var; Vite/Astro/SvelteKit get `--port`/`--host` flags injected automatically
+- Safari requires `sudo portless hosts sync` for `.localhost` resolution
+- Git worktrees auto-prefix branch name as subdomain
+
 ### pnpm Catalogs
 
 Use named catalogs in `pnpm-workspace.yaml` for version management:
