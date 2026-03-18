@@ -1,0 +1,3 @@
+[submodule "sources/vue-flow"]
+	path = sources/vue-flow
+	url = https://github.com/bcakmakoglu/vue-flow
