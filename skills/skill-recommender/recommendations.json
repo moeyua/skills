@@ -1,0 +1,47 @@
+{
+  "nuxt": [
+    "antfu/skills -s nuxt"
+  ],
+  "nuxt-ui": [
+    "nuxt/ui -s nuxt-ui"
+  ],
+  "pinia": [
+    "antfu/skills -s pinia"
+  ],
+  "pnpm": [
+    "antfu/skills -s pnpm"
+  ],
+  "portless": [
+    "vercel-labs/portless -s portless"
+  ],
+  "tailwindcss": [
+    "wshobson/agents -s tailwind-design-system"
+  ],
+  "tsdown": [
+    "antfu/skills -s tsdown"
+  ],
+  "turborepo": [
+    "antfu/skills -s turborepo"
+  ],
+  "typescript": [
+    "wshobson/agents -s typescript-advanced-types"
+  ],
+  "vite": [
+    "antfu/skills -s vite"
+  ],
+  "vitest": [
+    "antfu/skills -s vitest"
+  ],
+  "vue": [
+    "antfu/skills -s vue",
+    "antfu/skills -s vue-best-practices",
+    "antfu/skills -s vue-router-best-practices",
+    "antfu/skills -s vue-testing-best-practices"
+  ],
+  "vueuse": [
+    "antfu/skills -s vueuse-functions"
+  ],
+  "web-design": [
+    "vercel-labs/agent-skills -s web-design-guidelines"
+  ]
+}

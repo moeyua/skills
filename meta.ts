@@ -36,4 +36,5 @@ export const manual = [
   'dev-flow',
   'doc-system',
   'moeyua',
+  'skill-recommender',
 ]
