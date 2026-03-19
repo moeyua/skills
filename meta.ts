@@ -12,6 +12,7 @@ export const submodules: Record<string, string> = {
   // Example:
   // vue: 'https://github.com/vuejs/docs',
   // vite: 'https://github.com/vitejs/vite',
+  'vue-flow': 'https://github.com/bcakmakoglu/vue-flow',
 }
 
 /**
