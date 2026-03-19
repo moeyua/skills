@@ -8,7 +8,7 @@ description: "Full development workflow for AI Agent-driven feature development.
 This skill orchestrates the full development lifecycle from spec to merged PR. It delegates the core development work (explore → clarify → design → implement → review) to `feature-dev:feature-dev` and handles the setup and finalization that `feature-dev` doesn't cover.
 
 ```
-Phase 0: Setup     → Read spec/docs, create branch/worktree
+Phase 0: Setup     → Read spec/docs, create branch
 Phase 1: Develop   → Delegate to feature-dev:feature-dev
 Phase 2: Verify    → Lint, test, fix issues
 Phase 3: Ship      → Commit, push, create PR
@@ -52,17 +52,26 @@ After reading, briefly summarize to the user what you understood about the task 
 
 **Context budget**: This workflow spans many phases. Use `/compact` between phases if the context is getting heavy. Avoid reading large files in full when a targeted search suffices — treat the context window as a scarce resource.
 
-### 0.3 Create worktree
+### 0.3 Create branch
 
-Default to worktree — it keeps the current working directory clean and allows parallel work.
+Default to creating a new branch — simple and sufficient for most tasks.
 
 ```bash
-git worktree add ../[feature-name] -b feat/[feature-name]
+git checkout -b feat/[feature-name]
 ```
 
 Branch naming convention: `feat/[feature-name]`, `fix/[bug-name]`, `refactor/[scope]`.
 
-Skip this step if the user is already on a feature branch or explicitly asks to use a regular branch instead.
+Use a **worktree** instead only when:
+- The user needs to **parallel-develop** multiple features simultaneously
+- The user **explicitly requests** a worktree
+
+```bash
+# Worktree (only when needed)
+git worktree add ../[feature-name] -b feat/[feature-name]
+```
+
+Skip this step if the user is already on a feature branch.
 
 ---
 
