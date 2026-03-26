@@ -1,0 +1,23 @@
+{
+  "skill_name": "spec-dev",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/spec-dev 写用户认证的 spec，支持邮箱密码登录和 OAuth",
+      "expected_output": "Should enter Spec mode: create a feature spec with goal (user perspective), behavior constraints as pre/behavior/post triples, state machine, testable AC, BDD Gherkin scenarios, TDD pointers, and out of scope. No UI details.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "拖拽排序功能做完了，帮我更新一下文档",
+      "expected_output": "Should enter Sync mode: read git diff, find related specs, update AC status, check module contracts, identify ADR candidates, produce sync report.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "新项目刚初始化，Vue 3 + Pinia + Vitest，帮我建立文档体系",
+      "expected_output": "Should enter Init mode: scan project, propose four-layer directory structure, write progressively starting with CLAUDE.md and conventions.md.",
+      "files": []
+    }
+  ]
+}

@@ -34,8 +34,7 @@ export const vendors: Record<string, VendorSkillMeta> = {
  * Type 3: Manually written skills (directly in skills/)
  */
 export const manual = [
-  'dev-flow',
-  'doc-system',
   'moeyua',
+  'spec-dev',
   'skill-recommender',
 ]
