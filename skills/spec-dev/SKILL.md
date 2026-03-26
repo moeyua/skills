@@ -69,19 +69,23 @@ A feature spec file at `docs/specs/{feature-name}.md` that serves as structured 
 
 ### For a feature spec
 
-1. **Understand the feature goal** — Ask the user what the feature should accomplish from the user's perspective. No technology names in the goal.
+Write Mode is a collaborative, step-by-step conversation — not a one-shot generation. Each step requires the user's confirmation before moving to the next. This matters because specs define what gets built; assumptions made here propagate through development and testing.
 
-2. **Define behavior constraints** — Each constraint is a precondition/behavior/postcondition triple. These are the formal rules the implementation must satisfy. Focus on what the system does, not how it looks or how it's built.
+**Step 1: Confirm the goal** — Ask the user what the feature should accomplish from the user's perspective. Propose a one-line goal statement. Wait for the user to confirm or refine it. No technology names in the goal.
 
-3. **Define state machine** (if the feature has stateful behavior) — Not every feature needs one. Use judgment: a login flow has states (unauthenticated → authenticating → authenticated → error), a simple data transform does not.
+**Step 2: Define behavior constraints together** — Propose behavior constraints as precondition/behavior/postcondition triples. Present them to the user and ask: are these complete? Any missing edge cases? Any constraints that don't belong? Revise based on feedback. Only proceed when the user confirms.
 
-4. **Write Acceptance Criteria** — Each AC must be verifiable by a single test. This is the most important part of the spec — it's what drives both development and testing. Mark each as `[ ]` (not yet implemented) or `[x]` (implemented and tested).
+**Step 3: Define state machine** (if the feature has stateful behavior) — Not every feature needs one. Use judgment: a login flow has states (unauthenticated → authenticating → authenticated → error), a simple data transform does not. If applicable, propose the states and transitions, confirm with the user.
 
-5. **Derive BDD Gherkin scenarios from AC** — These drive E2E / integration tests. Focus on user-visible behavior, cover both happy path and error paths.
+**Step 4: Write Acceptance Criteria** — Propose AC based on the confirmed behavior constraints. Each AC must be verifiable by a single test. Present the list and ask the user to review: any missing? Any too vague? Any that should be split or merged? Mark each as `[ ]` (not yet implemented).
 
-6. **List TDD unit test pointers** — What pure logic to test, which module — not the full test code. These guide the developer on what unit tests to write.
+**Step 5: Derive BDD Gherkin scenarios from AC** — Propose scenarios that drive E2E / integration tests. Focus on user-visible behavior, cover both happy path and error paths. Confirm with the user.
 
-7. **Define out of scope** — What this spec explicitly does NOT cover. This prevents scope creep during development.
+**Step 6: List TDD unit test pointers** — Propose what pure logic to test, which module — not the full test code. Confirm with the user.
+
+**Step 7: Define out of scope** — Propose what this spec explicitly does NOT cover. This prevents scope creep during development. Confirm with the user.
+
+**Step 8: Write the spec file** — Only after all steps are confirmed, write the complete spec to `docs/specs/{feature-name}.md`.
 
 ### Scaling by feature size
 
