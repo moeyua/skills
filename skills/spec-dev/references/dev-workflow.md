@@ -9,9 +9,10 @@ description: "Complete SDD→TDD→BDD development workflow guide. Read when set
 
 Every feature follows the same cycle. Specs come first, tests come before code, code makes tests green.
 
-```
-Write Spec → Write Failing Tests → Minimal Implementation → Tests Pass → Refactor → Update Spec
-    ↑___________________________ feedback loop ____________________________↑
+```mermaid
+graph LR
+    A[Write Spec] --> B[Write Failing Tests] --> C[Minimal Implementation] --> D[Tests Pass] --> E[Refactor] --> F[Update Spec]
+    F -->|feedback loop| A
 ```
 
 ## The Seven Steps

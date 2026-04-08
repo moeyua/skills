@@ -186,21 +186,18 @@ WHAT layer. Replaces Module Map. Describes system-level structure: layering, dat
 
 ## Layer Diagram
 
-```
-┌─────────────────────────────────┐
-│         {Layer name}            │
-│  {Module A}  │  {Module B}     │
-└───────────────┬─────────────────┘
-                │ calls
-┌───────────────▼─────────────────┐
-│         {Layer name}            │
-│  {Module C}  │  {Module D}     │
-└───────────────┬─────────────────┘
-                │ calls
-┌───────────────▼─────────────────┐
-│         {Layer name}            │
-│  {Module E}  │  {Module F}     │
-└─────────────────────────────────┘
+```mermaid
+graph TD
+    subgraph L1["{Layer name}"]
+        A["{Module A}"] ~~~ B["{Module B}"]
+    end
+    subgraph L2["{Layer name}"]
+        C["{Module C}"] ~~~ D["{Module D}"]
+    end
+    subgraph L3["{Layer name}"]
+        E["{Module E}"] ~~~ F["{Module F}"]
+    end
+    L1 -->|calls| L2 -->|calls| L3
 ```
 
 ## Data Flow
@@ -265,8 +262,9 @@ List method/function **names** and one-line purpose. Do NOT copy full signatures
 
 ## State Machine (if stateful)
 
-```
-{state} --[{trigger}]--> {state}
+```mermaid
+stateDiagram-v2
+    {state} --> {state}: {trigger}
 ```
 
 | Current | Event | Next | Side Effect |
@@ -326,8 +324,9 @@ Each constraint is a precondition/behavior/postcondition triple. These are the f
 
 ## State Machine (if applicable)
 
-```
-{state} --[{trigger}]--> {state}
+```mermaid
+stateDiagram-v2
+    {state} --> {state}: {trigger}
 ```
 
 ## Acceptance Criteria

@@ -141,7 +141,7 @@ Read [refine-mode](references/refine-mode.md) for detailed steps. Summary:
 ## Principles
 
 - **Spec → AC → Test**: The core invariant. No feature starts without a spec, no spec exists without testable AC, no AC is `[x]` without a passing test.
-- **Text-first**: Agents can't read images or diagrams. Describe everything in text.
+- **Text-first**: No images — agents can't read them. Use text and Mermaid for diagrams (Mermaid source is structured text that agents understand).
 - **Behavior over UI**: Specs define what the system does, not what it looks like. No pixel values, colors, or button labels in AC.
 - **`[~]` is debt, not progress**: An implemented but untested AC is a promise without proof. Update Mode flags it, Status Mode surfaces it, Audit Mode fails on it.
 - **Keep docs alive**: Outdated docs are worse than no docs. When implementation changes, update the spec's AC status immediately — this is what Update Mode automates.

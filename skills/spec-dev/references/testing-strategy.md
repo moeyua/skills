@@ -7,14 +7,9 @@ description: "Testing strategy guide for SDD projects. Defines the test pyramid,
 
 ## Test Pyramid
 
-```
-        /\
-       /E2E\         BDD scenarios from specs → Playwright
-      /------\
-     / Integ. \      Store + Composable + Component → Vitest + test-utils
-    /----------\
-   /   Unit     \    Pure functions, business rules → Vitest (zero framework deps)
-  /--------------\
+```mermaid
+graph BT
+    Unit["Unit — Pure functions, business rules → Vitest"] --> Integration["Integration — Store + Composable + Component → Vitest + test-utils"] --> E2E["E2E — BDD scenarios from specs → Playwright"]
 ```
 
 **Principle:** The more a test depends on infrastructure, the fewer of them you need. Pure logic gets the most tests; E2E covers critical user journeys only.
