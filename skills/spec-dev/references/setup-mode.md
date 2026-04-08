@@ -26,10 +26,12 @@ Present to user for confirmation. Target structure:
 docs/
 ├── product/                    # WHY layer
 │   ├── vision.md               # Product positioning, users, core value
-│   └── scope.md                # MVP boundary: P0/P1/P2, explicit exclusions
+│   ├── scope.md                # MVP boundary: P0/P1/P2, explicit exclusions
+│   └── glossary.md             # Domain terminology definitions
+│
+├── architecture.md             # WHAT layer — system structure + module registry
 │
 ├── modules/                    # WHAT layer — module behavior contracts
-│   ├── README.md               # Module dependency map
 │   └── {module-name}.md        # One file per module
 │
 ├── specs/                      # WHAT+VERIFY layer — feature specs
@@ -41,7 +43,6 @@ docs/
 ├── guides/                     # HOW layer — implementation guides
 │   ├── conventions.md          # Coding conventions
 │   ├── design-system.md        # Visual design rules (if frontend)
-│   ├── data-model.md           # Data structures and state shape
 │   ├── testing.md              # Testing strategy and pyramid
 │   └── dev-workflow.md         # SDD→TDD→BDD development process
 │
@@ -54,13 +55,14 @@ Not every project needs every document. Decision guide:
 |----------|-------------|
 | `product/vision.md` | User can articulate what the product does and for whom |
 | `product/scope.md` | Need to define MVP boundaries |
+| `product/glossary.md` | Project has domain-specific terminology that could be ambiguous |
+| `architecture.md` | Project has 3+ modules or non-trivial layering |
 | `modules/*.md` | Project has 3+ distinct modules |
 | `specs/*.md` | Planning a feature before implementing |
 | `decisions/*.md` | Making architectural or technology choices |
 | `guides/conventions.md` | Codebase has patterns an agent might violate |
 | `guides/design-system.md` | Frontend with custom visual rules |
-| `guides/data-model.md` | Complex state, API data, or database models |
-| `guides/testing.md` | Always — create alongside first spec (defines where tests live, naming conventions, and test↔AC mapping strategy) |
+| `guides/testing.md` | Always — create alongside first spec (defines where tests live, naming conventions, test↔AC mapping strategy, and BDD verification method: automated E2E or manual) |
 | `guides/dev-workflow.md` | Always — create alongside first spec (defines the SDD→TDD→BDD cycle) |
 
 ## 3. Write progressively
@@ -69,12 +71,11 @@ Don't create all documents at once. Follow this rhythm:
 
 | Stage | Create |
 |-------|--------|
-| **Day 0** (before code) | `CLAUDE.md`, `guides/conventions.md` (basics), `product/vision.md` if user can describe the product |
-| **First feature** | `guides/testing.md` (basics: test locations, naming, AC↔test mapping), `guides/dev-workflow.md` (SDD→TDD→BDD cycle), then `specs/{feature}.md` with AC + BDD scenarios |
-| **After code exists** | `modules/*.md` (now you know the real architecture) |
+| **Day 0** (before code) | `CLAUDE.md`, `guides/conventions.md` (basics), `product/vision.md` if user can describe the product, `product/glossary.md` if domain terms need alignment |
+| **First feature** | `guides/testing.md` (basics: test locations, naming, AC↔test mapping, BDD verification method), `guides/dev-workflow.md` (SDD→TDD→BDD cycle), then `specs/{feature}.md` with AC + BDD scenarios |
+| **After code exists** | `architecture.md` (system structure + module registry), `modules/*.md` (now you know the real architecture) |
 | **Agent keeps making mistakes** | Add correction to `guides/conventions.md` |
 | **Major technical decision** | ADR in `decisions/` |
-| **Integrating APIs** | `guides/data-model.md` |
 | **Visual bugs recur** | `guides/design-system.md` |
 
 ## 4. Write each document
@@ -87,12 +88,16 @@ Read templates in `references/templates.md` for full structure. Key principles:
 
 **product/scope.md** — What's in MVP, what's explicitly out. Priority tiers (P0/P1/P2). Under 100 lines.
 
-**modules/{name}.md** — Module behavior contract. Defines: responsibilities (what it does and doesn't do), public API (TypeScript signatures), consumed interfaces (dependencies), state machine (if stateful), invariants (conditions that must always hold), error scenarios. No UI details, no implementation specifics — those belong in HOW layer.
+**product/glossary.md** — Domain terminology. Alphabetical table of terms, definitions, and where they're used. Prevents miscommunication.
 
-**specs/{name}.md** — Feature behavior spec. Defines: one-line goal (user perspective), behavior constraints (precondition/behavior/postcondition triples), state machine, Acceptance Criteria (each one testable), BDD Gherkin scenarios (derived from AC, for E2E tests), TDD unit test pointers (what to test, not how), out of scope. This is the most important document type in SDD — it drives both development and testing.
+**architecture.md** — System-level structure: layer diagram, data flow, external integrations, module registry. Replaces the old Module Map — one file for both macro architecture and module index.
+
+**modules/{name}.md** — Module behavior contract. Defines: responsibilities (what it does and doesn't do), public API (point to source file + name/purpose table, NOT copied signatures), consumed interfaces (dependencies), state machine (if stateful), invariants (conditions that must always hold), error scenarios. No UI details, no implementation specifics — those belong in HOW layer.
+
+**specs/{name}.md** — Feature behavior spec. Defines: one-line goal (user perspective), behavior constraints (precondition/behavior/postcondition triples), state machine, Acceptance Criteria (each one testable), BDD Gherkin scenarios (derived from AC, verified by automated E2E or manual testing), TDD unit test pointers (what to test, not how), out of scope. This is the most important document type in SDD — it drives both development and testing.
 
 **decisions/NNN-{title}.md** — Standard ADR: Status → Context → Options → Decision → Consequences.
 
-**guides/testing.md** — Testing pyramid, layer responsibilities, naming conventions, coverage targets, data-testid conventions. Read `references/testing-strategy.md` for the full guide.
+**guides/testing.md** — Testing pyramid, layer responsibilities, naming conventions, coverage targets, data-testid conventions, and BDD verification method (automated E2E or manual). Read `references/testing-strategy.md` for the full guide.
 
 **guides/dev-workflow.md** — The SDD→TDD→BDD development process. Read `references/dev-workflow.md` for the full guide.

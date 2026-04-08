@@ -61,7 +61,7 @@ describe('{module}', () => {
 
 Run in watch mode: `pnpm test:unit --watch`
 
-**3b. E2E test skeletons:**
+**3b. E2E test skeletons (if project uses automated E2E):**
 
 From the spec's BDD Scenarios, create Playwright test files. Use `test.skip` initially:
 
@@ -73,6 +73,8 @@ test.skip('{scenario from BDD}', async ({ page }) => {
   // Then: {expectation}
 })
 ```
+
+If the project uses manual testing instead, prepare the manual test checklist entries from BDD scenarios at this stage — they'll be executed in Step 6.
 
 ### Step 4: Write minimal implementation (GREEN)
 
@@ -94,15 +96,11 @@ With all tests green:
 - Simplify structure
 - Keep tests green throughout
 
-### Step 6: Activate E2E tests
+### Step 6: Verify BDD scenarios
 
-Remove `test.skip` from Playwright tests. Run:
+**If project uses automated E2E:** Remove `test.skip` from Playwright tests. Run `pnpm test:e2e`. Fix until all pass.
 
-```bash
-pnpm test:e2e
-```
-
-Fix until all pass.
+**If project uses manual testing:** Execute the manual test checklist from Step 3b. Record pass/fail results with tester name and date. Any failure → fix the code and re-test.
 
 ### Step 7: Update spec status
 

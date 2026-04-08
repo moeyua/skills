@@ -3,7 +3,7 @@ name: spec-dev
 description: "Spec-Driven Development documentation system that serves as bookends around feature-dev. Builds a four-layer doc architecture (WHY → WHAT → HOW → VERIFY) where specs drive development and tests verify specs. Use this skill whenever the user wants to: write a spec or feature spec before development, set up SDD/TDD/BDD workflows, sync or update docs after development (update AC status, module contracts, ADRs), initialize project documentation, audit or restructure existing docs, create module contracts, check project status or progress, refine or streamline documentation based on code reality (split, merge, delete, migrate docs), or says things like 'write a spec', 'update the spec', 'sync docs', 'set up docs', 'audit my docs', 'restructure docs', 'refine docs', 'streamline specs', '精简文档', '精简 specs', 'create module contract', 'add BDD scenarios', 'status', '看一下进度', '接下来做什么'. Also trigger when the user mentions spec-first development, behavior-driven development, acceptance criteria, or wants documentation that drives their testing strategy. This skill complements feature-dev: use spec-dev before feature-dev to define what to build, and after feature-dev to update documentation."
 metadata:
   author: Moeyua
-  version: "2026.3.31"
+  version: "2026.4.8"
   source: Manual
 ---
 
@@ -55,12 +55,12 @@ Every document belongs to exactly one layer. Layers depend downward only.
 
 | Layer | Question | Contents | Consumers |
 |-------|----------|----------|-----------|
-| **WHY** | Why does this exist? | Vision, scope | Product decisions |
-| **WHAT** | What does each module/feature do? | Module contracts, feature specs, BDD scenarios | Developers writing code, testers writing tests |
-| **HOW** | How is it built? | ADRs, conventions, design system, data model | Developers making implementation choices |
-| **VERIFY** | How do we prove it works? | Testing strategy, AC↔test mapping | Test runners, CI |
+| **WHY** | Why does this exist? | Vision, scope, glossary | Product decisions |
+| **WHAT** | What does each module/feature do? | Architecture, module contracts, feature specs, BDD scenarios | Developers writing code, testers writing tests |
+| **HOW** | How is it built? | ADRs, conventions, design system | Developers making implementation choices |
+| **VERIFY** | How do we prove it works? | Testing strategy, AC↔test mapping | Test runners, CI, manual testers |
 
-The VERIFY layer is embedded inside WHAT-layer specs (each spec contains its own AC, BDD scenarios, and TDD pointers) plus a standalone testing strategy guide. This keeps verification co-located with the behavior it verifies.
+The VERIFY layer is embedded inside WHAT-layer specs (each spec contains its own AC, BDD scenarios, and TDD pointers) plus a standalone testing strategy guide. BDD scenarios can be verified by automated E2E tests or manual testing — the project decides which method to use and documents it in `docs/guides/testing.md`. This keeps verification co-located with the behavior it verifies.
 
 ## Modes
 
@@ -78,7 +78,7 @@ The VERIFY layer is embedded inside WHAT-layer specs (each spec contains its own
 
 ## Write Mode
 
-Collaborative step-by-step conversation to define a feature spec or module contract before development. Produces `docs/specs/{feature-name}.md` with behavior constraints, AC, BDD scenarios, and TDD pointers. Scales by feature size — large features get the full treatment, small ones just need a goal + AC.
+Collaborative step-by-step conversation to define a feature spec or module contract before development. Produces `docs/specs/{feature-name}.md` with behavior constraints, AC, BDD scenarios (verified by automated E2E or manual testing), and TDD pointers. Scales by feature size — large features get the full treatment, small ones just need a goal + AC.
 
 Read [write-mode](references/write-mode.md) for the 8-step process, scaling guide, module contract steps, and quality checklist.
 
@@ -86,7 +86,7 @@ Read [write-mode](references/write-mode.md) for the 8-step process, scaling guid
 
 ## Update Mode
 
-Closes the loop after feature-dev — reads git diff, verifies each AC against both implementation AND tests (three-state: `[x]` tested, `[~]` untested, `[ ]` not implemented), updates BDD scenarios, updates module contracts, suggests ADRs, and updates CLAUDE.md.
+Closes the loop after feature-dev — reads git diff, verifies each AC against both implementation AND tests (three-state: `[x]` tested, `[~]` untested, `[ ]` not implemented), updates BDD scenarios, updates module contracts (name/purpose tables, not copied signatures), suggests ADRs, and updates CLAUDE.md.
 
 Read [update-mode](references/update-mode.md) for the 7-step process and output format.
 
@@ -102,7 +102,7 @@ Read [status-mode](references/status-mode.md) for the process and output format.
 
 ## Setup Mode
 
-Initialize project documentation from scratch. Scans the codebase (including existing tests), plans the doc structure across four layers (WHY/WHAT/HOW/VERIFY), then writes documents progressively. Testing guides (`testing.md`, `dev-workflow.md`) are created alongside the first spec, not deferred.
+Initialize project documentation from scratch. Scans the codebase (including existing tests), plans the doc structure across four layers (WHY/WHAT/HOW/VERIFY), then writes documents progressively. Includes glossary for domain terminology and architecture document for system structure. Testing guides (`testing.md`, `dev-workflow.md`) are created alongside the first spec, not deferred.
 
 Read [setup-mode](references/setup-mode.md) for the scan checklist, target structure, progressive rhythm, and per-document guidance.
 
@@ -110,7 +110,7 @@ Read [setup-mode](references/setup-mode.md) for the scan checklist, target struc
 
 ## Audit Mode
 
-Binary pass/fail doc linter. Checks specs (structure + TDD: every `[x]` AC has a test + BDD: scenarios exist with E2E implementations), module contracts (API, invariants, boundary, errors), cross-references (scope coverage, orphan specs, dead links), and accuracy (API signatures match code, AC status matches reality).
+Binary pass/fail doc linter. Checks specs (structure + TDD: every `[x]` AC has a test + BDD: scenarios exist with automated E2E or manual test records), module contracts (API source paths, invariants, boundary, errors), cross-references (scope coverage, orphan specs, dead links), and accuracy (API source files exist, AC status matches reality).
 
 Read [audit-mode](references/audit-mode.md) for all check tables and output format.
 
@@ -118,7 +118,7 @@ Read [audit-mode](references/audit-mode.md) for all check tables and output form
 
 ## Migrate Mode
 
-Restructure existing docs to SDD four-layer architecture. Scans existing tests to set initial AC status (`[x]`/`[~]`/`[ ]`), maps old docs to target layers, executes migration in dependency order, then runs Audit Mode to verify.
+Restructure existing docs to SDD four-layer architecture. Scans existing tests to set initial AC status (`[x]`/`[~]`/`[ ]`), maps old docs to target layers (old data-model docs are removed — data models reference code files directly), executes migration in dependency order, then runs Audit Mode to verify.
 
 Read [migrate-mode](references/migrate-mode.md) for the mapping table, test scan step, execution order, and verification.
 
@@ -145,7 +145,7 @@ Read [refine-mode](references/refine-mode.md) for detailed steps. Summary:
 - **Behavior over UI**: Specs define what the system does, not what it looks like. No pixel values, colors, or button labels in AC.
 - **`[~]` is debt, not progress**: An implemented but untested AC is a promise without proof. Update Mode flags it, Status Mode surfaces it, Audit Mode fails on it.
 - **Keep docs alive**: Outdated docs are worse than no docs. When implementation changes, update the spec's AC status immediately — this is what Update Mode automates.
-- **Don't duplicate code**: Reference file paths instead of pasting code that will go stale.
+- **Don't duplicate code**: Reference file paths instead of pasting code that will go stale. Module APIs and data models point to source files, not copied signatures or type definitions.
 - **Progressive detail**: WHY is stable (changes quarterly), WHAT changes per feature, HOW changes per implementation.
 - **Language**: Match existing docs. If starting fresh, use the language the user communicates in.
 

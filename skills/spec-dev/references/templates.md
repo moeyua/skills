@@ -1,6 +1,6 @@
 ---
 name: templates
-description: "Full markdown templates for all SDD document types: module contracts, feature specs with BDD/TDD, ADR, product vision/scope, testing strategy pointers, and CLAUDE.md"
+description: "Full markdown templates for all SDD document types: module contracts, feature specs with BDD/TDD, ADR, product vision/scope/glossary, architecture, testing strategy pointers, and CLAUDE.md"
 ---
 
 # SDD Document Templates
@@ -14,13 +14,13 @@ Adapt these templates to the specific project. Remove sections that don't apply,
 1. [CLAUDE.md Template](#claudemd-template) — Agent entry point
 2. [Product Vision Template](#product-vision-template) — WHY layer
 3. [Product Scope Template](#product-scope-template) — WHY layer
-4. [Module Contract Template](#module-contract-template) — WHAT layer
-5. [Module Map Template](#module-map-template) — WHAT layer
-6. [Feature Spec Template](#feature-spec-template) — WHAT+VERIFY layer
-7. [ADR Template](#adr-template) — HOW layer
-8. [Conventions Template](#conventions-template) — HOW layer
-9. [Design System Template](#design-system-template) — HOW layer
-10. [Data Model Template](#data-model-template) — HOW layer
+4. [Glossary Template](#glossary-template) — WHY layer
+5. [Architecture Template](#architecture-template) — WHAT layer
+6. [Module Contract Template](#module-contract-template) — WHAT layer
+7. [Feature Spec Template](#feature-spec-template) — WHAT+VERIFY layer
+8. [ADR Template](#adr-template) — HOW layer
+9. [Conventions Template](#conventions-template) — HOW layer
+10. [Design System Template](#design-system-template) — HOW layer
 
 ---
 
@@ -71,12 +71,13 @@ See docs/guides/dev-workflow.md for the full process.
 |----------|-------------|
 | docs/product/vision.md | Understanding product goals |
 | docs/product/scope.md | What's in/out of scope |
+| docs/product/glossary.md | Understanding domain terminology |
+| docs/architecture.md | System structure and module overview |
 | docs/modules/ | Module responsibilities and interfaces |
 | docs/specs/ | Feature behavior and test criteria |
 | docs/decisions/ | Before proposing architectural changes |
 | docs/guides/conventions.md | Before writing new code |
 | docs/guides/design-system.md | Implementing UI |
-| docs/guides/data-model.md | Working with data structures |
 | docs/guides/testing.md | Writing tests |
 | docs/guides/dev-workflow.md | SDD development process |
 ```
@@ -155,6 +156,72 @@ These are intentionally excluded. Do not implement them:
 
 ---
 
+## Glossary Template
+
+WHY layer. Defines domain terminology used across all documents. Prevents miscommunication between team members and agents. Update when a new domain concept is introduced.
+
+```markdown
+# Glossary
+
+| Term | Definition | Context |
+|------|-----------|---------|
+| {Term} | {Precise definition in this project's context} | {Where this term is used — e.g., specs, module contracts, UI} |
+| {Term} | {Definition} | {Context} |
+```
+
+Keep entries sorted alphabetically. If a term has a different meaning in general usage vs. this project, note the distinction explicitly.
+
+---
+
+## Architecture Template
+
+WHAT layer. Replaces Module Map. Describes system-level structure: layering, data flow, external integrations, and includes a module registry. One file for the whole project.
+
+```markdown
+# Architecture
+
+## System Overview
+
+{2-3 sentences: what the system does and its high-level structure.}
+
+## Layer Diagram
+
+```
+┌─────────────────────────────────┐
+│         {Layer name}            │
+│  {Module A}  │  {Module B}     │
+└───────────────┬─────────────────┘
+                │ calls
+┌───────────────▼─────────────────┐
+│         {Layer name}            │
+│  {Module C}  │  {Module D}     │
+└───────────────┬─────────────────┘
+                │ calls
+┌───────────────▼─────────────────┐
+│         {Layer name}            │
+│  {Module E}  │  {Module F}     │
+└─────────────────────────────────┘
+```
+
+## Data Flow
+
+{Describe how data moves through the system — from user input or external trigger to final output/persistence. Use text, not diagrams.}
+
+## External Integrations (if applicable)
+
+| System | Purpose | Interface |
+|--------|---------|-----------|
+| {system} | {why we integrate} | {API / SDK / message queue / etc.} |
+
+## Module Registry
+
+| Module | Contract | Main source |
+|--------|----------|-------------|
+| {Name} | [{name}.md](modules/{name}.md) | `{path}` |
+```
+
+---
+
 ## Module Contract Template
 
 WHAT layer. This is the core SDD document for defining module boundaries. It answers "what does this module do" without saying "how".
@@ -176,10 +243,13 @@ WHAT layer. This is the core SDD document for defining module boundaries. It ans
 
 ## Public API
 
-```typescript
-// Exact signatures, synced from source code
-{function/method signatures}
-```
+> See source: `{file path to barrel export or main module file}`
+
+List method/function **names** and one-line purpose. Do NOT copy full signatures — they go stale. The source file is the single source of truth.
+
+| Export | Purpose |
+|--------|---------|
+| `{name}` | {what it does} |
 
 ## Events Published (if applicable)
 
@@ -227,41 +297,6 @@ Conditions that must always hold. Violation = bug:
 
 ---
 
-## Module Map Template
-
-WHAT layer. One file that shows how all modules relate.
-
-```markdown
-# Module Map
-
-{Project name} consists of {N} modules with unidirectional dependencies:
-
-```
-┌─────────────────────────────────┐
-│         UI Layer                │
-│  {Module A}  │  {Module B}     │
-└───────────────┬─────────────────┘
-                │ calls
-┌───────────────▼─────────────────┐
-│         Logic Layer             │
-│  {Module C}  │  {Module D}     │
-└───────────────┬─────────────────┘
-                │ calls
-┌───────────────▼─────────────────┐
-│         Service Layer           │
-│  {Module E}  │  {Module F}     │
-└─────────────────────────────────┘
-```
-
-## Modules
-
-| Module | Contract | Main files |
-|--------|----------|------------|
-| {Name} | [{name}.md]({name}.md) | `{path}` |
-```
-
----
-
 ## Feature Spec Template
 
 WHAT+VERIFY layer. The most important template in SDD — it drives both development and testing.
@@ -305,7 +340,7 @@ Each AC maps to exactly one test. Mark `[x]` when implemented and tested.
 
 ## BDD Scenarios
 
-Derived from AC. These drive E2E / integration tests.
+Derived from AC. These describe user-visible behavior and can be verified either by automated E2E tests or manual testing — the project decides which.
 
 ```gherkin
 Feature: {Feature name}
@@ -322,6 +357,10 @@ Feature: {Feature name}
     When {user action}
     Then {expected outcome}
 ```
+
+**Verification method** (choose one per project, note in `docs/guides/testing.md`):
+- **Automated**: Each scenario maps to an E2E test file (Playwright / Cypress / etc.)
+- **Manual**: Each scenario maps to a manual test checklist entry with pass/fail record
 
 ## TDD Pointers
 
@@ -496,45 +535,3 @@ HOW layer. Only for frontend projects with custom visual rules.
 {Breakpoints, minimum supported width}
 ```
 
----
-
-## Data Model Template
-
-HOW layer. Defines data structures and state shape.
-
-```markdown
-# Data Model
-
-## Core Entities
-
-### {Entity Name}
-
-```typescript
-interface {EntityName} {
-  // fields with types and comments
-}
-```
-
-- Source: {where this data comes from}
-- Store: {where it lives in state}
-
-## State Shape
-
-### {Store Name}
-```
-├── {field}: {type}
-├── {field}: {type}
-└── {field}: {type}
-```
-
-## API Endpoints (if applicable)
-
-| Method | Path | Request | Response |
-|--------|------|---------|----------|
-| {GET/POST} | {path} | {body type} | {response type} |
-
-## Key Transformations
-
-- {e.g., API returns snake_case, frontend uses camelCase}
-- {e.g., dates stored as ISO strings, formatted at display}
-```

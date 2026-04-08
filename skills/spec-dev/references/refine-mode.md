@@ -33,7 +33,9 @@ Scan all documentation:
 
 - `docs/specs/*.md` — feature specs with AC
 - `docs/modules/*.md` — module contracts
+- `docs/architecture.md` — system structure and module registry
 - `docs/product/scope.md` — planned features
+- `docs/product/glossary.md` — domain terminology
 - `docs/decisions/*.md` — ADRs
 - `docs/guides/*.md` — implementation guides
 
@@ -116,6 +118,6 @@ Walk through the plan action by action. For each:
 1. Show the specific change (diff-style for content changes, file ops for structural changes)
 2. Wait for user confirmation
 3. Execute
-4. Update any cross-references (CLAUDE.md links, scope.md entries, module README)
+4. Update any cross-references (CLAUDE.md links, scope.md entries, architecture.md module registry)
 
 After all actions complete, run Audit Mode to verify the result is consistent.

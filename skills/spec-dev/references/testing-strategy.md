@@ -80,18 +80,25 @@ describe('flowStore', () => {
 })
 ```
 
-### E2E Tests
+### E2E / Acceptance Tests
 
-**Location:** `tests/`
-**Framework:** Playwright
+**Location:** `tests/` (automated) or manual test checklist
+**Framework:** Playwright / Cypress (automated) or structured manual testing
 **Scope:** Critical user journeys mapped from BDD scenarios in specs
+
+The project chooses one verification method and documents it in `docs/guides/testing.md`:
+
+- **Automated E2E**: BDD scenarios map to Playwright/Cypress test files
+- **Manual testing**: BDD scenarios map to a manual test checklist with structured pass/fail records
+
+Both approaches are valid. Automated E2E is preferred when the project has the infrastructure; manual testing is acceptable when E2E tooling is not integrated.
 
 Good candidates:
 - Core user workflows (create → configure → execute)
 - Cross-module interactions that integration tests can't cover
 - Error recovery flows visible to users
 
-**Pattern — map directly from BDD scenarios:**
+**Pattern A — automated E2E (map from BDD scenarios):**
 
 ```typescript
 // Spec says:
@@ -106,6 +113,16 @@ test('create text node from toolbar', async ({ page }) => {
   await page.click('[data-testid="node-type-text"]')
   await expect(page.locator('[data-testid="node-text"]')).toBeVisible()
 })
+```
+
+**Pattern B — manual test checklist (when no E2E framework):**
+
+```markdown
+## Manual Test: {Feature name}
+
+| # | Scenario | Steps | Expected | Pass/Fail | Tester | Date |
+|---|----------|-------|----------|-----------|--------|------|
+| 1 | Create text node from toolbar | 1. Open canvas editor 2. Click toolbar add 3. Select text | Text node appears on canvas | | | |
 ```
 
 ## Spec → Test Mapping
@@ -150,7 +167,7 @@ Examples:
 |-------|--------|-------|
 | Unit | > 90% | Validation, business rules, pure logic |
 | Integration | > 70% | All public store actions, key composables |
-| E2E | Critical paths 100% | Every P0 user journey has at least one test |
+| E2E / Manual | Critical paths 100% | Every P0 user journey has at least one automated test or manual test record |
 
 These are guidelines, not gates. 90% coverage with meaningful tests beats 100% coverage with trivial assertions.
 

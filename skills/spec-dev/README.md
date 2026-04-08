@@ -24,10 +24,10 @@ Spec → AC → Test
 
 | 层级 | 回答的问题 | 内容 |
 |------|-----------|------|
-| **WHY** | 为什么要做？ | 愿景、范围 |
-| **WHAT** | 做什么？ | 模块契约、功能规格、BDD 场景 |
-| **HOW** | 怎么做？ | ADR、约定、设计系统、数据模型 |
-| **VERIFY** | 如何验证？ | 测试策略、AC↔测试映射 |
+| **WHY** | 为什么要做？ | 愿景、范围、术语表 |
+| **WHAT** | 做什么？ | 架构、模块契约、功能规格、BDD 场景 |
+| **HOW** | 怎么做？ | ADR、约定、设计系统 |
+| **VERIFY** | 如何验证？ | 测试策略、AC↔测试映射（自动化 E2E 或人工测试） |
 
 ## 工作流
 
@@ -81,16 +81,23 @@ spec-dev 负责定义和记录，feature-dev 负责探索和实现。没有 spec
 
 ```
 docs/
-├── scope.md                    # WHY 层 — 项目愿景和范围
+├── product/
+│   ├── vision.md               # WHY 层 — 产品愿景
+│   ├── scope.md                # WHY 层 — 产品范围
+│   └── glossary.md             # WHY 层 — 术语表
+├── architecture.md             # WHAT 层 — 系统架构 + 模块注册表
+├── modules/
+│   └── {module-name}.md        # WHAT 层 — 模块契约（API 指向代码文件）
 ├── specs/
 │   └── {feature-name}.md       # WHAT 层 — 功能规格（含 AC + BDD）
-├── modules/
-│   └── {module-name}.md        # WHAT 层 — 模块契约
-├── adr/
+├── decisions/
 │   └── NNN-{decision}.md       # HOW 层 — 架构决策记录
-├── conventions.md              # HOW 层 — 编码约定
-├── testing.md                  # VERIFY 层 — 测试策略
-└── dev-workflow.md             # HOW 层 — 开发工作流
+├── guides/
+│   ├── conventions.md          # HOW 层 — 编码约定
+│   ├── design-system.md        # HOW 层 — 设计系统（前端项目）
+│   ├── testing.md              # VERIFY 层 — 测试策略（含 BDD 验证方式）
+│   └── dev-workflow.md         # HOW 层 — 开发工作流
+└── CLAUDE.md                   # Agent 入口
 ```
 
 ## 设计原则
@@ -100,7 +107,7 @@ docs/
 - **行为优先**：规格定义系统做什么，而非长什么样。AC 中不写像素值、颜色、按钮文案
 - **`[~]` 是债务**：已实现但未测试的 AC 是没有证明的承诺
 - **保持文档鲜活**：过时的文档比没有文档更糟糕
-- **不复制代码**：引用文件路径，而非粘贴会过时的代码片段
+- **不复制代码**：引用文件路径，而非粘贴会过时的代码片段。模块 API 和数据模型指向源文件，不复制签名或类型定义
 
 ## 参考文件
 

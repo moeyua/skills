@@ -23,7 +23,7 @@ Write Mode is a collaborative, step-by-step conversation — not a one-shot gene
 
 **Step 4: Write Acceptance Criteria** — Propose AC based on the confirmed behavior constraints. Each AC must be verifiable by a single test. Present the list and ask the user to review: any missing? Any too vague? Any that should be split or merged? Mark each as `[ ]` (not yet implemented).
 
-**Step 5: Derive BDD Gherkin scenarios from AC** — Propose scenarios that drive E2E / integration tests. Focus on user-visible behavior, cover both happy path and error paths. Confirm with the user.
+**Step 5: Derive BDD Gherkin scenarios from AC** — Propose scenarios that describe user-visible behavior, covering both happy path and error paths. These scenarios can be verified by automated E2E tests or manual testing — the project's `docs/guides/testing.md` defines which method is used. Confirm with the user.
 
 **Step 6: List TDD unit test pointers** — Propose what pure logic to test, which module — not the full test code. Confirm with the user.
 
@@ -67,5 +67,5 @@ Steps:
 - Every AC can be verified by a single test?
 - No UI details in the spec (pixel values, colors, button labels)?
 - No implementation technology mentioned in behavior constraints?
-- BDD scenarios cover both happy path and error paths?
+- BDD scenarios cover both happy path and error paths (regardless of whether verified by automated E2E or manual testing)?
 - Module contract lists what it does NOT do?

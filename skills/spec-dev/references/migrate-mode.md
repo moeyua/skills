@@ -14,10 +14,9 @@ Read every existing doc and classify:
 | Existing doc | Target layer | Action |
 |-------------|-------------|--------|
 | PRD.md | WHY | Split into `product/vision.md` + `product/scope.md` |
-| architecture.md | WHAT | Split into `modules/*.md` contracts |
+| architecture.md | WHAT | Migrate to `architecture.md` (system structure + module registry) |
 | conventions.md | HOW | Move to `guides/conventions.md` |
 | design-system.md | HOW | Move to `guides/design-system.md` |
-| data-model.md | HOW | Move to `guides/data-model.md` |
 | specs/*.md | WHAT+VERIFY | Rewrite: remove UI details, add AC + BDD + TDD |
 | decisions/*.md | HOW | Keep in place |
 | tasks.md | — | Delete (use issue tracker instead) |
@@ -37,11 +36,12 @@ Order matters — migrate in dependency order:
 1. Create directory structure (`product/`, `modules/`, `guides/`)
 2. Move HOW-layer docs (no content changes, just path)
 3. Supplement missing ADRs for undocumented decisions
-4. Split WHY-layer docs (extract vision and scope from PRD)
-5. Rewrite WHAT-layer: module contracts from architecture docs, specs with AC + BDD scenarios + TDD pointers. Set AC status using test scan results from step 2
-6. Create VERIFY-layer guides (`testing.md`, `dev-workflow.md`)
-7. Update CLAUDE.md and doc site config
-8. Delete obsolete files
+4. Split WHY-layer docs (extract vision, scope, and glossary from PRD or existing docs)
+5. Create `architecture.md` (system structure + module registry) from existing architecture docs
+6. Rewrite WHAT-layer: module contracts (with source file pointers, not copied signatures), specs with AC + BDD scenarios + TDD pointers. Set AC status using test scan results from step 2
+7. Create VERIFY-layer guides (`testing.md` including BDD verification method, `dev-workflow.md`)
+8. Update CLAUDE.md and doc site config
+9. Delete obsolete files (including old `data-model.md` — data models should be referenced via code paths)
 
 ## 4. Verify migration
 

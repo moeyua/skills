@@ -25,7 +25,7 @@ For each file in `docs/modules/` (excluding README.md):
 
 | Check | Pass condition |
 |-------|---------------|
-| Has Public API | Public API section exists |
+| Has Public API | Public API section exists with source file path |
 | Has Invariants | Invariants section exists |
 | Has boundary | "Does NOT own" or equivalent section exists |
 | Has error scenarios | Error Scenarios section exists |
@@ -55,14 +55,14 @@ How to find corresponding tests: search test directories for imports from the re
 |-------|---------------|
 | Specs have scenarios | Every spec with 3+ AC has at least one BDD Gherkin scenario |
 | Scenarios derived from AC | Each scenario's Then clause maps back to a specific AC (not invented independently) |
-| Scenarios have test impl | Each BDD scenario has a corresponding E2E or integration test file (search for scenario keywords in `e2e/`, `tests/`, or `*.spec.*` files) |
+| Scenarios have verification | Each BDD scenario has either: (a) a corresponding E2E/integration test file, OR (b) an entry in a manual test checklist with a recorded pass/fail result. Check `docs/guides/testing.md` to determine which verification method the project uses |
 | Happy + error coverage | Scenarios cover at least one happy path and one error path per spec |
 
 ## Accuracy checks
 
 | Check | Pass condition |
 |-------|---------------|
-| Public API matches code | Signatures in module contracts match actual source code |
+| Public API source exists | Source file path in module contract's Public API section exists in the codebase, and listed exports exist in that file |
 | AC status correct | `[x]` items are implemented AND tested, `[~]` items are implemented but untested, `[ ]` items are not yet implemented |
 
 ## Output format
@@ -92,10 +92,10 @@ How to find corresponding tests: search test directories for imports from the re
 
 ### BDD
 - specs/search.md: scenarios only cover happy path, no error scenario
-- specs/auth.md: scenario "Login with expired token" has no E2E test implementation
+- specs/auth.md: scenario "Login with expired token" has no E2E test or manual test record
 
 ### Accuracy
-- modules/list.md: `reorder()` signature outdated (returns void, code returns Promise)
+- modules/list.md: Public API source `src/list/index.ts` exists but `reorder` export not found
 - specs/drag-sort.md: AC-03 marked [x] but not implemented
 
 ### Summary: 22/30 checks passed

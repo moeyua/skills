@@ -26,7 +26,7 @@ feature-dev produces working code but doesn't update documentation. Without this
    To find corresponding tests: search test directories for imports from the relevant module, test names referencing the feature, or BDD scenario keywords matching the AC description.
 
 4. **Update module contracts** — For each module that was modified:
-   - Check if the public API changed (new functions, changed signatures, removed methods)
+   - Check if the public API changed (new exports, removed exports, renamed functions) — update the name/purpose table, NOT signatures (those live in code)
    - Check if new dependencies were introduced
    - Check if invariants still hold or need updating
    - Update `docs/modules/{module}.md` accordingly
@@ -36,6 +36,7 @@ feature-dev produces working code but doesn't update documentation. Without this
    - If implementation added new user-visible paths not covered by existing scenarios, propose new ones
    - If implementation changed behavior described by an existing scenario, update it
    - If a scenario describes behavior that was descoped or changed, flag it for removal
+   - If using manual testing: update the manual test checklist to match any changed/added scenarios
    - Skip this step if the spec has no BDD scenarios (small features)
 
 6. **Check for ADR candidates** — During development, architectural decisions are often made implicitly. Look for:
