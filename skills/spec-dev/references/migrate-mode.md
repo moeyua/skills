@@ -13,7 +13,7 @@ Read every existing doc and classify:
 
 | Existing doc | Target layer | Action |
 |-------------|-------------|--------|
-| PRD.md | WHY | Split into `product/vision.md` + `product/scope.md` |
+| PRD.md | WHY + WHAT | Split WHY content into `product/vision.md` + `product/scope.md` + `product/glossary.md`; extract feature-level behavior descriptions into individual `specs/*.md` files; extract tech decisions into `decisions/*.md` |
 | architecture.md | WHAT | Migrate to `architecture.md` (system structure + module registry) |
 | conventions.md | HOW | Move to `guides/conventions.md` |
 | design-system.md | HOW | Move to `guides/design-system.md` |
