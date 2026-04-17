@@ -5,11 +5,13 @@ description: "Testing strategy guide for SDD projects. Defines the test pyramid,
 
 # Testing Strategy
 
+This guide is **technology-neutral**. It describes the shape of a healthy test suite for SDD projects; the specific framework names (Vitest/Jest/Playwright/Cypress/pytest/go test/…) are substituted in per project. Record your project's choices in `docs/guides/testing.md`.
+
 ## Test Pyramid
 
 ```mermaid
 graph BT
-    Unit["Unit — Pure functions, business rules → Vitest"] --> Integration["Integration — Store + Composable + Component → Vitest + test-utils"] --> E2E["E2E — BDD scenarios from specs → Playwright"]
+    Unit["Unit — Pure functions, business rules"] --> Integration["Integration — Modules + adapters with framework runtime"] --> E2E["E2E — BDD scenarios from specs"]
 ```
 
 **Principle:** The more a test depends on infrastructure, the fewer of them you need. Pure logic gets the most tests; E2E covers critical user journeys only.
@@ -18,8 +20,6 @@ graph BT
 
 ### Unit Tests
 
-**Location:** `test/unit/`
-**Framework:** Vitest
 **Scope:** Pure functions with zero framework dependencies
 
 Good candidates:
@@ -47,24 +47,18 @@ it('should detect cycle when edge creates loop', () => {
 
 ### Integration Tests
 
-**Location:** `test/nuxt/` (Nuxt) or `test/integration/`
-**Framework:** Vitest + framework test utils
-**Scope:** Components, stores, composables that depend on framework runtime
+**Scope:** Modules that depend on the framework runtime — stores, components, hooks/composables, adapters that touch I/O boundaries with test doubles.
 
 Good candidates:
-- Pinia store actions and getters
-- Composables that use framework APIs (reactivity, lifecycle)
+- Store actions and selectors (Pinia, Zustand, Redux, etc.)
+- Hooks / composables that use framework APIs (reactivity, lifecycle)
 - Component rendering and interaction
 - Store ↔ component integration
 
-**Pattern — test public API, not internals:**
+**Pattern — test public API, not internals.** Use your framework's test harness (e.g., `@testing-library`, Nuxt test utils, React Testing Library). Example (Pinia-flavored, substitute your own stack):
 
 ```typescript
 describe('flowStore', () => {
-  beforeEach(() => {
-    setActivePinia(createPinia())
-  })
-
   it('should add node and sync to canvas', () => {
     const store = useFlowStore()
     store.addNode('text', { x: 100, y: 200 })
@@ -77,13 +71,11 @@ describe('flowStore', () => {
 
 ### E2E / Acceptance Tests
 
-**Location:** `tests/` (automated) or manual test checklist
-**Framework:** Playwright / Cypress (automated) or structured manual testing
 **Scope:** Critical user journeys mapped from BDD scenarios in specs
 
 The project chooses one verification method and documents it in `docs/guides/testing.md`:
 
-- **Automated E2E**: BDD scenarios map to Playwright/Cypress test files
+- **Automated E2E**: BDD scenarios map to E2E test files (Playwright / Cypress / Selenium / whatever the project uses)
 - **Manual testing**: BDD scenarios map to a manual test checklist with structured pass/fail records
 
 Both approaches are valid. Automated E2E is preferred when the project has the infrastructure; manual testing is acceptable when E2E tooling is not integrated.
@@ -122,14 +114,14 @@ test('create text node from toolbar', async ({ page }) => {
 
 ## Spec → Test Mapping
 
-Every test must trace back to a spec:
+Every test must trace back to a spec. In the spec, each AC points at the test; in the test, a comment references the AC:
 
 ```
 docs/specs/ai-generation-flow.md
   AC-01: "Node enters generating state"
-    → test/nuxt/aiGeneration.test.ts: it('should set status to generating')
+    → {integration-tests}/aiGeneration.test.ts: it('should set status to generating')
   AC-02: "Generate button disabled during generation"
-    → tests/ai-generation.spec.ts: test('generate button disabled while generating')
+    → {e2e-tests}/ai-generation.spec.ts: test('generate button disabled while generating')
 ```
 
 When you write a test, add a comment referencing the AC:
@@ -141,9 +133,13 @@ it('should set status to generating when generate is called', () => {
 })
 ```
 
-## data-testid Conventions
+This two-way link is what makes Audit Mode's TDD checks possible.
 
-All interactive UI elements should have `data-testid` for E2E tests. Naming pattern:
+## UI Test Selector Conventions (frontend only)
+
+Interactive UI elements should expose a stable hook for E2E tests — `data-testid` is a common choice; your project may prefer `aria-label`, test ids injected by the framework, or accessible name queries. Pick one and record it in `docs/guides/testing.md`.
+
+A naming pattern that scales:
 
 ```
 {component}-{element}
@@ -161,7 +157,7 @@ Examples:
 | Layer | Target | Focus |
 |-------|--------|-------|
 | Unit | > 90% | Validation, business rules, pure logic |
-| Integration | > 70% | All public store actions, key composables |
+| Integration | > 70% | All public store/module actions, key hooks/composables |
 | E2E / Manual | Critical paths 100% | Every P0 user journey has at least one automated test or manual test record |
 
 These are guidelines, not gates. 90% coverage with meaningful tests beats 100% coverage with trivial assertions.
@@ -171,14 +167,16 @@ These are guidelines, not gates. 90% coverage with meaningful tests beats 100% c
 - Third-party library behavior (trust the library)
 - CSS/styling (unless testing conditional class application)
 - Static content rendering
-- Framework internals (Vue reactivity, Nuxt auto-imports)
+- Framework internals (reactivity systems, auto-imports, DI containers)
 
 ## Test File Naming
 
+A consistent naming scheme helps both humans and Audit Mode locate the test for a given spec. The exact paths below are a suggestion — match whatever the project has already established, and record the chosen scheme in `docs/guides/testing.md`:
+
 ```
-test/unit/{module}.test.ts          # Unit tests
-test/nuxt/{component|store}.test.ts # Integration tests
-tests/{feature}.spec.ts             # E2E tests
+{unit-tests}/{module}.test.ts           # Unit tests
+{integration-tests}/{unit}.test.ts      # Integration tests
+{e2e-tests}/{feature}.spec.ts           # E2E tests
 ```
 
 Match the `{feature}` name to the spec filename in `docs/specs/` for easy tracing.

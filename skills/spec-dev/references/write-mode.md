@@ -21,7 +21,7 @@ Write Mode is a collaborative, step-by-step conversation — not a one-shot gene
 
 **Step 3: State Machine** (if the feature has stateful behavior) — Not every feature needs one. Use judgment: a login flow has states (unauthenticated → authenticating → authenticated → error), a simple data transform does not. If applicable, propose the states and transitions, confirm with the user.
 
-**Step 4: Acceptance Criteria** — Propose AC based on the confirmed behavior constraints. Each AC must be verifiable by a single test. Present the list and ask the user to review: any missing? Any too vague? Any that should be split or merged? Mark each as `[ ]` (not yet implemented).
+**Step 4: Acceptance Criteria** — Propose AC based on the confirmed behavior constraints. Each AC must be verifiable by a single test. Present the list and ask the user to review: any missing? Any too vague? Any that should be split or merged? Mark each as `[ ]` (not yet implemented — see [concepts](concepts.md#three-state-acceptance-criteria) for the full three-state system).
 
 **Step 5: Verification** — Derive testing from AC. Two kinds, presented together in one message because they share the same root (AC) and differ only in scope:
 

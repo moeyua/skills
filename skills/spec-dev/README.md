@@ -4,30 +4,17 @@
 
 ## 核心理念
 
+核心概念（`Spec → AC → Test` 不变量、三态 AC、四层架构、SDD/TDD/BDD 分工）集中在 [references/concepts.md](references/concepts.md) —— 读一次即可，所有模式都基于它。
+
+**速览：**
+
 ```
 Spec → AC → Test
 ```
 
-每个功能必须先有规格（Spec），规格中的每条验收标准（AC）必须映射到测试。AC 使用三态标记：
+每个功能必须先有规格（Spec），规格中的每条验收标准（AC）必须映射到测试。AC 使用三态标记：`[x]` 已实现且已测试 / `[~]` 已实现但未测试（技术债务）/ `[ ]` 尚未实现。功能只有在所有 AC 都是 `[x]` 时才算完成。
 
-| 标记 | 含义 |
-|------|------|
-| `[x]` | 已实现 + 已测试 |
-| `[~]` | 已实现但未测试（技术债务） |
-| `[ ]` | 尚未实现 |
-
-功能只有在所有 AC 都是 `[x]` 时才算完成。
-
-## 四层文档架构
-
-所有文档归属于四层之一，层级之间仅向下依赖：
-
-| 层级 | 回答的问题 | 内容 |
-|------|-----------|------|
-| **WHY** | 为什么要做？ | 愿景、范围、术语表 |
-| **WHAT** | 做什么？ | 架构、模块契约、功能规格、BDD 场景 |
-| **HOW** | 怎么做？ | ADR、约定、设计系统 |
-| **VERIFY** | 如何验证？ | 测试策略、AC↔测试映射（自动化 E2E 或人工测试） |
+所有文档归属于 WHY / WHAT / HOW / VERIFY 四层，层级之间仅向下依赖。完整的层级定义和变更频率见 [concepts.md](references/concepts.md#the-four-layer-architecture)。
 
 ## 工作流
 
@@ -113,6 +100,7 @@ docs/
 
 | 主题 | 文件 |
 |------|------|
+| 核心概念（不变量、三态 AC、四层、SDD/TDD/BDD） | [concepts.md](references/concepts.md) |
 | CLAUDE.md 模板 | [templates-claude.md](references/templates-claude.md) |
 | WHY 层模板（vision/scope/glossary） | [templates-why.md](references/templates-why.md) |
 | WHAT 层模板（architecture/module/feature spec） | [templates-what.md](references/templates-what.md) |

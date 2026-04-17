@@ -43,10 +43,12 @@ For each file in `docs/modules/` (excluding README.md):
 
 ## TDD checks
 
+Uses the three-state AC system — see [concepts](concepts.md#three-state-acceptance-criteria) for state definitions.
+
 | Check | Pass condition |
 |-------|---------------|
 | AC has test | Every `[x]` AC has a corresponding test (unit, integration, or E2E) that verifies it |
-| No `[~]` items | No AC is marked `[~]` (implemented but untested) — these are test debt |
+| No `[~]` items | No AC is marked `[~]` — all test debt is resolved |
 | Orphan tests | No test file exists that tests behavior not described by any AC (sign of undocumented behavior — either add AC or delete the test) |
 
 How to find corresponding tests: search test directories for imports from the relevant module, test names matching AC descriptions, or `describe`/`it`/`test` blocks referencing the feature name.
@@ -65,7 +67,7 @@ How to find corresponding tests: search test directories for imports from the re
 | Check | Pass condition |
 |-------|---------------|
 | Public API source exists | Source file path in module contract's Public API section exists in the codebase, and listed exports exist in that file |
-| AC status correct | `[x]` items are implemented AND tested, `[~]` items are implemented but untested, `[ ]` items are not yet implemented |
+| AC status correct | Each AC's marker matches the observed state (see [concepts](concepts.md#three-state-acceptance-criteria)) |
 
 ## Output format
 

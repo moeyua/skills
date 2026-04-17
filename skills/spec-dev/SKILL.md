@@ -3,29 +3,17 @@ name: spec-dev
 description: "Spec-Driven Development workflow (SDD+TDD+BDD) used as bookends around feature-dev — write specs before development, sync docs after. Seven modes cover the lifecycle: Write, Update, Status, Setup, Audit, Migrate, Refine. Triggers when the user wants to write or refine feature specs, update AC status after coding, audit or restructure docs, create module contracts, or check project progress — e.g. 'write a spec', 'sync docs', 'audit my docs', 'create module contract', '精简文档', '看一下进度', '接下来做什么'. Also triggers on mentions of acceptance criteria, BDD scenarios, spec-first development, or the four-layer doc architecture (WHY/WHAT/HOW/VERIFY)."
 metadata:
   author: Moeyua
-  version: "2026.4.8"
+  version: "2026.4.17"
   source: Manual
 ---
 
 # Spec-Dev — Spec-Driven Development Documentation System
 
-## Methodology: SDD + TDD + BDD
+## Core Concepts
 
-This skill integrates three practices into one workflow. Each owns a different question:
+This skill integrates **SDD + TDD + BDD** around a single invariant: `Spec → AC → Test`. Every AC carries a three-state marker (`[x]` tested, `[~]` untested debt, `[ ]` pending), and every document belongs to one of four layers (WHY / WHAT / HOW / VERIFY).
 
-| Practice | Question | This skill's role |
-|----------|----------|-------------------|
-| **SDD** (Spec-Driven Development) | What should the system do? | Write specs with behavior constraints and AC before any code exists. Specs are the single source of truth — if spec and code disagree, the spec wins or gets updated. |
-| **TDD** (Test-Driven Development) | How do we prove each unit works? | Every AC maps to exactly one test. AC status uses three states: `[x]` implemented + tested, `[~]` implemented but untested, `[ ]` not yet implemented. `[~]` is technical debt, not progress. |
-| **BDD** (Behavior-Driven Development) | How do we prove the feature works from the user's perspective? | Derive Gherkin scenarios (Given/When/Then) from AC. These drive E2E and integration tests. Scenarios describe user-visible behavior, not implementation. |
-
-The core invariant across all modes:
-
-```
-Spec → AC → Test
-```
-
-A feature is not done until every AC is `[x]` — meaning a test exists and passes. This invariant is enforced at every stage: Write defines it, Update verifies it, Audit checks it, Status reports it, Refine repairs it.
+Read [concepts](references/concepts.md) once before using any mode — it defines the invariant, the three-state system, the four-layer architecture, and how SDD/TDD/BDD divide responsibilities. The mode files reference it instead of redefining it.
 
 ## How This Skill Fits Your Workflow
 
@@ -49,104 +37,53 @@ spec-dev(Write) → feature-dev(全部7阶段) → spec-dev(Update) → commit-p
 | Update docs after dev | Update mode | — |
 | Project-level doc setup | Setup / Audit / Migrate | — |
 
-## Core Architecture: Four Layers
-
-Every document belongs to exactly one layer. Layers depend downward only.
-
-| Layer | Question | Contents | Consumers |
-|-------|----------|----------|-----------|
-| **WHY** | Why does this exist? | Vision, scope, glossary | Product decisions |
-| **WHAT** | What does each module/feature do? | Architecture, module contracts, feature specs, BDD scenarios | Developers writing code, testers writing tests |
-| **HOW** | How is it built? | ADRs, conventions, design system | Developers making implementation choices |
-| **VERIFY** | How do we prove it works? | Testing strategy, AC↔test mapping | Test runners, CI, manual testers |
-
-The VERIFY layer is embedded inside WHAT-layer specs (each spec contains its own AC, BDD scenarios, and TDD pointers) plus a standalone testing strategy guide. BDD scenarios can be verified by automated E2E tests or manual testing — the project decides which method to use and documents it in `docs/guides/testing.md`. This keeps verification co-located with the behavior it verifies.
-
 ## Modes
 
-| Mode | When | What to do |
-|------|------|------------|
-| **Write** | Before feature-dev: user wants to define a feature | Write spec with Scope (Goal + Out of Scope), Behavior Constraints, AC, and Verification (BDD + TDD) |
-| **Update** | After feature-dev: development is done, docs need updating | Read code changes → update AC status → update module contracts → suggest ADRs |
-| **Status** | User wants to see progress or decide what to work on next | Scan scope + specs → compute status from AC checkboxes → report |
-| **Setup** | New project or no docs exist | Scan → plan → write docs progressively |
-| **Audit** | Docs exist but may not follow SDD | Evaluate against SDD principles → report → fix |
-| **Migrate** | Existing docs need restructuring to SDD layers | Map old docs to new layers → migrate → clean up |
-| **Refine** | Docs have drifted from code reality, need restructuring | Read code → cross-reference docs → split / merge / delete / migrate |
+| Mode | When to trigger | Produces |
+|------|-----------------|----------|
+| **Write** | Before feature-dev — user wants to define a feature | `docs/specs/{feature}.md` with Scope + AC + Verification |
+| **Update** | After feature-dev — development is done, docs need syncing | Updated AC status, module contracts, ADR suggestions |
+| **Status** | User wants to see progress or decide what's next | Read-only progress report across all specs |
+| **Setup** | New project or no docs exist | Full four-layer doc skeleton, written progressively |
+| **Audit** | Docs exist but compliance is unclear | Pass/fail report — does not modify files |
+| **Migrate** | Existing docs need restructuring to SDD layers | Old docs mapped and migrated to four-layer format |
+| **Refine** | Docs have drifted from code reality | Split / merge / delete / create docs to match code |
+
+### Choosing a mode
+
+Three modes operate on existing docs and are easy to confuse. Use this quick decision:
+
+```
+No docs/ directory yet               → Setup
+Docs exist, old structure (pre-SDD)  → Migrate   (one-shot format conversion)
+Docs follow SDD, want compliance     → Audit     (reports only, no changes)
+Docs follow SDD, but don't match code → Refine    (changes what docs exist)
+```
+
+Write and Update are the high-frequency modes — they bookend each feature. Status is read-only and safe to run anytime.
 
 ---
 
-## Write Mode
+Each mode has a dedicated reference file with the full procedure and output format:
 
-Collaborative 7-step conversation to define a feature spec or module contract before development. Produces `docs/specs/{feature-name}.md` with **Scope** (Goal + Out of Scope), Behavior Constraints, State Machine (if stateful), AC, and **Verification** (BDD scenarios + TDD pointers). A **Consistency Check** runs before the file is written to catch AC↔test coverage gaps and UI leakage. Scales by feature size — large features get the full treatment, small ones just need Scope + AC + Consistency Check.
-
-Read [write-mode](references/write-mode.md) for the 7-step process (Scope → Behavior Constraints → State Machine → AC → Verification → Consistency Check → Write), scaling guide, and module contract steps.
-
----
-
-## Update Mode
-
-Closes the loop after feature-dev — reads git diff, verifies each AC against both implementation AND tests (three-state: `[x]` tested, `[~]` untested, `[ ]` not implemented), updates BDD scenarios, updates module contracts (name/purpose tables, not copied signatures), suggests ADRs, and updates CLAUDE.md.
-
-Read [update-mode](references/update-mode.md) for the 7-step process and output format.
-
----
-
-## Status Mode
-
-Read-only progress report. Scans scope and specs using three-state AC (`[x]` tested, `[~]` untested, `[ ]` pending), classifies features as Done / Implemented Untested / In Progress / Ready for Dev / Needs Spec. Includes test health summary.
-
-Read [status-mode](references/status-mode.md) for the process and output format.
-
----
-
-## Setup Mode
-
-Initialize project documentation from scratch. Scans the codebase (including existing tests), plans the doc structure across four layers (WHY/WHAT/HOW/VERIFY), then writes documents progressively. Includes glossary for domain terminology and architecture document for system structure. Testing guides (`testing.md`, `dev-workflow.md`) are created alongside the first spec, not deferred.
-
-Read [setup-mode](references/setup-mode.md) for the scan checklist, target structure, progressive rhythm, and per-document guidance.
-
----
-
-## Audit Mode
-
-Binary pass/fail doc linter. Checks specs (structure + TDD: every `[x]` AC has a test + BDD: scenarios exist with automated E2E or manual test records), module contracts (API source paths, invariants, boundary, errors), cross-references (scope coverage, orphan specs, dead links), and accuracy (API source files exist, AC status matches reality).
-
-Read [audit-mode](references/audit-mode.md) for all check tables and output format.
-
----
-
-## Migrate Mode
-
-Restructure existing docs to SDD four-layer architecture. Scans existing tests to set initial AC status (`[x]`/`[~]`/`[ ]`), maps old docs to target layers (old data-model docs are removed — data models reference code files directly), executes migration in dependency order, then runs Audit Mode to verify.
-
-Read [migrate-mode](references/migrate-mode.md) for the mapping table, test scan step, execution order, and verification.
-
----
-
-## Refine Mode
-
-Restructure doc **content** to match code reality — split, merge, delete, migrate docs so they reflect what the code actually does. Unlike Audit (reports only) or Migrate (restructures format), Refine changes which docs exist and what they cover.
-
-Read [refine-mode](references/refine-mode.md) for detailed steps. Summary:
-
-1. **Build code truth map** — scan modules, features, tests, dependencies to understand what exists
-2. **Build doc map** — scan all docs to understand what's documented
-3. **Cross-reference** — identify splits, merges, deletes, migrations, missing docs, stale ADRs
-4. **Present plan** — show all proposed actions with reasons, wait for confirmation
-5. **Execute** — apply changes one by one with user approval, then run Audit Mode to verify
+- **Write** → [write-mode](references/write-mode.md) — 7-step collaborative flow, scaling guide, module contracts
+- **Update** → [update-mode](references/update-mode.md) — git-diff driven AC/contract/ADR sync
+- **Status** → [status-mode](references/status-mode.md) — scope + spec scan, feature classification
+- **Setup** → [setup-mode](references/setup-mode.md) — scan checklist, progressive rhythm, per-doc guidance
+- **Audit** → [audit-mode](references/audit-mode.md) — all check tables and report format
+- **Migrate** → [migrate-mode](references/migrate-mode.md) — old→new layer mapping, execution order
+- **Refine** → [refine-mode](references/refine-mode.md) — code-truth map, cross-reference, split/merge/delete/migrate actions
 
 ---
 
 ## Principles
 
-- **Spec → AC → Test**: The core invariant. No feature starts without a spec, no spec exists without testable AC, no AC is `[x]` without a passing test.
+Conceptual principles (Spec→AC→Test, three-state AC, four-layer architecture, WHY/WHAT/HOW change frequencies) live in [concepts](references/concepts.md). The rules below apply to *how you write* across all modes:
+
 - **Text-first**: No images — agents can't read them. Use text and Mermaid for diagrams (Mermaid source is structured text that agents understand).
 - **Behavior over UI**: Specs define what the system does, not what it looks like. No pixel values, colors, or button labels in AC.
-- **`[~]` is debt, not progress**: An implemented but untested AC is a promise without proof. Update Mode flags it, Status Mode surfaces it, Audit Mode fails on it.
 - **Keep docs alive**: Outdated docs are worse than no docs. When implementation changes, update the spec's AC status immediately — this is what Update Mode automates.
 - **Don't duplicate code**: Reference file paths instead of pasting code that will go stale. Module APIs and data models point to source files, not copied signatures or type definitions.
-- **Progressive detail**: WHY is stable (changes quarterly), WHAT changes per feature, HOW changes per implementation.
 - **Language**: Match existing docs. If starting fresh, use the language the user communicates in.
 
 ---
@@ -155,6 +92,7 @@ Read [refine-mode](references/refine-mode.md) for detailed steps. Summary:
 
 | Topic | When to read | File |
 |-------|-------------|------|
+| Core concepts (invariant, three-state AC, four layers, SDD/TDD/BDD) | Always, before first use | [concepts](references/concepts.md) |
 | CLAUDE.md template | Writing the agent entry file | [templates-claude](references/templates-claude.md) |
 | WHY layer templates (vision, scope, glossary) | Defining product purpose | [templates-why](references/templates-why.md) |
 | WHAT layer templates (architecture, module contract, feature spec) | Defining structure and behavior | [templates-what](references/templates-what.md) |

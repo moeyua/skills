@@ -17,11 +17,7 @@ feature-dev produces working code but doesn't update documentation. Without this
 
 2. **Find related specs** — Look in `docs/specs/` for specs that correspond to the developed feature. If no spec exists (the user skipped Write Mode), note this but don't block — help them create one retroactively if they want.
 
-3. **Update AC status** — For each spec found, go through the AC list. Check two things for each AC: is the behavior implemented in code? And does a test exist that verifies it? Mark using three states:
-   - `[x]` — implemented AND has a corresponding test (unit, integration, or E2E)
-   - `[~]` — implemented but NO test exists (flag to user: "AC-03 is implemented but untested")
-   - `[ ]` — not yet implemented
-   - Add new AC if the implementation revealed behaviors not in the original spec
+3. **Update AC status** — For each spec found, go through the AC list and mark each AC using the three-state system (see [concepts](concepts.md#three-state-acceptance-criteria)). Flag every `[~]` to the user as test debt ("AC-03 is implemented but untested"). Add new AC if the implementation revealed behaviors not in the original spec.
 
    To find corresponding tests: search test directories for imports from the relevant module, test names referencing the feature, or BDD scenario keywords matching the AC description.
 

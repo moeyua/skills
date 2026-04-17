@@ -7,11 +7,13 @@ description: "Detailed instructions for Status Mode: computing project progress 
 
 This mode computes project progress by scanning existing documentation and test coverage. It does not generate or modify any files — it reads scope, specs, and test directories, then reports what's done, what's in progress, and what needs attention.
 
+Uses the three-state AC system (see [concepts](concepts.md#three-state-acceptance-criteria)) as its raw input.
+
 ## How it works
 
 1. **Read scope** — Read `docs/product/scope.md` to get the list of planned features and their priority (P0/P1/P2).
 
-2. **Scan specs** — List all files in `docs/specs/`. For each spec, count AC by state: `[x]` (implemented + tested), `[~]` (implemented but untested), `[ ]` (not implemented).
+2. **Scan specs** — List all files in `docs/specs/`. For each spec, count AC by each of the three states.
 
 3. **Cross-reference** — Match features in scope against spec files. Classify each feature:
 

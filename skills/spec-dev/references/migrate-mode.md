@@ -27,7 +27,7 @@ Before rewriting specs, scan test directories to understand what's already verif
 
 - Map each test file to the module/feature it covers (based on imports and file path)
 - Identify test frameworks and conventions in use
-- This informs AC status in the rewritten specs: behavior with a passing test → `[x]`, behavior implemented but untested → `[~]`, behavior not implemented → `[ ]`
+- This informs AC status in the rewritten specs using the three-state system (see [concepts](concepts.md#three-state-acceptance-criteria))
 
 ## 3. Execute migration
 
