@@ -24,21 +24,20 @@
       "id": 2,
       "name": "update-mode-ac-sync",
       "prompt": "开发完了，请同步一下刚才那个点赞功能的 spec 状态。",
-      "expected_output": "Updated spec with AC-01 marked [x] (implemented + tested), AC-02 marked [~] (implemented but untested — flagged as test debt), AC-03 remains [ ]. Plus an Update Report summarizing changes.",
+      "expected_output": "Updated spec with AC-01/AC-02 marked [x] (both implementation and test exist), AC-03 marked [~] (DB-constraint-backed but no concurrency test), AC-04/AC-05 marked [~] or [ ] (implementation delegated to external layers with no test in this repo). Plus an Update Report following the skill's prescribed structure.",
       "files": [
-        "evals/files/like-post-spec.md",
-        "evals/files/like-post-diff.patch"
+        "fixture lives in spec-dev-workspace/iteration-1/eval-2-update-mode/fixture/ — a mock project with spec, module contract, impl code, and tests"
       ],
       "expectations": [
-        "AC-01 is marked [x] because both implementation and test exist",
-        "AC-02 is marked [~] because implementation exists but test is missing",
-        "AC-03 remains [ ] because implementation is missing",
-        "The output explicitly flags AC-02 as test debt (not silently marks [x])",
-        "Original AC descriptions are preserved — only the state marker changes",
-        "The Update Report has a 'Test Coverage Gaps' or equivalent section listing AC-02",
-        "The skill does not invent new AC that aren't supported by the diff"
-      ],
-      "status": "not_yet_run"
+        "AC-01 is marked [x] (implementation + test both present)",
+        "AC-02 is marked [x] (implementation + test both present)",
+        "AC-03 is marked [~] (indirect implementation via DB UNIQUE constraint, no concurrency test)",
+        "AC-04 and AC-05 are marked either [~] (delegated) or [ ] (no implementation in this repo) — both interpretations accepted",
+        "The output explicitly flags the [~] ACs as test debt",
+        "Original AC descriptions are preserved — only the state marker changes, no explanatory text appended to the AC text itself",
+        "The Update Report includes a 'Test Coverage Gaps' or equivalent section listing the [~] ACs",
+        "Module contract is not gratuitously expanded beyond what the API signature actually requires"
+      ]
     },
     {
       "id": 3,
@@ -46,19 +45,18 @@
       "prompt": "audit 一下我的 docs",
       "expected_output": "A summary-first audit report grouped by affected file. Does not modify any files.",
       "files": [
-        "evals/files/audit-sample-docs/"
+        "fixture lives in spec-dev-workspace/iteration-1/eval-3-audit-mode/fixture/ — a docs tree with 5 known flaws"
       ],
       "expectations": [
         "Report title includes pass count (e.g., 'N/M passed')",
         "Failures are grouped by the affected file, not a wide matrix where every check is a column",
-        "Missing 'Out of Scope' section in specs/buggy.md is flagged",
-        "An [~] untested AC is flagged as test debt",
-        "Missing boundary ('Does NOT own') section in a module contract is flagged",
-        "Orphan test (test with no matching AC) is flagged if present",
+        "Missing 'Out of Scope' section in specs/comment.md and specs/draft.md is flagged",
+        "specs/comment.md AC-02 '[~]' is flagged as test debt (not generic 'partial')",
+        "Missing Boundary ('Does NOT own') section in modules/comments.md is flagged",
+        "Dead link CLAUDE.md → docs/guides/design-system.md is flagged",
         "No files are modified during the audit",
         "Passed checks are collapsed (e.g., in a <details> block) rather than shown in full"
-      ],
-      "status": "not_yet_run"
+      ]
     }
   ]
 }
