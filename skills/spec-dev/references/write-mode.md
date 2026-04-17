@@ -15,21 +15,33 @@ A feature spec file at `docs/specs/{feature-name}.md` that serves as structured 
 
 Write Mode is a collaborative, step-by-step conversation — not a one-shot generation. Each step requires the user's confirmation before moving to the next. This matters because specs define what gets built; assumptions made here propagate through development and testing.
 
-**Step 1: Confirm the goal** — Ask the user what the feature should accomplish from the user's perspective. Propose a one-line goal statement. Wait for the user to confirm or refine it. No technology names in the goal.
+**Step 1: Scope** — Propose the feature's **Goal** and **Non-goals** side by side. Goal is one line from the user's perspective, no technology names. Non-goals explicitly list what this spec does NOT cover, to prevent scope creep. Presenting them together lets the user calibrate one against the other — Non-goals sharpen the Goal and vice versa. Wait for confirmation.
 
-**Step 2: Define behavior constraints together** — Propose behavior constraints as precondition/behavior/postcondition triples. Present them to the user and ask: are these complete? Any missing edge cases? Any constraints that don't belong? Revise based on feedback. Only proceed when the user confirms.
+**Step 2: Behavior Constraints** — Propose behavior constraints as precondition/behavior/postcondition triples. Present them to the user and ask: are these complete? Any missing edge cases? Any constraints that don't belong? Revise based on feedback. Only proceed when the user confirms.
 
-**Step 3: Define state machine** (if the feature has stateful behavior) — Not every feature needs one. Use judgment: a login flow has states (unauthenticated → authenticating → authenticated → error), a simple data transform does not. If applicable, propose the states and transitions, confirm with the user.
+**Step 3: State Machine** (if the feature has stateful behavior) — Not every feature needs one. Use judgment: a login flow has states (unauthenticated → authenticating → authenticated → error), a simple data transform does not. If applicable, propose the states and transitions, confirm with the user.
 
-**Step 4: Write Acceptance Criteria** — Propose AC based on the confirmed behavior constraints. Each AC must be verifiable by a single test. Present the list and ask the user to review: any missing? Any too vague? Any that should be split or merged? Mark each as `[ ]` (not yet implemented).
+**Step 4: Acceptance Criteria** — Propose AC based on the confirmed behavior constraints. Each AC must be verifiable by a single test. Present the list and ask the user to review: any missing? Any too vague? Any that should be split or merged? Mark each as `[ ]` (not yet implemented).
 
-**Step 5: Derive BDD Gherkin scenarios from AC** — Propose scenarios that describe user-visible behavior, covering both happy path and error paths. These scenarios can be verified by automated E2E tests or manual testing — the project's `docs/guides/testing.md` defines which method is used. Confirm with the user.
+**Step 5: Verification** — Derive testing from AC. Two kinds, presented together in one message because they share the same root (AC) and differ only in scope:
 
-**Step 6: List TDD unit test pointers** — Propose what pure logic to test, which module — not the full test code. Confirm with the user.
+- **BDD scenarios** (user-visible behavior) — Gherkin scenarios covering both happy path and error paths. Each scenario maps back to a specific AC. Verified by automated E2E tests or manual testing; `docs/guides/testing.md` defines which method the project uses.
+- **TDD pointers** (pure logic, module-level) — What unit test each AC needs, which module, what behavior to verify. Not the full test code — just direction.
 
-**Step 7: Define out of scope** — Propose what this spec explicitly does NOT cover. This prevents scope creep during development. Confirm with the user.
+Confirm with the user before proceeding.
 
-**Step 8: Write the spec file** — Only after all steps are confirmed, write the complete spec to `docs/specs/{feature-name}.md`.
+**Step 6: Consistency Check** — Before writing the file, run a self-audit and present the results as a checklist to the user. This is the quality gate — assumptions that slipped through earlier steps get caught here, where fixing them is still cheap. Check:
+
+- Every Behavior Constraint's post-condition has at least one AC covering it
+- Every AC maps to either a BDD scenario or a TDD pointer (or both)
+- BDD scenarios cover at least one happy path AND one error path
+- No UI details leaked into AC (pixel values, color codes, button labels)
+- No implementation technology mentioned in Behavior Constraints
+- Goal and Non-goals are consistent with the AC (nothing in AC that Non-goals excluded, nothing missing that Goal promised)
+
+If anything fails, offer to loop back to the relevant earlier step. If everything passes, proceed to Step 7.
+
+**Step 7: Write Spec File** — Write the complete spec to `docs/specs/{feature-name}.md`.
 
 ## Scaling by feature size
 
@@ -37,12 +49,12 @@ Not every feature needs the full treatment. Use judgment:
 
 | Feature size | What to write | What to skip |
 |-------------|---------------|--------------|
-| **Large** (new module, cross-cutting) | Full spec: goal, behavior constraints, state machine, AC, BDD, TDD pointers, out of scope | Nothing |
-| **Medium** (new feature in existing module) | Goal, behavior constraints, AC, BDD scenarios | State machine (unless stateful), TDD pointers (obvious from AC) |
-| **Small** (enhancement, UI tweak) | Goal, AC (each AC notes test type: unit/integration/E2E) | Behavior constraints, state machine, full BDD scenarios, detailed TDD pointers |
+| **Large** (new module, cross-cutting) | Full 7 steps: Scope, Behavior Constraints, State Machine, AC, Verification (BDD + TDD), Consistency Check, Write | Nothing |
+| **Medium** (new feature in existing module) | Scope, Behavior Constraints, AC, Verification (BDD only), Consistency Check, Write | State Machine (unless stateful), TDD pointers (obvious from AC) |
+| **Small** (enhancement, UI tweak) | Scope, AC (each AC notes test type: unit/integration/E2E), Consistency Check, Write | Behavior Constraints, State Machine, BDD scenarios, detailed TDD pointers |
 | **Bug fix** | Skip spec entirely — write a failing test that reproduces the bug, then fix it | Everything |
 
-The scaling guide is about pragmatism, not laziness. A small feature with 2 AC doesn't need 5 BDD scenarios and a state machine. But every AC — regardless of feature size — must indicate how it will be tested. The principle "AC = Test" has no exceptions; what scales is the surrounding documentation, not the test↔AC mapping itself.
+The scaling guide is about pragmatism, not laziness. A small feature with 2 AC doesn't need 5 BDD scenarios and a state machine. But every AC — regardless of feature size — must indicate how it will be tested, and Consistency Check always runs. The principle "AC = Test" has no exceptions; what scales is the surrounding documentation, not the test↔AC mapping itself.
 
 ## For a module contract
 
@@ -61,11 +73,3 @@ Steps:
 6. Define invariants (conditions that must always hold — violation = bug)
 7. Document error scenarios and expected behavior
 8. If stateful, define the state machine
-
-## Quality checklist before finishing
-
-- Every AC can be verified by a single test?
-- No UI details in the spec (pixel values, colors, button labels)?
-- No implementation technology mentioned in behavior constraints?
-- BDD scenarios cover both happy path and error paths (regardless of whether verified by automated E2E or manual testing)?
-- Module contract lists what it does NOT do?

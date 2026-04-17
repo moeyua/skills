@@ -23,21 +23,21 @@ Before designing anything, read `docs/decisions/`. There may be ADRs that constr
 
 ### Step 1: Write the Feature Spec
 
-Create `docs/specs/{feature-name}.md` using the feature spec template.
+Create `docs/specs/{feature-name}.md` using the feature spec template. Write Mode walks through this as a 7-step conversation (see [write-mode](write-mode.md)):
 
 **What to write:**
-1. One-line goal from user's perspective (no technology names)
-2. Behavior constraints as precondition/behavior/postcondition triples
-3. State machine if the feature has stateful behavior
-4. Acceptance Criteria — each one verifiable by a single test
-5. BDD Gherkin scenarios derived from AC (for E2E tests)
-6. TDD unit test pointers (what to test, which module — not the full test code)
+1. **Scope** — One-line Goal (user's perspective, no technology names) + Out of Scope (what this spec explicitly does NOT cover)
+2. **Behavior Constraints** — precondition/behavior/postcondition triples
+3. **State Machine** — if the feature has stateful behavior
+4. **Acceptance Criteria** — each verifiable by a single test
+5. **Verification** — BDD Gherkin scenarios (user-visible behavior) + TDD pointers (pure logic, module-level), both derived from AC
 
-**Spec review checklist:**
-- Every AC can be verified by one test?
-- No UI details (button colors, pixel values)?
-- No implementation technology in behavior constraints?
-- Both happy path and error paths covered?
+**Consistency Check** (runs before writing the file):
+- Every Behavior Constraint's post-condition has at least one AC covering it?
+- Every AC maps to a BDD scenario or TDD pointer?
+- BDD scenarios cover both happy path and error paths?
+- No UI details (button colors, pixel values) leaked into AC?
+- No implementation technology mentioned in Behavior Constraints?
 
 ### Step 2: Update module contracts (if needed)
 

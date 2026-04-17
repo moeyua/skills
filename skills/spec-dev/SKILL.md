@@ -66,7 +66,7 @@ The VERIFY layer is embedded inside WHAT-layer specs (each spec contains its own
 
 | Mode | When | What to do |
 |------|------|------------|
-| **Write** | Before feature-dev: user wants to define a feature | Write spec with behavior constraints + AC + BDD + TDD pointers |
+| **Write** | Before feature-dev: user wants to define a feature | Write spec with Scope (Goal + Out of Scope), Behavior Constraints, AC, and Verification (BDD + TDD) |
 | **Update** | After feature-dev: development is done, docs need updating | Read code changes → update AC status → update module contracts → suggest ADRs |
 | **Status** | User wants to see progress or decide what to work on next | Scan scope + specs → compute status from AC checkboxes → report |
 | **Setup** | New project or no docs exist | Scan → plan → write docs progressively |
@@ -78,9 +78,9 @@ The VERIFY layer is embedded inside WHAT-layer specs (each spec contains its own
 
 ## Write Mode
 
-Collaborative step-by-step conversation to define a feature spec or module contract before development. Produces `docs/specs/{feature-name}.md` with behavior constraints, AC, BDD scenarios (verified by automated E2E or manual testing), and TDD pointers. Scales by feature size — large features get the full treatment, small ones just need a goal + AC.
+Collaborative 7-step conversation to define a feature spec or module contract before development. Produces `docs/specs/{feature-name}.md` with **Scope** (Goal + Out of Scope), Behavior Constraints, State Machine (if stateful), AC, and **Verification** (BDD scenarios + TDD pointers). A **Consistency Check** runs before the file is written to catch AC↔test coverage gaps and UI leakage. Scales by feature size — large features get the full treatment, small ones just need Scope + AC + Consistency Check.
 
-Read [write-mode](references/write-mode.md) for the 8-step process, scaling guide, module contract steps, and quality checklist.
+Read [write-mode](references/write-mode.md) for the 7-step process (Scope → Behavior Constraints → State Machine → AC → Verification → Consistency Check → Write), scaling guide, and module contract steps.
 
 ---
 

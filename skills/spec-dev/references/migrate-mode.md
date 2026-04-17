@@ -38,7 +38,7 @@ Order matters — migrate in dependency order:
 3. Supplement missing ADRs for undocumented decisions
 4. Split WHY-layer docs (extract vision, scope, and glossary from PRD or existing docs)
 5. Create `architecture.md` (system structure + module registry) from existing architecture docs
-6. Rewrite WHAT-layer: module contracts (with source file pointers, not copied signatures), specs with AC + BDD scenarios + TDD pointers. Set AC status using test scan results from step 2
+6. Rewrite WHAT-layer: module contracts (with source file pointers, not copied signatures), specs with Scope + AC + Verification (BDD scenarios + TDD pointers). Set AC status using test scan results from step 2
 7. Create VERIFY-layer guides (`testing.md` including BDD verification method, `dev-workflow.md`)
 8. Update CLAUDE.md and doc site config
 9. Delete obsolete files (including old `data-model.md` — data models should be referenced via code paths)

@@ -140,12 +140,19 @@ Conditions that must always hold. Violation = bug:
 
 The most important template in SDD — it drives both development and testing. Includes embedded VERIFY content (AC + BDD + TDD).
 
+The spec structure mirrors the Write Mode 7-step flow: Scope (Goal + Out of Scope) is declared first to bound the feature, then Behavior Constraints, State Machine, AC, and a unified Verification section containing BDD + TDD.
+
 ````markdown
 # Feature: {Name}
 
 ## Goal
 
 {What the user can do and what value it produces. No technology names. One sentence.}
+
+## Out of Scope
+
+- {What this spec explicitly does NOT cover}
+- {Another excluded behavior or concern}
 
 ## Behavior Constraints
 
@@ -178,9 +185,11 @@ Each AC maps to exactly one test. Mark `[x]` when implemented and tested.
 - [ ] **AC-02**: {Verifiable behavior description}
 - [ ] **AC-03**: {Verifiable behavior description}
 
-## BDD Scenarios
+## Verification
 
-Derived from AC. These describe user-visible behavior and can be verified either by automated E2E tests or manual testing — the project decides which.
+Both subsections derive from AC and must cover every AC collectively. BDD describes user-visible behavior; TDD tests pure logic at the module level.
+
+### BDD Scenarios
 
 ```gherkin
 Feature: {Feature name}
@@ -202,15 +211,11 @@ Feature: {Feature name}
 - **Automated**: Each scenario maps to an E2E test file (Playwright / Cypress / etc.)
 - **Manual**: Each scenario maps to a manual test checklist entry with pass/fail record
 
-## TDD Pointers
+### TDD Pointers
 
 Unit test direction for pure logic. Each points to the module and function to test — not the full test implementation.
 
 **{Module/function name}:**
 - Test: {what behavior to verify} (maps to AC-{NN})
 - Test: {boundary condition}
-
-## Out of Scope
-
-- {What this spec explicitly does NOT cover}
 ````
