@@ -80,7 +80,7 @@ Don't create all documents at once. Follow this rhythm:
 
 ## 4. Write each document
 
-Read templates in `references/templates.md` for full structure. Key principles:
+Read the layer-specific templates for full structure — [templates-claude](templates-claude.md) for CLAUDE.md, [templates-why](templates-why.md) for vision/scope/glossary, [templates-what](templates-what.md) for architecture/module contracts/feature specs, [templates-how](templates-how.md) for ADRs/conventions/design system. Key principles:
 
 **CLAUDE.md** — Agent entry point. Concise, declarative, scannable. Under 150 lines. Link to detailed docs.
 

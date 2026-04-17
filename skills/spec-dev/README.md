@@ -113,7 +113,10 @@ docs/
 
 | 主题 | 文件 |
 |------|------|
-| 文档模板 | [templates.md](references/templates.md) |
+| CLAUDE.md 模板 | [templates-claude.md](references/templates-claude.md) |
+| WHY 层模板（vision/scope/glossary） | [templates-why.md](references/templates-why.md) |
+| WHAT 层模板（architecture/module/feature spec） | [templates-what.md](references/templates-what.md) |
+| HOW 层模板（ADR/conventions/design system） | [templates-how.md](references/templates-how.md) |
 | SDD→TDD→BDD 工作流 | [dev-workflow.md](references/dev-workflow.md) |
 | 测试策略 | [testing-strategy.md](references/testing-strategy.md) |
 | Write 模式详情 | [write-mode.md](references/write-mode.md) |

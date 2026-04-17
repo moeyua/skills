@@ -7,6 +7,8 @@ description: "Detailed instructions for Audit Mode: binary pass/fail doc linter 
 
 Audit is a doc linter — every check is binary pass/fail, no subjective judgment. Run each check, report the results.
 
+**Audit reports problems; it does not fix them.** To restructure docs based on audit findings (split, merge, delete, migrate), use Refine Mode. To convert legacy docs into the SDD four-layer format, use Migrate Mode.
+
 ## Spec checks
 
 For each file in `docs/specs/`:

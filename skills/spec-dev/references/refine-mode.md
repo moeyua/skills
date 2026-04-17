@@ -5,6 +5,8 @@ description: "Detailed instructions for Refine Mode: reading the codebase, cross
 
 # Refine Mode — Detailed Instructions
 
+**Refine vs. Audit vs. Migrate:** Audit only *reports* doc problems (pass/fail). Migrate converts legacy docs into the SDD four-layer *format* (one-shot structural conversion). Refine changes *which docs exist and what they cover* based on code reality — it's the mode you reach for when the code has moved but the docs haven't.
+
 ## Why Refine Mode exists
 
 Projects evolve. Features get merged, split, or dropped. Modules get refactored. Over time, docs drift: a spec covers three features that are now separate modules, two specs describe the same thing from different angles, a module contract describes an interface that was deleted months ago. Refine brings docs back in sync with what the code actually does.

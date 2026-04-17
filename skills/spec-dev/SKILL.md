@@ -1,6 +1,6 @@
 ---
 name: spec-dev
-description: "Spec-Driven Development documentation system that serves as bookends around feature-dev. Builds a four-layer doc architecture (WHY → WHAT → HOW → VERIFY) where specs drive development and tests verify specs. Use this skill whenever the user wants to: write a spec or feature spec before development, set up SDD/TDD/BDD workflows, sync or update docs after development (update AC status, module contracts, ADRs), initialize project documentation, audit or restructure existing docs, create module contracts, check project status or progress, refine or streamline documentation based on code reality (split, merge, delete, migrate docs), or says things like 'write a spec', 'update the spec', 'sync docs', 'set up docs', 'audit my docs', 'restructure docs', 'refine docs', 'streamline specs', '精简文档', '精简 specs', 'create module contract', 'add BDD scenarios', 'status', '看一下进度', '接下来做什么'. Also trigger when the user mentions spec-first development, behavior-driven development, acceptance criteria, or wants documentation that drives their testing strategy. This skill complements feature-dev: use spec-dev before feature-dev to define what to build, and after feature-dev to update documentation."
+description: "Spec-Driven Development workflow (SDD+TDD+BDD) used as bookends around feature-dev — write specs before development, sync docs after. Seven modes cover the lifecycle: Write, Update, Status, Setup, Audit, Migrate, Refine. Triggers when the user wants to write or refine feature specs, update AC status after coding, audit or restructure docs, create module contracts, or check project progress — e.g. 'write a spec', 'sync docs', 'audit my docs', 'create module contract', '精简文档', '看一下进度', '接下来做什么'. Also triggers on mentions of acceptance criteria, BDD scenarios, spec-first development, or the four-layer doc architecture (WHY/WHAT/HOW/VERIFY)."
 metadata:
   author: Moeyua
   version: "2026.4.8"
@@ -155,7 +155,10 @@ Read [refine-mode](references/refine-mode.md) for detailed steps. Summary:
 
 | Topic | When to read | File |
 |-------|-------------|------|
-| All document templates | Creating any document | [templates](references/templates.md) |
+| CLAUDE.md template | Writing the agent entry file | [templates-claude](references/templates-claude.md) |
+| WHY layer templates (vision, scope, glossary) | Defining product purpose | [templates-why](references/templates-why.md) |
+| WHAT layer templates (architecture, module contract, feature spec) | Defining structure and behavior | [templates-what](references/templates-what.md) |
+| HOW layer templates (ADR, conventions, design system) | Documenting implementation rules | [templates-how](references/templates-how.md) |
 | SDD→TDD→BDD workflow | Setting up dev process or onboarding | [dev-workflow](references/dev-workflow.md) |
 | Testing strategy | Defining test pyramid and conventions | [testing-strategy](references/testing-strategy.md) |
 | Write mode | Writing feature specs or module contracts | [write-mode](references/write-mode.md) |
