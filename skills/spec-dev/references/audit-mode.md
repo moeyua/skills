@@ -71,36 +71,50 @@ How to find corresponding tests: search test directories for imports from the re
 
 ## Output format
 
+Summary-first: the reader should see pass/fail at a glance, then drill into failures only. Do not emit a wide per-file matrix — that scales badly and hides the actual problems under visual noise.
+
 ```markdown
-## Audit Report
+## Audit Report — 22/30 passed
 
-### Specs (N files)
-| File | Goal | AC | AC# | No UI | OOS | AC↔Test | BDD |
-|------|------|----|-----|-------|-----|---------|-----|
-| drag-sort.md | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ 1 untested | ✅ |
+### ❌ Failures (8)
 
-### Module Contracts (N files)
-| File | API | Invariants | Boundary | Errors |
-|------|-----|------------|----------|--------|
-| list.md | ✅ | ✅ | ❌ | ✅ |
+**specs/drag-sort.md**
+- Out of Scope section missing
+- AC-02 `[x]` but no corresponding test found
+- AC-03 `[x]` but implementation not found in code
 
-### Cross-references
-- Scope coverage: 4/6 features have specs
-- Orphan specs: none
-- Dead links: CLAUDE.md → docs/guides/design-system.md (file missing)
+**specs/auth.md**
+- AC-05 `[~]` implemented but untested
+- BDD scenario "Login with expired token" has no E2E test or manual test record
 
-### TDD
-- specs/drag-sort.md: AC-02 [x] but no corresponding test found
-- specs/auth.md: AC-05 [~] implemented but untested
-- tests/utils/helpers.test.ts: tests `formatDate()` but no AC references this behavior
+**specs/search.md**
+- BDD scenarios cover only happy path, no error scenario
 
-### BDD
-- specs/search.md: scenarios only cover happy path, no error scenario
-- specs/auth.md: scenario "Login with expired token" has no E2E test or manual test record
+**modules/list.md**
+- Boundary ("Does NOT own") section missing
+- Public API source `src/list/index.ts` exists but `reorder` export not found
 
-### Accuracy
-- modules/list.md: Public API source `src/list/index.ts` exists but `reorder` export not found
-- specs/drag-sort.md: AC-03 marked [x] but not implemented
+### ⚠️ Cross-reference issues
+- Scope coverage: 4/6 features have specs (missing: `export`, `import`)
+- Dead link: CLAUDE.md → docs/guides/design-system.md
 
-### Summary: 22/30 checks passed
+### 🗑️ Orphan tests
+- `tests/utils/helpers.test.ts` tests `formatDate()` — no AC references this behavior (add AC or delete test)
+
+### ✅ Passed (22)
+<details>
+<summary>Expand to see which checks passed</summary>
+
+- specs/{other files}.md: all structural + TDD + BDD checks passed
+- modules/{other files}.md: all contract checks passed
+- No `[~]` items outside flagged files
+- All CLAUDE.md doc links valid except the one flagged above
+</details>
 ```
+
+**Rules for writing the report:**
+
+- Group failures by the affected file so the reader has one place to fix per file, not one row per check
+- Use one-line findings with enough context to act ("AC-02 `[x]` but no corresponding test found" — not just "AC has test ❌")
+- Put the headline pass count in the title so the reader knows scale before reading
+- Collapse the "passed" list into a `<details>` block — it's there for auditability but doesn't belong on the critical path

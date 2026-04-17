@@ -1,0 +1,64 @@
+{
+  "skill_name": "spec-dev",
+  "evals": [
+    {
+      "id": 1,
+      "name": "write-mode-like-post",
+      "prompt": "帮我写一个 spec：用户可以给帖子点赞，同一用户对同一帖子只能点一次。",
+      "expected_output": "A markdown spec file at docs/specs/{feature}.md with Scope (Goal + Out of Scope), AC (using '[ ] **AC-NN**' format), and Verification (BDD scenarios + TDD pointers). No UI details should appear in AC.",
+      "files": [],
+      "expectations": [
+        "Output is saved to a path under docs/specs/",
+        "Spec has a top-level feature title and a Goal section (or equivalent one-sentence goal)",
+        "Spec has an 'Out of Scope' or Non-goals section with at least one entry",
+        "Spec uses '[ ] **AC-NN**' format for acceptance criteria",
+        "AC explicitly covers the uniqueness constraint: one like per user per post",
+        "AC covers the happy path (a user likes a post)",
+        "Spec has a Verification section with BDD Gherkin scenarios OR TDD pointers",
+        "BDD scenarios (if present) reference a specific AC (e.g., '# Maps to AC-01')",
+        "No UI details (colors, pixel values, button labels) appear in AC text",
+        "All AC markers are '[ ]' (not yet implemented) since this is a fresh spec"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "update-mode-ac-sync",
+      "prompt": "开发完了，请同步一下刚才那个点赞功能的 spec 状态。",
+      "expected_output": "Updated spec with AC-01 marked [x] (implemented + tested), AC-02 marked [~] (implemented but untested — flagged as test debt), AC-03 remains [ ]. Plus an Update Report summarizing changes.",
+      "files": [
+        "evals/files/like-post-spec.md",
+        "evals/files/like-post-diff.patch"
+      ],
+      "expectations": [
+        "AC-01 is marked [x] because both implementation and test exist",
+        "AC-02 is marked [~] because implementation exists but test is missing",
+        "AC-03 remains [ ] because implementation is missing",
+        "The output explicitly flags AC-02 as test debt (not silently marks [x])",
+        "Original AC descriptions are preserved — only the state marker changes",
+        "The Update Report has a 'Test Coverage Gaps' or equivalent section listing AC-02",
+        "The skill does not invent new AC that aren't supported by the diff"
+      ],
+      "status": "not_yet_run"
+    },
+    {
+      "id": 3,
+      "name": "audit-mode-flawed-docs",
+      "prompt": "audit 一下我的 docs",
+      "expected_output": "A summary-first audit report grouped by affected file. Does not modify any files.",
+      "files": [
+        "evals/files/audit-sample-docs/"
+      ],
+      "expectations": [
+        "Report title includes pass count (e.g., 'N/M passed')",
+        "Failures are grouped by the affected file, not a wide matrix where every check is a column",
+        "Missing 'Out of Scope' section in specs/buggy.md is flagged",
+        "An [~] untested AC is flagged as test debt",
+        "Missing boundary ('Does NOT own') section in a module contract is flagged",
+        "Orphan test (test with no matching AC) is flagged if present",
+        "No files are modified during the audit",
+        "Passed checks are collapsed (e.g., in a <details> block) rather than shown in full"
+      ],
+      "status": "not_yet_run"
+    }
+  ]
+}
