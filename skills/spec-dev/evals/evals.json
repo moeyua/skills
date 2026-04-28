@@ -22,11 +22,11 @@
     },
     {
       "id": 2,
-      "name": "update-mode-ac-sync",
+      "name": "sync-mode-ac-sync",
       "prompt": "开发完了，请同步一下刚才那个点赞功能的 spec 状态。",
-      "expected_output": "Updated spec with AC-01/AC-02 marked [x] (both implementation and test exist), AC-03 marked [~] (DB-constraint-backed but no concurrency test), AC-04/AC-05 marked [~] or [ ] (implementation delegated to external layers with no test in this repo). Plus an Update Report following the skill's prescribed structure.",
+      "expected_output": "Updated spec with AC-01/AC-02 marked [x] (both implementation and test exist), AC-03 marked [~] (DB-constraint-backed but no concurrency test), AC-04/AC-05 marked [~] or [ ] (implementation delegated to external layers with no test in this repo). Plus a Sync Plan following the skill's prescribed structure.",
       "files": [
-        "fixture lives in spec-dev-workspace/iteration-1/eval-2-update-mode/fixture/ — a mock project with spec, module contract, impl code, and tests"
+        "fixture lives in spec-dev-workspace/iteration-1/eval-2-sync-mode/fixture/ — a mock project with spec, module contract, impl code, and tests"
       ],
       "expectations": [
         "AC-01 is marked [x] (implementation + test both present)",
@@ -35,7 +35,7 @@
         "AC-04 and AC-05 are marked either [~] (delegated) or [ ] (no implementation in this repo) — both interpretations accepted",
         "The output explicitly flags the [~] ACs as test debt",
         "Original AC descriptions are preserved — only the state marker changes, no explanatory text appended to the AC text itself",
-        "The Update Report includes a 'Test Coverage Gaps' or equivalent section listing the [~] ACs",
+        "The Sync Plan includes a 'Test Coverage Gaps' or equivalent section listing the [~] ACs",
         "Module contract is not gratuitously expanded beyond what the API signature actually requires"
       ]
     },

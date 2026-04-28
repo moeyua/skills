@@ -7,7 +7,11 @@ description: "Detailed instructions for Audit Mode: binary pass/fail doc linter 
 
 Audit is a doc linter — every check is binary pass/fail, no subjective judgment. Run each check, report the results.
 
-**Audit reports problems; it does not fix them.** To restructure docs based on audit findings (split, merge, delete, migrate), use Refine Mode. To convert legacy docs into the SDD four-layer format, use Migrate Mode.
+**Audit reports problems; it does not fix them.** Audit recommends a fix mode for each finding:
+- **Mechanical / local issues** → fix via [sync-mode](sync-mode.md) (status flip, link repair, add row)
+- **Structural / drift issues** → fix via [rewrite-mode](rewrite-mode.md) (restructure, format conversion, replace section)
+
+Audit covers two complementary kinds of checks: **structural compliance** (does the doc follow SDD format rules?) and **drift detection** (does the doc match code reality?).
 
 ## Spec checks
 
@@ -69,6 +73,54 @@ How to find corresponding tests: search test directories for imports from the re
 | Public API source exists | Source file path in module contract's Public API section exists in the codebase, and listed exports exist in that file |
 | AC status correct | Each AC's marker matches the observed state (see [concepts](concepts.md#three-state-acceptance-criteria)) |
 
+## Drift detection
+
+The structural / TDD / BDD / accuracy checks above answer "is this doc internally well-formed?". Drift detection answers a different question: "**does this doc still match what the code actually does?**" — the doc may be perfectly well-formed yet describe a feature that no longer exists, or omit a module that does.
+
+Drift produces fix recommendations (Sync vs Rewrite) per finding.
+
+### Build the code truth map
+
+Scan the codebase before comparing:
+
+1. **Identify modules** — top-level directories with a barrel export (`index.ts`, `mod.rs`, `__init__.py`); also `package.json` workspaces for monorepos
+2. **Map module boundaries** — read each barrel export for the public API surface; scan cross-module imports for dependency direction
+3. **Identify features** — user-facing entry points: route definitions, CLI registrations, exported components, API endpoint handlers
+4. **Map tests** — test files and what they cover (by imports + path)
+5. **Read dependencies** — `package.json`, lock files, config files
+
+Output: an internal map of `module → public API → features → tests`.
+
+### Build the doc map
+
+Scan all documentation for what each doc describes and which code units it references:
+- `docs/specs/*.md` → which feature, AC count by state
+- `docs/modules/*.md` → which module, public API claimed
+- `docs/architecture.md` → registered modules
+- `docs/product/scope.md` → planned features
+- `docs/decisions/*.md` → ADR status
+
+Output: an internal map of `doc → what it describes → AC status → referenced code paths`.
+
+### Classify drift
+
+For each mismatch between the two maps, produce a finding with a fix-mode recommendation:
+
+| Drift situation | Fix mode | Suggested action |
+|---|---|---|
+| Spec AC implemented but not marked | Sync | Flip `[ ]` → `[x]` (or `[~]` if untested) |
+| AC `[x]` or `[~]` but no test exists | Sync | Add the test (or downgrade AC) |
+| Module contract API doesn't match exports | Sync | Update API table |
+| Module contract describes API that was refactored to a different module | Rewrite | Move the contract content to the new module's contract |
+| Spec covers a feature that no longer exists in code | Rewrite | Delete the spec (after archiving content if needed) |
+| One spec covers multiple now-independent modules | Rewrite | Split into multiple specs |
+| Multiple specs describe overlapping behavior | Rewrite | Merge into one |
+| Code module exists with no contract | Sync (if simple) / Rewrite (if complex) | Create a contract |
+| Test exists but no AC describes the tested behavior | Sync | Add AC to relevant spec |
+| ADR documents a reversed decision | Sync | Mark as `Superseded by ADR-NNN` |
+
+Mechanical-Patches (Sync) are the default; restructuring (Rewrite) is reserved for cases where the doc's *shape* has to change.
+
 ## Output format
 
 Summary-first: the reader should see pass/fail at a glance, then drill into failures only. Do not emit a wide per-file matrix — that scales badly and hides the actual problems under visual noise.
@@ -110,6 +162,12 @@ Summary-first: the reader should see pass/fail at a glance, then drill into fail
 - No `[~]` items outside flagged files
 - All CLAUDE.md doc links valid except the one flagged above
 </details>
+
+### Drift fix recommendations
+- 5 findings → run [sync-mode](sync-mode.md) (mechanical fixes)
+- 2 findings → run [rewrite-mode](rewrite-mode.md):
+  - `specs/user-management.md` (split into auth + profile)
+  - `specs/legacy-export.md` (delete; feature removed in commit abc123)
 ```
 
 **Rules for writing the report:**

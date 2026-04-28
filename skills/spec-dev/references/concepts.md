@@ -35,7 +35,7 @@ Each AC carries one of three states. The state reflects both implementation AND 
 | `[~]` | Implemented but NO test exists | Technical debt — a promise without proof |
 | `[ ]` | Not yet implemented | Pending work |
 
-`[~]` is **debt, not progress**. Update Mode flags it, Status Mode surfaces it, Audit Mode fails on it. The three-state system prevents the common anti-pattern where "implemented but untested" masquerades as "done".
+`[~]` is **debt, not progress**. Sync Mode flags it, Status Mode surfaces it, Audit Mode fails on it. The three-state system prevents the common anti-pattern where "implemented but untested" masquerades as "done".
 
 To determine the state, check both conditions:
 - Is the behavior present in the codebase? → if no, `[ ]`
