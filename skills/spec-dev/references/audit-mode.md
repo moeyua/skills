@@ -40,10 +40,9 @@ For each file in `docs/modules/` (excluding README.md):
 
 | Check | Pass condition |
 |-------|---------------|
-| Scope coverage | Every feature in `docs/product/scope.md` has a matching file in `docs/specs/` |
-| No orphan specs | Every file in `docs/specs/` has a corresponding entry in scope |
 | File paths valid | File paths referenced in module contracts exist in the codebase |
 | CLAUDE.md links valid | Every doc link in CLAUDE.md points to an existing file |
+| Upstream context exists | If the project has user-facing surfaces, `PRODUCT.md` exists at root. If the project is frontend, `DESIGN.md` exists at root. (These are not maintained by spec-dev but their absence often correlates with drift in specs.) |
 
 ## TDD checks
 
@@ -97,7 +96,6 @@ Scan all documentation for what each doc describes and which code units it refer
 - `docs/specs/*.md` → which feature, AC count by state
 - `docs/modules/*.md` → which module, public API claimed
 - `docs/architecture.md` → registered modules
-- `docs/product/scope.md` → planned features
 - `docs/decisions/*.md` → ADR status
 
 Output: an internal map of `doc → what it describes → AC status → referenced code paths`.
@@ -147,8 +145,8 @@ Summary-first: the reader should see pass/fail at a glance, then drill into fail
 - Public API source `src/list/index.ts` exists but `reorder` export not found
 
 ### ⚠️ Cross-reference issues
-- Scope coverage: 4/6 features have specs (missing: `export`, `import`)
-- Dead link: CLAUDE.md → docs/guides/design-system.md
+- Dead link: CLAUDE.md → docs/specs/legacy-export.md (file removed)
+- Upstream context: PRODUCT.md missing despite project having user-facing surfaces — flag to user
 
 ### 🗑️ Orphan tests
 - `tests/utils/helpers.test.ts` tests `formatDate()` — no AC references this behavior (add AC or delete test)

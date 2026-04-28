@@ -1,11 +1,11 @@
 ---
 name: templates-claude
-description: "Template for CLAUDE.md — the agent entry point that indexes the rest of the four-layer documentation"
+description: "Template for CLAUDE.md — the agent entry point that indexes upstream context (PRODUCT.md, DESIGN.md) and the spec-dev managed docs"
 ---
 
 # CLAUDE.md Template
 
-CLAUDE.md is the agent's entry point. It doesn't belong to the four layers (WHY/WHAT/HOW/VERIFY) — it points to them. Keep it concise, declarative, scannable. Under 150 lines.
+CLAUDE.md is the agent's entry point. It doesn't belong to the layers spec-dev manages (WHAT / HOW / VERIFY) — it points to them, plus to the upstream `PRODUCT.md` and `DESIGN.md` (when present). Keep it concise, declarative, scannable. Under 150 lines.
 
 ```markdown
 # {Project Name}
@@ -48,15 +48,13 @@ See docs/guides/dev-workflow.md for the full process.
 
 | Document | When to read |
 |----------|-------------|
-| docs/product/vision.md | Understanding product goals |
-| docs/product/scope.md | What's in/out of scope |
-| docs/product/glossary.md | Understanding domain terminology |
+| ./PRODUCT.md | Product positioning, target users, brand, design intent |
+| ./DESIGN.md | Visual design system — tokens, typography, components, named rules (frontend only) |
 | docs/architecture.md | System structure and module overview |
 | docs/modules/ | Module responsibilities and interfaces |
 | docs/specs/ | Feature behavior and test criteria |
 | docs/decisions/ | Before proposing architectural changes |
 | docs/guides/conventions.md | Before writing new code |
-| docs/guides/design-system.md | Implementing UI |
 | docs/guides/testing.md | Writing tests |
 | docs/guides/dev-workflow.md | SDD development process |
 ```

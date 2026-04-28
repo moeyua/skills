@@ -1,6 +1,6 @@
 ---
 name: spec-dev
-description: "Spec-Driven Development workflow (SDD+TDD+BDD) used as bookends around feature-dev — write specs before development, sync docs after. Six modes cover the lifecycle: Write, Sync, Rewrite, Status, Setup, Audit. The Sync vs Rewrite split enforces anchoring discipline — Sync for mechanical local edits where anchoring on existing content is fine, Rewrite for structural changes via sequential isolation (old version is a facts pool, never a template). Triggers when the user wants to write or refine feature specs, update AC status after coding, audit or restructure docs, convert legacy docs to SDD, create module contracts, or check project progress — e.g. 'write a spec', 'sync docs', 'rewrite this section', 'audit my docs', 'create module contract', '精简文档', '看一下进度', '接下来做什么', 'legacy 文档转 SDD'. Also triggers on mentions of acceptance criteria, BDD scenarios, spec-first development, or the four-layer doc architecture (WHY/WHAT/HOW/VERIFY)."
+description: "Spec-Driven Development workflow (SDD+TDD+BDD) used as bookends around feature-dev — write specs before development, sync docs after. Six modes cover the lifecycle: Write, Sync, Rewrite, Status, Setup, Audit. The Sync vs Rewrite split enforces anchoring discipline — Sync for mechanical local edits where anchoring on existing content is fine, Rewrite for structural changes via sequential isolation (old version is a facts pool, never a template). Manages WHAT (architecture, modules, specs), HOW (ADRs, code conventions), and VERIFY (testing strategy, AC↔test mapping). Product context (PRODUCT.md) and visual design system (DESIGN.md) live at project root and are NOT spec-dev's territory — they're upstream context, not maintained here. Triggers when the user wants to write or refine feature specs, update AC status after coding, audit or restructure docs, convert legacy docs to SDD, create module contracts, or check project progress — e.g. 'write a spec', 'sync docs', 'rewrite this section', 'audit my docs', 'create module contract', '精简文档', '看一下进度', '接下来做什么', 'legacy 文档转 SDD'. Also triggers on mentions of acceptance criteria, BDD scenarios, spec-first development, or the WHAT/HOW/VERIFY layered doc architecture."
 metadata:
   author: Moeyua
   version: "2026.4.28"
@@ -11,9 +11,9 @@ metadata:
 
 ## Core Concepts
 
-This skill integrates **SDD + TDD + BDD** around a single invariant: `Spec → AC → Test`. Every AC carries a three-state marker (`[x]` tested, `[~]` untested debt, `[ ]` pending), and every document belongs to one of four layers (WHY / WHAT / HOW / VERIFY).
+This skill integrates **SDD + TDD + BDD** around a single invariant: `Spec → AC → Test`. Every AC carries a three-state marker (`[x]` tested, `[~]` untested debt, `[ ]` pending), and every document spec-dev produces belongs to one of three layers (WHAT / HOW / VERIFY). Product context (`PRODUCT.md`) and visual design system (`DESIGN.md`) are expected at the project root as upstream context, but are out of spec-dev's scope.
 
-Read [concepts](references/concepts.md) once before using any mode — it defines the invariant, the three-state system, the four-layer architecture, and how SDD/TDD/BDD divide responsibilities. The mode files reference it instead of redefining it.
+Read [concepts](references/concepts.md) once before using any mode — it defines the invariant, the three-state system, the WHAT/HOW/VERIFY layering, and how SDD/TDD/BDD divide responsibilities. The mode files reference it instead of redefining it.
 
 ## How This Skill Fits Your Workflow
 
@@ -45,7 +45,7 @@ spec-dev(Write) → feature-dev(全部7阶段) → spec-dev(Sync) → commit-pus
 | **Sync** | After feature-dev, or any local doc update — small mechanical changes | AC status flips, new contract rows, ADR suggestions, link repairs (anchoring on existing content is OK) |
 | **Rewrite** | Structural changes — format conversion, restructure, replace section | New doc produced from scratch via sequential isolation; old version is a facts pool, never a template |
 | **Status** | User wants to see progress or decide what's next | Read-only progress report across all specs |
-| **Setup** | New project or no docs exist | Full four-layer doc skeleton, written progressively |
+| **Setup** | New project or no docs exist | Full WHAT/HOW/VERIFY doc skeleton, written progressively (assumes PRODUCT.md / DESIGN.md exist as upstream context) |
 | **Audit** | Docs exist, want compliance + drift report | Pass/fail report **plus drift findings**, with per-finding fix-mode recommendation (Sync vs Rewrite) — does not modify files |
 
 ### Choosing a mode
@@ -81,7 +81,7 @@ Each mode has a dedicated reference file with the full procedure and output form
 
 ## Principles
 
-Conceptual principles (Spec→AC→Test, three-state AC, four-layer architecture, WHY/WHAT/HOW change frequencies) live in [concepts](references/concepts.md). The rules below apply to *how you write* across all modes:
+Conceptual principles (Spec→AC→Test invariant, three-state AC, what's spec-dev managed vs upstream PRODUCT.md/DESIGN.md, change frequencies per layer) live in [concepts](references/concepts.md). The rules below apply to *how you write* across all modes:
 
 - **Text-first**: No images — agents can't read them. Use text and Mermaid for diagrams (Mermaid source is structured text that agents understand).
 - **Behavior over UI**: Specs define what the system does, not what it looks like. No pixel values, colors, or button labels in AC.
@@ -95,11 +95,10 @@ Conceptual principles (Spec→AC→Test, three-state AC, four-layer architecture
 
 | Topic | When to read | File |
 |-------|-------------|------|
-| Core concepts (invariant, three-state AC, four layers, SDD/TDD/BDD) | Always, before first use | [concepts](references/concepts.md) |
+| Core concepts (invariant, three-state AC, WHAT/HOW/VERIFY layering, scope vs PRODUCT.md/DESIGN.md, SDD/TDD/BDD) | Always, before first use | [concepts](references/concepts.md) |
 | CLAUDE.md template | Writing the agent entry file | [templates-claude](references/templates-claude.md) |
-| WHY layer templates (vision, scope, glossary) | Defining product purpose | [templates-why](references/templates-why.md) |
 | WHAT layer templates (architecture, module contract, feature spec) | Defining structure and behavior | [templates-what](references/templates-what.md) |
-| HOW layer templates (ADR, conventions, design system) | Documenting implementation rules | [templates-how](references/templates-how.md) |
+| HOW layer templates (ADR, code conventions) | Documenting implementation rules | [templates-how](references/templates-how.md) |
 | SDD→TDD→BDD workflow | Setting up dev process or onboarding | [dev-workflow](references/dev-workflow.md) |
 | Testing strategy | Defining test pyramid and conventions | [testing-strategy](references/testing-strategy.md) |
 | Write mode | Writing feature specs or module contracts | [write-mode](references/write-mode.md) |

@@ -14,7 +14,7 @@ This mode enforces a procedure that breaks anchoring: **sequential isolation**. 
 Trigger keywords: "重写 X", "regenerate the doc", "用新的格式", "this section is wrong from the start".
 
 Concrete cases:
-- Format conversion: legacy free-form doc → SDD four-layer
+- Format conversion: legacy free-form doc → SDD WHAT/HOW/VERIFY layout
 - Restructuring: the doc's section organization no longer matches the code or the mental model
 - Fundamental behavior change: the spec's premise is gone, what's left is just facts
 - Mass split / merge: code split one module into three (or merged three into one), and the doc needs to follow
@@ -37,7 +37,7 @@ This is not a politeness, it's a hard requirement. Holding "new structure" and "
 Three inputs must be identified before proceeding:
 
 1. **Target type** — what kind of doc is this? (feature spec / module contract / ADR / architecture doc / convention guide)
-2. **Target rules** — what conventions and templates apply? (See [templates-what](templates-what.md), [templates-why](templates-why.md), [templates-how](templates-how.md), [templates-claude](templates-claude.md))
+2. **Target rules** — what conventions and templates apply? (See [templates-what](templates-what.md), [templates-how](templates-how.md), [templates-claude](templates-claude.md))
 3. **Source of truth** — where does the *content* come from? Options:
    - **Code** (for module contracts, behavior specs against existing code)
    - **User intent / new spec** (when the user explains what the doc should now describe)
@@ -122,20 +122,20 @@ Run [audit-mode](audit-mode.md) on the rewritten doc to confirm structural compl
 
 ## Special Case: Format Conversion (legacy → SDD)
 
-When the trigger is "convert legacy non-SDD docs to the four-layer architecture", the principle is the same (target structure first, old as facts pool), but Step 1 has an extra sub-step: **decide which target layer each old doc maps to, then run Steps 2-4 for each target doc independently**.
+When the trigger is "convert legacy non-SDD docs to spec-dev's WHAT/HOW/VERIFY layout", the principle is the same (target structure first, old as facts pool), but Step 1 has an extra sub-step: **decide where each old doc's content belongs (spec-dev managed, or upstream PRODUCT.md / DESIGN.md, or drop), then run Steps 2-4 for each target doc independently**.
 
-Common legacy → SDD layer mappings:
+Common legacy → target mappings:
 
-| Legacy doc | Target layer | Action |
+| Legacy doc | Destination | Action |
 |---|---|---|
-| `PRD.md` | WHY + WHAT | Split into `product/vision.md`, `product/scope.md`, `product/glossary.md`; extract per-feature behavior into `specs/{name}.md` files; extract decisions into `decisions/{NNN-slug}.md` |
-| `architecture.md` (legacy free-form) | WHAT | Produce new `architecture.md` (system structure + module registry) |
-| `conventions.md` (legacy free-form) | HOW | Produce new `guides/conventions.md` |
-| `design-system.md` | HOW | Produce new `guides/design-system.md` |
-| `specs/*.md` (legacy free-form) | WHAT + VERIFY | For each, produce SDD-format spec with Scope + AC + BDD + TDD pointers |
-| `decisions/*.md` | HOW | Usually keep in place (already SDD-shaped); verify status field |
+| `PRD.md` | Mostly **`PRODUCT.md`** (root, upstream — out of spec-dev scope) + extract per-feature behavior into `docs/specs/{name}.md` + extract decisions into `docs/decisions/{NNN-slug}.md` | Per-feature behavior is spec-dev's job; product positioning / users / brand goes in PRODUCT.md (do not produce that file inside spec-dev — flag for the user) |
+| `architecture.md` (legacy free-form) | `docs/architecture.md` (WHAT) | Produce new `architecture.md` (system structure + module registry) |
+| `conventions.md` (legacy free-form, code rules) | `docs/guides/conventions.md` (HOW) | Produce new code-conventions doc |
+| `design-system.md` / `design-tokens.md` | **`DESIGN.md`** (root, upstream — out of spec-dev scope) | Flag for user; do not produce inside `docs/` |
+| `specs/*.md` (legacy free-form) | `docs/specs/*.md` (WHAT + VERIFY) | For each, produce SDD-format spec with Scope + AC + BDD + TDD pointers |
+| `decisions/*.md` | `docs/decisions/*.md` (HOW) | Usually keep in place (already SDD-shaped); verify status field |
 | `tasks.md` / `todo.md` | — | Drop (use issue tracker) |
-| `data-model.md` (copied schemas) | WHAT (in module contracts) | Replace with **path references** to source files; do not copy schemas |
+| `data-model.md` (copied schemas) | `docs/modules/*.md` (WHAT, in module contracts) | Replace with **path references** to source files; do not copy schemas |
 
 **Pre-rewrite test scan** (for converting legacy specs):
 Before producing the new spec, scan test directories to determine each AC's correct three-state status:
@@ -147,17 +147,17 @@ This avoids the trap of marking everything `[x]` based on legacy doc claims.
 
 **Dependency ordering for multi-doc conversion:**
 When rewriting many legacy docs at once, do them in this order to avoid forward references:
-1. Create directory skeleton (`product/`, `modules/`, `guides/`, `decisions/`)
-2. Move/produce HOW-layer docs first (no upstream dependencies)
-3. Supplement missing ADRs for previously-undocumented decisions
-4. Produce WHY-layer (`vision`, `scope`, `glossary`)
+1. **Flag upstream docs to the user** — if `PRODUCT.md` / `DESIGN.md` content needs to be extracted, surface that as a separate task for the user; spec-dev does not produce those files
+2. Create directory skeleton (`docs/{modules,guides,decisions}/`)
+3. Move/produce HOW-layer docs first (no upstream dependencies)
+4. Supplement missing ADRs for previously-undocumented decisions
 5. Produce `architecture.md` (system structure + module registry)
 6. Produce WHAT-layer module contracts (with source file pointers, not copied signatures)
 7. Produce WHAT+VERIFY-layer specs (with three-state AC seeded from test scan)
-8. Update `CLAUDE.md` documentation index
+8. Update `CLAUDE.md` documentation index (including links to `PRODUCT.md` / `DESIGN.md` if present)
 9. Delete obsolete legacy files (only after their content is verified ported)
 
-After all docs are produced, run [audit-mode](audit-mode.md) to verify cross-references and the four-layer integrity.
+After all docs are produced, run [audit-mode](audit-mode.md) to verify cross-references and layer integrity.
 
 ## Strict Rules
 
