@@ -1,16 +1,17 @@
 ---
 name: templates-how
-description: "HOW layer templates — ADRs, coding conventions, and design system. Documents that describe implementation choices and rules."
+description: "HOW layer templates — ADRs and coding conventions. Documents that describe implementation choices and code-level rules. Visual design rules live in DESIGN.md (project root) — not covered here."
 ---
 
 # HOW Layer Templates
 
-The HOW layer answers "how is it built?". These documents change per implementation. They record choices (ADRs) and rules (conventions, design system) that agents and developers must follow when writing code.
+The HOW layer answers "how is it built?". These documents change per implementation. They record architectural choices (ADRs) and code-level rules (conventions) that agents and developers must follow when writing code.
+
+**Out of scope:** visual design system (colors, typography, components) — that lives in `DESIGN.md` at the project root, not under spec-dev management.
 
 Contents:
 1. [ADR](#adr-template) — architectural decision records
 2. [Conventions](#conventions-template) — coding rules agents must follow
-3. [Design System](#design-system-template) — visual rules for frontend projects
 
 ---
 
@@ -123,51 +124,3 @@ Rules an agent must follow when writing code.
 - Commit messages: {convention, e.g., conventional commits}
 ```
 
----
-
-## Design System Template
-
-Only for frontend projects with custom visual rules.
-
-```markdown
-# Design System
-
-## Style Direction
-
-{1-2 sentences: overall visual feel}
-
-## Colors
-
-### Base Palette
-{Primary, neutral, background colors with values}
-
-### Semantic Colors
-{Success, warning, error, info}
-
-### Domain Colors (if applicable)
-{Project-specific color assignments}
-
-## Typography
-
-{Font family, size scale, weight scale}
-
-## Spacing & Radius
-
-{Base unit, border radius scale}
-
-## Shadows
-
-{Shadow definitions by usage context}
-
-## Animation
-
-{Default transitions, motion preferences}
-
-## Component Library Overrides
-
-{Only document customizations beyond the library defaults}
-
-## Responsive Strategy
-
-{Breakpoints, minimum supported width}
-```

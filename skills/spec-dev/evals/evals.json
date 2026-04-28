@@ -53,7 +53,7 @@
         "Missing 'Out of Scope' section in specs/comment.md and specs/draft.md is flagged",
         "specs/comment.md AC-02 '[~]' is flagged as test debt (not generic 'partial')",
         "Missing Boundary ('Does NOT own') section in modules/comments.md is flagged",
-        "Dead link CLAUDE.md → docs/guides/design-system.md is flagged",
+        "Dead link CLAUDE.md → docs/specs/legacy-export.md (file removed) is flagged",
         "No files are modified during the audit",
         "Passed checks are collapsed (e.g., in a <details> block) rather than shown in full"
       ]

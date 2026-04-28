@@ -11,11 +11,11 @@ Uses the three-state AC system (see [concepts](concepts.md#three-state-acceptanc
 
 ## How it works
 
-1. **Read scope** — Read `docs/product/scope.md` to get the list of planned features and their priority (P0/P1/P2).
+1. **Read planned features** — If `PRODUCT.md` lists planned features (P0/P1/P2 or roadmap), use that as the planning baseline. Otherwise, the planning baseline is whatever specs already exist in `docs/specs/`.
 
 2. **Scan specs** — List all files in `docs/specs/`. For each spec, count AC by each of the three states.
 
-3. **Cross-reference** — Match features in scope against spec files. Classify each feature:
+3. **Cross-reference** — Match planned features against spec files. Classify each feature:
 
 | Status | Condition |
 |--------|-----------|
@@ -23,7 +23,7 @@ Uses the three-state AC system (see [concepts](concepts.md#three-state-acceptanc
 | **Implemented, Untested** | Spec exists, all AC are `[x]` or `[~]`, but at least one is `[~]` |
 | **In Progress** | Spec exists, some AC `[x]`/`[~]` and some `[ ]` |
 | **Ready for Dev** | Spec exists, all AC are `[ ]` (spec written but no implementation) |
-| **Needs Spec** | Listed in scope but no matching spec file in `docs/specs/` |
+| **Needs Spec** | Listed as planned in `PRODUCT.md` but no matching spec file |
 
 4. **Report** — Present the status grouped by category, with links to specs, AC progress counts, and test health. For "In Progress" and "Implemented, Untested" features, list actionable items so the user can see what's left.
 
