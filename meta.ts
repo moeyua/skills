@@ -37,4 +37,5 @@ export const manual = [
   'moeyua',
   'spec-dev',
   'skill-recommender',
+  'cruft-sweep',
 ]
