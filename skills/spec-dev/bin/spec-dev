@@ -1,0 +1,63 @@
+#!/usr/bin/env sh
+#
+# spec-dev — short alias for the script layer
+#
+# Resolves to the skill's own scripts/ directory regardless of where you call
+# it from. You don't need to know the absolute path; just put this on PATH.
+#
+# Setup (one-time):
+#   echo 'export PATH="$HOME/.claude/skills/spec-dev/bin:$PATH"' >> ~/.zshrc
+#   # or for bash:
+#   echo 'export PATH="$HOME/.claude/skills/spec-dev/bin:$PATH"' >> ~/.bashrc
+#
+# Usage:
+#   spec-dev audit                  # full mechanical audit
+#   spec-dev audit --json           # machine-readable
+#   spec-dev verify                 # reverse-check [x] markers
+#   spec-dev literals               # UI/impl literal blacklist
+#   spec-dev <command> --help       # forwarded to the underlying script
+#
+# Default --root is the current directory; pass --root <path> to override.
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SKILL_DIR="$(dirname "$SCRIPT_DIR")"
+SCRIPTS="$SKILL_DIR/scripts"
+
+cmd="${1:-}"
+shift 2>/dev/null || true
+
+case "$cmd" in
+  audit)
+    exec node "$SCRIPTS/audit-mechanical.mjs" --root "${PWD}" "$@"
+    ;;
+  verify)
+    exec node "$SCRIPTS/verify.mjs" --root "${PWD}" "$@"
+    ;;
+  literals|check-literals)
+    exec node "$SCRIPTS/check-literals.mjs" --root "${PWD}" "$@"
+    ;;
+  ""|-h|--help|help)
+    cat <<'EOF'
+spec-dev — mechanical checks for spec-driven docs
+
+Usage:
+  spec-dev audit         Full mechanical audit (dead-links, AC format,
+                         section presence, Public API drift, Test↔AC mapping)
+  spec-dev verify        Reverse-check every [x] AC against test annotations
+  spec-dev literals      UI / implementation literal blacklist on spec files
+
+Each command accepts --root <path> (default: current directory) and --json.
+
+You normally don't run these by hand — Claude Code's spec-dev modes call
+them, and the git pre-push hook calls audit on every push. This shim is
+for ad-hoc CLI use (CI, debugging, sanity checks).
+EOF
+    ;;
+  *)
+    echo "spec-dev: unknown command '$cmd'" >&2
+    echo "Run 'spec-dev --help' for usage." >&2
+    exit 64
+    ;;
+esac

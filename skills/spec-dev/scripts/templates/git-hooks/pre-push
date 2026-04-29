@@ -1,0 +1,63 @@
+#!/usr/bin/env sh
+#
+# spec-dev pre-push hook
+# ----------------------
+# Runs the mechanical audit before each `git push`. If anything has rotted
+# since the last sync — dead links, malformed AC, missing required sections —
+# the push is blocked until you fix it.
+#
+# Install (option A, native):
+#   cp <skill>/scripts/templates/git-hooks/pre-push .git/hooks/pre-push
+#   chmod +x .git/hooks/pre-push
+#
+# Install (option B, simple-git-hooks):
+#   add to package.json:
+#     "simple-git-hooks": {
+#       "pre-push": "node $SPEC_DEV_HOME/scripts/audit-mechanical.mjs --root ."
+#     }
+#
+# Override / skip:
+#   SPEC_DEV_SKIP=1 git push        # one-off skip
+#   SPEC_DEV_HOME=...               # absolute path to the spec-dev skill dir
+#                                   # (defaults below; edit to match your setup)
+
+set -e
+
+if [ "${SPEC_DEV_SKIP:-}" = "1" ]; then
+  echo "spec-dev pre-push: skipped (SPEC_DEV_SKIP=1)"
+  exit 0
+fi
+
+# Path to the spec-dev skill installation. Edit this if yours differs.
+SPEC_DEV_HOME="${SPEC_DEV_HOME:-$HOME/.claude/skills/spec-dev}"
+
+if [ ! -d "$SPEC_DEV_HOME/scripts" ]; then
+  echo "spec-dev pre-push: skill not found at $SPEC_DEV_HOME"
+  echo "  set SPEC_DEV_HOME or edit .git/hooks/pre-push to the correct path"
+  exit 0
+fi
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# If there is no docs/ tree, the audit has nothing to check — exit clean.
+if [ ! -d "$REPO_ROOT/docs" ]; then
+  exit 0
+fi
+
+echo "spec-dev pre-push: running mechanical audit..."
+node "$SPEC_DEV_HOME/scripts/audit-mechanical.mjs" --root "$REPO_ROOT"
+audit_exit=$?
+
+if [ $audit_exit -ne 0 ]; then
+  echo ""
+  echo "✗ spec-dev pre-push: audit found errors. Push blocked."
+  echo "  Run \`/spec-dev sync\` or \`/spec-dev rewrite\` to repair."
+  echo "  Override once with: SPEC_DEV_SKIP=1 git push"
+  exit $audit_exit
+fi
+
+# Optional: also run verify if SPEC_DEV_VERIFY=1 (slower, scans test/ + src/).
+if [ "${SPEC_DEV_VERIFY:-}" = "1" ]; then
+  echo "spec-dev pre-push: running verify..."
+  node "$SPEC_DEV_HOME/scripts/verify.mjs" --root "$REPO_ROOT"
+fi

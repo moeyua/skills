@@ -13,6 +13,35 @@ Audit is a doc linter — every check is binary pass/fail, no subjective judgmen
 
 Audit covers two complementary kinds of checks: **structural compliance** (does the doc follow SDD format rules?) and **drift detection** (does the doc match code reality?).
 
+## Procedure
+
+Audit is a script-first mode. The script layer does the mechanical work; the LLM consumes the report, applies the decisions ledger, and writes the narrative.
+
+### Step 0: Load the decisions ledger
+
+Before reporting, Read `docs/.spec-dev/decisions.md` (if it exists). Each entry is an H2 dated `YYYY-MM-DD — <scope>` with four required fields (Verdict / Scope / Reason / Source). When you encounter a finding whose scope matches a ledger entry, do **not** re-flag it as a fresh issue — list it under "Resolved by ledger" instead.
+
+This is the mechanism that prevents reverse-decision flip-flopping. The same case judged once stays judged. To overturn a decision, append a new entry with a later date — the most recent entry for the same scope wins.
+
+If the file does not exist, that's fine: it gets created the first time the user resolves an UNCLEAR or SUPPRESS-RULE case. Use the template at `<skill>/scripts/templates/decisions.md` as the format reference.
+
+### Step 1: Run the mechanical checks
+
+```bash
+node {skill-path}/scripts/audit-mechanical.mjs --root . --json
+node {skill-path}/scripts/check-literals.mjs --root . --json
+```
+
+These cover everything that does not require judgment — dead links, malformed AC, missing required sections, UI / implementation literal blacklist. The LLM does NOT participate in finding these issues; it only consumes the JSON output.
+
+### Step 2: Run the LLM-narrative drift checks
+
+The remaining checks (BDD coverage, scenario quality, drift between doc map and code map, structural rewrites needed) genuinely require judgment. Walk the criteria below for these.
+
+### Step 3: Assemble the report
+
+Apply the ledger to suppress already-resolved findings, then emit the report in the format below.
+
 ## Spec checks
 
 For each file in `docs/specs/`:
