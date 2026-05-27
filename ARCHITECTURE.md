@@ -49,14 +49,14 @@ praxis/
 
 ## 技术栈
 
-| 选择 | 工具 | 理由 |
-|---|---|---|
-| 运行时 | Node.js + `tsx` | 协作者机器普遍装了 Node；tsx 让 .ts 直接跑，不需要 build |
-| 包管理 | `pnpm` | 磁盘友好、严格依赖、社区标准 |
-| 测试 | `vitest` | TS 友好、快、API 类 jest |
-| 类型检查 | `tsc --noEmit` | 只做检查，不 emit |
-| Frontmatter parser | 手写，零运行时依赖 | praxis frontmatter 只有 4 个字段，不需要完整 YAML；手写还能给精确报错 |
-| 版本真源 | `package.json` 的 `version` | TS 项目里 package.json 天然是版本入口，少一个文件 |
+| 选择               | 工具                        | 理由                                                                  |
+| ------------------ | --------------------------- | --------------------------------------------------------------------- |
+| 运行时             | Node.js + `tsx`             | 协作者机器普遍装了 Node；tsx 让 .ts 直接跑，不需要 build              |
+| 包管理             | `pnpm`                      | 磁盘友好、严格依赖、社区标准                                          |
+| 测试               | `vitest`                    | TS 友好、快、API 类 jest                                              |
+| 类型检查           | `tsc --noEmit`              | 只做检查，不 emit                                                     |
+| Frontmatter parser | 手写，零运行时依赖          | praxis frontmatter 只有 4 个字段，不需要完整 YAML；手写还能给精确报错 |
+| 版本真源           | `package.json` 的 `version` | TS 项目里 package.json 天然是版本入口，少一个文件                     |
 
 **不需要的**：
 
@@ -89,11 +89,13 @@ rules/durable-context.md        # 跨 skill 的 memory 前置规则
 ```
 
 **SKILL.md vs references/**：
+
 - SKILL.md 全文加载——必须精简
 - 当 skill 超 ~200 行（比如 think 有 5 个 mode），mode-specific 内容拆 references/
 - agent 读完 SKILL.md，根据 mode picker 决定**再加载哪个 reference**——按需加载省 token
 
 **rules/ vs skills/**：
+
 - skills/ 是"用户触发"的能力
 - rules/ 是"always-on 背景行为"——agent 不管在做什么都遵守
 - 例：rules/anti-patterns.md 的"不要在 commit message 加 AI 署名"——适用所有 skill
@@ -106,6 +108,7 @@ skills/RESOLVER.md              # 给人看的路由索引
 ```
 
 **两套路由**：
+
 - **Agent 路由**：Claude Code 读所有 SKILL.md 的 frontmatter `description`，匹配用户消息——隐式的
 - **人类路由**：开发者查"X 场景该用哪个 skill"——看 RESOLVER.md，显式的
 
@@ -126,6 +129,7 @@ scripts/checks.ts               # 各种 check 函数（厚）
 ```
 
 **为什么拆三个文件**：
+
 - `verify-skills.ts`：argparse 风格的入口
 - `frontmatter.ts`：纯解析器，零运行时依赖——首次安装不需要 `pnpm install` 也能跑
 - `checks.ts`：所有 check 函数，可被 vitest 单独 import 测试
@@ -225,13 +229,13 @@ dispatch_intent: "一句话意图，给路由表用"
 
 ## think 的 mode 系统（详细）
 
-| Mode | 触发条件 | Clarify 关注 | 输出结构 |
-|---|---|---|---|
-| (default) | 想法模糊、探索性、"我想做..."、"该不该..." | 想清楚要解决什么问题 | 设计草案 / 头脑风暴结论 |
-| `fix` | 报错、行为异常、回归 | 复现条件、影响面 | 根因报告 + 修复方案 |
-| `feat` | 新功能、新能力 | 用户场景、接口边界、验收 | 实施方案 + 影响范围 + 验证方式 |
-| `refactor` | 整理结构、不改外部行为 | 行为保留边界、回归测试覆盖 | 重构方案 + 行为保留验证 |
-| `perf` | 性能差、慢、卡顿 | baseline、目标数字、瓶颈 | baseline + 优化方案 + 测量 |
+| Mode       | 触发条件                                   | Clarify 关注               | 输出结构                       |
+| ---------- | ------------------------------------------ | -------------------------- | ------------------------------ |
+| (default)  | 想法模糊、探索性、"我想做..."、"该不该..." | 想清楚要解决什么问题       | 设计草案 / 头脑风暴结论        |
+| `fix`      | 报错、行为异常、回归                       | 复现条件、影响面           | 根因报告 + 修复方案            |
+| `feat`     | 新功能、新能力                             | 用户场景、接口边界、验收   | 实施方案 + 影响范围 + 验证方式 |
+| `refactor` | 整理结构、不改外部行为                     | 行为保留边界、回归测试覆盖 | 重构方案 + 行为保留验证        |
+| `perf`     | 性能差、慢、卡顿                           | baseline、目标数字、瓶颈   | baseline + 优化方案 + 测量     |
 
 **mode 识别流程**：
 

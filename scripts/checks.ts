@@ -8,16 +8,16 @@
  * The rest are stubs to be filled when skill content lands.
  */
 
-import { readdirSync, statSync } from 'node:fs';
-import { basename, dirname, join } from 'node:path';
-import { parseFrontmatter, type SkillFrontmatter } from './frontmatter.ts';
+import { readdirSync, statSync } from "node:fs";
+import { basename, dirname, join } from "node:path";
+import { parseFrontmatter, type SkillFrontmatter } from "./frontmatter.ts";
 
 export function findSkillFiles(root: string): string[] {
-  const skillsDir = join(root, 'skills');
+  const skillsDir = join(root, "skills");
   const entries = readdirSync(skillsDir);
   const result: string[] = [];
   for (const entry of entries) {
-    const skillPath = join(skillsDir, entry, 'SKILL.md');
+    const skillPath = join(skillsDir, entry, "SKILL.md");
     try {
       if (statSync(skillPath).isFile()) {
         result.push(skillPath);
@@ -32,7 +32,7 @@ export function findSkillFiles(root: string): string[] {
 export function checkSkillFiles(root: string): Map<string, SkillFrontmatter> {
   const skillFiles = findSkillFiles(root);
   if (skillFiles.length === 0) {
-    throw new Error('NO SKILLS FOUND: expected skills/*/SKILL.md');
+    throw new Error("NO SKILLS FOUND: expected skills/*/SKILL.md");
   }
 
   const out = new Map<string, SkillFrontmatter>();
@@ -40,9 +40,7 @@ export function checkSkillFiles(root: string): Map<string, SkillFrontmatter> {
     const skillDir = basename(dirname(path));
     const fields = parseFrontmatter(path);
     if (fields.name !== skillDir) {
-      throw new Error(
-        `NAME MISMATCH: ${path} frontmatter name=${fields.name} dir=${skillDir}`,
-      );
+      throw new Error(`NAME MISMATCH: ${path} frontmatter name=${fields.name} dir=${skillDir}`);
     }
     out.set(skillDir, fields);
     console.log(`ok: ${path}`);

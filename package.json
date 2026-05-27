@@ -2,22 +2,26 @@
   "name": "praxis",
   "version": "0.1.0",
   "private": true,
-  "license": "MIT",
   "description": "A set of skills for AI agent-assisted development.",
+  "license": "MIT",
   "type": "module",
   "scripts": {
-    "test": "pnpm run verify && vitest run",
+    "test": "pnpm run verify && vp test run",
     "verify": "tsx scripts/verify-skills.ts",
+    "check": "vp check",
+    "lint": "vp lint",
+    "fmt": "vp fmt",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
     "tsx": "^4.22.3",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.7"
+    "vite": "^8.0.14",
+    "vite-plus": "^0.1.22"
   },
-  "packageManager": "pnpm@11.3.0",
   "engines": {
     "node": ">=20"
-  }
+  },
+  "packageManager": "pnpm@11.3.0"
 }

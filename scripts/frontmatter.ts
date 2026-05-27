@@ -6,7 +6,7 @@
  * praxis frontmatter has 4 string fields: name, description, when_to_use, dispatch_intent.
  */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync } from "node:fs";
 
 export interface SkillFrontmatter {
   name: string;
@@ -18,23 +18,23 @@ export interface SkillFrontmatter {
 export class FrontmatterError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'FrontmatterError';
+    this.name = "FrontmatterError";
   }
 }
 
-const REQUIRED_FIELDS = ['name', 'description'] as const;
-const ALL_FIELDS = ['name', 'description', 'when_to_use', 'dispatch_intent'] as const;
+const REQUIRED_FIELDS = ["name", "description"] as const;
+const ALL_FIELDS = ["name", "description", "when_to_use", "dispatch_intent"] as const;
 type FieldName = (typeof ALL_FIELDS)[number];
 
 export function parseFrontmatter(filePath: string): SkillFrontmatter {
-  const text = readFileSync(filePath, 'utf-8');
-  const lines = text.split('\n');
+  const text = readFileSync(filePath, "utf-8");
+  const lines = text.split("\n");
 
-  if (lines[0] !== '---') {
+  if (lines[0] !== "---") {
     throw new FrontmatterError(`INVALID FRONTMATTER: ${filePath} must start with ---`);
   }
 
-  const endIdx = lines.indexOf('---', 1);
+  const endIdx = lines.indexOf("---", 1);
   if (endIdx === -1) {
     throw new FrontmatterError(`INVALID FRONTMATTER: ${filePath} missing closing ---`);
   }
@@ -42,7 +42,7 @@ export function parseFrontmatter(filePath: string): SkillFrontmatter {
   const fields: Partial<Record<FieldName, string>> = {};
   for (const raw of lines.slice(1, endIdx)) {
     if (!raw.trim()) continue;
-    const colonIdx = raw.indexOf(':');
+    const colonIdx = raw.indexOf(":");
     if (colonIdx === -1) {
       throw new FrontmatterError(`INVALID FRONTMATTER LINE: ${filePath}: ${JSON.stringify(raw)}`);
     }
@@ -62,8 +62,8 @@ export function parseFrontmatter(filePath: string): SkillFrontmatter {
   return {
     name: fields.name!,
     description: fields.description!,
-    when_to_use: fields.when_to_use ?? '',
-    dispatch_intent: fields.dispatch_intent ?? '',
+    when_to_use: fields.when_to_use ?? "",
+    dispatch_intent: fields.dispatch_intent ?? "",
   };
 }
 
@@ -85,7 +85,7 @@ function parseScalar(raw: string, filePath: string, field: string): string {
 export function parseWhenToUseKeywords(whenToUse: string): Set<string> {
   return new Set(
     whenToUse
-      .split(',')
+      .split(",")
       .map((kw) => kw.trim().toLowerCase())
       .filter(Boolean),
   );

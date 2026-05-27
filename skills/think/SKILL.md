@@ -22,16 +22,16 @@ TODO
 
 ## Mode Picker
 
-| 用户线索 | Mode | Reference |
-|---|---|---|
-| 想法模糊 / 探索性 | (default) | (无) |
-| 报错 / 异常 / 回归 | `fix` | [references/mode-fix.md](references/mode-fix.md) |
-| 新功能 | `feat` | [references/mode-feat.md](references/mode-feat.md) |
+| 用户线索                | Mode       | Reference                                                  |
+| ----------------------- | ---------- | ---------------------------------------------------------- |
+| 想法模糊 / 探索性       | (default)  | (无)                                                       |
+| 报错 / 异常 / 回归      | `fix`      | [references/mode-fix.md](references/mode-fix.md)           |
+| 新功能                  | `feat`     | [references/mode-feat.md](references/mode-feat.md)         |
 | 整理结构 / 不改外部行为 | `refactor` | [references/mode-refactor.md](references/mode-refactor.md) |
-| 性能 / 慢 / 卡顿 | `perf` | [references/mode-perf.md](references/mode-perf.md) |
+| 性能 / 慢 / 卡顿        | `perf`     | [references/mode-perf.md](references/mode-perf.md)         |
 
 ## Gotchas
 
 | What happened | Rule |
-|---|---|
-| TODO | TODO |
+| ------------- | ---- |
+| TODO          | TODO |

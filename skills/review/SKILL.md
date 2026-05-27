@@ -19,5 +19,5 @@ dispatch_intent: "TODO"
 ## Gotchas
 
 | What happened | Rule |
-|---|---|
-| TODO | TODO |
+| ------------- | ---- |
+| TODO          | TODO |
