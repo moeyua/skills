@@ -34,15 +34,14 @@ praxis/
 ├── rules/                            # 跨 skill 的 always-on 约束
 │   ├── anti-patterns.md
 │   └── durable-context.md
-├── scripts/                          # 全 TS
-│   ├── verify-skills.ts              # 校验入口
+├── scripts/                          # 全 TS（库代码，被 tests/ 调用）
 │   ├── frontmatter.ts                # 手写 parser，零运行时依赖
 │   └── checks.ts                     # 各种 check 函数
 └── tests/
-    ├── frontmatter.test.ts
-    ├── checks.test.ts
+    ├── frontmatter.test.ts           # parser 单元测试
+    ├── checks.test.ts                # check 函数单元测试
     └── smoke/
-        └── verify-skills.test.ts
+        └── verify-skills.test.ts     # 整库 smoke：跑当前 repo 过所有 check
 ```
 
 **唯一硬性约束**：不要在根目录放 `SKILL.md`——会破坏 `npx skills add` 的嵌套 skill 扫描。
@@ -51,10 +50,11 @@ praxis/
 
 | 选择               | 工具                        | 理由                                                                  |
 | ------------------ | --------------------------- | --------------------------------------------------------------------- |
-| 运行时             | Node.js + `tsx`             | 协作者机器普遍装了 Node；tsx 让 .ts 直接跑，不需要 build              |
+| 运行时             | Node.js                     | 协作者机器普遍装了 Node，TS 由 vite-plus 内部处理                     |
 | 包管理             | `pnpm`                      | 磁盘友好、严格依赖、社区标准                                          |
-| 测试               | `vitest`                    | TS 友好、快、API 类 jest                                              |
-| 类型检查           | `tsc --noEmit`              | 只做检查，不 emit                                                     |
+| 工具链             | `vite-plus`                 | test / lint / fmt / typecheck 统一在 `vp` 命令下                      |
+| 测试               | `vp test`（vitest 内核）    | TS 友好、快、API 类 jest                                              |
+| Lint / Format      | `oxlint` + `oxfmt`（自带）  | vite-plus 默认集成，速度快                                            |
 | Frontmatter parser | 手写，零运行时依赖          | praxis frontmatter 只有 4 个字段，不需要完整 YAML；手写还能给精确报错 |
 | 版本真源           | `package.json` 的 `version` | TS 项目里 package.json 天然是版本入口，少一个文件                     |
 
@@ -112,7 +112,7 @@ skills/RESOLVER.md              # 给人看的路由索引
 - **Agent 路由**：Claude Code 读所有 SKILL.md 的 frontmatter `description`，匹配用户消息——隐式的
 - **人类路由**：开发者查"X 场景该用哪个 skill"——看 RESOLVER.md，显式的
 
-两份不一致会出问题（agent 实际匹配 A，文档说该用 B）。verify-skills.ts 强制两者锁步。
+两份不一致会出问题（agent 实际匹配 A，文档说该用 B）。`tests/smoke/verify-skills.test.ts` 通过调用 `scripts/checks.ts` 强制两者锁步。
 
 ### 4. 生成（Codegen）
 
@@ -123,16 +123,18 @@ skills/RESOLVER.md              # 给人看的路由索引
 ### 5. 验证（Lint）
 
 ```
-scripts/verify-skills.ts        # 校验入口（薄）
 scripts/frontmatter.ts          # parser，零依赖
-scripts/checks.ts               # 各种 check 函数（厚）
+scripts/checks.ts               # 各种 check 函数（库代码）
+tests/smoke/verify-skills.test.ts  # 整库验证 smoke（CI 入口）
 ```
 
-**为什么拆三个文件**：
+**为什么不要独立 CLI 入口**：
 
-- `verify-skills.ts`：argparse 风格的入口
-- `frontmatter.ts`：纯解析器，零运行时依赖——首次安装不需要 `pnpm install` 也能跑
-- `checks.ts`：所有 check 函数，可被 vitest 单独 import 测试
+`scripts/` 下只有库代码，没有可执行 CLI。验证由 `tests/smoke/verify-skills.test.ts` 触发——一个 vitest 测试，跑当前 repo 的 skill 文件验证整体一致。这样：
+
+- 单一入口（`vp test run` 一次跑完单元测试 + 整库验证）
+- 单元测试和整库验证用同一份逻辑（`scripts/checks.ts`），没有 CLI 与 vitest 之间的同步成本
+- 加新 check 时只在 `scripts/checks.ts` 加函数 + 在 smoke 里加 `it()`，不需要改 CLI
 
 **v1 必含的检查**（精简自 Waza 13 项的 8 项）：
 
@@ -150,12 +152,12 @@ scripts/checks.ts               # 各种 check 函数（厚）
 ### 6. 测试
 
 ```
-tests/frontmatter.test.ts       # parser 单元测试
-tests/checks.test.ts            # check 函数单元测试
-tests/smoke/*.test.ts           # 端到端 smoke
+tests/frontmatter.test.ts          # parser 单元测试
+tests/checks.test.ts               # check 函数单元测试
+tests/smoke/verify-skills.test.ts  # 整库 smoke（替代旧的 verify-skills CLI）
 ```
 
-全部 vitest。run via `pnpm test`。
+全部 vitest（通过 `vp test run`）。run via `pnpm test`。
 
 ### 7. 元文档
 
@@ -170,24 +172,34 @@ v1 暂不写 `AGENTS.md` / `CLAUDE.md`——praxis 当前是单人项目，等�
 ## 数据流
 
 ```
-                  [真源]
-       package.json + SKILL.md frontmatter
-                  │
-                  ▼
-             [验证层]
-          verify-skills.ts
-          ┌──────┴──────┐
-          ▼             ▼
-        PASS         FAIL
-       继续工作      CI 阻塞
+              [真源]
+   package.json + SKILL.md frontmatter
+              │
+              ▼
+         [库代码层]
+   scripts/frontmatter.ts + checks.ts
+              │
+   ┌──────────┼──────────┐
+   ▼          ▼          ▼
+[单元测试]              [smoke 测试]
+checks.test.ts          verify-skills.test.ts
+frontmatter.test.ts     （跑整个 repo）
+   │                     │
+   └──────────┬──────────┘
+              ▼
+           vp test run
+          ┌────┴────┐
+          ▼         ▼
+        PASS      FAIL
+       继续      CI 阻塞
 ```
 
 ```
-[内容层]                         [测试层]
-SKILL.md ─────────┐               tests/*.test.ts
+[内容层]                         [验证执行]
+SKILL.md ─────────┐               vp test run
 references/*.md   │                     │
 rules/*.md        │                     ▼
-       │          │                vitest run
+       │          │              tests/ + smoke/
        ▼          │
    agent 触发时   │
    按需加载       ▼
@@ -274,9 +286,9 @@ Mode Picker
 
 ```
 1. 编辑 skills/<name>/SKILL.md
-2. pnpm test
-   ├── verify-skills.ts 检查 frontmatter / Outcome Contract / 链接有效性
-   └── vitest 单元测试
+2. pnpm test  (= vp test run)
+   ├── 单元测试（frontmatter / checks 函数）
+   └── smoke：跑整个 repo 过 checks，发现 frontmatter / Outcome Contract / 链接问题
 3. git commit
 ```
 
@@ -299,9 +311,9 @@ v1 阶段没有 codegen，版本号只在 package.json 一处。
 2. 写 skills/inspect/SKILL.md（frontmatter + Outcome Contract + 内容）
 3. 在 skills/RESOLVER.md 加一行
 4. pnpm test
-   ├── verify-skills.ts 检查新 skill 符合规范
+   ├── smoke 自动发现新 skill 并跑所有 check
    ├── 触发词 Jaccard 检查它跟现有 7 个不撞车
-   └── 路由一致性检查
+   └── 路由一致性检查（RESOLVER.md 是否列出）
 5. git commit
 ```
 
@@ -346,6 +358,22 @@ Marker 的主要价值是"反 hallucination invariant"——强制 agent 输出�
 ### 为什么不写 marketplace.json？
 
 Claude Code plugin marketplace 是另一条独立的安装路径，需要维护 `.claude-plugin/marketplace.json`。`npx skills add` 已经能覆盖 Claude Code 安装，不需要额外渠道。v2 如果想做"一键安装到多个 host"再加。
+
+### 为什么把 verify 合并到 vitest，没有独立 CLI？
+
+原本设计是 `scripts/verify-skills.ts` 作为 CLI 入口 + `tests/*.test.ts` 跑单元测试，两条路径。问题：
+
+- 同一份 check 逻辑（`scripts/checks.ts`）有两个调用入口，加新 check 要同步两处
+- `pnpm test` 实际跑 `pnpm verify && vp test run`，两步骤难维护
+- `tsx` 仅为这个 CLI 而引入，作为额外的运行时依赖
+
+合并到 vitest 后：
+
+- `scripts/` 下只有库代码，没有可执行入口
+- 所有验证通过 `tests/smoke/verify-skills.test.ts` 触发，跟单元测试同管线
+- `vp test run` 一个命令搞定全部，`tsx` 依赖可以移除
+
+代价：失去独立 `pnpm verify` 命令——但 `vp test run --filter=verify-skills` 等价，且实际上很少需要分开跑。
 
 ## v2 规划
 
