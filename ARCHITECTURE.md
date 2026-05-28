@@ -382,8 +382,9 @@ Claude Code plugin marketplace 是另一条独立的安装路径，需要维护 
 ### Skill 层面
 
 - `think` 的 `arch` mode：架构调整、技术选型、模块重组
-- `document` skill：文档管理——野心更大，需要想清楚边界
+- `document` skill：文档管理——野心更大，需要想清楚边界。explore 的"必读文档清单"在 document skill 落地后可能调整
 - `release` skill：发布流程——各项目差异大，需要提炼跨项目的通用机制（参考 Waza `/check` 的 Project Context Extraction 思路）
+- `health` skill：项目体检——文档与代码的漂移检测、依赖陈旧、CI 状态、文件大小热点等。explore 故意只读不验证，把"文档说的 vs 代码实际"的对照工作留给 health
 
 ### 架构层面
 

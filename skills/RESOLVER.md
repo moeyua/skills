@@ -1,14 +1,14 @@
 # Praxis Skill Resolver
 
-> 触发词到技能的路由表。Claude Code 通过每个 SKILL.md 的 `description` 自动匹配，这份文档是给人看的集中索引，也是 `scripts/verify-skills.ts` 的校验依据。改 SKILL.md 的适用范围时，同步改这里。
+> 触发词到技能的路由表。Claude Code 通过每个 SKILL.md 的 `description` 自动匹配，这份文档是给人看的集中索引，也是 `tests/smoke/verify-skills.test.ts` 的校验依据。改 SKILL.md 的适用范围时，同步改这里。
 
 ## 按工作流阶段分路
 
 ### 0. 理解阶段
 
-| 触发 | 技能                      |
-| ---- | ------------------------- |
-| TODO | `skills/explore/SKILL.md` |
+| 触发                                                                                                        | 技能                      |
+| ----------------------------------------------------------------------------------------------------------- | ------------------------- |
+| 新仓库 / 不熟悉的模块 / "先看看这个项目" / "整体了解一下" / "看一下 X 模块" / `$explore` / 为后续工作打基础 | `skills/explore/SKILL.md` |
 
 ### 1. 设计阶段
 
