@@ -2,7 +2,7 @@
 mode: refactor
 title: 把 7 个 SKILL.md 从命令式硬约束改成对话式 why-driven 风格
 created: 2026-05-28
-status: approved
+status: done
 ---
 
 # Refactor: SKILL.md prose style
