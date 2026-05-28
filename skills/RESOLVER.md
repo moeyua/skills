@@ -36,10 +36,10 @@
 
 ### 5. 入库 / 推送阶段
 
-| 触发 | 技能                     |
-| ---- | ------------------------ |
-| TODO | `skills/commit/SKILL.md` |
-| TODO | `skills/push/SKILL.md`   |
+| 触发                                                             | 技能                     |
+| ---------------------------------------------------------------- | ------------------------ |
+| "提交" / "commit" / "入库" / `$commit` / 改完代码要入库          | `skills/commit/SKILL.md` |
+| "开 PR" / "推送" / "提评审" / `$push` / commit 完要推到远端开 PR | `skills/push/SKILL.md`   |
 
 ## Disambiguation
 
