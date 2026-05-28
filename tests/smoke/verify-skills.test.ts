@@ -1,26 +1,60 @@
 /**
- * Smoke test: invokes the same verification logic that used to live in
- * `scripts/verify-skills.ts` (CLI). Keeping it as a vitest test gives us a
- * single entrypoint (`vp test run`) and unified assertions.
+ * Smoke test: runs every check from scripts/checks.ts against the live praxis
+ * repo. Replaces the deleted CLI entrypoint scripts/verify-skills.ts.
  *
- * As `scripts/checks.ts` grows new check functions, add them here too — this
- * file is the authoritative "everything is consistent" gate for the repo.
+ * As scripts/checks.ts grows new check functions, add a new it() block here.
+ * That keeps the live verifier a single, append-only ledger of invariants.
  */
 
 import { describe, it, expect } from "vite-plus/test";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { checkSkillFiles } from "../../scripts/checks.ts";
+import {
+  checkSkillFiles,
+  checkDescriptionConformance,
+  checkOutcomeContract,
+  checkReferencesExist,
+  checkMarkdownLinks,
+  checkNoRootSkill,
+  checkTriggerJaccard,
+  checkResolverConsistency,
+} from "../../scripts/checks.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 describe("repo skill verifier (smoke)", () => {
-  it("all skills pass schema checks", () => {
-    expect(() => checkSkillFiles(REPO_ROOT)).not.toThrow();
+  // Parse once and reuse — every check below operates on the same snapshot.
+  const skills = checkSkillFiles(REPO_ROOT);
+
+  it("checkSkillFiles: name <-> dir match, frontmatter parses", () => {
+    expect(skills.size).toBeGreaterThanOrEqual(7);
   });
 
-  // Add future checks here as scripts/checks.ts grows. Examples:
-  //   it("description conformance: Use when / Not for, 40-500 chars", () => ...)
-  //   it("trigger keyword Jaccard < 0.5 across skills", () => ...)
-  //   it("RESOLVER.md lists every skill", () => ...)
+  it("checkDescriptionConformance: every description has Use when / Not for, 40-500 chars", () => {
+    expect(() => checkDescriptionConformance(skills)).not.toThrow();
+  });
+
+  it("checkOutcomeContract: every SKILL.md has the 4 Outcome Contract fields", () => {
+    expect(() => checkOutcomeContract(REPO_ROOT)).not.toThrow();
+  });
+
+  it("checkReferencesExist: every references/X.md mentioned in a SKILL.md exists", () => {
+    expect(() => checkReferencesExist(REPO_ROOT)).not.toThrow();
+  });
+
+  it("checkMarkdownLinks: every relative markdown link resolves", () => {
+    expect(() => checkMarkdownLinks(REPO_ROOT)).not.toThrow();
+  });
+
+  it("checkNoRootSkill: no root SKILL.md (would break nested discovery)", () => {
+    expect(() => checkNoRootSkill(REPO_ROOT)).not.toThrow();
+  });
+
+  it("checkTriggerJaccard: no two skills share more than half their when_to_use keywords", () => {
+    expect(() => checkTriggerJaccard(skills)).not.toThrow();
+  });
+
+  it("checkResolverConsistency: RESOLVER.md lists exactly the skills under skills/", () => {
+    expect(() => checkResolverConsistency(REPO_ROOT, skills)).not.toThrow();
+  });
 });

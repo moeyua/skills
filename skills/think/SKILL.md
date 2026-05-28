@@ -1,8 +1,8 @@
 ---
 name: think
-description: "TODO: Use when ...; Not for ..."
-when_to_use: "TODO"
-dispatch_intent: "TODO"
+description: "TODO（待填充实际内容）：意图澄清和方案制定，支持 default / fix / feat / refactor / perf 多 mode。Use when 用户想做某件事但需要先想清楚，或意图明确后需要可执行方案。Not for 已经有方案要落代码（用 implement）。"
+when_to_use: "think, 想想, 头脑风暴, 出方案, 设计, 怎么做, 该不该, 值不值得, $think"
+dispatch_intent: "意图澄清 + 多 mode 方案制定"
 ---
 
 # Think: 意图澄清 + 出方案
