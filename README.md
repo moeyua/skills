@@ -2,11 +2,7 @@
 
 > 一套用于 Agent 辅助开发的 Skills，把完整的代码开发闭环沉淀成 Agent 可调用的技能。
 
-## Why
-
-每条 rule 都是一个 ceiling —— Agent 只能做指令允许的事。Praxis 走克制路线：每个 skill 只设清晰的目标和最关键的约束，剩下让模型发挥。
-
-聚焦一件事：**代码开发闭环**。不做产品决策，不做文档管理，不做发布管理，不做 Agent 自审计。
+> 设计哲学和产品边界见 [PRODUCT.md](./PRODUCT.md)。
 
 ## Skills
 
@@ -67,14 +63,6 @@ explore → think → implement → test → review → commit → push
 - 出方案前不写任何代码
 
 详细的 mode 设计、数据流、目录结构见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
-
-## 边界：明确不做的
-
-- 价值判断（"值不值得做"、Kill/Keep/Pivot）
-- 文档管理（README / 接口文档 / 变更说明）
-- 发布管理（上线检查 / release notes / 回滚）
-- Agent 自审计（hooks / MCP / config 漂移）
-- 内容输入处理（URL/PDF 抓取、深度研究）
 
 ## 致谢
 

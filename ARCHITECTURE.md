@@ -162,6 +162,7 @@ tests/smoke/verify-skills.test.ts  # 整库 smoke（替代旧的 verify-skills C
 ### 7. 元文档
 
 ```
+PRODUCT.md                      # 产品定位 / 设计哲学 / 边界
 README.md                       # 给使用者看
 ARCHITECTURE.md                 # 给开发者和协作 agent 看（本文件）
 LICENSE
