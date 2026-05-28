@@ -25,11 +25,7 @@
 ## Install
 
 ```bash
-# 本地仓库（开发时）
 npx skills add .
-
-# 私人仓库 SSH（跨机器）
-npx skills add git@github.com:moeyua/praxis.git
 ```
 
 常用 flag：

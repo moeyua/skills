@@ -299,7 +299,7 @@ Mode Picker
 2. pnpm test（CI 同样的检查跑一遍）
 3. git tag v0.2.0
 4. git push --tags
-   └── 用户重新 `npx skills add .` 或 `npx skills add git@...:praxis.git` 拉最新
+   └── 用户重新 `npx skills add .` 拉最新
 ```
 
 v1 阶段没有 codegen，版本号只在 package.json 一处。
