@@ -25,10 +25,23 @@
 ## Install
 
 ```bash
-npx skills add <your-github>/praxis -a claude-code -g -y
+# 本地仓库（开发时）
+npx skills add .
+
+# 私人仓库 SSH（跨机器）
+npx skills add git@github.com:moeyua/praxis.git
 ```
 
-`-g` 全局安装到 `~/.claude/skills/`，`-a claude-code` 指定目标 agent。
+常用 flag：
+
+- `-g` 全局（`~/.claude/skills/`），不加是 project 级（`.claude/skills/`）
+- `-a claude-code` 指定 agent，不加会询问
+- `-y` 跳过确认
+- `--copy` 改为复制；默认是 symlink，编辑仓库内 SKILL.md 立刻生效
+
+装完后触发命令：`/explore` / `/think` / `/implement` / `/test` / `/review` / `/commit` / `/push`。
+
+**注意冲突**：praxis 的 `/review` 会遮蔽 Claude Code 内置 `/review`（personal skill 优先级高于 command）。如果想用内置 review，先卸载 praxis review。`/commit` 跟 `commit-commands` plugin 不撞（plugin 命令有 namespace `/commit-commands:commit`），但用户级 `/commit` 仍走 praxis。
 
 ## 工作流
 

@@ -1,7 +1,7 @@
 ---
 name: explore
 description: '理解项目或不熟悉的模块，为后续 think / implement / review 等工作建立可靠 context。必读关键文档（README / ARCHITECTURE / PRODUCT / DESIGN / specs / docs / agent 指南等）并扫项目结构。Use when 用户进入新仓库、面对不熟悉的模块，或说"先看看这个项目""整体了解一下"。Not for 调试错误（用 think fix mode）、出方案（用 think）、纯回答 API 用法（直接搜代码即可）。'
-when_to_use: "explore, 看项目, 项目结构, 入口, 怎么跑, 不熟悉, 先看看, 整体了解, 模块, $explore"
+when_to_use: "explore, 看项目, 项目结构, 入口, 怎么跑, 不熟悉, 先看看, 整体了解, 模块"
 dispatch_intent: "为后续工作建立项目 context；必读关键文档并扫项目结构"
 ---
 
@@ -18,7 +18,7 @@ Explore 是其他 skill 的**前置**——它不是终点，是为后续 think 
 
 ## Phase 划分
 
-每次 explore 调用都**从 Overview Phase 开始**。如果用户消息里指定了范围（"看一下 auth 模块" / "详细看 src/agent" / "$explore <某模块>"），Overview 完成后**继续 Scoped Deep-dive Phase** 处理该范围。
+每次 explore 调用都**从 Overview Phase 开始**。如果用户消息里指定了范围（"看一下 auth 模块" / "详细看 src/agent" / "/explore <某模块>"），Overview 完成后**继续 Scoped Deep-dive Phase** 处理该范围。
 
 **硬约束**：绝不允许跳过 Overview 直接 deep-dive。即使用户只问"看一下 X 模块"，仍然先做完整 Overview 再深入。
 

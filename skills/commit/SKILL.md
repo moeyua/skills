@@ -1,7 +1,7 @@
 ---
 name: commit
-description: '生成符合项目风格的 commit 并入库；明显多主题时自动拆分。Use when 用户说"提交" / "commit" / "入库" / `$commit`。Not for 推送远端或开 PR（用 push）、写 release notes。'
-when_to_use: "commit, 提交, 入库, message, 整理变更, 拆 commit, $commit"
+description: '生成符合项目风格的 commit 并入库；明显多主题时自动拆分。Use when 用户说"提交" / "commit" / "入库"。Not for 推送远端或开 PR（用 push）、写 release notes。'
+when_to_use: "commit, 提交, 入库, message, 整理变更, 拆 commit"
 dispatch_intent: "生成 commit 并入库，必要时拆分多主题"
 ---
 

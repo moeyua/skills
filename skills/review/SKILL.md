@@ -1,13 +1,13 @@
 ---
 name: review
-description: '合并前的代码 review。5 维度扫描（plan 一致性 / 代码质量 / 错误处理 / 测试覆盖 / 简化机会），按 confidence ≥ 80 过滤，分级输出建议。Use when 用户说 "review" / "看看变更" / "把关" / "合并前检查" / `$review`。Not for 主动重构（用 think refactor）、修 bug（用 think fix）、补测试（用 test）——review 只看不动。'
-when_to_use: "review, 评审, 把关, 合并前, 看看变更, code-review, $review"
+description: '合并前的代码 review。5 维度扫描（plan 一致性 / 代码质量 / 错误处理 / 测试覆盖 / 简化机会），按 confidence ≥ 80 过滤，分级输出建议。Use when 用户说 "review" / "看看变更" / "把关" / "合并前检查"。Not for 主动重构（用 think refactor）、修 bug（用 think fix）、补测试（用 test）——review 只看不动。'
+when_to_use: "review, 评审, 把关, 合并前, 看看变更, code-review"
 dispatch_intent: "5 维度代码 review，confidence 过滤，只输出建议不改代码"
 ---
 
 # Review
 
-> **Prerequisite**：你应该知道项目背景。陌生项目先 `$explore`。
+> **Prerequisite**：你应该知道项目背景。陌生项目先 `/explore`。
 
 合并前的代码 review。**只看不动**——不改任何文件、不写代码、不补测试、不修 bug。所有发现都是建议，由用户决定回哪个 skill 处理。
 
@@ -33,10 +33,10 @@ dispatch_intent: "5 维度代码 review，confidence 过滤，只输出建议不
 用户消息含特定关键词 → 只 review 对应维度。没指定 → 全 5 维度。
 
 ```bash
-$review                       # 默认全 5 维度
-$review tests errors          # 只 tests + errors
-$review plan                  # 只 plan 一致性
-$review simplify              # 只简化机会
+/review                       # 默认全 5 维度
+/review tests errors          # 只 tests + errors
+/review plan                  # 只 plan 一致性
+/review simplify              # 只简化机会
 ```
 
 关键词识别（不区分大小写）：`plan` / `quality` / `errors` / `tests` / `simplify`。其他英文/中文表述按语义就近映射（"测试" → tests，"错误处理" → errors）。
@@ -84,15 +84,15 @@ review **绝对不做**：
 
 发现问题 → **报告 + 建议方向**：
 
-- 发现简化机会 → 建议用户回 `$think refactor`
-- 发现测试 gap → 建议用户回 `$test 补覆盖`
-- 发现 bug → 建议用户回 `$think fix`
+- 发现简化机会 → 建议用户回 `/think refactor`
+- 发现测试 gap → 建议用户回 `/test 补覆盖`
+- 发现 bug → 建议用户回 `/think fix`
 - 发现 scope creep → 标出来让用户决定（撤回 plan 之外的改动 / 接受 / 回 think 改 plan）
 
 ## Hard Stops
 
 - 工作树和 HEAD 完全一致（无 diff 可看）→ 报告"无改动可 review"
-- 用户指定 aspect 但 spelling 错（如 `$review xxx`）→ 报告识别失败，列可用 aspect
+- 用户指定 aspect 但 spelling 错（如 `/review xxx`）→ 报告识别失败，列可用 aspect
 - 当前 detached HEAD / 进行中 rebase / merge → 报告，可能拿不到准确 diff
 - review 过程中诱发改动文件的冲动（"我顺手改一下"）→ 立刻 stop，写进 finding 而不是动手
 
@@ -121,7 +121,7 @@ Confidence threshold: ≥ 80
 - <一两条正面 ack>
 
 ## Recommended Next
-- Critical 优先：<具体动作，如 $think fix>
+- Critical 优先：<具体动作，如 /think fix>
 - Important 次之：<...>
 - Suggestion 视情况
 ```

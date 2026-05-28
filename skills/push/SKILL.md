@@ -1,7 +1,7 @@
 ---
 name: push
-description: '把当前 branch 推到 origin 并在 GitHub 开 PR；PR 描述基于整 branch 历史。Use when 用户说 "开 PR" / "提评审" / `$push` 或 commit 完要推到远端开 PR。Not for 本地 commit（用 commit）、写 release notes、非 GitHub 远端（不自动开 PR）。'
-when_to_use: "push, 开 PR, MR, 提 PR, 推送, pull request, merge request, $push"
+description: '把当前 branch 推到 origin 并在 GitHub 开 PR；PR 描述基于整 branch 历史。Use when 用户说 "开 PR" / "提评审" 或 commit 完要推到远端开 PR。Not for 本地 commit（用 commit）、写 release notes、非 GitHub 远端（不自动开 PR）。'
+when_to_use: "push, 开 PR, MR, 提 PR, 推送, pull request, merge request"
 dispatch_intent: "推送 branch 到 origin 并在 GitHub 自动创建 PR"
 ---
 
@@ -71,7 +71,7 @@ body 强制结构：
 ## Hard Stops
 
 - 当前在 `main` / `master` / `develop` → 报告；让用户 `git checkout -b <name>` 后再调
-- 有 uncommitted changes → 报告；让用户先 `$commit` 或显式放弃
+- 有 uncommitted changes → 报告；让用户先 `/commit` 或显式放弃
 - `gh` 没装 / `gh auth status` 失败 → 报告安装或登录命令
 - 没有 `origin` remote → 报告；让用户 `git remote add origin ...`
 - 已有开着的 PR → 报告 PR # 和 URL，让用户决定继续 push 还是放弃

@@ -1,13 +1,13 @@
 ---
 name: test
-description: '测试相关工作的统一入口：跑测试、补覆盖、调试失败。Use when 用户说 "跑测试" / "加测试" / "补回归" / "这个 test fail 帮我看" / `$test`。Not for plan 要求的最小测试集（在 implement 内 TDD 写）、非测试代码改动（用 implement）、纯 review 不写测试（用 review）。'
-when_to_use: "test, 测试, 跑测试, 加测试, 补测试, 单元测试, 回归, 覆盖, flaky, 测试 fail, $test"
+description: '测试相关工作的统一入口：跑测试、补覆盖、调试失败。Use when 用户说 "跑测试" / "加测试" / "补回归" / "这个 test fail 帮我看"。Not for plan 要求的最小测试集（在 implement 内 TDD 写）、非测试代码改动（用 implement）、纯 review 不写测试（用 review）。'
+when_to_use: "test, 测试, 跑测试, 加测试, 补测试, 单元测试, 回归, 覆盖, flaky, 测试 fail"
 dispatch_intent: "跑 / 补 / 调试测试的统一入口"
 ---
 
 # Test
 
-> **Prerequisite**：你应该知道项目的测试 framework 和命令。陌生项目先 `$explore`。
+> **Prerequisite**：你应该知道项目的测试 framework 和命令。陌生项目先 `/explore`。
 
 测试相关工作的入口。**不重新发明测试基础设施**，跟项目走。
 
@@ -22,7 +22,7 @@ dispatch_intent: "跑 / 补 / 调试测试的统一入口"
 
 | 用户消息线索                                           | 工作   |
 | ------------------------------------------------------ | ------ |
-| `$test` / "跑测试" / "test 通过吗"                     | 跑测试 |
+| `/test` / "跑测试" / "test 通过吗"                     | 跑测试 |
 | "加测试" / "补 X 的回归" / "覆盖 Y 模块"               | 补覆盖 |
 | "这个 fail 帮我看" / "flaky 排查" / "为什么这个测试挂" | 调试   |
 
@@ -44,7 +44,7 @@ pnpm test / npm test / pytest / cargo test / go test ./... / ...
 - 总数 + pass/fail
 - 失败的测试：文件 + 测试名 + 第一条 assertion 失败信息
 - 多个失败时按"看起来相关 / 看起来独立"分组
-- 给下一步建议：跑 `$test 调试 X` / 看是否要回 think 修 plan / 等
+- 给下一步建议：跑 `/test 调试 X` / 看是否要回 think 修 plan / 等
 
 **Flaky 怀疑**：如果某个测试看起来时序 / 资源敏感，**只 retry 一次**；仍 fail 就不算 flaky，就是 fail。
 
@@ -94,7 +94,7 @@ pnpm test / npm test / pytest / cargo test / go test ./... / ...
 - 补测试时新测试一开始就 green → 测试没真覆盖
 - 测试 retry 1 次仍 fail → 不再 retry，按 fail 处理
 - 用户要求"让 X 测试通过"但 X 反映的是真实 bug → 拒绝；建议回 think (fix mode)
-- 项目没装 framework，用户没说要装，但要"跑测试" → 报告状态，问要不要 `$think feat` 引入测试
+- 项目没装 framework，用户没说要装，但要"跑测试" → 报告状态，问要不要 `/think feat` 引入测试
 
 ## 完成后输出
 
@@ -109,7 +109,7 @@ Failures:
   → <assertion or error first line>
 - ...
 
-下一步：调试单个 fail 用 $test <file::name> / 修代码回 $think fix
+下一步：调试单个 fail 用 /test <file::name> / 修代码回 /think fix
 ```
 
 **补覆盖**：
@@ -124,7 +124,7 @@ New tests:
 
 Verify: <command> → pass (N new green)
 
-下一步：跑全套 $test 看有没有 regression / 调 commit 入库
+下一步：跑全套 /test 看有没有 regression / 调 commit 入库
 ```
 
 **调试**：

@@ -1,13 +1,13 @@
 ---
 name: think
-description: '把模糊想法澄清成可执行的 plan。多 mode：default（探索/brainstorm）/ fix / feat / refactor / perf。具名 mode 出 plan 文件到 plans/。Use when 用户说 "想想" / "出方案" / "怎么做" / "$think" / 任何"需要先想清楚"的场景。Not for 已经有 plan 要落代码（用 implement）、价值判断"值不值得做"、纯回答 API 用法。'
-when_to_use: "think, 想想, 头脑风暴, 出方案, 设计, 怎么做, 该不该, 值不值得, $think"
+description: '把模糊想法澄清成可执行的 plan。多 mode：default（探索/brainstorm）/ fix / feat / refactor / perf。具名 mode 出 plan 文件到 plans/。Use when 用户说 "想想" / "出方案" / "怎么做" / 任何"需要先想清楚"的场景。Not for 已经有 plan 要落代码（用 implement）、价值判断"值不值得做"、纯回答 API 用法。'
+when_to_use: "think, 想想, 头脑风暴, 出方案, 设计, 怎么做, 该不该, 值不值得"
 dispatch_intent: "意图澄清 + 多 mode 方案制定，具名 mode 写 plan 文件"
 ---
 
 # Think
 
-> **Prerequisite**：think 假设你对当前项目已有基本理解。陌生项目或不熟悉的模块，先调 `$explore`。
+> **Prerequisite**：think 假设你对当前项目已有基本理解。陌生项目或不熟悉的模块，先调 `/explore`。
 
 直接给意见，take a position。避免 "这是个好问题" / "有很多种方式" / "你可以考虑"。说什么 evidence 会改变你的判断。
 
@@ -31,7 +31,7 @@ dispatch_intent: "意图澄清 + 多 mode 方案制定，具名 mode 写 plan �
 - 关键约束已知（接口边界 / 行为保留要求 / baseline 数字 / 不能动的地方）
 - 没有阻塞性歧义（"两种合理解读 cost 差别巨大"必须先问清）
 
-知道意图 ≠ 不需要 clarify。即使用户说 `$think 重构这块`，仍可能要问"保留哪些 API 行为？接受多少风险？跑哪些回归测试？"
+知道意图 ≠ 不需要 clarify。即使用户说 `/think 重构这块`，仍可能要问"保留哪些 API 行为？接受多少风险？跑哪些回归测试？"
 
 ## Phase 2: Mode Picker
 
@@ -123,7 +123,7 @@ Plan written to plans/YYYY-MM-DD-<slug>.md
 | Plan 里写 "TBD" / "之后再说"           | Plan red flag；回头补完整                                                 |
 | 用户批准后又改方向 "其实再想想..."     | 不要 re-litigate；明确说"你刚批了 plan，要改哪一点？"，最小修改而非重做   |
 | "这是个有趣的问题" / "你可以考虑..."   | 反 hedging；直接 take position                                            |
-| `$think 重构这块` 跳过 clarify         | 知道 mode 不等于不需要 clarify；仍问 1-2 个收敛性问题                     |
+| `/think 重构这块` 跳过 clarify         | 知道 mode 不等于不需要 clarify；仍问 1-2 个收敛性问题                     |
 | 价值判断（"值不值得做"）               | praxis 不做价值判断；如果用户问，明确说"这不在 praxis 范围"+ 给一句话观察 |
 | 卡在 brainstorm 出不来                 | 提议收敛："基于讨论我倾向 X mode，要走这条路吗？"                         |
 | 用 ASCII diagram 画 2 个组件的简单关系 | 只在 >3 组件交换数据时画                                                  |

@@ -1,13 +1,13 @@
 ---
 name: implement
-description: '按 think 出的 plan 文件严格执行代码改动；项目有测试就走 TDD。Use when 用户说 "实施" / "implement" / "按计划做" / "$implement" / "整" / "可以干" / "直接改" 或 think 出 plan 后切实施。Not for 还没 plan 就动手（先 think）、纯写文档、绕过 plan 改代码。'
-when_to_use: "implement, 实施, 实现, 写代码, 按计划, 落实, 整, 可以干, 直接改, $implement"
+description: '按 think 出的 plan 文件严格执行代码改动；项目有测试就走 TDD。Use when 用户说 "实施" / "implement" / "按计划做" / "整" / "可以干" / "直接改" 或 think 出 plan 后切实施。Not for 还没 plan 就动手（先 think）、纯写文档、绕过 plan 改代码。'
+when_to_use: "implement, 实施, 实现, 写代码, 按计划, 落实, 整, 可以干, 直接改"
 dispatch_intent: "按 plan 文件严格执行代码改动"
 ---
 
 # Implement
 
-> **Prerequisite**：必须有一个 think 出的 plan 文件（`plans/YYYY-MM-DD-<slug>.md`，`status: approved`）。没有先调 `$think`。
+> **Prerequisite**：必须有一个 think 出的 plan 文件（`plans/YYYY-MM-DD-<slug>.md`，`status: approved`）。没有先调 `/think`。
 
 把 plan 翻译成符合项目风格的代码。不重新判断意图、不偏离 plan、不顺手做无关的事。
 
@@ -22,7 +22,7 @@ dispatch_intent: "按 plan 文件严格执行代码改动"
 
 - 用户消息含 plan 路径 → 用那个
 - 否则 → 找 `plans/` 下最新 `status: approved` 的 plan（按文件名 YYYY-MM-DD 排序）
-- 找不到 → Hard Stop，让用户指定路径或先调 `$think`
+- 找不到 → Hard Stop，让用户指定路径或先调 `/think`
 
 ## 前置检查（并行执行）
 

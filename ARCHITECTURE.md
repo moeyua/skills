@@ -252,7 +252,7 @@ dispatch_intent: "一句话意图，给路由表用"
 **mode 识别流程**：
 
 ```
-用户 $think <内容>
+用户 /think <内容>
   ↓
 think SKILL.md 加载
   ↓
@@ -272,7 +272,7 @@ Mode Picker
 
 - 默认无 mode 即是探索状态——不需要单独 brainstorm skill
 - mode 不是用户指定，是 agent 在 clarify 过程中识别
-- 知道意图 ≠ 不需要澄清（用户说 `$think 重构这块`，agent 仍可能问"重构成什么样？保留哪些 API？"）
+- 知道意图 ≠ 不需要澄清（用户说 `/think 重构这块`，agent 仍可能问"重构成什么样？保留哪些 API？"）
 - 出方案前不写任何代码 / scaffolding / pseudo-code
 - 不同 mode 的 plan 关注点不同：
   - fix 关注根因和回归测试
@@ -299,7 +299,7 @@ Mode Picker
 2. pnpm test（CI 同样的检查跑一遍）
 3. git tag v0.2.0
 4. git push --tags
-   └── 用户 npx skills add <user>/praxis 自动拉到最新
+   └── 用户重新 `npx skills add .` 或 `npx skills add git@...:praxis.git` 拉最新
 ```
 
 v1 阶段没有 codegen，版本号只在 package.json 一处。
@@ -316,6 +316,44 @@ v1 阶段没有 codegen，版本号只在 package.json 一处。
    └── 路由一致性检查（RESOLVER.md 是否列出）
 5. git commit
 ```
+
+## 安装机制
+
+praxis 通过 [vercel-labs/skills](https://github.com/vercel-labs/skills) CLI 安装到 Claude Code，**不用** Claude Code plugin marketplace、**不用** install.sh 脚本。
+
+### 命令名 = 目录名
+
+Personal/project skill 的触发命令**取目录名**，不是 frontmatter 的 `name` 字段（[Claude Code skills 文档](https://code.claude.com/docs/en/skills)）。
+
+praxis 的 `skills/think/SKILL.md` 装到 `~/.claude/skills/think/` 后，触发命令是 `/think`。即使 frontmatter 写 `name: something-else` 也不改这点。
+
+### 触发方式：auto + manual
+
+Claude Code skill 触发是双轨：
+
+- **Auto-routing**：Claude 看每个 skill 的 `description` 字段，根据当前对话语义匹配
+- **Manual invocation**：用户输 `/<name>` 直接触发
+
+两种默认都开。frontmatter 的 `disable-model-invocation` / `user-invocable` 可分别关闭。
+
+### 优先级：skill > command
+
+> "If a skill and a command share the same name, the skill takes precedence."
+
+实际影响：
+
+| 冲突                                                      | 行为                                                                                 |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `/review`（Claude Code 内置）vs praxis review skill       | praxis 接管 `/review`                                                                |
+| `/commit`（commit-commands plugin）vs praxis commit skill | plugin 有 namespace（`/commit-commands:commit`），不冲突；用户输 `/commit` 走 praxis |
+
+### 默认 symlink
+
+`npx skills add .` 默认创建 symlink 而非 copy——编辑仓库内的 SKILL.md 全局立刻生效。需要纯 copy 加 `--copy` flag。
+
+### 不在 description 里放 `/<name>` trigger phrases
+
+`/<name>` 是 manual invocation 语法，**不走** description-based auto-routing。在 description / when_to_use 里写 `/think` / `/commit` 等关键词没意义（不影响自动匹配，也不影响手动触发）。只放自然语言关键词（"想想" / "出方案" / "提交"等）。
 
 ## 关键设计决策记录
 
