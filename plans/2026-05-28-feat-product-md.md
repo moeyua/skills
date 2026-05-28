@@ -2,7 +2,7 @@
 mode: feat
 title: 立 PRODUCT.md 作为 praxis 设计哲学和边界的显式锚点
 created: 2026-05-28
-status: approved
+status: done
 ---
 
 # Feat: PRODUCT.md
