@@ -125,14 +125,15 @@ Verify: <command> → pass
 
 ## Gotchas
 
-| 情况                                                | 规则                                                     |
-| --------------------------------------------------- | -------------------------------------------------------- |
-| 拿到 plan 直接动手没前置检查                        | status / placeholder / 工作树 / 测试 framework 都要先查  |
-| TDD mode 写完测试一开始就 green                     | Hard Stop；测试没覆盖到 plan 的 scenario                 |
-| verify fail 后用 `--no-verify` / 删测试让它通过     | 永远不绕过；report failure                               |
-| 顺手修了 plan 之外的 bug                            | scope creep；可以在 report 里 note 你的发现，但不改      |
-| plan 路径错（说 src/auth.ts:42 但代码不对）默默调整 | plan 漂移；Hard Stop 让用户回 think 修 plan              |
-| 中间 step 跑测试不报告就过                          | 每个 step 的 red→green / verify 都要在 report 里 surface |
-| 加了 plan 没说的 dependency                         | Hard Stop；回 think 修 plan 或改用项目已有方案           |
-| 改了 plan 文件内容让自己更好实施                    | implement 永远不改 plan 内容（只改 `status: done`）      |
-| 项目没测试 framework 还硬走 TDD                     | 没框架就按 plan.verification 走，不要凭空造测试基础设施  |
+| 情况                                                | 规则                                                         |
+| --------------------------------------------------- | ------------------------------------------------------------ |
+| 拿到 plan 直接动手没前置检查                        | status / placeholder / 工作树 / 测试 framework 都要先查      |
+| TDD mode 写完测试一开始就 green                     | Hard Stop；测试没覆盖到 plan 的 scenario                     |
+| verify fail 后用 `--no-verify` / 删测试让它通过     | 永远不绕过；report failure                                   |
+| 顺手修了 plan 之外的 bug                            | scope creep；可以在 report 里 note 你的发现，但不改          |
+| plan 路径错（说 src/auth.ts:42 但代码不对）默默调整 | plan 漂移；Hard Stop 让用户回 think 修 plan                  |
+| 中间 step 跑测试不报告就过                          | 每个 step 的 red→green / verify 都要在 report 里 surface     |
+| 加了 plan 没说的 dependency                         | Hard Stop；回 think 修 plan 或改用项目已有方案               |
+| 改了 plan 文件内容让自己更好实施                    | implement 永远不改 plan 内容（只改 `status: done`）          |
+| 项目没测试 framework 还硬走 TDD                     | 没框架就按 plan.verification 走，不要凭空造测试基础设施      |
+| 凭印象写 API / 调用语法 / 框架特性                  | 先 grep 项目已有用法或查文档；见 `rules/anti-patterns.md` #1 |

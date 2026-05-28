@@ -115,15 +115,16 @@ Plan written to plans/YYYY-MM-DD-<slug>.md
 
 ## Gotchas
 
-| 情况                                   | 规则                                                                      |
-| -------------------------------------- | ------------------------------------------------------------------------- |
-| 一次问 3-5 个 clarify 问题轰炸用户     | 一次一题，多选优先                                                        |
-| 没 clarify 完就跳到 propose            | Phase 1 检查清单全过才进 Phase 2                                          |
-| brainstorm 阶段就强行写 plan 文件      | default mode 不写文件；只有收敛到具名 mode 才写                           |
-| Plan 里写 "TBD" / "之后再说"           | Plan red flag；回头补完整                                                 |
-| 用户批准后又改方向 "其实再想想..."     | 不要 re-litigate；明确说"你刚批了 plan，要改哪一点？"，最小修改而非重做   |
-| "这是个有趣的问题" / "你可以考虑..."   | 反 hedging；直接 take position                                            |
-| `/think 重构这块` 跳过 clarify         | 知道 mode 不等于不需要 clarify；仍问 1-2 个收敛性问题                     |
-| 价值判断（"值不值得做"）               | praxis 不做价值判断；如果用户问，明确说"这不在 praxis 范围"+ 给一句话观察 |
-| 卡在 brainstorm 出不来                 | 提议收敛："基于讨论我倾向 X mode，要走这条路吗？"                         |
-| 用 ASCII diagram 画 2 个组件的简单关系 | 只在 >3 组件交换数据时画                                                  |
+| 情况                                             | 规则                                                                           |
+| ------------------------------------------------ | ------------------------------------------------------------------------------ |
+| 一次问 3-5 个 clarify 问题轰炸用户               | 一次一题，多选优先                                                             |
+| 没 clarify 完就跳到 propose                      | Phase 1 检查清单全过才进 Phase 2                                               |
+| brainstorm 阶段就强行写 plan 文件                | default mode 不写文件；只有收敛到具名 mode 才写                                |
+| Plan 里写 "TBD" / "之后再说"                     | Plan red flag；回头补完整                                                      |
+| 用户批准后又改方向 "其实再想想..."               | 不要 re-litigate；明确说"你刚批了 plan，要改哪一点？"，最小修改而非重做        |
+| "这是个有趣的问题" / "你可以考虑..."             | 反 hedging；直接 take position                                                 |
+| `/think 重构这块` 跳过 clarify                   | 知道 mode 不等于不需要 clarify；仍问 1-2 个收敛性问题                          |
+| 价值判断（"值不值得做"）                         | praxis 不做价值判断；如果用户问，明确说"这不在 praxis 范围"+ 给一句话观察      |
+| 卡在 brainstorm 出不来                           | 提议收敛："基于讨论我倾向 X mode，要走这条路吗？"                              |
+| 用 ASCII diagram 画 2 个组件的简单关系           | 只在 >3 组件交换数据时画                                                       |
+| Plan 写"用 X 库的 Y API"，凭印象没 verify Y 存在 | 外部库 / 工具 / API 用法必须查文档或读现有代码；见 `rules/anti-patterns.md` #1 |
