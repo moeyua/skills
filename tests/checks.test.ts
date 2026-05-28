@@ -250,6 +250,16 @@ describe("checkMarkdownLinks", () => {
     ]);
     expect(() => checkMarkdownLinks(root)).not.toThrow();
   });
+
+  it("ignores links inside inline code (single backticks)", () => {
+    const root = repo([
+      {
+        name: "x",
+        body: `${DEFAULT_BODY}\n\nQuote a snippet: \`[broken](./nope.md)\` here.\n`,
+      },
+    ]);
+    expect(() => checkMarkdownLinks(root)).not.toThrow();
+  });
 });
 
 describe("checkNoRootSkill", () => {

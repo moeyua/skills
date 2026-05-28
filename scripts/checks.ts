@@ -157,9 +157,10 @@ export function checkMarkdownLinks(root: string): void {
         continue;
       }
       if (inCode) continue;
+      const scannable = line.replace(/`[^`\n]*`/g, "");
       LINK_RE.lastIndex = 0;
       let match: RegExpExecArray | null;
-      while ((match = LINK_RE.exec(line)) !== null) {
+      while ((match = LINK_RE.exec(scannable)) !== null) {
         const raw = match[1]!.trim();
         if (!raw || raw.startsWith("#") || raw.startsWith("/")) continue;
         if (URL_PREFIXES.some((p) => raw.startsWith(p)) || raw.includes("://")) continue;
