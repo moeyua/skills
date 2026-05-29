@@ -9,6 +9,8 @@ dispatch_intent: "Build clean git commits matching the project's history style"
 
 Commit turns working-tree changes into clean git history — in one pass: gather context, decide what to stage, commit, verify. Don't interrupt the user unless you hit something you can't continue past. Every rule here exists so the commit history **truly records intent**: one commit one topic, the message says why not just what, and secrets never enter the repo.
 
+Two cross-skill rules apply to all praxis work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+
 ## Outcome Contract
 
 - Outcome: clean git commits with messages matching the project's history style

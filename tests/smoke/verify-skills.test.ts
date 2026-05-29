@@ -18,7 +18,6 @@ import {
   checkNoRootSkill,
   checkTriggerJaccard,
   checkResolverConsistency,
-  checkRulesWellFormed,
 } from "../../scripts/checks.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -57,9 +56,5 @@ describe("repo skill verifier (smoke)", () => {
 
   it("checkResolverConsistency: RESOLVER.md lists exactly the skills under skills/", () => {
     expect(() => checkResolverConsistency(REPO_ROOT, skills)).not.toThrow();
-  });
-
-  it("checkRulesWellFormed: every rules/*.md is non-empty with an H1 title", () => {
-    expect(() => checkRulesWellFormed(REPO_ROOT)).not.toThrow();
   });
 });

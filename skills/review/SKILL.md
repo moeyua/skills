@@ -20,6 +20,8 @@ Unfamiliar project? Run `/explore` first — a review without knowing the projec
 
 These constraints look like they weaken review's force; in fact they make review actually useful — a report that names problems without touching them is worth far more to the author than a PR that "fixed it all along the way" (with the latter, the author never had a chance to understand what happened).
 
+Two cross-skill rules apply to all praxis work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+
 ## Outcome Contract
 
 - Outcome: a severity-graded findings report, each with file:line and a suggested direction

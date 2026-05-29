@@ -1,19 +1,19 @@
-# Anti-Patterns: 跨技能 AI 行为约束
+# Anti-Patterns
 
-> Always-on 行为守则。这些约束适用于所有 skill，不管 agent 当前在干什么。
+> Cross-skill behavior constraints that apply to all praxis work, whatever the agent is currently doing.
 >
-> 每条 anti-pattern 都应该来自真实失败，**不是预想的**。从空开始，每次遇到 agent 失误就 append 一条。
+> Every anti-pattern should come from a real failure, **not an imagined one**. Start empty; append one each time the agent slips up.
 
-| #   | Pattern                   | Wrong                                                                                      | Right                                                                                                        |
-| --- | ------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
-| 1   | 凭印象答工具 / API / 语法 | 凭训练数据印象答"Claude Code skill 没有显式触发语法"、"X 库有 Y API"——结果编造不存在的事实 | 先 fetch 文档 / 实测 / 读 reference 实现；承认"不知道，要查"比"看起来合理但错的"答案好。误导成本 >> 查证成本 |
+| #   | Pattern                                     | Wrong                                                                                                         | Right                                                                                                                                              |
+| --- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Answering about tools / APIs / syntax from memory | Answering "Claude Code skills have no explicit trigger syntax" or "library X has API Y" from a training-data impression — and inventing facts that don't exist | Fetch the docs / test it / read the reference implementation first. "I don't know, I need to check" beats a plausible-but-wrong answer. The cost of misleading far outweighs the cost of checking. |
 
-## 何时增补
+## When to add one
 
-- agent 实际犯了某种错误，且该错误**不限于单个 skill**——这才是 anti-pattern 候选
-- 如果错误只在一个 skill 中发生，写进那个 SKILL.md 的 Gotchas 表里
+- The agent actually made a mistake, and it **isn't confined to a single skill** — that's an anti-pattern candidate.
+- If the mistake only happens in one skill, put it in that SKILL.md instead.
 
-## 何时移除
+## When to remove one
 
-- 如果某条 anti-pattern 已经在 6 个月内没有触发过，重新评估它是否仍然有意义
-- 如果 agent 模型升级后某条不再是问题，移除并记录
+- If an anti-pattern hasn't triggered in 6 months, re-evaluate whether it still matters.
+- If a model upgrade makes one no longer a problem, remove it and note why.

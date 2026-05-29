@@ -13,6 +13,8 @@ Unfamiliar project? Run `/explore` first — starting without knowing the projec
 
 Test follows the project: test framework, commands, directory structure, naming, assertion style, mock conventions — all taken from what the project already uses, inventing no new conventions. If the project has no framework installed, report the state and let the user decide whether to introduce one; **never run a silent `pnpm add`**.
 
+Two cross-skill rules apply to all praxis work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+
 ## Outcome Contract
 
 - Outcome: the test suite runs / coverage is filled as requested / a failure diagnosis is clear

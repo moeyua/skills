@@ -13,6 +13,8 @@ Unfamiliar project or module? Run `/explore` first — think assumes you already
 
 Give your opinion directly; take a position. Avoid "that's a great question" / "there are many ways" / "you could consider" — hedging dodges the judgment, and the other person, handed a vague answer, just has to ask again; you both lose time. If you're unsure, say what evidence would change your judgment, so they know it's a position, not stubbornness.
 
+Two cross-skill rules apply to all praxis work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+
 ## Outcome Contract
 
 - Outcome: an approved plan (named mode) or an exploration conclusion (default mode)
@@ -89,7 +91,7 @@ Self-check before the plan is done — this prevents "looks complete but impleme
 - [ ] listed every meaningful test path (happy / errors / edges)
 - [ ] every step that changes external state has a rollback path
 - [ ] every external API key / token / third-party account is listed (don't leave it to be sorted out mid-build)
-- [ ] every dependency — MCP / external API / CLI — is verified reachable; writing "use X library's Y API" from memory is a classic `rules/anti-patterns.md` #1; check the docs or read existing code before committing it to the plan
+- [ ] every dependency — MCP / external API / CLI — is verified reachable before it goes in the plan; check the docs or read existing code rather than writing it from memory (see `references/anti-patterns.md`)
 
 **Plan red flags** (any one means the plan isn't done — go back and fix it):
 
@@ -125,6 +127,6 @@ Think's failure mode is always "should have paused, but pushed ahead". Stop and 
 
 - **Clarify hasn't met the checklist but you want to jump to propose** — Phase 1 is the convergence gate; jumping early means guessing the intent.
 - **You want to write a plan file during brainstorm** — default mode writes no plan; forcing one out pretends the intent converged.
-- **Citing an external API / library / CLI from memory** — check the docs or read existing code before it goes in the plan; see `rules/anti-patterns.md` #1.
+- **Citing an external API / library / CLI from memory** — check the docs or read existing code before it goes in the plan; see `references/anti-patterns.md`.
 - **The user asks whether it's worth doing** — praxis doesn't answer at that level; say it's out of scope and give a one-line observation, no more.
 - **Stuck in brainstorm with no exit** — propose converging instead of exploring further; exploring past a certain depth without converging is itself a stop signal.

@@ -1,27 +1,27 @@
 # Durable Context Preflight
 
-> 共享前言。每个消费 memory / preview / 历史决策的 skill 都链接到这里，再补充 skill 特定的覆盖规则。
+> A shared preamble every skill references. Consult durable context only under the conditions below, then apply any skill-specific overrides.
 
-## 何时读取 durable context
+## When to read durable context
 
-只在以下情况读取：
+Only when:
 
-- 用户提到 memory、preview、之前的决定、之前的结论
-- 用户提供 memory 路径
-- 当前项目暴露明显的本地 memory 摘要（如 `MEMORY.md` 或文档化的 memory 目录）
+- the user mentions memory, a preview, a past decision, or a past conclusion
+- the user gives a memory path
+- the current project exposes an obvious local memory summary (e.g. `MEMORY.md` or a documented memory directory)
 
-不要硬编码机器特定的 memory 根路径，不要读取 raw transcripts。
+Don't hardcode machine-specific memory root paths, and don't read raw transcripts.
 
-## 读取顺序与预算
+## Reading order and budget
 
-按以下顺序：用户提供的路径 → 当前项目范围 → 全局偏好。先列标题，再打开 1-2 个最相关的摘要。跨项目条目当作可迁移模式，不当作当前项目事实。
+In this order: the path the user gave → the current project scope → global preferences. List titles first, then open the 1-2 most relevant summaries. Treat cross-project entries as transferable patterns, not as facts about the current project.
 
-## Memory 类型映射
+## Memory type mapping
 
-- `decision` / `preference` / `principle`：当前任务的约束（规划 / 设计 / review / 调试 / 语气 / 审计期待，因 skill 而异）
-- `pattern` / `learning`：可复用的检查或假设
-- `fact`：必须先用当前状态重新验证后才能影响输出
+- `decision` / `preference` / `principle`: constraints on the current task (planning / design / review / debugging / tone / audit expectations — varies by skill)
+- `pattern` / `learning`: reusable checks or assumptions
+- `fact`: must be re-verified against the current state before it can affect output
 
-**当前代码、diff、截图、日志、测试、文档、CI、远端状态、live probe 永远 override memory**。如果它们与记忆冲突，明说冲突并以当前状态为准。
+**Current code, diffs, screenshots, logs, tests, docs, CI, remote state, and live probes always override memory.** If they conflict with a memory, say so and go with the current state.
 
-每个 skill 在引用本文件后，补充自己的 skill 特定段落（哪些 override 规则、哪些 memory 类型作为约束）。
+Each skill applies its own overrides on top of this — which override rules apply, and which memory types act as constraints.

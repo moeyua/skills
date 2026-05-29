@@ -11,6 +11,8 @@ Implement turns an approved plan into code that fits the project. The intent wor
 
 No plan yet? Run `/think` first.
 
+Two cross-skill rules apply to all praxis work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+
 ## Outcome Contract
 
 - Outcome: every implementation step in the plan is done, verification passes, and the changes match the project's style
@@ -90,7 +92,7 @@ Implement's most common failure is pushing through where it should stop. In thes
 - **Verify fails and one retry still fails** — don't silently skip it or delete the test; report the failure output and let the user decide.
 - **You want to edit the plan to make implementation easier** — implement never changes plan content, only `status: done`. To change the plan, go back to think.
 - **The project has no test framework but you want to force TDD** — follow the plan's verification instead; don't conjure test infrastructure from nothing.
-- **You're about to write an API, call syntax, or framework feature from memory** — grep the project's existing usage or check the docs first; this is `rules/anti-patterns.md` #1.
+- **You're about to write an API, call syntax, or framework feature from memory** — grep the project's existing usage or check the docs first; see `references/anti-patterns.md`.
 
 ## When done, report
 

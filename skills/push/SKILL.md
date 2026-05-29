@@ -11,6 +11,8 @@ Push pushes the current branch to origin and opens a PR on GitHub — in one pas
 
 GitHub-only: for a non-GitHub remote, finish the push, skip `gh pr create`, and let the user open the PR/MR manually.
 
+Two cross-skill rules apply to all praxis work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+
 ## Outcome Contract
 
 - Outcome: the current branch is pushed to origin; on a GitHub remote, a PR is created and its URL returned
