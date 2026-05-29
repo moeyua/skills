@@ -31,12 +31,14 @@ praxis/
 │   ├── review/SKILL.md
 │   ├── commit/SKILL.md
 │   └── push/SKILL.md
-├── rules/                            # 跨 skill 的 always-on 约束
+├── rules/                            # 跨 skill 约束（经 setup-rule.mjs 装入 agent context）
 │   ├── anti-patterns.md
-│   └── durable-context.md
-├── scripts/                          # 全 TS（库代码，被 tests/ 调用）
+│   ├── durable-context.md
+│   └── output-style.md               # 语言无关的输出风格规则
+├── scripts/                          # 库代码（被 tests/ 调用）+ setup-rule.mjs 安装脚本
 │   ├── frontmatter.ts                # 手写 parser，零运行时依赖
-│   └── checks.ts                     # 各种 check 函数
+│   ├── checks.ts                     # 各种 check 函数
+│   └── setup-rule.mjs                # 把 rules/ 装入 agent context（可执行，零依赖 Node）
 └── tests/
     ├── frontmatter.test.ts           # parser 单元测试
     ├── checks.test.ts                # check 函数单元测试
@@ -84,8 +86,9 @@ v1 因为不做 codegen，真源只是"开发者必须只编辑这里"的约定�
 ```
 skills/<name>/SKILL.md          # skill 主体，agent 触发时全文加载
 skills/think/references/*.md    # 多 mode 时的子文件，按需加载
-rules/anti-patterns.md          # 跨 skill 的 always-on 反模式
+rules/anti-patterns.md          # 跨 skill 的反模式
 rules/durable-context.md        # 跨 skill 的 memory 前置规则
+rules/output-style.md           # 语言无关的输出风格规则
 ```
 
 **SKILL.md vs references/**：
@@ -96,9 +99,9 @@ rules/durable-context.md        # 跨 skill 的 memory 前置规则
 
 **rules/ vs skills/**：
 
-- skills/ 是"用户触发"的能力
-- rules/ 是"always-on 背景行为"——agent 不管在做什么都遵守
-- 例：rules/anti-patterns.md 的"不要在 commit message 加 AI 署名"——适用所有 skill
+- skills/ 是"用户触发"的能力——Claude Code 扫 skills/，触发时加载对应 SKILL.md
+- rules/ 是"装上之后 always-on 的背景行为"——但 **rules/ 不会被自动加载**。Claude Code 只自动读 `~/.claude/CLAUDE.md`，不读仓库里的 rules/；`npx skills add` 也只装 skills/。要让一条 rule 真正生效，跑 `scripts/setup-rule.mjs <rule> <agent>`：Claude Code 把它拷到 `~/.claude/rules/` 并在 CLAUDE.md 加 `@import`，Codex 把内容内联进 `~/.codex/AGENTS.md`。装上后它对所有 skill 生效。
+- 例：rules/output-style.md 的"按用户语言、克制混写、逻辑摊平"——装上后适用所有 skill 的输出
 
 ### 3. 索引/路由
 
@@ -130,13 +133,13 @@ tests/smoke/verify-skills.test.ts  # 整库验证 smoke（CI 入口）
 
 **为什么不要独立 CLI 入口**：
 
-`scripts/` 下只有库代码，没有可执行 CLI。验证由 `tests/smoke/verify-skills.test.ts` 触发——一个 vitest 测试，跑当前 repo 的 skill 文件验证整体一致。这样：
+`scripts/` 下的验证逻辑只有库代码，没有可执行 CLI（`setup-rule.mjs` 是独立的安装脚本，不属于验证管线）。验证由 `tests/smoke/verify-skills.test.ts` 触发——一个 vitest 测试，跑当前 repo 的 skill 文件验证整体一致。这样：
 
 - 单一入口（`vp test run` 一次跑完单元测试 + 整库验证）
 - 单元测试和整库验证用同一份逻辑（`scripts/checks.ts`），没有 CLI 与 vitest 之间的同步成本
 - 加新 check 时只在 `scripts/checks.ts` 加函数 + 在 smoke 里加 `it()`，不需要改 CLI
 
-**v1 必含的检查**（精简自 Waza 13 项的 8 项）：
+**v1 必含的检查**（精简自 Waza 13 项，现 9 项）：
 
 1. frontmatter 解析与字段完整性
 2. description 规范（"Use when" + "Not for"、长度 40-500）
@@ -146,6 +149,7 @@ tests/smoke/verify-skills.test.ts  # 整库验证 smoke（CI 入口）
 6. 触发词 Jaccard < 0.5（防止 skill 触发词撞车）
 7. portable surface（无个人路径 / 无 AI 署名 / 无私有 context）
 8. 路由一致性（RESOLVER.md 列出所有 skill）
+9. rules/*.md well-formed（非空 + 有 H1 标题；`setup-rule.mjs` 的安装源）
 
 **v2 可选**：marketplace 锁步、表格 pipe 转义、表格列对齐等。
 
@@ -408,7 +412,7 @@ Claude Code plugin marketplace 是另一条独立的安装路径，需要维护 
 
 合并到 vitest 后：
 
-- `scripts/` 下只有库代码，没有可执行入口
+- `scripts/` 下的验证逻辑只有库代码，没有可执行入口（`setup-rule.mjs` 例外，是安装脚本，不是验证入口）
 - 所有验证通过 `tests/smoke/verify-skills.test.ts` 触发，跟单元测试同管线
 - `vp test run` 一个命令搞定全部，`tsx` 依赖可以移除
 
