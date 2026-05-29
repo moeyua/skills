@@ -1,137 +1,137 @@
 ---
 name: explore
-description: '理解项目或不熟悉的模块，为后续 think / implement / review 等工作建立可靠 context。必读关键文档（README / ARCHITECTURE / PRODUCT / DESIGN / specs / docs / agent 指南等）并扫项目结构。Use when 用户进入新仓库、面对不熟悉的模块，或说"先看看这个项目""整体了解一下"。Not for 调试错误（用 think fix mode）、出方案（用 think）、纯回答 API 用法（直接搜代码即可）。'
-when_to_use: "explore, 看项目, 项目结构, 入口, 怎么跑, 不熟悉, 先看看, 整体了解, 模块"
-dispatch_intent: "为后续工作建立项目 context；必读关键文档并扫项目结构"
+description: 'Build a working, fact-level understanding of a project or unfamiliar module so downstream work (think / implement / review) starts from reliable context — read the key docs (README / ARCHITECTURE / PRODUCT / DESIGN / specs / docs) and map the structure. Use when entering a new repo, facing an unfamiliar module, or the user says "look at this project" / "先看看" / "整体了解一下". Not for debugging (use think fix mode), proposing a plan (use think), or a plain API-usage question (just grep the code).'
+when_to_use: "explore, understand, codebase, project structure, entry point, how to run, 看项目, 项目结构, 入口, 怎么跑, 整体了解, 不熟悉的模块"
+dispatch_intent: "Build project context for downstream work; read key docs and map the structure"
 ---
 
 # Explore
 
-explore 不是终点——它是其他 skill 的前置，为 think / implement / test / review 建立可工作的事实级理解。所有约束的根目的是让下游 skill 拿到的 context **可信**：基于真实读到的内容、基于代码当下状态，不基于猜测和过时假设。
+Explore isn't an end in itself — it's the front end for other skills, building a working, fact-level understanding for think / implement / test / review. Every rule here exists to make the context downstream skills inherit **trustworthy**: grounded in what was actually read and in the code's current state, not in guesses or stale assumptions.
 
-explore 只读不动：
+Explore reads, never writes:
 
-- 不修改任何文件——纯只读
-- 不验证"文档说的跟代码实际是否一致"——那是未来 health skill 的工作
-- 不猜测——说"未读到 / 不存在"比编造"应该是 X 吧"好
+- Modify no file — strictly read-only.
+- Don't check whether the docs match the code — that's a future health skill's job.
+- Don't guess — "didn't find it / doesn't exist" beats inventing "it's probably X".
 
-引用文档时**必须标注 source**：`per README` / `per ARCHITECTURE` / `docs 声称`——让下游 skill 知道这是"文档说的"而不是"代码事实"。两者很可能不同步，下游处理冲突时需要这个 attribution。
+When you cite a doc, **mark the source**: `per README` / `per ARCHITECTURE` / `the docs claim`. This tells downstream skills that something is "what the docs say", not "what the code does". The two are often out of sync, and downstream needs the attribution to resolve the conflict.
 
 ## Outcome Contract
 
-- Outcome: agent 对项目有可工作的事实级理解，关键文档与项目结构被显式记录在报告里，后续 skill 可以直接基于此工作
-- Done when: Project Identity / Structure / Docs Inventory 三个章节都填好；用户指定范围时 Scoped Deep-dive 章节也填好；Where to Start 给出 2-3 条切入建议
-- Evidence: 真实读取的文档全文 + `pwd` / `git ls-files` / `Read` / `Grep` 等命令的输出
-- Output: 结构化 Explore Report（见输出模板）
+- Outcome: a working, fact-level understanding of the project, with the key docs and structure recorded explicitly in a report that downstream skills can build on
+- Done when: the Project Identity / Structure / Docs Inventory sections are filled; the Scoped Deep-dive section too when the user named a scope; Where to Start gives 2-3 entry suggestions
+- Evidence: the full text of docs actually read + the output of `pwd` / `git ls-files` / `Read` / `Grep` and similar
+- Output: a structured Explore Report (see the template)
 
-## Phase 划分
+## Phases
 
-每次 explore 调用都**从 Overview Phase 开始**。用户指定范围（"看一下 auth 模块" / `/explore <某模块>`）时，Overview 完成后继续 Scoped Deep-dive Phase。**任何情况下都先做完 Overview 再深入**——直接跳 deep-dive 会缺骨架，下游 skill 看到的 context 残缺。
+Every explore run **starts with the Overview Phase**. When the user named a scope ("look at the auth module" / `/explore <module>`), continue into the Scoped Deep-dive Phase after Overview. **Always finish Overview before going deep** — jumping straight to a deep-dive leaves the skeleton missing, so downstream sees partial context.
 
 ## Overview Phase
 
-### Step 1: 路径确认与项目身份
+### Step 1: Confirm the path and project identity
 
-- `pwd` 或 `git rev-parse --show-toplevel` 确认工作目录
-- 读 `README*`，拿到项目名 + 一句话定位
-- 读项目清单文件确定主语言 / 框架（按生态选）：
+- `pwd` or `git rev-parse --show-toplevel` to confirm the working directory.
+- Read `README*` for the project name + a one-line positioning.
+- Read the manifest file to identify the main language / framework (pick by ecosystem):
   - JS/TS: `package.json`
   - Rust: `Cargo.toml`
   - Python: `pyproject.toml` / `requirements.txt`
   - Go: `go.mod`
   - Java/Kotlin: `pom.xml` / `build.gradle`
   - Ruby: `Gemfile`
-  - 其他生态按惯例查找
-- 记录运行 / 测试 / 构建命令的出处（`package.json` scripts、`Makefile`、`justfile`、README 章节等）
+  - other ecosystems: find by convention
+- Record where the run / test / build commands come from (`package.json` scripts, `Makefile`, `justfile`, a README section, etc.).
 
-### Step 2: 关键文档清单
+### Step 2: Inventory the key docs
 
-扫描根目录与常见位置，**对存在的文档读全文**——只看标题等于猜内容，下游 skill 会因此用错。
+Scan the root and the usual locations, and **read in full every doc that exists** — reading only titles is guessing at the contents, and downstream skills will act on the wrong thing.
 
-> **v1 起步清单**（会随 document skill 的发展调整）：
+> **v1 starter list** (will shift as the document skill evolves):
 >
 > - `README*`
 > - `ARCHITECTURE*`
 > - `PRODUCT*`
 > - `DESIGN*`
 > - `CLAUDE.md` / `AGENTS.md`
-> - `specs/` 目录下所有 `.md`
-> - `docs/` 目录下所有 `.md`
-> - `.cursorrules` / `.windsurfrules` / 其他 IDE 规则
-> - 根目录其他 `.md` 文件
+> - every `.md` under `specs/`
+> - every `.md` under `docs/`
+> - `.cursorrules` / `.windsurfrules` / other IDE rules
+> - other `.md` files at the root
 
-每份文档读完后记录：文档路径 + 一句话摘要（基于实际读到的内容）。
+For each doc you read, record: the path + a one-line summary (based on what you actually read).
 
-### Step 3: 项目结构
+### Step 3: Project structure
 
-顶层目录职责（每个目录一行简述）+ 关键模块（基于目录大小、文档引用、入口文件依赖关系判断）。
+Top-level directory responsibilities (one line each) + key modules (judged from directory size, doc references, and entry-file dependencies).
 
-### Step 4: 输出 Overview 报告
+### Step 4: Emit the Overview report
 
-按下方"输出模板"组织。
+Organize it per the template below.
 
 ## Scoped Deep-dive Phase
 
-**前提**：Overview Phase 已完成。
+**Precondition**: the Overview Phase is done.
 
-针对用户指定的范围（模块名 / 目录 / 文件）：
+For the scope the user named (module / directory / file):
 
-- 范围内的入口与对外接口（带 `file:line` 引用）
-- 关键数据流 / 调用链（grep / read 跟踪）
-- 该范围相关的文档位置
-- 后续工作的切入点建议
+- entry points and the public interface in scope (with `file:line` references)
+- key data flows / call chains (traced via grep / read)
+- where the docs relevant to this scope live
+- entry-point suggestions for the follow-up work
 
-## 预算意识
+## Budget awareness
 
-explore 容易陷入"读越多越好"——读 100 个文件浪费 token 还得不到结构感。**先扫目录 + 列文档清单，再决定深读哪些**；同一个文件不要反复读。
+Explore slips easily into "the more I read the better" — reading 100 files burns tokens and still yields no sense of structure. **Scan the directories and list the docs first, then decide what to read deeply**; don't re-read the same file.
 
-## 输出模板
+## Report template
 
 ```markdown
 # Explore Report: <project-name>
 
 ## Project Identity
 
-- 项目名 / 定位 (per README:Lx)
-- 主语言 / 框架 / 关键栈
-- 运行 / 测试 / 构建命令 (per <source>:Lx)
+- name / positioning (per README:Lx)
+- main language / framework / key stack
+- run / test / build commands (per <source>:Lx)
 
 ## Structure
 
-- 顶层目录职责（一行一个，带证据 `file:line` 或 `dir/`）
-- 关键模块
+- top-level directory responsibilities (one per line, with evidence `file:line` or `dir/`)
+- key modules
 
 ## Docs Inventory
 
-- README: 一句话摘要 (path)
-- ARCHITECTURE: 一句话摘要 (path) — or `N/A`
-- PRODUCT: 一句话摘要 (path) — or `N/A`
-- DESIGN: 一句话摘要 (path) — or `N/A`
-- CLAUDE.md / AGENTS.md: 一句话摘要 (path) — or `N/A`
-- specs/: N docs, 关键主题 — or `N/A`
-- docs/: N docs, 关键主题 — or `N/A`
-- 其他: ...
+- README: one-line summary (path)
+- ARCHITECTURE: one-line summary (path) — or `N/A`
+- PRODUCT: one-line summary (path) — or `N/A`
+- DESIGN: one-line summary (path) — or `N/A`
+- CLAUDE.md / AGENTS.md: one-line summary (path) — or `N/A`
+- specs/: N docs, key topics — or `N/A`
+- docs/: N docs, key topics — or `N/A`
+- other: ...
 
 ## Scoped Deep-dive: <module>
 
-> 仅当用户指定范围时输出本节
+> only when the user named a scope
 
-- 入口与对外接口（`file:line`）
-- 关键数据流 / 调用链
-- 相关文档位置
-- 后续工作切入点
+- entry points and public interface (`file:line`)
+- key data flows / call chains
+- where the relevant docs live
+- follow-up entry points
 
 ## Where to Start
 
-基于以上，后续工作的入口建议（2-3 条，每条带 `file:line`）。
+Based on the above, 2-3 entry suggestions for the follow-up work (each with `file:line`).
 ```
 
-## 什么情况下停下来
+## When to stop
 
-explore 跟 review 一样——失败模式是"动手 / 越界"。下面这些情况停下：
+Like review, explore's failure mode is "acting / overstepping". Stop in these cases:
 
-- **没读关键文档就开始猜架构**——Step 2 是硬要求；先按清单扫描存在性，对存在的文档读全文。
-- **用户问"看一下 auth"想直接 deep-dive 跳过 Overview**——任何情况都先 Overview，否则下游缺骨架。
-- **想做"文档 vs 代码"漂移检测**——不是 explore 的工作（留给未来的 health skill）；发现疑似漂移就记录到报告里让下游判断，不动手核对。
-- **想编造"应该是 X 吧"**——说"未读到 / 不存在 / 该项目没有 X"比编造好；猜测污染下游 skill 的判断。
-- **想修改文件**——explore 纯只读；发现的问题写进报告，要改回对应 skill（`/think` / `/implement`）。
+- **Guessing at the architecture before reading the key docs** — Step 2 is mandatory; scan for existence first, then read in full every doc that exists.
+- **The user says "look at auth" and you want to skip Overview straight to the deep-dive** — always do Overview first, or downstream loses the skeleton.
+- **You want to run doc-vs-code drift detection** — not explore's job (leave it to a future health skill); when you suspect drift, record it in the report for downstream to judge, don't verify it yourself.
+- **You want to invent "it's probably X"** — "didn't find it / doesn't exist / this project has no X" beats inventing; a guess pollutes downstream skills' judgment.
+- **You want to modify a file** — explore is strictly read-only; write what you find into the report, and route fixes back to the right skill (`/think` / `/implement`).
