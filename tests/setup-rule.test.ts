@@ -1,12 +1,12 @@
 /**
- * Unit tests for scripts/setup-rule.mjs.
+ * Unit tests for scripts/setup-rule.ts.
  *
  * Only the pure upsertBlock is tested here — the file-writing main() is guarded
  * by a direct-run check, so importing the module has no side effects.
  */
 
 import { describe, it, expect } from "vite-plus/test";
-import { upsertBlock } from "../scripts/setup-rule.mjs";
+import { upsertBlock } from "../scripts/setup-rule.ts";
 
 describe("upsertBlock", () => {
   it("adds a marked block to empty text", () => {

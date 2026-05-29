@@ -254,13 +254,13 @@ export function findRuleFiles(root: string): string[] {
     .sort();
 }
 
-// rules/ files are loaded into an agent via scripts/setup-rule.mjs, which installs
+// rules/ files are loaded into an agent via scripts/setup-rule.ts, which installs
 // any rules/*.md by name. Guard that the layer it draws from stays well-formed:
 // each rule non-empty with an H1, so an installed rule is never blank or untitled.
 export function checkRulesWellFormed(root: string): void {
   const ruleFiles = findRuleFiles(root);
   if (ruleFiles.length === 0) {
-    throw new Error("NO RULES FOUND: expected rules/*.md (setup-rule.mjs installs from here)");
+    throw new Error("NO RULES FOUND: expected rules/*.md (setup-rule.ts installs from here)");
   }
   for (const path of ruleFiles) {
     const text = readFileSync(path, "utf-8").trim();

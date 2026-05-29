@@ -2,9 +2,13 @@
 /**
  * Install a praxis rule into an agent's always-on context.
  *
- * Usage: node scripts/setup-rule.mjs <rule> <agent>
+ * Usage: node scripts/setup-rule.ts <rule> <agent>
  *   <rule>  — a file rules/<rule>.md (e.g. output-style, anti-patterns, durable-context)
  *   <agent> — claude-code | codex
+ *
+ * Running .ts directly needs Node >= 23.6 (native type stripping) or >= 22.6 with
+ * --experimental-strip-types. Installing skills (npx skills add) and the test suite
+ * (vitest transpiles) are unaffected by Node version.
  *
  * Why this exists: rules/ files are never loaded on their own. Claude Code only
  * auto-loads ~/.claude/CLAUDE.md globally, so for claude-code we copy the rule to
@@ -27,14 +31,14 @@ const RULES_DIR = join(REPO_ROOT, "rules");
 
 const AGENTS = ["claude-code", "codex"];
 
-export function availableRules(rulesDir = RULES_DIR) {
+export function availableRules(rulesDir: string = RULES_DIR): string[] {
   return readdirSync(rulesDir)
     .filter((f) => f.endsWith(".md"))
     .map((f) => basename(f, ".md"))
     .sort();
 }
 
-function escapeRegExp(s) {
+function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
@@ -42,7 +46,7 @@ function escapeRegExp(s) {
  * Insert or replace a marker-delimited block. Pure and testable.
  * Re-running with the same marker replaces the existing block instead of duplicating.
  */
-export function upsertBlock(text, marker, body) {
+export function upsertBlock(text: string, marker: string, body: string): string {
   const start = `<!-- praxis:${marker} start -->`;
   const end = `<!-- praxis:${marker} end -->`;
   const block = `${start}\n${body}\n${end}`;
@@ -54,15 +58,15 @@ export function upsertBlock(text, marker, body) {
   return (base ? base + "\n\n" : "") + block + "\n";
 }
 
-function fail(msg) {
+function fail(msg: string): never {
   console.error(`setup-rule: ${msg}`);
-  console.error("usage: node scripts/setup-rule.mjs <rule> <agent>");
+  console.error("usage: node scripts/setup-rule.ts <rule> <agent>");
   console.error(`  rules:  ${availableRules().join(", ")}`);
   console.error(`  agents: ${AGENTS.join(", ")}`);
   process.exit(1);
 }
 
-function main(argv) {
+function main(argv: string[]): void {
   const rule = argv[0];
   const agent = argv[1];
 
@@ -98,9 +102,11 @@ function main(argv) {
   }
 }
 
-function isDirectRun() {
+function isDirectRun(): boolean {
+  const invoked = process.argv[1];
+  if (!invoked) return false;
   try {
-    return Boolean(process.argv[1]) && realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
+    return realpathSync(invoked) === realpathSync(fileURLToPath(import.meta.url));
   } catch {
     return false;
   }
