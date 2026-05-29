@@ -2,7 +2,7 @@
 mode: feat
 title: SKILL.md 转干净英文 + 双语触发词 + 可加载的输出风格规则
 created: 2026-05-29
-status: approved
+status: done
 ---
 
 # Clean Language System
