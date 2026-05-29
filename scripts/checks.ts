@@ -242,3 +242,34 @@ export function checkResolverConsistency(
     );
   }
 }
+
+// ---------- rules well-formed ----------
+
+export function findRuleFiles(root: string): string[] {
+  const rulesDir = join(root, "rules");
+  if (!existsSync(rulesDir)) return [];
+  return readdirSync(rulesDir)
+    .filter((entry) => entry.endsWith(".md"))
+    .map((entry) => join(rulesDir, entry))
+    .sort();
+}
+
+// rules/ files are loaded into an agent via scripts/setup-rule.mjs, which installs
+// any rules/*.md by name. Guard that the layer it draws from stays well-formed:
+// each rule non-empty with an H1, so an installed rule is never blank or untitled.
+export function checkRulesWellFormed(root: string): void {
+  const ruleFiles = findRuleFiles(root);
+  if (ruleFiles.length === 0) {
+    throw new Error("NO RULES FOUND: expected rules/*.md (setup-rule.mjs installs from here)");
+  }
+  for (const path of ruleFiles) {
+    const text = readFileSync(path, "utf-8").trim();
+    if (text.length === 0) {
+      throw new Error(`EMPTY RULE: ${path}`);
+    }
+    const firstLine = text.split("\n", 1)[0] ?? "";
+    if (!/^#\s+\S/.test(firstLine)) {
+      throw new Error(`RULE MISSING H1: ${path}; first line must be a '# Title' heading`);
+    }
+  }
+}

@@ -20,6 +20,7 @@ import {
   checkNoRootSkill,
   checkTriggerJaccard,
   checkResolverConsistency,
+  checkRulesWellFormed,
 } from "../scripts/checks.ts";
 
 // ---------- fixture helper ----------
@@ -315,5 +316,26 @@ describe("checkResolverConsistency", () => {
     });
     const map = checkSkillFiles(root);
     expect(() => checkResolverConsistency(root, map)).toThrow(/RESOLVER STALE.*ghost/);
+  });
+});
+
+describe("checkRulesWellFormed", () => {
+  it("passes when rules/*.md are non-empty with an H1", () => {
+    const root = repo([{ name: "x" }]);
+    mkdirSync(join(root, "rules"));
+    writeFileSync(join(root, "rules", "foo.md"), "# Foo\n\nbody\n");
+    expect(() => checkRulesWellFormed(root)).not.toThrow();
+  });
+
+  it("throws when there is no rules dir", () => {
+    const root = repo([{ name: "x" }]);
+    expect(() => checkRulesWellFormed(root)).toThrow(/NO RULES FOUND/);
+  });
+
+  it("fails when a rule has no H1 first line", () => {
+    const root = repo([{ name: "x" }]);
+    mkdirSync(join(root, "rules"));
+    writeFileSync(join(root, "rules", "bad.md"), "no heading here\n");
+    expect(() => checkRulesWellFormed(root)).toThrow(/MISSING H1/);
   });
 });
