@@ -1,55 +1,55 @@
 # think — `perf` mode
 
-触发：慢、卡、性能、"优化加载"、"首屏太久"、"内存太多"、"接口太慢"。
+Triggers: slow, laggy, performance, "optimize loading", "first paint takes too long", "uses too much memory", "the endpoint is too slow".
 
-`perf` 的核心是**先 measure 再 optimize**。没有 baseline 不开始；没有测量方式不结束。
+The core of `perf` is **measure before optimize**. No baseline, no start; no way to measure, no finish.
 
-## Clarify 重点（perf 特有）
+## Clarify focus (perf-specific)
 
-- 性能指标：要优化什么？（latency / throughput / memory / bundle size / startup time / 别的）
-- Baseline：当前数字是多少？怎么测的？
-- 目标：要达到多少？为什么这个数字（用户体验 / SLA / 业务需求）？
-- 瓶颈：知道在哪卡吗？还是需要先 profile？
-- 接受的代价：可读性变差 / 引入复杂度 / 增加内存换 CPU——能接受哪些？
+- Performance metric: what are we optimizing? (latency / throughput / memory / bundle size / startup time / something else)
+- Baseline: what's the current number? how was it measured?
+- Target: what number do we need? why that number (user experience / SLA / business need)?
+- Bottleneck: do you know where it's stuck? or do you need to profile first?
+- Acceptable cost: worse readability / added complexity / more memory to trade for CPU — which are acceptable?
 
-## Plan 必含字段（除通用骨架外）
+## Required plan fields (beyond the common skeleton)
 
 ### `## Baseline`
 
-实际跑过的测量，含：
+A measurement actually taken, including:
 
-- **测量命令 / 工具**：`hyperfine ./run.sh` / Chrome DevTools Performance / `pprof -http` / 等
-- **数字**：具体到单位（如 `首屏 2.3s` / `内存 1.2GB` / `bundle 8.4MB`），最好有分布（p50 / p95 / p99）而不只均值
-- **环境**：硬件 / 网络 / 数据集大小
+- **Measurement command / tool**: `hyperfine ./run.sh` / Chrome DevTools Performance / `pprof -http` / etc.
+- **Numbers**: with units (e.g. `first paint 2.3s` / `memory 1.2GB` / `bundle 8.4MB`), ideally a distribution (p50 / p95 / p99), not just the mean.
+- **Environment**: hardware / network / dataset size.
 
-如果还没测量 → plan 第一步必须是"先 measure"，否则没 baseline 不能 commit 到 plan。
+If you haven't measured yet → the plan's first step must be "measure first", otherwise there's no baseline to commit the plan against.
 
 ### `## Target`
 
-具体目标数字 + 为什么是这个数字：
+A specific target number + why it's that number:
 
-- `首屏 < 1s`（用户感知阈值）
-- `p99 latency < 200ms`（SLA 要求）
-- `bundle < 5MB`（移动网络可接受）
+- `first paint < 1s` (perceptual threshold)
+- `p99 latency < 200ms` (SLA requirement)
+- `bundle < 5MB` (acceptable on mobile networks)
 
-避免"快一点就行" / "尽量优化"——必须可验证。
+Avoid "just make it faster" / "optimize as much as possible" — it must be verifiable.
 
 ### `## Measurement`
 
-实施后**用什么命令 / 数字证明目标达成**：
+What command / number proves the target was met after the build:
 
-- 同 baseline 用的工具 / 命令，跑同样负载
-- 期望数字：`新 baseline 应满足 <target>`
-- 回归保护：把测量加入 CI / benchmark suite，防止以后退化
+- the same tool / command as the baseline, run under the same load
+- expected number: `the new baseline should meet <target>`
+- regression guard: add the measurement to CI / a benchmark suite to prevent future regressions.
 
-## 反模式
+## Anti-patterns
 
-- 没 baseline 就开始优化——"凭直觉"的优化经常是负优化
-- 优化代码可读性下降但没换来可证明的性能提升——撤销
-- 用"应该会快"猜测，不测——必须实测
-- 优化非瓶颈——profile 没指向的地方不动
-- 用合成 micro-benchmark 数字代替实际场景测量
-- 一次性优化 N 个点，无法判断哪个起作用——一次一个变化，每次重测
-- Target 写成"快一点 / 流畅一点"——不可验证
-- 优化引入新功能——这是 feat，不是 perf
-- 性能优化跟着改外部行为——这是 perf + refactor 混杂，要拆开
+- Optimizing without a baseline — "gut feel" optimizations are often negative optimizations.
+- Readability dropped but no provable performance gain to show for it — revert.
+- Guessing "it should be faster" without measuring — you must measure.
+- Optimizing a non-bottleneck — don't touch what the profile didn't point to.
+- Substituting a synthetic micro-benchmark number for a real-scenario measurement.
+- Optimizing N points at once with no way to tell which one worked — one change at a time, re-measure each time.
+- Target written as "a bit faster / smoother" — not verifiable.
+- The optimization introduces a new feature — that's feat, not perf.
+- The performance work also changes external behavior — that's perf + refactor mixed; split them.

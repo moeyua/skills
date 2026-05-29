@@ -1,130 +1,130 @@
 ---
 name: think
-description: '把模糊想法澄清成可执行的 plan。多 mode：default（探索/brainstorm）/ fix / feat / refactor / perf。具名 mode 出 plan 文件到 plans/。Use when 用户说 "想想" / "出方案" / "怎么做" / 任何"需要先想清楚"的场景。Not for 已经有 plan 要落代码（用 implement）、价值判断"值不值得做"、纯回答 API 用法。'
-when_to_use: "think, 想想, 头脑风暴, 出方案, 设计, 怎么做, 该不该, 值不值得"
-dispatch_intent: "意图澄清 + 多 mode 方案制定，具名 mode 写 plan 文件"
+description: 'Clarify a fuzzy idea into an executable plan. Modes: default (explore / brainstorm) / fix / feat / refactor / perf; named modes write a plan file to plans/. Use when the user says "think it through" / "how should we do this" / "出方案" / "想想", or anything that needs thinking through before coding. Not for executing an existing plan (use implement), value judgments ("is this worth doing"), or a plain API-usage question.'
+when_to_use: "think, plan, design, brainstorm, approach, 想想, 出方案, 设计, 怎么做, 头脑风暴"
+dispatch_intent: "Clarify intent and produce a plan; named modes write a plan file"
 ---
 
 # Think
 
-think 是意图判断的舞台——把模糊想法澄清成清晰意图，再翻译成可执行的 plan。它不写代码、不动 scaffolding、不留 placeholder。所有约束的根目的都是让 plan 被批准时已经经得起 implement 严格执行，不会回头才发现"原来这件事还没想清楚"。
+Think is the stage for judging intent — clarify a fuzzy idea into clear intent, then translate that into an executable plan. It writes no code, touches no scaffolding, leaves no placeholders. Every rule here exists so that by the time a plan is approved, it already holds up to strict execution in implement — no discovering mid-build that "this part was never actually thought through".
 
-陌生项目或不熟悉的模块先调 `/explore`——think 假设你对项目已经有基本理解，没基础硬开容易 hallucinate。
+Unfamiliar project or module? Run `/explore` first — think assumes you already understand the project; forcing it without that base invites hallucination.
 
-直接给意见，take a position。避免 "这是个好问题" / "有很多种方式" / "你可以考虑"——hedging 是逃避判断，对方拿到模糊回应只能再问一遍，时间双输。如果不确定，说清楚什么 evidence 会改变你的判断，让对方知道这是 take position 而不是固执。
+Give your opinion directly; take a position. Avoid "that's a great question" / "there are many ways" / "you could consider" — hedging dodges the judgment, and the other person, handed a vague answer, just has to ask again; you both lose time. If you're unsure, say what evidence would change your judgment, so they know it's a position, not stubbornness.
 
 ## Outcome Contract
 
-- Outcome: 一个 approved 的 plan（具名 mode）或一份探索结论（default mode）
-- Done when: 具名 mode → plan 文件写到 `plans/`，每一步可执行不需要再决策；default mode → 探索方向和下一步明确
-- Evidence: `git status` / 项目文件读取 / 用户回答的 clarify questions
-- Output: 具名 mode → plan 文件路径 + 摘要 + after-approval 提示；default → 对话内的结论摘要
+- Outcome: an approved plan (named mode) or an exploration conclusion (default mode)
+- Done when: named mode → a plan file written to `plans/`, every step executable without further decisions; default mode → the direction and next step are clear
+- Evidence: `git status` / project files read / the user's answers to clarify questions
+- Output: named mode → plan file path + summary + after-approval prompt; default → a conclusion summary in the conversation
 
 ## Phase 1: Clarify
 
-进 skill 第一步永远是 Clarify。**一次只问一个问题**——多选优先（"A 还是 B？"），开放式备用。一次轰炸 3-5 个问题让对方负担过重，反而拿不到清晰回答。
+The first move on entering the skill is always Clarify. **Ask one question at a time** — multiple-choice first ("A or B?"), open-ended as backup. Firing 3-5 questions at once overloads the other person and gets you vaguer answers, not clearer ones.
 
-判断够不够 clarify 的标准（满足才进 Phase 2）：
+The bar for "clarified enough" (meet it before Phase 2):
 
-- 用户想达成的目标具体到一句话能描述
-- 知道是 fix / feat / refactor / perf / 还是 default 探索
-- 关键约束已知（接口边界 / 行为保留要求 / baseline 数字 / 不能动的地方）
-- 没有阻塞性歧义（"两种合理解读 cost 差别巨大"必须先问清）
+- the user's goal fits in one sentence
+- you know whether it's fix / feat / refactor / perf / or default exploration
+- the key constraints are known (interface boundary / behavior to preserve / baseline numbers / what can't be touched)
+- no blocking ambiguity (two reasonable readings with a big cost difference must be resolved first)
 
-**知道意图 ≠ 不需要 clarify**。即使用户说 `/think 重构这块`，仍可能要问"保留哪些 API 行为？接受多少风险？跑哪些回归测试？"——mode 清楚不等于约束清楚。
+**Knowing the intent ≠ not needing to clarify.** Even when the user says `/think refactor this`, you may still need to ask "which API behavior stays? how much risk is acceptable? which regression tests run?" — a clear mode doesn't mean clear constraints.
 
-如果用户说"你看着办"或"whatever you think is best"，先给推荐 + 一句话理由再让对方确认或反对，而不是默默替对方做决定——默默替对方决定剥夺了对方反对的机会。
+If the user says "you decide" or "whatever you think is best", give a recommendation + a one-line reason and let them confirm or object, rather than silently deciding for them — silently deciding robs them of the chance to push back.
 
 ## Phase 2: Mode Picker
 
-基于 Clarify 结果定 mode：
+Set the mode from the Clarify result:
 
-| 用户线索                                      | Mode       | Plan 文件 |
-| --------------------------------------------- | ---------- | --------- |
-| 想法模糊 / 探索性 / "我想做..." / "该不该..." | (default)  | 不写      |
-| 报错 / 异常 / 回归 / "为什么不工作"           | `fix`      | 写        |
-| 新功能 / 新能力                               | `feat`     | 写        |
-| 整理结构 / 不改外部行为                       | `refactor` | 写        |
-| 性能 / 慢 / 卡顿                              | `perf`     | 写        |
+| user's cue                                          | mode       | plan file |
+| --------------------------------------------------- | ---------- | --------- |
+| fuzzy idea / exploratory / "I want to..." / "should I..." | (default)  | none      |
+| error / exception / regression / "why doesn't it work" | `fix`      | yes       |
+| new feature / new capability                        | `feat`     | yes       |
+| restructure / no external behavior change           | `refactor` | yes       |
+| performance / slow / laggy                          | `perf`     | yes       |
 
-含糊时（"我想优化这块代码"——refactor 还是 perf？）多问一句：是为了**结构可读**（refactor）还是**数字变好**（perf）。
+When it's ambiguous ("I want to optimize this code" — refactor or perf?), ask one more: is it for **readable structure** (refactor) or **better numbers** (perf)?
 
-进入具名 mode 后加载对应 reference：
+On entering a named mode, load the matching reference:
 
 - [references/mode-fix.md](references/mode-fix.md)
 - [references/mode-feat.md](references/mode-feat.md)
 - [references/mode-refactor.md](references/mode-refactor.md)
 - [references/mode-perf.md](references/mode-perf.md)
 
-Plan 文件结构见 [references/plan-template.md](references/plan-template.md)。
+Plan file structure: see [references/plan-template.md](references/plan-template.md).
 
-## Default Mode（brainstorm）
+## Default Mode (brainstorm)
 
-意图未收敛——纯探索对话。允许多轮回合，**不写 plan 文件**——写 plan 等于假装收敛了；意图没定型时落地的 plan 一定 churn。
+Intent hasn't converged — pure exploratory conversation. Multiple rounds are fine, and you **write no plan file** — writing a plan pretends convergence happened; a plan landed before the intent sets will churn.
 
-输出形态：方向草案 / 选项对比 / 待澄清问题清单。
+Output shapes: draft directions / option comparisons / a list of open questions.
 
-什么时候收敛进具名 mode：用户的目标变清晰（"OK 我决定做 X"）→ 切到对应 mode → Phase 3。卡在 brainstorm 出不来时，主动提议收敛："基于讨论我倾向 X mode，要走这条路吗？"——一直探索而不收敛也是一种逃避。
+When to converge into a named mode: the user's goal sharpens ("OK, I'll do X") → switch to the matching mode → Phase 3. When stuck in brainstorm with no exit, propose converging yourself: "Based on this I lean toward X mode — want to go that way?" — exploring forever without converging is also a form of dodging.
 
-**价值判断不在 think 范围**。如果用户问"这件事值不值得做"/"该不该做"，明确说这不是 praxis 处理的——praxis 只决定怎么做，不决定该不该做。可以给一句话观察（"这看起来是 X 的取舍"），但不替对方下"该做 / 不该做"的结论。
+**Value judgments are out of think's scope.** If the user asks "is this worth doing" / "should we do this", say plainly that praxis doesn't handle that — praxis decides how, not whether. You can offer a one-line observation ("this looks like a tradeoff between X and Y"), but don't reach a "should / shouldn't do it" verdict for them.
 
-## Phase 3: Propose Approach（具名 mode）
+## Phase 3: Propose Approach (named mode)
 
-给一个推荐方案。**只在 tradeoff 真正接近时（>40% 用户可能更倾向另一个）才提第二个**——多方案是有用的稀缺信号；次次给三方案对比就成了噪音。永远包含一个 minimal option（最小可行的样子），让对方能把推荐跟"完全不做"做对比。
+Give one recommended approach. **Offer a second only when the tradeoff is genuinely close (>40% chance the user prefers the other)** — multiple options are a useful scarce signal; a three-way comparison every time becomes noise. Always include a minimal option (the smallest viable version), so they can weigh the recommendation against "do nothing".
 
-识别**最脆弱的假设**（premise collapse）并显式写出：
+Name the **most fragile assumption** (premise collapse) explicitly:
 
-> "这个 plan 假设 X。如果 X 不成立，会发生 Y。"
+> "This plan assumes X. If X doesn't hold, Y happens."
 
-这一步逼自己看见 plan 的脆弱点。如果脆弱假设是 load-bearing（一倒整个 plan 全垮），**变形设计让它即使失败也能 survive**——不要赌假设。
+This step forces you to see the plan's weak point. If the fragile assumption is load-bearing (one fall and the whole plan collapses), **reshape the design so it survives even if the assumption fails** — don't bet on the assumption.
 
-阻塞性歧义不能默默选——明确说"两种解读冲突在 X 点上，选 A 还是 B？"。默默选等于把判断责任压到 implement 阶段。
+A blocking ambiguity can't be chosen silently — say "the two readings conflict at X; A or B?". Choosing silently pushes the judgment down onto the implement stage.
 
 ## Phase 4: Validate Before Handing Off
 
-Plan 写完前自检——这一步防止"看起来完整但 implement 时才发现关键东西没说"。
+Self-check before the plan is done — this prevents "looks complete but implement hits a wall when a key thing was never stated".
 
-- [ ] 超过 8 个文件 / 引入 1 个新服务 → 显式 acknowledge（scope 大了 implement 容易踩坑）
-- [ ] 超过 3 个组件交换数据 → 画 ASCII diagram，找环路（少于 3 个不用画，画了反而是 noise）
-- [ ] 列了所有 meaningful 测试路径（happy / errors / edges）
-- [ ] 外部状态有变动的 step 都有 rollback 路径
-- [ ] 每个外部 API key / token / 第三方账号都列了（不留到实施中途讨钥匙）
-- [ ] 每个依赖的 MCP / 外部 API / CLI 已经验证可达——凭印象写"用 X 库的 Y API"是 `rules/anti-patterns.md` #1 的典型；动手前查文档或读已有代码
+- [ ] more than 8 files / introduces 1 new service → acknowledge it explicitly (large scope trips up implement)
+- [ ] more than 3 components exchange data → draw an ASCII diagram, look for cycles (fewer than 3 needs no diagram; drawing one is noise)
+- [ ] listed every meaningful test path (happy / errors / edges)
+- [ ] every step that changes external state has a rollback path
+- [ ] every external API key / token / third-party account is listed (don't leave it to be sorted out mid-build)
+- [ ] every dependency — MCP / external API / CLI — is verified reachable; writing "use X library's Y API" from memory is a classic `rules/anti-patterns.md` #1; check the docs or read existing code before committing it to the plan
 
-**Plan red flags**（任意触发说明 plan 没写好，回头改）：
+**Plan red flags** (any one means the plan isn't done — go back and fix it):
 
-- 有 placeholder（`TBD` / `TODO` / `implement later` / `similar to step N`）——是想清楚但还没写下来的标志，跟实施阶段才"现想"等价。
-- 任何 phase 不能独立 ship（必须等下一 phase 才有用）——多 phase 串成一根，中间出问题只能整批回退。
-- 存在 "Phase 0: investigate / spike"——调研属于 plan 之前，不该写进 plan 当 step。
+- a placeholder (`TBD` / `TODO` / `implement later` / `similar to step N`) — a sign of "thought through but not written down", which is equivalent to improvising at build time.
+- any phase can't ship on its own (only useful once the next phase lands) — phases chained into one rope means a mid-chain problem forces a full rollback.
+- a "Phase 0: investigate / spike" exists — investigation belongs before the plan, not inside it as a step.
 
-## Phase 5: 写 plan 文件 + After Approval
+## Phase 5: Write the plan file + After Approval
 
-具名 mode 出完 plan 后写文件到 `plans/YYYY-MM-DD-<slug>.md`：
+Once a named mode finishes the plan, write the file to `plans/YYYY-MM-DD-<slug>.md`:
 
-- `<slug>` 从 plan 主题派生（`fix-login-loop` / `feat-rbac` / `refactor-storage-layer`）
-- 文件结构遵循 `references/plan-template.md`
-- mode-specific 字段参见对应 mode reference
+- `<slug>` derived from the plan topic (`fix-login-loop` / `feat-rbac` / `refactor-storage-layer`)
+- file structure follows `references/plan-template.md`
+- mode-specific fields per the matching mode reference
 
-写完后输出：
+Then output:
 
 ```
 Plan written to plans/YYYY-MM-DD-<slug>.md
 
-[摘要 2-3 行]
+[2-3 line summary]
 
-要实施：说 "implement this plan"。实施完跑 review 把关。
+To build it: say "implement this plan". After implementing, run review to check it.
 ```
 
-**用户说 "implement this plan" / "可以干" / "按计划做" / "整" / "直接改" → 视为 approval，直接转给 implement**。不要 re-litigate——刚批的 plan 又问"确定吗"是把判断责任推回去，对方刚下完决心又被踢回来很烦。
+**The user saying "implement this plan" / "go ahead" / "按计划做" → treat it as approval and hand straight to implement.** Don't re-litigate — asking "are you sure?" about a plan they just approved pushes the judgment back onto them, and being bounced right after deciding is annoying.
 
-如果用户批准后改口"其实再想想..."，不要重做，明确问"你刚批了 plan，要改哪一点？"——锁定最小修改面，避免整 plan 重启。
+If the user approves and then says "actually, let me reconsider...", don't redo it; ask "you just approved the plan — which one point do you want to change?" — lock down the smallest edit surface and avoid restarting the whole plan.
 
-## 什么情况下停下来
+## When to stop
 
-think 的失败模式都是"该停顿处理却继续推进"。下面这些情况停下来处理，不要硬上：
+Think's failure mode is always "should have paused, but pushed ahead". Stop and handle these, don't force through:
 
-- **clarify 没满足检查清单就想跳到 propose**——Phase 1 是收敛入口，提早跳进 propose 等于猜对方意图。
-- **brainstorm 阶段就想写 plan 文件**——default mode 不写 plan；强行写出来等于假装意图收敛了。
-- **凭印象引用外部 API / 库 / CLI**——写进 plan 前查文档或读现有代码；见 `rules/anti-patterns.md` #1。
-- **用户问值不值得做**——praxis 不在这个层面回答；明确说不是 praxis 范围，给一句话观察就好。
-- **stuck 在 brainstorm 出不来**——提议收敛而不是继续探索；探索到一定深度还没收敛是个停顿信号。
+- **Clarify hasn't met the checklist but you want to jump to propose** — Phase 1 is the convergence gate; jumping early means guessing the intent.
+- **You want to write a plan file during brainstorm** — default mode writes no plan; forcing one out pretends the intent converged.
+- **Citing an external API / library / CLI from memory** — check the docs or read existing code before it goes in the plan; see `rules/anti-patterns.md` #1.
+- **The user asks whether it's worth doing** — praxis doesn't answer at that level; say it's out of scope and give a one-line observation, no more.
+- **Stuck in brainstorm with no exit** — propose converging instead of exploring further; exploring past a certain depth without converging is itself a stop signal.

@@ -1,58 +1,58 @@
 # Praxis Skill Resolver
 
-> 触发词到技能的路由表。Claude Code 通过每个 SKILL.md 的 `description` 自动匹配，这份文档是给人看的集中索引，也是 `tests/smoke/verify-skills.test.ts` 的校验依据。改 SKILL.md 的适用范围时，同步改这里。
+> A trigger-to-skill routing table. Claude Code matches automatically via each SKILL.md's `description`; this doc is the human-facing central index, and also the basis `tests/smoke/verify-skills.test.ts` checks against. When you change a skill's scope, update this in sync.
 
-## 按工作流阶段分路
+## Routing by workflow stage
 
-### 0. 理解阶段
+### 0. Understand
 
-| 触发                                                                                                        | 技能                      |
-| ----------------------------------------------------------------------------------------------------------- | ------------------------- |
-| 新仓库 / 不熟悉的模块 / "先看看这个项目" / "整体了解一下" / "看一下 X 模块" / `/explore` / 为后续工作打基础 | `skills/explore/SKILL.md` |
+| trigger                                                                                          | skill                     |
+| ------------------------------------------------------------------------------------------------ | ------------------------- |
+| new repo / unfamiliar module / "look at this project" / "整体了解一下" / "look at the X module" / `/explore` / building a base for later work | `skills/explore/SKILL.md` |
 
-### 1. 设计阶段
+### 1. Design
 
-| 触发                                                                                                                              | 技能                    |
-| --------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| "想想" / "怎么做" / "出方案" / "该不该" / "值不值得" / 头脑风暴 / 报错诊断 / 新功能 / 重构 / 性能优化 / `/think` / 动手前先想清楚 | `skills/think/SKILL.md` |
+| trigger                                                                                                            | skill                   |
+| ------------------------------------------------------------------------------------------------------------------ | ----------------------- |
+| "think it through" / "how should we do this" / "出方案" / "should we" / brainstorm / error diagnosis / new feature / refactor / perf optimization / `/think` / think before acting | `skills/think/SKILL.md` |
 
-### 2. 执行阶段
+### 2. Execute
 
-| 触发                                                                                              | 技能                        |
-| ------------------------------------------------------------------------------------------------- | --------------------------- |
-| "实现" / "写代码" / "按计划" / "整" / "可以干" / "直接改" / `/implement` / think 出 plan 后落代码 | `skills/implement/SKILL.md` |
+| trigger                                                                                       | skill                       |
+| --------------------------------------------------------------------------------------------- | --------------------------- |
+| "implement" / "build it" / "apply the plan" / "实现" / "落实" / `/implement` / land code after think produces a plan | `skills/implement/SKILL.md` |
 
-### 3. 验证阶段
+### 3. Verify
 
-| 触发                                                                                                   | 技能                   |
-| ------------------------------------------------------------------------------------------------------ | ---------------------- |
-| "跑测试" / "加测试" / "补回归" / "覆盖" / "test fail 帮我看" / "flaky 排查" / `/test` / 跑/补/调试测试 | `skills/test/SKILL.md` |
+| trigger                                                                                          | skill                  |
+| ------------------------------------------------------------------------------------------------ | ---------------------- |
+| "run the tests" / "add tests" / "add a regression" / "coverage" / "this test is failing" / "flaky?" / `/test` / run, add, or debug tests | `skills/test/SKILL.md` |
 
-### 4. 把关阶段
+### 4. Gate
 
-| 触发                                                                                                        | 技能                     |
-| ----------------------------------------------------------------------------------------------------------- | ------------------------ |
-| "review" / "评审" / "把关" / "看看变更" / "合并前检查" / `/review` / 5 维度扫描只看不动；支持 aspect filter | `skills/review/SKILL.md` |
+| trigger                                                                                              | skill                    |
+| ---------------------------------------------------------------------------------------------------- | ------------------------ |
+| "review" / "look at the changes" / "把关" / "check before merge" / `/review` / 5-dimension scan, look-don't-touch; supports an aspect filter | `skills/review/SKILL.md` |
 
-### 5. 入库 / 推送阶段
+### 5. Land / Push
 
-| 触发                                                                        | 技能                     |
-| --------------------------------------------------------------------------- | ------------------------ |
-| "提交" / "commit" / "入库" / `/commit` / 改完代码要入库                     | `skills/commit/SKILL.md` |
-| "开 PR" / "提评审" / "推送" / `/push` / commit 完推到远端开 PR；GitHub-only | `skills/push/SKILL.md`   |
+| trigger                                                                          | skill                    |
+| -------------------------------------------------------------------------------- | ------------------------ |
+| "commit" / "stage and commit" / "入库" / `/commit` / land code after editing     | `skills/commit/SKILL.md` |
+| "open a PR" / "push it" / "提评审" / `/push` / push to the remote and open a PR after committing; GitHub-only | `skills/push/SKILL.md`   |
 
 ## Disambiguation
 
-> 多个技能都可能匹配时的消解规则。TODO: 写完每个 SKILL.md 后回填。
+> Rules for resolving when multiple skills could match. TODO: fill in after each SKILL.md is finalized.
 
 ## Chaining
 
-技能默认不自动串联。每个技能完成后会停下来等用户决定下一步。
+Skills don't chain automatically. Each one stops when done and waits for the user to decide the next step.
 
-基础闭环：
+Base loop:
 
 ```
 explore → think → implement → test → review → commit → push
 ```
 
-think 内部根据意图走不同 mode：default / fix / feat / refactor / perf。
+think branches internally by intent: default / fix / feat / refactor / perf.

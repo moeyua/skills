@@ -1,26 +1,26 @@
 ---
 name: push
-description: '把当前 branch 推到 origin 并在 GitHub 开 PR；PR 描述基于整 branch 历史。Use when 用户说 "开 PR" / "提评审" 或 commit 完要推到远端开 PR。Not for 本地 commit（用 commit）、写 release notes、非 GitHub 远端（不自动开 PR）。'
-when_to_use: "push, 开 PR, MR, 提 PR, 推送, pull request, merge request"
-dispatch_intent: "推送 branch 到 origin 并在 GitHub 自动创建 PR"
+description: 'Push the current branch to origin and open a PR on GitHub; the PR description is built from the whole branch history. Use when the user says "open a PR" / "push it" / "开 PR" / "提评审", or after committing to push to the remote and open a PR. Not for local commits (use commit), writing release notes, or non-GitHub remotes (no auto PR).'
+when_to_use: "push, open PR, pull request, merge request, 推送, 开 PR, 提评审"
+dispatch_intent: "Push the branch to origin and auto-create a PR on GitHub"
 ---
 
 # Push
 
-push 把当前 branch 推到 origin 并在 GitHub 开 PR——一气呵成：并行收集 git/gh context、push、`gh pr create`。所有约束的根目的是让推送和 PR 反映**完整 branch 历史**：title/body 基于整 branch 综合而不只看最新 commit，force 操作和保护分支永远不动，用户的 git/gh 配置永远不改。
+Push pushes the current branch to origin and opens a PR on GitHub — in one pass: gather git/gh context in parallel, push, `gh pr create`. Every rule here exists so the push and PR reflect the **whole branch history**: the title/body are synthesized from the entire branch, not just the latest commit; force operations and protected branches are never touched; the user's git/gh config is never changed.
 
-GitHub-only：非 GitHub 远端就完成 push，跳过 `gh pr create`，让用户手动开 PR/MR。
+GitHub-only: for a non-GitHub remote, finish the push, skip `gh pr create`, and let the user open the PR/MR manually.
 
 ## Outcome Contract
 
-- Outcome: 当前 branch push 到 origin；GitHub 远端时 PR 已创建并返回 URL
-- Done when: PR URL 已返回（GitHub）或 push 成功 + 手动开 PR 提示（其他）
-- Evidence: `gh pr view` / `git push` 的实际输出
-- Output: PR URL + title + body 摘要
+- Outcome: the current branch is pushed to origin; on a GitHub remote, a PR is created and its URL returned
+- Done when: the PR URL is returned (GitHub) or the push succeeds + a manual-PR prompt is given (otherwise)
+- Evidence: the actual output of `gh pr view` / `git push`
+- Output: PR URL + title + body summary
 
-## 流程
+## Flow
 
-并行收集：
+Gather in parallel:
 
 ```bash
 git status --short
@@ -31,55 +31,55 @@ gh repo view --json defaultBranchRef -q .defaultBranchRef.name
 gh pr list --head <current-branch> --json number,url,state
 ```
 
-检查"什么情况下停下来"列出的条件，通过后拿 base branch 跑：
+Check the conditions under "When to stop"; once they pass, take the base branch and run:
 
 ```bash
 git log <base>..HEAD --oneline
-git diff <base>...HEAD       # 注意三个点——branch 跟 base 共同祖先后的改动
+git diff <base>...HEAD       # note the three dots — changes since the branch's common ancestor with base
 ```
 
-基于**整 branch** 信息生成 PR title + body——不是最新一个 commit；只看 HEAD 容易漏掉前面 commit 的主题。然后：
+Build the PR title + body from the **whole branch** — not the latest commit alone; looking only at HEAD easily misses the topics of earlier commits. Then:
 
 ```bash
 git push -u origin <current-branch>
 gh pr create --title "..." --body "..."
 ```
 
-返回 PR URL。
+Return the PR URL.
 
-## PR 描述
+## PR description
 
-title 一句话讲整 PR 在干什么（基于全部 commits 综合）。
+The title says in one line what the whole PR does (synthesized from all commits).
 
-body 强制结构：
+The body has a required structure:
 
 ```markdown
 ## Summary
 
-- 1-3 bullet，一句话一项，讲改了什么
+- 1-3 bullets, one line each, on what changed
 
 ## Test plan
 
-- [ ] reviewer 可验证的检查点
-- N/A 如果是纯文档/配置/无行为变更
+- [ ] checkpoints a reviewer can verify
+- N/A if it's pure docs/config/no behavior change
 
 🤖 Generated with Claude Code
 ```
 
-- Summary 基于整 branch 综合，不只是最新 commit
-- **Test plan section 强制写**——即使 N/A 也明确写 "N/A 因为 X"；section 缺失比 N/A 更不清晰，reviewer 会问"那测了没"
-- footer 默认加，除非项目 anti-patterns 反对
+- Summary is synthesized from the whole branch, not just the latest commit
+- **The Test plan section is required** — even for N/A, write "N/A because X" explicitly; a missing section is less clear than N/A, and the reviewer will ask "so was it tested?"
+- the footer is added by default, unless the project's anti-patterns forbid it
 
-## 什么情况下停下来
+## When to stop
 
-push 的失败模式是"硬推 / 越界用户配置"。下面这些情况停下并报告：
+Push's failure mode is "force-pushing / overstepping the user's config". Stop and report in these cases:
 
-- **当前在 `main` / `master` / `develop` 等保护分支**——拒绝；让用户 `git checkout -b <name>` 后再调。直接推到主分支或保护分支是 destructive 操作。
-- **有 uncommitted changes**——push 假定 commit 都做完；报告状态让用户先 `/commit` 或显式放弃。
-- **`gh` 没装 / `gh auth status` 失败**——报告安装或登录命令；不要用 raw GitHub API / curl 替代 `gh`，认证管理交给 gh 才有保证。
-- **没有 `origin` remote**——报告，让用户 `git remote add origin ...`。
-- **已有开着的 PR**——报告 PR # 和 URL，让用户决定继续 push 到已有 PR 还是放弃。
-- **remote 不是 GitHub**（URL 不含 `github.com`）——完成 `git push` 跳过 `gh pr create`，输出"非 GitHub 远端，请手动开 PR/MR"和已准备好的 PR body。
-- **用户要 `--force` / `--force-with-lease`**——拒绝；force push 改写远端历史，作为默认操作太危险；用户真要 force 自己跑。
-- **想改 `git config` / `gh config`**——永远不动用户配置。
-- **想删除 remote branch**——永远不删；这是 destructive 操作。
+- **Currently on a protected branch like `main` / `master` / `develop`** — refuse; have the user `git checkout -b <name>` first. Pushing straight to a main or protected branch is a destructive op.
+- **Uncommitted changes exist** — push assumes the commits are done; report the state and have the user `/commit` first or explicitly discard.
+- **`gh` not installed / `gh auth status` fails** — report the install or login command; don't substitute a raw GitHub API / curl for `gh` — leave auth management to gh for any guarantee.
+- **No `origin` remote** — report, have the user `git remote add origin ...`.
+- **A PR is already open** — report the PR # and URL, and let the user decide whether to keep pushing to the existing PR or stop.
+- **The remote isn't GitHub** (URL doesn't contain `github.com`) — finish `git push`, skip `gh pr create`, and output "non-GitHub remote, please open the PR/MR manually" plus the prepared PR body.
+- **The user asks for `--force` / `--force-with-lease`** — refuse; force push rewrites remote history, a destructive op too dangerous as a default; if the user really wants force, they run it themselves.
+- **The urge to change `git config` / `gh config`** — never touch the user's config.
+- **The urge to delete a remote branch** — never delete; that's a destructive op.

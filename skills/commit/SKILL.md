@@ -1,24 +1,24 @@
 ---
 name: commit
-description: '生成符合项目风格的 commit 并入库；明显多主题时自动拆分。Use when 用户说"提交" / "commit" / "入库"。Not for 推送远端或开 PR（用 push）、写 release notes。'
-when_to_use: "commit, 提交, 入库, message, 整理变更, 拆 commit"
-dispatch_intent: "生成 commit 并入库，必要时拆分多主题"
+description: 'Turn working-tree changes into clean git history matching the project style; auto-split when there are clearly multiple topics. Use when the user says "commit" / "stage and commit" / "提交" / "入库". Not for pushing to a remote or opening a PR (use push), or writing release notes.'
+when_to_use: "commit, stage changes, commit message, 提交, 入库, 整理变更, 拆提交"
+dispatch_intent: "Build clean git commits matching the project's history style"
 ---
 
 # Commit
 
-commit 把 working tree 的改动整理成干净的 git 历史——一气呵成：收集 context、决定 stage、commit、verify。不打断用户，除非碰到不能继续的事。所有约束的根目的是让 commit 历史**真实记录意图**：一个 commit 一个主题，message 讲为什么不只是讲做了什么，secrets 永远不进版本库。
+Commit turns working-tree changes into clean git history — in one pass: gather context, decide what to stage, commit, verify. Don't interrupt the user unless you hit something you can't continue past. Every rule here exists so the commit history **truly records intent**: one commit one topic, the message says why not just what, and secrets never enter the repo.
 
 ## Outcome Contract
 
-- Outcome: 干净的 git commit，message 跟项目历史风格一致
-- Done when: 末次 `git status` 显示 working tree clean（或仅剩 unrelated 改动）
-- Evidence: `git status` / `git diff HEAD` / `git log --oneline -10` 的实际输出
-- Output: 每个 commit 的 hash + message + stage 决策（"stage 了 X，跳过 Y 因为 Z"）
+- Outcome: clean git commits with messages matching the project's history style
+- Done when: the final `git status` shows a clean working tree (or only unrelated changes remain)
+- Evidence: the actual output of `git status` / `git diff HEAD` / `git log --oneline -10`
+- Output: each commit's hash + message + the staging decision ("staged X, skipped Y because Z")
 
-## 流程
+## Flow
 
-并行收集：
+Gather in parallel:
 
 ```bash
 git status --short
@@ -27,36 +27,36 @@ git log --oneline -10
 git branch --show-current
 ```
 
-基于输出决定 stage / message / commit，并行执行。多主题时连续多个 add+commit。末尾 `git status` 验证一次。
+Decide staging / message / commit from the output, executed in parallel. With multiple topics, run consecutive add+commit pairs. Verify once with `git status` at the end.
 
 ## Stage
 
-- 已 staged → 沿用
-- 否则 → specific filenames 选与主题相关的（**不用 `-A` / `.`**——一锅端容易扫进 secrets 或不相关改动）
-- 永不 stage：`.env*`（除 `.example`）、`*credentials*` / `*secrets*` / `*.key` / `*.pem` / `.DS_Store` / 任何含 token 的文件——这是不可挽回的泄漏，比正确性优先
+- already staged → keep it
+- otherwise → pick specific filenames relevant to the topic (**not `-A` / `.`** — a blanket add easily sweeps in secrets or unrelated changes)
+- never stage: `.env*` (except `.example`), `*credentials*` / `*secrets*` / `*.key` / `*.pem` / `.DS_Store` / any file containing a token — this is an unrecoverable leak, and it outranks correctness
 
 ## Message
 
-学项目风格 from `git log --oneline -10`。无明显风格则用 conventional commits。
+Learn the project style from `git log --oneline -10`. With no obvious style, use conventional commits.
 
-- 第一行 ≤ 72 字符
-- **讲为什么，不只是做了什么**——"Various changes" / "Update files" 是浪费 reviewer 时间，未来回头看也看不出意图
-- 默认加 `Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>`，除非项目 anti-patterns 明文反对
+- first line ≤ 72 chars
+- **say why, not just what** — "Various changes" / "Update files" wastes the reviewer's time, and your future self can't see the intent either
+- add `Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>` by default, unless the project's anti-patterns explicitly forbid it
 
-## 拆 commit
+## Splitting commits
 
-**合一（默认）**：单主题，即使涉及多文件——修 bug + 触发的同步改动；feature + tests + docs；接口签名改 + 调用点更新。
+**Combine (default)**: one topic, even across multiple files — a bug fix + the sync changes it triggers; a feature + tests + docs; an interface signature change + the call sites updated.
 
-**拆分（agent 自己判断不询问）**：彼此可独立 revert、intent 完全不同——auth 改动 + 不相关 logging；bug 修复 + 顺手改 `.gitignore`。
+**Split (the skill decides, no asking)**: independently revertable, with completely different intent — an auth change + unrelated logging; a bug fix + an incidental `.gitignore` change.
 
-含糊时合一。拆不超过 3 个。**中途别问用户"要不要拆"**——这种判断是 commit skill 自己的工作，问回去等于把活推回去。
+When in doubt, combine. Don't split into more than 3. **Don't ask the user "should I split?" mid-flow** — that judgment is the commit skill's own job, and asking back pushes the work back onto them.
 
-## 什么情况下停下来
+## When to stop
 
-commit 失败模式是"硬塞进去 / 绕过工具"。下面这些情况停下并报告：
+Commit's failure mode is "forcing it in / bypassing tools". Stop and report in these cases:
 
-- **请求 commit 含 secret-like 文件**（staged `.env` 等）——拒绝；让用户先取消 stage。secrets 一旦进版本库基本不可挽回。
-- **nothing to commit**——报告即停，不创建 empty commit。
-- **pre-commit hook fail**——报告 hook 输出让用户决定；**不 retry，不加 `--no-verify`** 绕过。hook 拦下的东西通常是 lint / type / 测试错误，绕过就是丢失信号。
-- **detached HEAD / 进行中 rebase / merge**——git 状态特殊，先让用户处理完再 commit。
-- **用户要求 `git commit --amend`**——拒绝，永远新 commit。amend 改写历史是 destructive 操作，作为默认操作太危险；用户真要 amend 自己跑。
+- **The commit request includes a secret-like file** (staged `.env` etc.) — refuse; have the user unstage it first. Once a secret enters the repo it's essentially unrecoverable.
+- **Nothing to commit** — report and stop; don't create an empty commit.
+- **A pre-commit hook fails** — report the hook output and let the user decide; **don't retry, don't add `--no-verify`** to bypass. What a hook stops is usually a lint / type / test error, and bypassing it loses the signal.
+- **detached HEAD / rebase or merge in progress** — git state is special; let the user finish that before committing.
+- **The user asks for `git commit --amend`** — refuse, always a new commit. Amend rewrites history, a destructive op too dangerous as a default; if the user really wants amend, they run it themselves.

@@ -1,46 +1,46 @@
 # think — `fix` mode
 
-触发：报错、异常、行为不对、回归、"为什么不工作"、"以前是好的"。
+Triggers: error, exception, wrong behavior, regression, "why doesn't it work", "it used to work".
 
-`fix` 的核心是**先找到根因，再设计修复**。不允许"症状级修复"（看到 null 就加 `if (x == null) return`）。
+The core of `fix` is **find the root cause first, then design the fix**. No symptom-level patching (seeing a null and slapping on `if (x == null) return`).
 
-## Clarify 重点（fix 特有）
+## Clarify focus (fix-specific)
 
-- 复现条件：什么操作、什么输入、什么环境触发？
-- 影响面：只这一处坏，还是同类问题可能多处？
-- 期望行为 vs 实际行为：分别一句话
-- 引入时间：以前好用过吗？什么时候开始坏？（用于 bisect）
+- Repro conditions: what action, what input, what environment triggers it?
+- Blast radius: just this one spot, or could the same class of problem be in many places?
+- Expected vs actual behavior: one line each.
+- When introduced: did it ever work? when did it start breaking? (for bisecting)
 
-## Plan 必含字段（除通用骨架外）
+## Required plan fields (beyond the common skeleton)
 
 ### `## Root cause`
 
-一句话陈述根因，含：
+A one-sentence statement of the root cause, including:
 
-- **是什么**：具体到 file:line 或 function/condition
-- **为什么**：触发这个 bug 的代码路径是什么
-- **每个观察症状都被这一句话解释**——如果根因只覆盖部分症状，它是症状级假设，不是根因
+- **What**: down to file:line or function/condition.
+- **Why**: the code path that triggers the bug.
+- **Every observed symptom is explained by this one sentence** — if the root cause covers only some symptoms, it's a symptom-level guess, not a root cause.
 
-格式：
+Format:
 
-> 根因是 `<file:line>` 的 `<function>` 在 `<condition>` 时 `<wrong behavior>`，因为 `<reason>`。
+> The root cause is `<function>` at `<file:line>` doing `<wrong behavior>` when `<condition>`, because `<reason>`.
 
 ### `## Regression tests`
 
-修复前必须存在一个**在旧代码上失败、修复后通过**的测试。
+Before the fix, there must be a test that **fails on the old code and passes after the fix**.
 
-列：
+List:
 
-- 测试文件 + 测试名
-- 测试覆盖的条件（什么输入 → 什么期望输出）
-- 是新加的测试还是已有测试
+- test file + test name
+- what condition the test covers (what input → what expected output)
+- whether it's a new test or an existing one
 
-如果项目没测试框架 → 列**最小可手工复现的步骤**（命令 / 操作序列 / 期望观察）。
+If the project has no test framework → list the **minimal manual repro steps** (commands / action sequence / what to observe).
 
-## 反模式
+## Anti-patterns
 
-- 看到 `null pointer` 直接 `if (x) ...` 包一层而不查为什么 x 是 null
-- 用 try/catch 吞错误来"修复"
-- "应该是 X 吧"——没复现就猜根因
-- 同样的 bug 在 N 处出现，只改了用户报的那 1 处（pattern 漏扫）
-- root cause 写成"用户输入异常"——这是症状不是根因
+- Seeing a null pointer and wrapping it in `if (x) ...` without asking why x is null.
+- Swallowing the error with try/catch to "fix" it.
+- "It's probably X" — guessing the root cause without reproducing.
+- The same bug appears in N places, but only the one the user reported got fixed (missed the pattern scan).
+- A root cause written as "bad user input" — that's a symptom, not a root cause.

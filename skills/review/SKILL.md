@@ -1,129 +1,129 @@
 ---
 name: review
-description: '合并前的代码 review。5 维度扫描（plan 一致性 / 代码质量 / 错误处理 / 测试覆盖 / 简化机会），按 confidence ≥ 80 过滤，分级输出建议。Use when 用户说 "review" / "看看变更" / "把关" / "合并前检查"。Not for 主动重构（用 think refactor）、修 bug（用 think fix）、补测试（用 test）——review 只看不动。'
-when_to_use: "review, 评审, 把关, 合并前, 看看变更, code-review"
-dispatch_intent: "5 维度代码 review，confidence 过滤，只输出建议不改代码"
+description: 'Pre-merge code review. Scans 5 dimensions (plan consistency / code quality / error handling / test coverage / simplification), filters by confidence ≥ 80, outputs graded suggestions. Use when the user says "review" / "look at the changes" / "check before merge" / "把关" / "评审". Not for proactive refactoring (use think refactor), fixing bugs (use think fix), or adding tests (use test) — review only looks, never touches.'
+when_to_use: "review, code review, pre-merge check, 评审, 把关, 合并前检查, 看变更"
+dispatch_intent: "5-dimension code review, confidence-filtered, suggestions only — no code changes"
 ---
 
 # Review
 
-review 是合并前最后一道关——找出可能让 reviewer / 用户 / 生产环境出问题的改动，给作者建议方向，让**作者**决定怎么处理。所有约束的根目的是：保住作者的 agency，把判断权留给他。review 一旦动手改文件，作者就失去看见自己 review 反馈的机会。
+Review is the last gate before merge — find the changes that could trip up a reviewer, a user, or production, give the author a direction, and let **the author** decide how to handle it. Every rule here exists to preserve the author's agency, keeping the judgment with them. The moment review edits a file, the author loses the chance to see their own review feedback.
 
-陌生项目先调 `/explore`——不知道项目背景的 review 给出的"建议"会变成噪音。
+Unfamiliar project? Run `/explore` first — a review without knowing the project's context produces "suggestions" that become noise.
 
-**review 只看不动**。具体不做的事：
+**Review only looks, never touches.** Specifically, what it doesn't do:
 
-- 不改任何文件（代码 / 测试 / plan / SKILL.md / 都不动）
-- 不给完整 code patch——只给方向（"这里有 race condition，看下加锁的位置"），代码由作者自己写
-- 不调其他 skill 替作者干活（不自动跳 fix / refactor / test）
-- 不改 plan status / 不 commit / 不 push
+- changes no file (code / tests / plan / SKILL.md / none of them)
+- gives no full code patch — only a direction ("there's a race condition here, look at where to lock"); the author writes the code
+- doesn't call other skills to do the work for the author (no auto-jump to fix / refactor / test)
+- doesn't change plan status / doesn't commit / doesn't push
 
-这些约束看起来限制 review 力度，实际上是让 review 真正 useful——一份给出问题但不动手的报告，比一份"顺手都修好了"的 PR 给作者价值大得多（后者作者根本没机会理解发生了什么）。
+These constraints look like they weaken review's force; in fact they make review actually useful — a report that names problems without touching them is worth far more to the author than a PR that "fixed it all along the way" (with the latter, the author never had a chance to understand what happened).
 
 ## Outcome Contract
 
-- Outcome: 一份按 severity 分级的 finding 报告，每条带 file:line 和建议方向
-- Done when: 5 个维度（或指定 aspect）都扫过，confidence ≥ 80 的 finding 全部列出，正面 ack 也给了
-- Evidence: `git diff` / 项目 guidelines (CLAUDE.md / AGENTS.md) / plan 文件（如有）/ 实际 Read 过的代码
-- Output: Critical / Important / Suggestion / Strengths 四段 + 下一步建议
+- Outcome: a severity-graded findings report, each with file:line and a suggested direction
+- Done when: all 5 dimensions (or the specified aspect) are scanned, every finding with confidence ≥ 80 is listed, and positive acknowledgment is given too
+- Evidence: `git diff` / project guidelines (CLAUDE.md / AGENTS.md) / the plan file (if any) / the code actually Read
+- Output: Critical / Important / Suggestion / Strengths sections + a next-step recommendation
 
-## 5 个维度
+## The 5 dimensions
 
-| 维度                    | 关注                                                                                    |
-| ----------------------- | --------------------------------------------------------------------------------------- |
-| **plan** (plan 一致性)  | 改动是否在 plan 范围内 / scope creep / plan 没说的依赖被引入                            |
-| **quality** (代码质量)  | bugs / 逻辑错误 / 项目 guidelines (CLAUDE.md/AGENTS.md) compliance / 命名 / 死代码      |
-| **errors** (错误处理)   | silent failures / 过宽 catch / 不当 fallback / 生产代码用 mock / 缺少 logging           |
-| **tests** (测试覆盖)    | plan acceptance scenarios 是否覆盖 / edge cases / 测试是否 ground 在真实行为 / 重复覆盖 |
-| **simplify** (简化机会) | 复杂度 / nesting / 重复 / 过度抽象 / over-engineering                                   |
+| dimension                  | focus                                                                                  |
+| -------------------------- | -------------------------------------------------------------------------------------- |
+| **plan** (plan consistency) | are the changes within plan scope / scope creep / a dependency the plan didn't name    |
+| **quality** (code quality) | bugs / logic errors / project guidelines (CLAUDE.md/AGENTS.md) compliance / naming / dead code |
+| **errors** (error handling) | silent failures / over-broad catch / improper fallback / mock in production code / missing logging |
+| **tests** (test coverage)  | are the plan's acceptance scenarios covered / edge cases / are tests grounded in real behavior / duplicate coverage |
+| **simplify** (simplification) | complexity / nesting / duplication / over-abstraction / over-engineering             |
 
 ## Aspect Filter
 
-用户消息含特定关键词时只 review 对应维度，没指定就跑全 5 维度。关键词不区分大小写：`plan` / `quality` / `errors` / `tests` / `simplify`。
+When the user's message contains a specific keyword, review only that dimension; with none specified, run all 5. Keywords are case-insensitive: `plan` / `quality` / `errors` / `tests` / `simplify`.
 
 ```bash
-/review                       # 全 5 维度
-/review tests errors          # 只 tests + errors
-/review plan                  # 只 plan 一致性
+/review                       # all 5 dimensions
+/review tests errors          # only tests + errors
+/review plan                  # only plan consistency
 ```
 
-中文 / 近义表述按语义就近映射（"测试" → tests，"错误处理" → errors）。实在不确定就默认全 5 维度并 note 一句"未识别 aspect 关键词，跑全维度"——别因为没把握就停下不干。
+Map Chinese / near-synonyms to the nearest dimension by meaning ("测试" → tests, "错误处理" → errors). If genuinely unsure, default to all 5 and note "aspect keyword not recognized, running all dimensions" — don't stop just because you're not certain.
 
-## Confidence + 分级
+## Confidence + grading
 
-每个 finding 给 0-100 confidence。**aggressive filter——quality over quantity**：一份 review 给 5 条 high-confidence finding 比 30 条混杂 finding 有用得多。混入低 confidence 的 finding 是 reviewer 信任的慢性杀手。
+Give each finding a 0-100 confidence. **Aggressive filter — quality over quantity**: a review with 5 high-confidence findings is far more useful than 30 mixed ones. Mixing in low-confidence findings is a slow killer of reviewer trust.
 
-| 分级           | confidence | 这一档是什么样的发现                                                                |
+| grade          | confidence | what this grade looks like                                                          |
 | -------------- | ---------- | ----------------------------------------------------------------------------------- |
-| **Critical**   | 91-100     | 一定会出问题：critical bug、项目 guidelines 明确违反、生产代码 silent failure       |
-| **Important**  | 80-89      | 高度怀疑但非阻塞合并：很可能出问题，作者得回应一下                                  |
-| **Suggestion** | 60-79      | 建议但非必须：风格 / 微小重复 / 局部可简化；作者可以接受也可以驳回                  |
-| —              | < 60       | 不报告——false positive 风险高 / 噪音；漏报比误报代价小，宁可放过也别灌水            |
+| **Critical**   | 91-100     | will definitely break: critical bug, clear project-guideline violation, silent failure in production code |
+| **Important**  | 80-89      | strongly suspected but not merge-blocking: likely to break, the author should respond |
+| **Suggestion** | 60-79      | suggested but optional: style / minor duplication / local simplification; the author can take it or leave it |
+| —              | < 60       | not reported — high false-positive risk / noise; a miss costs less than a false alarm, so let it go rather than pad |
 
-**"风格偏好"最多 Suggestion**，除非违反项目 guidelines 明文规则——把审美当 Critical 是滥用职权。
+**"Style preference" is Suggestion at most**, unless it violates an explicit project-guideline rule — treating taste as Critical is abuse of authority.
 
-## 流程
+## Flow
 
-收集 context（并行）：
+Gather context (in parallel):
 
 ```bash
 git status --short
-git diff <base>...HEAD       # 改动范围（base 优先 origin/main，否则上一个 commit）
-git log -5 --oneline         # 最近的 commit 风格
-cat CLAUDE.md AGENTS.md      # 项目 guidelines（如果存在）
-ls plans/                    # 最近 done/approved 的 plan（如果 plan 维度在 scope）
+git diff <base>...HEAD       # change scope (base prefers origin/main, else the previous commit)
+git log -5 --oneline         # recent commit style
+cat CLAUDE.md AGENTS.md      # project guidelines (if present)
+ls plans/                    # the most recent done/approved plan (if the plan dimension is in scope)
 ```
 
-按 aspect filter 决定跑哪些维度。每个维度独立扫，发现先打草稿，最后用 confidence ≥ 80 过滤，按 severity 分组输出。
+Decide which dimensions to run per the aspect filter. Scan each dimension independently, draft findings first, then filter by confidence ≥ 80 and output grouped by severity.
 
-**永远给 Strengths 段**，即使只有 1-2 条——纯负面的 review 让作者关闭防御性吸收能力，价值大打折扣。
+**Always give a Strengths section**, even just 1-2 items — a purely negative review makes the author close down their defensive absorption, cutting its value sharply.
 
-跑 plan 维度时找不到 plan 文件就跳过 plan 维度并 note "无 plan 文件，跳过 plan 一致性扫描"，不要硬猜 plan 内容。
+When running the plan dimension and no plan file is found, skip it and note "no plan file, skipped plan-consistency scan"; don't guess the plan content.
 
-发现某类问题时把作者引到对应 skill，而不是自己接管：
+When you find a class of problem, point the author to the matching skill instead of taking over:
 
-- 简化机会 → 建议回 `/think refactor`
-- 测试 gap → 建议回 `/test 补覆盖`
-- bug → 建议回 `/think fix`
-- scope creep → 标出来让用户决定（撤回 plan 之外的改动 / 接受 / 回 think 改 plan）
+- simplification opportunity → suggest `/think refactor`
+- test gap → suggest `/test add coverage`
+- bug → suggest `/think fix`
+- scope creep → flag it and let the user decide (revert the out-of-plan change / accept it / go back to think to change the plan)
 
-## 完成后输出
+## When done, report
 
 ```
 # Review Summary
 
-Reviewed: <git diff base..HEAD or 指定 scope>
-Aspects: <plan, quality, errors, tests, simplify> 或子集
+Reviewed: <git diff base..HEAD or specified scope>
+Aspects: <plan, quality, errors, tests, simplify> or a subset
 Confidence threshold: ≥ 80
 
 ## Critical (X)
 - [<dim>] <file:line> — <issue> (confidence: NN)
-  → 建议：<direction>
+  → suggestion: <direction>
 
 ## Important (X)
 - [<dim>] <file:line> — <issue> (confidence: NN)
-  → 建议：<direction>
+  → suggestion: <direction>
 
 ## Suggestions (X)
 - [<dim>] <file:line> — <issue> (confidence: NN)
-  → 建议：<direction>
+  → suggestion: <direction>
 
 ## Strengths
-- <一两条正面 ack>
+- <one or two positive acknowledgments>
 
 ## Recommended Next
-- Critical 优先：<具体动作，如 /think fix>
-- Important 次之：<...>
-- Suggestion 视情况
+- Critical first: <specific action, e.g. /think fix>
+- Important next: <...>
+- Suggestion as appropriate
 ```
 
-无 high-confidence finding 时仍出报告，Critical / Important / Suggestion 各写 "None"，Strengths 给完整正面 ack，标 "Ready to commit/push"。
+With no high-confidence findings, still produce the report: write "None" under each of Critical / Important / Suggestion, give full positive acknowledgment under Strengths, and mark "Ready to commit/push".
 
-## 什么情况下停下来
+## When to stop
 
-review 跟其他 skill 不同——它的失败模式不是"硬上"，而是"动手"。下面这些情况停下并报告：
+Review differs from the other skills — its failure mode isn't "forcing through", it's "touching". Stop and report in these cases:
 
-- **工作树和 HEAD 完全一致（无 diff 可看）**——报告"无改动可 review"，别强行 review 历史 commit；用户没要 review 历史就别越界。
-- **detached HEAD / 进行中 rebase / merge**——git 状态特殊时 diff 可能拿不到准确范围，报告状态让用户决定。
-- **明显的 aspect spelling 错**（如 `/review xxx`，`xxx` 不是任何已知 aspect 也不是合理的中文 / 近义表述）——报告"无法识别 aspect 'xxx'，可用：plan / quality / errors / tests / simplify"，让用户重选，别擅自 fallback 全维度。
-- **review 过程中诱发"我顺手改一下"的冲动**——立刻停下，把发现写进 finding 而不是动手。review 一动手就丧失了 review 的位置。
+- **The working tree matches HEAD exactly (no diff to look at)** — report "no changes to review"; don't force a review of historical commits; the user didn't ask to review history, so don't overstep.
+- **detached HEAD / rebase or merge in progress** — git state is unusual and the diff range may be inaccurate; report the state and let the user decide.
+- **An obvious aspect spelling error** (e.g. `/review xxx` where `xxx` is neither a known aspect nor a reasonable Chinese / synonym) — report "can't recognize aspect 'xxx', available: plan / quality / errors / tests / simplify" and let the user re-pick; don't silently fall back to all dimensions.
+- **The urge to "just fix it real quick" during review** — stop immediately, write the finding instead of touching it. The moment review touches, it loses its standing as review.

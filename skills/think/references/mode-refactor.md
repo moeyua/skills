@@ -1,50 +1,50 @@
 # think — `refactor` mode
 
-触发：整理结构、改内部、"重构这块"、"把 X 拆开"、"这里太乱了"。
+Triggers: restructure, change internals, "refactor this", "split X apart", "this is too messy".
 
-`refactor` 的核心是**行为不变**——外部观察到的输出、副作用、性能特征保持一致；只重组内部。
+The core of `refactor` is **behavior unchanged** — the externally observable output, side effects, and performance characteristics stay the same; only the internals are reorganized.
 
-## Clarify 重点（refactor 特有）
+## Clarify focus (refactor-specific)
 
-- 重构目的：可读性 / 减少重复 / 解耦 / 准备下一个 feat / 别的？
-- 边界：改到哪一层为止？外部 API 包不包？
-- 行为保留范围：哪些行为绝对不能变？（公开 API / 副作用 / 错误消息）
-- 已有测试覆盖：现有测试能保护多少？没覆盖的部分怎么验证？
+- Goal of the refactor: readability / less duplication / decoupling / preparing for the next feat / something else?
+- Boundary: how deep does it go? does it include the external API?
+- Behavior-preservation scope: which behaviors absolutely must not change? (public API / side effects / error messages)
+- Existing test coverage: how much do current tests protect? how do you verify the parts they don't cover?
 
-## Plan 必含字段（除通用骨架外）
+## Required plan fields (beyond the common skeleton)
 
 ### `## Behavior invariants`
 
-明确**这次重构保证不变**的行为列表。每条是一个 reviewer 可以验证的断言。
+The explicit list of behaviors **this refactor guarantees won't change**. Each is an assertion a reviewer can verify.
 
-例：
+Examples:
 
-- 公开函数 `foo(x)` 在所有现有输入下返回值不变
-- HTTP endpoint `/api/users` 的响应 schema 不变
-- 数据库 schema 不变
-- 日志格式 / 错误消息文本不变
-- 性能特征（latency / memory）不显著变化
+- public function `foo(x)` returns the same value for all existing inputs
+- the response schema of HTTP endpoint `/api/users` is unchanged
+- the database schema is unchanged
+- log format / error message text is unchanged
+- performance characteristics (latency / memory) don't change meaningfully
 
-明确写**允许变化**的部分：
+Also state explicitly what's **allowed to change**:
 
-- 内部函数名 / 私有方法签名 / 模块结构 / 文件组织——可以变
-- 未公开的实现细节——可以变
+- internal function names / private method signatures / module structure / file organization — can change
+- undocumented implementation details — can change
 
 ### `## Regression coverage`
 
-如何验证 invariants 真的没变。三个层次：
+How to verify the invariants really didn't change. Three layers:
 
-1. **既有自动测试**：列出现有测试集合，跑通即可保护一部分 invariants
-2. **新加回归测试**：现有测试未覆盖的 invariants，重构前先补测试（让重构有保护网）
-3. **手工 spot check**：实在没法自动化的（视觉 / 集成 / 性能特征），列具体检查步骤
+1. **Existing automated tests**: list the current test set; running it green protects some invariants.
+2. **New regression tests**: for invariants the existing tests don't cover, add tests before refactoring (so the refactor has a safety net).
+3. **Manual spot checks**: for what truly can't be automated (visual / integration / performance characteristics), list the specific check steps.
 
-如果 invariants 既无自动测试也无手工 check 路径 → **refactor 不能开始**，先补测试 / 先 freeze。
+If an invariant has neither an automated test nor a manual check path → **the refactor can't start**; add tests first / freeze first.
 
-## 反模式
+## Anti-patterns
 
-- 一边重构一边改行为（"顺便修了 X 个 bug"）——拆出来走 fix mode
-- 一边重构一边加功能——拆出来走 feat mode
-- 一边重构一边优化性能——拆出来走 perf mode
-- Behavior invariants 写成"功能不变"——不够具体；要逐项列
-- 没有 regression coverage 就开干——重构是"高风险无收益"动作，没保护网不要做
-- 把 refactor 跟 feat / fix 打包进一个 plan——审 reviewer 会看不出哪些改动是必要的
+- Changing behavior while refactoring ("fixed a couple of bugs along the way") — split it out into fix mode.
+- Adding features while refactoring — split it out into feat mode.
+- Optimizing performance while refactoring — split it out into perf mode.
+- Behavior invariants written as "functionality unchanged" — not specific enough; list them one by one.
+- Starting without regression coverage — refactoring is a "high-risk, no-reward" move; don't do it without a safety net.
+- Bundling the refactor with feat / fix into one plan — the reviewer can't tell which changes were necessary.
