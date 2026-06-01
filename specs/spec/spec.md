@@ -47,6 +47,23 @@ spec skill 维护持久的 `specs/` 真源——记录系统当前该是什么�
 - THEN 直接编辑该 requirement
 - AND 不依赖任何漂移检测信号
 
+### Requirement: 为已有能力补写 spec
+
+本 skill 必须支持 backfill：为一个没有 plan/delta、但已经存在的能力，依据其权威行为来源（已有 SKILL.md、API 文档、维护者陈述的意图）补写 spec，而非从实现逆向猜测。
+
+#### Scenario: 给已有 skill 补 spec
+
+- GIVEN 一个已存在、无对应 plan 的 skill
+- WHEN 在 backfill 模式补它的 spec
+- THEN 依据该 skill 的 SKILL.md（其行为真源）写出 Lite spec
+- AND 不靠对实现的猜测编造契约
+
+#### Scenario: 只有实现可依、无权威来源
+
+- GIVEN 某能力既无 plan，也无可依据的行为描述，只能靠读实现猜
+- WHEN 要求 backfill
+- THEN 停下发问，而非凭实现推断契约
+
 ### Requirement: 拒绝凭空编造契约
 
 本 skill 必须停下发问，而非逆向推导一个没人提供的契约。
