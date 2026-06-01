@@ -29,8 +29,11 @@ squire/
 │   ├── build/SKILL.md
 │   ├── test/SKILL.md
 │   ├── review/SKILL.md
+│   ├── spec/SKILL.md                 # 持久 specs/ 真源的产出与维护
 │   ├── commit/SKILL.md
 │   └── propose/SKILL.md
+├── specs/                            # 持久规格真源（spec skill 维护，按 domain 一份）
+│   └── <domain>/spec.md              # 行为契约：Purpose + Requirements + Scenarios
 ├── rules/                            # 跨 skill 规则的单一真源（symlink 进各 skill 的 references/）
 │   ├── anti-patterns.md
 │   └── durable-context.md
@@ -366,11 +369,13 @@ Claude Code skill 触发是双轨：
 - `clarify` 并入 `shape` 作为 Clarify Phase——澄清几乎不独立发生
 - `refactor` / `optimize` / `diagnose` 并入 `shape` 作为 mode——它们都是"出方案"的不同类型
 - `plan` 改名 `think`（后再改名 `shape`）——更承载"思考 + 探索"的语义
-- `document` v2 再考虑——野心更大，需要想清楚
+- `document` v2 再考虑——野心更大，需要想清楚（其闭环内的一面后来收敛为 `spec` skill 落地，见下）
 - `release` v2 再考虑——各项目差异大，需要提炼通用机制
 - `submit` 改名 `push`（后再改名 `propose`）——push 更贴 git 语义，propose 更准地表达"开 PR 待评审"
 
-最终：explore / shape / build / test / review / commit / propose。
+最终（v1）：explore / shape / build / test / review / commit / propose。
+
+后续新增 `spec`（第 8 个）——把"持久 spec 真源管理"纳入闭环（review 与 commit 之间的 Crystallize 阶段），产物模型借鉴 OpenSpec（specs/ 真源 + plan 内 spec delta + 完成时合并）。这是 `document` 设想里闭环内的一面；对外文档管理仍排除，见 PRODUCT.md 边界 #2 的 2026-06-01 修订。
 
 ### 为什么 shape 用 mode 而不是多个 skill？
 
@@ -422,9 +427,9 @@ Claude Code plugin marketplace 是另一条独立的安装路径，需要维护 
 ### Skill 层面
 
 - `shape` 的 `arch` mode：架构调整、技术选型、模块重组
-- `document` skill：文档管理——野心更大，需要想清楚边界。explore 的"必读文档清单"在 document skill 落地后可能调整
+- `document` skill：其闭环内的一面已落地为 `spec` skill（持久 specs/ 真源）；剩下的对外文档管理仍排除（PRODUCT.md 边界 #2）。explore 的"必读文档清单"已含 `specs/`
 - `release` skill：发布流程——各项目差异大，需要提炼跨项目的通用机制（参考 Waza `/check` 的 Project Context Extraction 思路）
-- `health` skill：项目体检——文档与代码的漂移检测、依赖陈旧、CI 状态、文件大小热点等。explore 故意只读不验证，把"文档说的 vs 代码实际"的对照工作留给 health
+- `health` skill：项目体检——文档与代码的漂移检测、依赖陈旧、CI 状态、文件大小热点等。explore 故意只读不验证，把"文档说的 vs 代码实际"的对照工作留给 health。spec 的**自动漂移同步**依赖 health 提供"哪份 spec 漂了"的信号——在 health 落地前，spec 的"更新"只靠人主动发起
 
 ### 架构层面
 

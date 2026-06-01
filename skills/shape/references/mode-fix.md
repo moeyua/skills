@@ -37,6 +37,8 @@ List:
 
 If the project has no test framework → list the **minimal manual repro steps** (commands / action sequence / what to observe).
 
+If the fix changes the system's contracted behavior — the spec recorded the buggy behavior, or the correct behavior was never recorded — fill the common skeleton's `## Spec delta` (usually `## MODIFIED Requirements`) so spec can correct the source of truth after build.
+
 ## Anti-patterns
 
 - Seeing a null pointer and wrapping it in `if (x) ...` without asking why x is null.
