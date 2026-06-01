@@ -9,7 +9,7 @@ import {
 } from "../scripts/frontmatter.ts";
 
 function writeStub(content: string): string {
-  const dir = mkdtempSync(join(tmpdir(), "praxis-test-"));
+  const dir = mkdtempSync(join(tmpdir(), "squire-test-"));
   const path = join(dir, "SKILL.md");
   writeFileSync(path, content);
   return path;

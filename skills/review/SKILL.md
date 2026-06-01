@@ -1,6 +1,6 @@
 ---
 name: review
-description: 'Pre-merge code review. Scans 5 dimensions (plan consistency / code quality / error handling / test coverage / simplification), filters by confidence ≥ 80, outputs graded suggestions. Use when the user says "review" / "look at the changes" / "check before merge" / "把关" / "评审". Not for proactive refactoring (use think refactor), fixing bugs (use think fix), or adding tests (use test) — review only looks, never touches.'
+description: 'Pre-merge code review. Scans 5 dimensions (plan consistency / code quality / error handling / test coverage / simplification), filters by confidence ≥ 80, outputs graded suggestions. Use when the user says "review" / "look at the changes" / "check before merge" / "把关" / "评审". Not for proactive refactoring (use shape refactor), fixing bugs (use shape fix), or adding tests (use test) — review only looks, never touches.'
 when_to_use: "review, code review, pre-merge check, 评审, 把关, 合并前检查, 看变更"
 dispatch_intent: "5-dimension code review, confidence-filtered, suggestions only — no code changes"
 ---
@@ -20,7 +20,7 @@ Unfamiliar project? Run `/explore` first — a review without knowing the projec
 
 These constraints look like they weaken review's force; in fact they make review actually useful — a report that names problems without touching them is worth far more to the author than a PR that "fixed it all along the way" (with the latter, the author never had a chance to understand what happened).
 
-Two cross-skill rules apply to all praxis work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
 ## Outcome Contract
 
@@ -84,10 +84,10 @@ When running the plan dimension and no plan file is found, skip it and note "no 
 
 When you find a class of problem, point the author to the matching skill instead of taking over:
 
-- simplification opportunity → suggest `/think refactor`
+- simplification opportunity → suggest `/shape refactor`
 - test gap → suggest `/test add coverage`
-- bug → suggest `/think fix`
-- scope creep → flag it and let the user decide (revert the out-of-plan change / accept it / go back to think to change the plan)
+- bug → suggest `/shape fix`
+- scope creep → flag it and let the user decide (revert the out-of-plan change / accept it / go back to shape to change the plan)
 
 ## When done, report
 
@@ -114,7 +114,7 @@ Confidence threshold: ≥ 80
 - <one or two positive acknowledgments>
 
 ## Recommended Next
-- Critical first: <specific action, e.g. /think fix>
+- Critical first: <specific action, e.g. /shape fix>
 - Important next: <...>
 - Suggestion as appropriate
 ```

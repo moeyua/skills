@@ -1,5 +1,5 @@
 /**
- * Smoke test: runs every check from scripts/checks.ts against the live praxis
+ * Smoke test: runs every check from scripts/checks.ts against the live squire
  * repo. Replaces the deleted CLI entrypoint scripts/verify-skills.ts.
  *
  * As scripts/checks.ts grows new check functions, add a new it() block here.

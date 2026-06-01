@@ -1,6 +1,6 @@
 ---
 name: commit
-description: 'Turn working-tree changes into clean git history matching the project style; auto-split when there are clearly multiple topics. Use when the user says "commit" / "stage and commit" / "提交" / "入库". Not for pushing to a remote or opening a PR (use push), or writing release notes.'
+description: 'Turn working-tree changes into clean git history matching the project style; auto-split when there are clearly multiple topics. Use when the user says "commit" / "stage and commit" / "提交" / "入库". Not for pushing to a remote or opening a PR (use propose), or writing release notes.'
 when_to_use: "commit, stage changes, commit message, 提交, 入库, 整理变更, 拆提交"
 dispatch_intent: "Build clean git commits matching the project's history style"
 ---
@@ -9,7 +9,7 @@ dispatch_intent: "Build clean git commits matching the project's history style"
 
 Commit turns working-tree changes into clean git history — in one pass: gather context, decide what to stage, commit, verify. Don't interrupt the user unless you hit something you can't continue past. Every rule here exists so the commit history **truly records intent**: one commit one topic, the message says why not just what, and secrets never enter the repo.
 
-Two cross-skill rules apply to all praxis work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
 ## Outcome Contract
 

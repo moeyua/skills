@@ -1,17 +1,17 @@
 ---
-name: push
+name: propose
 description: 'Push the current branch to origin and open a PR on GitHub; the PR description is built from the whole branch history. Use when the user says "open a PR" / "push it" / "开 PR" / "提评审", or after committing to push to the remote and open a PR. Not for local commits (use commit), writing release notes, or non-GitHub remotes (no auto PR).'
 when_to_use: "push, open PR, pull request, merge request, 推送, 开 PR, 提评审"
 dispatch_intent: "Push the branch to origin and auto-create a PR on GitHub"
 ---
 
-# Push
+# Propose
 
-Push pushes the current branch to origin and opens a PR on GitHub — in one pass: gather git/gh context in parallel, push, `gh pr create`. Every rule here exists so the push and PR reflect the **whole branch history**: the title/body are synthesized from the entire branch, not just the latest commit; force operations and protected branches are never touched; the user's git/gh config is never changed.
+Propose pushes the current branch to origin and opens a PR on GitHub — in one pass: gather git/gh context in parallel, push, `gh pr create`. Every rule here exists so the push and PR reflect the **whole branch history**: the title/body are synthesized from the entire branch, not just the latest commit; force operations and protected branches are never touched; the user's git/gh config is never changed.
 
 GitHub-only: for a non-GitHub remote, finish the push, skip `gh pr create`, and let the user open the PR/MR manually.
 
-Two cross-skill rules apply to all praxis work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
 ## Outcome Contract
 
@@ -74,7 +74,7 @@ The body has a required structure:
 
 ## When to stop
 
-Push's failure mode is "force-pushing / overstepping the user's config". Stop and report in these cases:
+Propose's failure mode is "force-pushing / overstepping the user's config". Stop and report in these cases:
 
 - **Currently on a protected branch like `main` / `master` / `develop`** — refuse; have the user `git checkout -b <name>` first. Pushing straight to a main or protected branch is a destructive op.
 - **Uncommitted changes exist** — push assumes the commits are done; report the state and have the user `/commit` first or explicitly discard.

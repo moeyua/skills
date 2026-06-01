@@ -1,9 +1,9 @@
 /**
- * Frontmatter parser for praxis skill files.
+ * Frontmatter parser for squire skill files.
  *
  * Zero runtime dependencies — stdlib only. So first-run doesn't require `pnpm install`.
  *
- * praxis frontmatter has 4 string fields: name, description, when_to_use, dispatch_intent.
+ * squire frontmatter has 4 string fields: name, description, when_to_use, dispatch_intent.
  */
 
 import { readFileSync } from "node:fs";

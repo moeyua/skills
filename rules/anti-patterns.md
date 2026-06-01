@@ -1,6 +1,6 @@
 # Anti-Patterns
 
-> Cross-skill behavior constraints that apply to all praxis work, whatever the agent is currently doing.
+> Cross-skill behavior constraints that apply to all squire work, whatever the agent is currently doing.
 >
 > Every anti-pattern should come from a real failure, **not an imagined one**. Start empty; append one each time the agent slips up.
 

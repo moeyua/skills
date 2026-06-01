@@ -1,15 +1,15 @@
-# Praxis Architecture
+# Squire Architecture
 
 详细的架构、目录结构、技术栈选型、数据流、关键设计决策记录。面向**开发者和协作 agent**，不是给使用者看的。使用者看 [README.md](./README.md) 即可。
 
 ## 一句话
 
-praxis 的架构 = **真源层 + 内容层 + 索引层 + 生成层 + 验证层 + 测试层 + 元文档层**。整体设计目标：**多份元数据不靠人工维护，靠机械保证一致**。
+squire 的架构 = **真源层 + 内容层 + 索引层 + 生成层 + 验证层 + 测试层 + 元文档层**。整体设计目标：**多份元数据不靠人工维护，靠机械保证一致**。
 
 ## 目录结构
 
 ```
-praxis/
+squire/
 ├── README.md                         # 给使用者
 ├── ARCHITECTURE.md                   # 本文件
 ├── LICENSE
@@ -19,18 +19,18 @@ praxis/
 ├── skills/                           # 内容层（npx skills add 扫描这里）
 │   ├── RESOLVER.md                   # 人类可读路由索引
 │   ├── explore/SKILL.md
-│   ├── think/
+│   ├── shape/
 │   │   ├── SKILL.md                  # 主体 + clarify phase + mode picker
 │   │   └── references/
 │   │       ├── mode-fix.md
 │   │       ├── mode-feat.md
 │   │       ├── mode-refactor.md
 │   │       └── mode-perf.md
-│   ├── implement/SKILL.md
+│   ├── build/SKILL.md
 │   ├── test/SKILL.md
 │   ├── review/SKILL.md
 │   ├── commit/SKILL.md
-│   └── push/SKILL.md
+│   └── propose/SKILL.md
 ├── rules/                            # 跨 skill 规则的单一真源（symlink 进各 skill 的 references/）
 │   ├── anti-patterns.md
 │   └── durable-context.md
@@ -55,7 +55,7 @@ praxis/
 | 工具链             | `vite-plus`                 | test / lint / fmt / typecheck 统一在 `vp` 命令下                      |
 | 测试               | `vp test`（vitest 内核）    | TS 友好、快、API 类 jest                                              |
 | Lint / Format      | `oxlint` + `oxfmt`（自带）  | vite-plus 默认集成，速度快                                            |
-| Frontmatter parser | 手写，零运行时依赖          | praxis frontmatter 只有 4 个字段，不需要完整 YAML；手写还能给精确报错 |
+| Frontmatter parser | 手写，零运行时依赖          | squire frontmatter 只有 4 个字段，不需要完整 YAML；手写还能给精确报错 |
 | 版本真源           | `package.json` 的 `version` | TS 项目里 package.json 天然是版本入口，少一个文件                     |
 
 **不需要的**：
@@ -83,7 +83,7 @@ v1 因为不做 codegen，真源只是"开发者必须只编辑这里"的约定�
 
 ```
 skills/<name>/SKILL.md          # skill 主体，agent 触发时全文加载
-skills/think/references/*.md    # 多 mode 时的子文件，按需加载
+skills/shape/references/*.md    # 多 mode 时的子文件，按需加载
 rules/anti-patterns.md          # 跨 skill 的反模式（单一真源，symlink 进各 skill references/）
 rules/durable-context.md        # 跨 skill 的 memory 前置规则（同上）
 ```
@@ -91,14 +91,14 @@ rules/durable-context.md        # 跨 skill 的 memory 前置规则（同上）
 **SKILL.md vs references/**：
 
 - SKILL.md 全文加载——必须精简
-- 当 skill 超 ~200 行（比如 think 有 5 个 mode），mode-specific 内容拆 references/
+- 当 skill 超 ~200 行（比如 shape 有 5 个 mode），mode-specific 内容拆 references/
 - agent 读完 SKILL.md，根据 mode picker 决定**再加载哪个 reference**——按需加载省 token
 
 **rules/ vs skills/**：
 
 - skills/ 是"用户触发"的能力——Claude Code 扫 skills/，触发时加载对应 SKILL.md
 - rules/ 是跨 skill 规则的**单一真源**。它们不靠独立安装，而是 **symlink 进每个 skill 的 `references/`**——`npx skills add` 装 skill 时会跟随 symlink、把规则内容当真文件一起装到所有 agent（实测：多 agent 的 `~/.agents` 共享 store + 外层 symlink 布局都能解析，删源仓库后仍自包含）。
-- 每个 SKILL.md 顶部有一段统一指针：这两条规则适用于所有 praxis 工作，本会话未读则读一次、读过别重读——第一个触发的 skill 加载，整会话共享，不随 skill 数翻倍。
+- 每个 SKILL.md 顶部有一段统一指针：这两条规则适用于所有 squire 工作，本会话未读则读一次、读过别重读——第一个触发的 skill 加载，整会话共享，不随 skill 数翻倍。
 - **Windows caveat**：repo 里存的是 symlink，Windows 上 `git clone` 可能不还原（需 `git config core.symlinks true`，或用 `npx skills add --copy`）。
 
 ### 3. 索引/路由
@@ -169,7 +169,7 @@ ARCHITECTURE.md                 # 给开发者和协作 agent 看（本文件）
 LICENSE
 ```
 
-v1 暂不写 `AGENTS.md` / `CLAUDE.md`——praxis 当前是单人项目，等多人协作或需要约束 agent 自身行为时再加。
+v1 暂不写 `AGENTS.md` / `CLAUDE.md`——squire 当前是单人项目，等多人协作或需要约束 agent 自身行为时再加。
 
 ## 数据流
 
@@ -239,9 +239,9 @@ dispatch_intent: "一句话意图，给路由表用"
 |---|---|
 ```
 
-`think` 比其他 skill 多 **Clarify Phase** 和 **Mode Picker** 两个 section；mode-specific 内容拆到 `references/mode-*.md`。
+`shape` 比其他 skill 多 **Clarify Phase** 和 **Mode Picker** 两个 section；mode-specific 内容拆到 `references/mode-*.md`。
 
-## think 的 mode 系统（详细）
+## shape 的 mode 系统（详细）
 
 | Mode       | 触发条件                                   | Clarify 关注               | 输出结构                       |
 | ---------- | ------------------------------------------ | -------------------------- | ------------------------------ |
@@ -254,9 +254,9 @@ dispatch_intent: "一句话意图，给路由表用"
 **mode 识别流程**：
 
 ```
-用户 /think <内容>
+用户 /shape <内容>
   ↓
-think SKILL.md 加载
+shape SKILL.md 加载
   ↓
 Clarify Phase（共通）
   ├── 提问澄清意图
@@ -274,7 +274,7 @@ Mode Picker
 
 - 默认无 mode 即是探索状态——不需要单独 brainstorm skill
 - mode 不是用户指定，是 agent 在 clarify 过程中识别
-- 知道意图 ≠ 不需要澄清（用户说 `/think 重构这块`，agent 仍可能问"重构成什么样？保留哪些 API？"）
+- 知道意图 ≠ 不需要澄清（用户说 `/shape 重构这块`，agent 仍可能问"重构成什么样？保留哪些 API？"）
 - 出方案前不写任何代码 / scaffolding / pseudo-code
 - 不同 mode 的 plan 关注点不同：
   - fix 关注根因和回归测试
@@ -321,13 +321,13 @@ v1 阶段没有 codegen，版本号只在 package.json 一处。
 
 ## 安装机制
 
-praxis 通过 [vercel-labs/skills](https://github.com/vercel-labs/skills) CLI 安装到 Claude Code，**不用** Claude Code plugin marketplace、**不用** install.sh 脚本。
+squire 通过 [vercel-labs/skills](https://github.com/vercel-labs/skills) CLI 安装到 Claude Code，**不用** Claude Code plugin marketplace、**不用** install.sh 脚本。
 
 ### 命令名 = 目录名
 
 Personal/project skill 的触发命令**取目录名**，不是 frontmatter 的 `name` 字段（[Claude Code skills 文档](https://code.claude.com/docs/en/skills)）。
 
-praxis 的 `skills/think/SKILL.md` 装到 `~/.claude/skills/think/` 后，触发命令是 `/think`。即使 frontmatter 写 `name: something-else` 也不改这点。
+squire 的 `skills/shape/SKILL.md` 装到 `~/.claude/skills/shape/` 后，触发命令是 `/shape`。即使 frontmatter 写 `name: something-else` 也不改这点。
 
 ### 触发方式：auto + manual
 
@@ -346,8 +346,8 @@ Claude Code skill 触发是双轨：
 
 | 冲突                                                      | 行为                                                                                 |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `/review`（Claude Code 内置）vs praxis review skill       | praxis 接管 `/review`                                                                |
-| `/commit`（commit-commands plugin）vs praxis commit skill | plugin 有 namespace（`/commit-commands:commit`），不冲突；用户输 `/commit` 走 praxis |
+| `/review`（Claude Code 内置）vs squire review skill       | squire 接管 `/review`                                                                |
+| `/commit`（commit-commands plugin）vs squire commit skill | plugin 有 namespace（`/commit-commands:commit`），不冲突；用户输 `/commit` 走 squire |
 
 ### 默认 symlink
 
@@ -355,7 +355,7 @@ Claude Code skill 触发是双轨：
 
 ### 不在 description 里放 `/<name>` trigger phrases
 
-`/<name>` 是 manual invocation 语法，**不走** description-based auto-routing。在 description / when_to_use 里写 `/think` / `/commit` 等关键词没意义（不影响自动匹配，也不影响手动触发）。只放自然语言关键词（"想想" / "出方案" / "提交"等）。
+`/<name>` 是 manual invocation 语法，**不走** description-based auto-routing。在 description / when_to_use 里写 `/shape` / `/commit` 等关键词没意义（不影响自动匹配，也不影响手动触发）。只放自然语言关键词（"想想" / "出方案" / "提交"等）。
 
 ## 关键设计决策记录
 
@@ -363,29 +363,29 @@ Claude Code skill 触发是双轨：
 
 原始 demo.md 有 13 个 skill（explore / plan / implement / test / review / commit / diagnose / clarify / refactor / optimize / submit / document / release）。决策过程：
 
-- `clarify` 并入 `think` 作为 Clarify Phase——澄清几乎不独立发生
-- `refactor` / `optimize` / `diagnose` 并入 `think` 作为 mode——它们都是"出方案"的不同类型
-- `plan` 改名 `think`——更承载"思考 + 探索"的语义
+- `clarify` 并入 `shape` 作为 Clarify Phase——澄清几乎不独立发生
+- `refactor` / `optimize` / `diagnose` 并入 `shape` 作为 mode——它们都是"出方案"的不同类型
+- `plan` 改名 `think`（后再改名 `shape`）——更承载"思考 + 探索"的语义
 - `document` v2 再考虑——野心更大，需要想清楚
 - `release` v2 再考虑——各项目差异大，需要提炼通用机制
-- `submit` 改名 `push`——更贴 git 语义
+- `submit` 改名 `push`（后再改名 `propose`）——push 更贴 git 语义，propose 更准地表达"开 PR 待评审"
 
-最终：explore / think / implement / test / review / commit / push。
+最终：explore / shape / build / test / review / commit / propose。
 
-### 为什么 think 用 mode 而不是多个 skill？
+### 为什么 shape 用 mode 而不是多个 skill？
 
-设计 A（意图即 skill，每个独立）vs 设计 B（think 统一入口 + mode）的取舍：
+设计 A（意图即 skill，每个独立）vs 设计 B（shape 统一入口 + mode）的取舍：
 
 - 设计 A 假设**用户主动声明意图**
 - 设计 B 假设**意图是聊出来的**——"自己都不知道想要什么"
 
 观察到很多开发是"边聊边明白"的，B 更贴合真实场景。
 
-代价：think SKILL.md 不能太大，所以 mode-specific 内容拆 references/。
+代价：shape SKILL.md 不能太大，所以 mode-specific 内容拆 references/。
 
 ### 为什么默认 mode 没有名字？
 
-默认状态承载"探索 / 头脑风暴 / 价值判断"——brainstorm 就是没有任何 mode 的 think。给它命名（比如 `brainstorm` mode）反而增加认知负担，不命名让"默认状态 = 探索"成为天然的事实。
+默认状态承载"探索 / 头脑风暴 / 价值判断"——brainstorm 就是没有任何 mode 的 shape。给它命名（比如 `brainstorm` mode）反而增加认知负担，不命名让"默认状态 = 探索"成为天然的事实。
 
 ### 为什么不做 Marker（Waza 的 🥷）？
 
@@ -393,7 +393,7 @@ Marker 的主要价值是"反 hallucination invariant"——强制 agent 输出�
 
 ### 为什么不发 npm 包？
 
-`npx skills add` 走 GitHub 直拉，不依赖 npm 发布。发 npm 唯一额外好处是 Pi 集成（`pi.skills` 字段），但 praxis 不针对 Pi。少一个分发渠道少一份维护负担。
+`npx skills add` 走 GitHub 直拉，不依赖 npm 发布。发 npm 唯一额外好处是 Pi 集成（`pi.skills` 字段），但 squire 不针对 Pi。少一个分发渠道少一份维护负担。
 
 ### 为什么不写 marketplace.json？
 
@@ -421,7 +421,7 @@ Claude Code plugin marketplace 是另一条独立的安装路径，需要维护 
 
 ### Skill 层面
 
-- `think` 的 `arch` mode：架构调整、技术选型、模块重组
+- `shape` 的 `arch` mode：架构调整、技术选型、模块重组
 - `document` skill：文档管理——野心更大，需要想清楚边界。explore 的"必读文档清单"在 document skill 落地后可能调整
 - `release` skill：发布流程——各项目差异大，需要提炼跨项目的通用机制（参考 Waza `/check` 的 Project Context Extraction 思路）
 - `health` skill：项目体检——文档与代码的漂移检测、依赖陈旧、CI 状态、文件大小热点等。explore 故意只读不验证，把"文档说的 vs 代码实际"的对照工作留给 health
@@ -432,7 +432,7 @@ Claude Code plugin marketplace 是另一条独立的安装路径，需要维护 
 - `.claude-plugin/marketplace.json`：plugin marketplace 支持
 - `AGENTS.md` / `CLAUDE.md`：协作 agent 的 contributor guide
 - Marker（🥷 等价物）：反 hallucination invariant，如果出现体感问题
-- `rules/praxis-routing.md`：可选注入 host 的路由提示（给 Codex / Pi 等没有自动路由的 agent）
+- `rules/squire-routing.md`：可选注入 host 的路由提示（给 Codex / Pi 等没有自动路由的 agent）
 
 ### 分发渠道
 

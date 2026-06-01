@@ -2,7 +2,7 @@
  * Unit tests for scripts/checks.ts.
  *
  * Each test builds an isolated fake repo in tmpdir so the checks run on
- * controlled fixtures, not the live praxis repo. The live-repo verification
+ * controlled fixtures, not the live squire repo. The live-repo verification
  * lives in tests/smoke/verify-skills.test.ts.
  */
 
@@ -64,7 +64,7 @@ function buildFrontmatter(s: SkillSpec): string {
 }
 
 function makeRepo(skills: SkillSpec[], opts: RepoOpts = {}): string {
-  const root = mkdtempSync(join(tmpdir(), "praxis-fix-"));
+  const root = mkdtempSync(join(tmpdir(), "squire-fix-"));
   mkdirSync(join(root, "skills"), { recursive: true });
   for (const s of skills) {
     const dir = join(root, "skills", s.name);

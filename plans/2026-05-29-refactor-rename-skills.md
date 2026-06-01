@@ -2,7 +2,7 @@
 mode: refactor
 title: 重命名三个 skill（think→shape / implement→build / push→propose）+ 项目改名 praxis→squire
 created: 2026-05-29
-status: approved
+status: done
 ---
 
 # Rename skills + 项目改名

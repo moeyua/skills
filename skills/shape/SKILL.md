@@ -1,19 +1,19 @@
 ---
-name: think
-description: 'Clarify a fuzzy idea into an executable plan. Modes: default (explore / brainstorm) / fix / feat / refactor / perf; named modes write a plan file to plans/. Use when the user says "think it through" / "how should we do this" / "出方案" / "想想", or anything that needs thinking through before coding. Not for executing an existing plan (use implement), value judgments ("is this worth doing"), or a plain API-usage question.'
+name: shape
+description: 'Clarify a fuzzy idea into an executable plan. Modes: default (explore / brainstorm) / fix / feat / refactor / perf; named modes write a plan file to plans/. Use when the user says "think it through" / "how should we do this" / "出方案" / "想想", or anything that needs thinking through before coding. Not for executing an existing plan (use build), value judgments ("is this worth doing"), or a plain API-usage question.'
 when_to_use: "think, plan, design, brainstorm, approach, 想想, 出方案, 设计, 怎么做, 头脑风暴"
 dispatch_intent: "Clarify intent and produce a plan; named modes write a plan file"
 ---
 
-# Think
+# Shape
 
-Think is the stage for judging intent — clarify a fuzzy idea into clear intent, then translate that into an executable plan. It writes no code, touches no scaffolding, leaves no placeholders. Every rule here exists so that by the time a plan is approved, it already holds up to strict execution in implement — no discovering mid-build that "this part was never actually thought through".
+Shape is the stage for judging intent — clarify a fuzzy idea into clear intent, then translate that into an executable plan. It writes no code, touches no scaffolding, leaves no placeholders. Every rule here exists so that by the time a plan is approved, it already holds up to strict execution in build — no discovering mid-build that "this part was never actually thought through".
 
-Unfamiliar project or module? Run `/explore` first — think assumes you already understand the project; forcing it without that base invites hallucination.
+Unfamiliar project or module? Run `/explore` first — shape assumes you already understand the project; forcing it without that base invites hallucination.
 
 Give your opinion directly; take a position. Avoid "that's a great question" / "there are many ways" / "you could consider" — hedging dodges the judgment, and the other person, handed a vague answer, just has to ask again; you both lose time. If you're unsure, say what evidence would change your judgment, so they know it's a position, not stubbornness.
 
-Two cross-skill rules apply to all praxis work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
 ## Outcome Contract
 
@@ -33,7 +33,7 @@ The bar for "clarified enough" (meet it before Phase 2):
 - the key constraints are known (interface boundary / behavior to preserve / baseline numbers / what can't be touched)
 - no blocking ambiguity (two reasonable readings with a big cost difference must be resolved first)
 
-**Knowing the intent ≠ not needing to clarify.** Even when the user says `/think refactor this`, you may still need to ask "which API behavior stays? how much risk is acceptable? which regression tests run?" — a clear mode doesn't mean clear constraints.
+**Knowing the intent ≠ not needing to clarify.** Even when the user says `/shape refactor this`, you may still need to ask "which API behavior stays? how much risk is acceptable? which regression tests run?" — a clear mode doesn't mean clear constraints.
 
 If the user says "you decide" or "whatever you think is best", give a recommendation + a one-line reason and let them confirm or object, rather than silently deciding for them — silently deciding robs them of the chance to push back.
 
@@ -68,7 +68,7 @@ Output shapes: draft directions / option comparisons / a list of open questions.
 
 When to converge into a named mode: the user's goal sharpens ("OK, I'll do X") → switch to the matching mode → Phase 3. When stuck in brainstorm with no exit, propose converging yourself: "Based on this I lean toward X mode — want to go that way?" — exploring forever without converging is also a form of dodging.
 
-**Value judgments are out of think's scope.** If the user asks "is this worth doing" / "should we do this", say plainly that praxis doesn't handle that — praxis decides how, not whether. You can offer a one-line observation ("this looks like a tradeoff between X and Y"), but don't reach a "should / shouldn't do it" verdict for them.
+**Value judgments are out of shape's scope.** If the user asks "is this worth doing" / "should we do this", say plainly that squire doesn't handle that — squire decides how, not whether. You can offer a one-line observation ("this looks like a tradeoff between X and Y"), but don't reach a "should / shouldn't do it" verdict for them.
 
 ## Phase 3: Propose Approach (named mode)
 
@@ -80,13 +80,13 @@ Name the **most fragile assumption** (premise collapse) explicitly:
 
 This step forces you to see the plan's weak point. If the fragile assumption is load-bearing (one fall and the whole plan collapses), **reshape the design so it survives even if the assumption fails** — don't bet on the assumption.
 
-A blocking ambiguity can't be chosen silently — say "the two readings conflict at X; A or B?". Choosing silently pushes the judgment down onto the implement stage.
+A blocking ambiguity can't be chosen silently — say "the two readings conflict at X; A or B?". Choosing silently pushes the judgment down onto the build stage.
 
 ## Phase 4: Validate Before Handing Off
 
-Self-check before the plan is done — this prevents "looks complete but implement hits a wall when a key thing was never stated".
+Self-check before the plan is done — this prevents "looks complete but build hits a wall when a key thing was never stated".
 
-- [ ] more than 8 files / introduces 1 new service → acknowledge it explicitly (large scope trips up implement)
+- [ ] more than 8 files / introduces 1 new service → acknowledge it explicitly (large scope trips up build)
 - [ ] more than 3 components exchange data → draw an ASCII diagram, look for cycles (fewer than 3 needs no diagram; drawing one is noise)
 - [ ] listed every meaningful test path (happy / errors / edges)
 - [ ] every step that changes external state has a rollback path
@@ -95,7 +95,7 @@ Self-check before the plan is done — this prevents "looks complete but impleme
 
 **Plan red flags** (any one means the plan isn't done — go back and fix it):
 
-- a placeholder (`TBD` / `TODO` / `implement later` / `similar to step N`) — a sign of "thought through but not written down", which is equivalent to improvising at build time.
+- a placeholder (`TBD` / `TODO` / `build later` / `similar to step N`) — a sign of "thought through but not written down", which is equivalent to improvising at build time.
 - any phase can't ship on its own (only useful once the next phase lands) — phases chained into one rope means a mid-chain problem forces a full rollback.
 - a "Phase 0: investigate / spike" exists — investigation belongs before the plan, not inside it as a step.
 
@@ -114,19 +114,19 @@ Plan written to plans/YYYY-MM-DD-<slug>.md
 
 [2-3 line summary]
 
-To build it: say "implement this plan". After implementing, run review to check it.
+To build it: say "build this plan". After building, run review to check it.
 ```
 
-**The user saying "implement this plan" / "go ahead" / "按计划做" → treat it as approval and hand straight to implement.** Don't re-litigate — asking "are you sure?" about a plan they just approved pushes the judgment back onto them, and being bounced right after deciding is annoying.
+**The user saying "build this plan" / "go ahead" / "按计划做" → treat it as approval and hand straight to build.** Don't re-litigate — asking "are you sure?" about a plan they just approved pushes the judgment back onto them, and being bounced right after deciding is annoying.
 
 If the user approves and then says "actually, let me reconsider...", don't redo it; ask "you just approved the plan — which one point do you want to change?" — lock down the smallest edit surface and avoid restarting the whole plan.
 
 ## When to stop
 
-Think's failure mode is always "should have paused, but pushed ahead". Stop and handle these, don't force through:
+Shape's failure mode is always "should have paused, but pushed ahead". Stop and handle these, don't force through:
 
 - **Clarify hasn't met the checklist but you want to jump to propose** — Phase 1 is the convergence gate; jumping early means guessing the intent.
 - **You want to write a plan file during brainstorm** — default mode writes no plan; forcing one out pretends the intent converged.
 - **Citing an external API / library / CLI from memory** — check the docs or read existing code before it goes in the plan; see `references/anti-patterns.md`.
-- **The user asks whether it's worth doing** — praxis doesn't answer at that level; say it's out of scope and give a one-line observation, no more.
+- **The user asks whether it's worth doing** — squire doesn't answer at that level; say it's out of scope and give a one-line observation, no more.
 - **Stuck in brainstorm with no exit** — propose converging instead of exploring further; exploring past a certain depth without converging is itself a stop signal.

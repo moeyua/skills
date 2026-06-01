@@ -1,6 +1,6 @@
 ---
 name: test
-description: 'Run, add, or debug tests — the single entry point for test work. Use when the user says "run the tests" / "add tests" / "add a regression for X" / "this test is failing, help me look" / "跑测试" / "补测试". Not for the minimal test set a plan requires (write that via TDD inside implement), non-test code changes (use implement), or pure review without writing tests (use review).'
+description: 'Run, add, or debug tests — the single entry point for test work. Use when the user says "run the tests" / "add tests" / "add a regression for X" / "this test is failing, help me look" / "跑测试" / "补测试". Not for the minimal test set a plan requires (write that via TDD inside build), non-test code changes (use build), or pure review without writing tests (use review).'
 when_to_use: "test, run tests, add tests, regression, coverage, flaky, failing test, 跑测试, 补测试, 回归, 覆盖率, 测试挂了"
 dispatch_intent: "One entry point to run / add / debug tests"
 ---
@@ -13,7 +13,7 @@ Unfamiliar project? Run `/explore` first — starting without knowing the projec
 
 Test follows the project: test framework, commands, directory structure, naming, assertion style, mock conventions — all taken from what the project already uses, inventing no new conventions. If the project has no framework installed, report the state and let the user decide whether to introduce one; **never run a silent `pnpm add`**.
 
-Two cross-skill rules apply to all praxis work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
 ## Outcome Contract
 
@@ -44,7 +44,7 @@ Failures:
 - <file>::<test-name>
   → <assertion or error first line>
 
-Next: debug one failure with /test <file::name> / fix the code via /think fix
+Next: debug one failure with /test <file::name> / fix the code via /shape fix
 ```
 
 With multiple failures, group them by "looks related / looks independent" — failures with a shared root cause are far faster handled together than one by one.
@@ -75,14 +75,14 @@ Verify: <command> → pass (N new green)
 Next: run the full /test for regressions / run commit to land it
 ```
 
-**Cover only the agreed scope** — write any refactor opportunity you spot into the report and route it back to `/think refactor`; don't touch it on the side.
+**Cover only the agreed scope** — write any refactor opportunity you spot into the report and route it back to `/shape refactor`; don't touch it on the side.
 
 ## Debug
 
 1. **Read three things**: the failing test code + the full error message + the code under test. All three — missing any one risks a misdiagnosis.
 2. **Decide among three possibilities**:
    - **the test is wrong** (bad assertion / wrong mock / expectation out of sync with the implementation) → fix the test
-   - **the code is wrong** (real bug) → don't fix it here; route back to `/think fix`
+   - **the code is wrong** (real bug) → don't fix it here; route back to `/shape fix`
    - **flaky** (timing / resource / global state / random seed) → report the root cause; for a race condition, mark a TODO and let the user decide
 3. **Don't "patch" a test into passing** — tell clearly which class of problem it is and handle it on the matching path. Editing a test's assertion to make it pass erases the signal source.
 
@@ -105,8 +105,8 @@ Test's most common failure is "bypassing the signal to make a test pass". Stop a
 
 - **You want to `.skip` / delete a test / add `--no-verify` to make it pass** — never bypass; a failure is the signal.
 - **A test still fails after 1 retry** — no more retries, treat it as a failure; passing after many retries and calling it good is self-deception.
-- **The user asks to "make test X pass" but X reflects a real bug** — refuse; route back to `/think fix` so the bug takes the proper fix path.
+- **The user asks to "make test X pass" but X reflects a real bug** — refuse; route back to `/shape fix` so the bug takes the proper fix path.
 - **No test framework / command found** (and it's not an empty project) — report, let the user name the command or install a framework first.
-- **The project has no framework but the user wants to "run the tests"** — report the state, ask whether to introduce testing via `/think feat`.
-- **You want to write a test asserting a feature not yet implemented** — the code under test must already exist, otherwise it's TDD overreach (TDD is implement's job, not test's).
-- **You want to refactor the code under test on the side** — scope creep; write the refactor opportunity into the report but don't touch it, route it back to `/think refactor`.
+- **The project has no framework but the user wants to "run the tests"** — report the state, ask whether to introduce testing via `/shape feat`.
+- **You want to write a test asserting a feature not yet implemented** — the code under test must already exist, otherwise it's TDD overreach (TDD is build's job, not test's).
+- **You want to refactor the code under test on the side** — scope creep; write the refactor opportunity into the report but don't touch it, route it back to `/shape refactor`.

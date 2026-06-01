@@ -1,4 +1,4 @@
-# Praxis Skill Resolver
+# Squire Skill Resolver
 
 > A trigger-to-skill routing table. Claude Code matches automatically via each SKILL.md's `description`; this doc is the human-facing central index, and also the basis `tests/smoke/verify-skills.test.ts` checks against. When you change a skill's scope, update this in sync.
 
@@ -14,13 +14,13 @@
 
 | trigger                                                                                                            | skill                   |
 | ------------------------------------------------------------------------------------------------------------------ | ----------------------- |
-| "think it through" / "how should we do this" / "出方案" / "should we" / brainstorm / error diagnosis / new feature / refactor / perf optimization / `/think` / think before acting | `skills/think/SKILL.md` |
+| "think it through" / "how should we do this" / "出方案" / "should we" / brainstorm / error diagnosis / new feature / refactor / perf optimization / `/shape` / shape before acting | `skills/shape/SKILL.md` |
 
 ### 2. Execute
 
 | trigger                                                                                       | skill                       |
 | --------------------------------------------------------------------------------------------- | --------------------------- |
-| "implement" / "build it" / "apply the plan" / "实现" / "落实" / `/implement` / land code after think produces a plan | `skills/implement/SKILL.md` |
+| "implement" / "build it" / "apply the plan" / "实现" / "落实" / `/build` / land code after shape produces a plan | `skills/build/SKILL.md` |
 
 ### 3. Verify
 
@@ -39,7 +39,7 @@
 | trigger                                                                          | skill                    |
 | -------------------------------------------------------------------------------- | ------------------------ |
 | "commit" / "stage and commit" / "入库" / `/commit` / land code after editing     | `skills/commit/SKILL.md` |
-| "open a PR" / "push it" / "提评审" / `/push` / push to the remote and open a PR after committing; GitHub-only | `skills/push/SKILL.md`   |
+| "open a PR" / "push it" / "提评审" / `/propose` / push to the remote and open a PR after committing; GitHub-only | `skills/propose/SKILL.md`   |
 
 ## Disambiguation
 
@@ -52,7 +52,7 @@ Skills don't chain automatically. Each one stops when done and waits for the use
 Base loop:
 
 ```
-explore → think → implement → test → review → commit → push
+explore → shape → build → test → review → commit → propose
 ```
 
-think branches internally by intent: default / fix / feat / refactor / perf.
+shape branches internally by intent: default / fix / feat / refactor / perf.
