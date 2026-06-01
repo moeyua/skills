@@ -30,6 +30,8 @@ Also state explicitly what's **allowed to change**:
 - internal function names / private method signatures / module structure / file organization — can change
 - undocumented implementation details — can change
 
+Because behavior is preserved, the common skeleton's `## Spec delta` is normally `None` — a refactor that needs a spec change is actually changing behavior, and belongs in fix or feat mode.
+
 ### `## Regression coverage`
 
 How to verify the invariants really didn't change. Three layers:

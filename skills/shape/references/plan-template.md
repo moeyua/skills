@@ -6,7 +6,7 @@ Every named mode follows this common skeleton; mode-specific fields are detailed
 
 ## File structure
 
-```markdown
+````markdown
 ---
 mode: fix | feat | refactor | perf
 title: <one-line topic>
@@ -40,6 +40,35 @@ status: draft
 ## Public surface changes
 
 Changes to API / schema / config / CLI / file interfaces. If none → "None".
+
+## Spec delta
+
+If this change alters externally observable behavior, state the change to the persistent `specs/<domain>/spec.md` as a delta, for the spec skill to crystallize after build. If it changes no observable behavior (pure refactor / perf holding behavior) → "None".
+
+```markdown
+## ADDED Requirements
+
+### Requirement: <name>
+
+The system SHALL <observable behavior>.
+
+#### Scenario: <name>
+
+- GIVEN ... / WHEN ... / THEN ...
+
+## MODIFIED Requirements
+
+### Requirement: <existing name>
+
+The system SHALL <new behavior>. (Previously: <old behavior>)
+
+## REMOVED Requirements
+
+### Requirement: <name>
+
+(Deprecated because ...)
+```
+````
 
 ## Implementation steps
 
@@ -81,6 +110,7 @@ Add extra fields per mode; see the matching reference:
 - feat: `## Interface boundary` + `## Acceptance scenarios`
 - refactor: `## Behavior invariants` + `## Regression coverage`
 - perf: `## Baseline` + `## Target` + `## Measurement`
+
 ```
 
 ## Naming the slug
@@ -103,3 +133,4 @@ Semantics of the frontmatter `status` field:
 - `done`: changed after implement + review + commit complete (updated by the implement / review skill)
 
 In v1, support `draft` / `approved` first; leave `done` to v2, handled by the review skill.
+```

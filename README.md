@@ -6,17 +6,18 @@
 
 ## Skills
 
-7 个 skill 覆盖开发闭环：
+8 个 skill 覆盖开发闭环：
 
-| Skill     | 阶段     | 作用                                                   |
-| :-------- | :------- | :----------------------------------------------------- |
-| `explore` | 0. 理解  | 理解项目结构、技术栈、入口、相关代码和运行方式         |
-| `shape`   | 1. 设计  | 意图澄清 + 出方案（多 mode）                           |
-| `build`   | 2. 执行  | 按 shape 出的方案做最小、可控、符合项目风格的代码修改  |
-| `test`    | 3. 验证  | 补充或执行测试，验证功能、修复和边界场景               |
-| `review`  | 4. 把关  | 检查代码质量、边界条件、安全、性能和无关改动           |
-| `commit`  | 5a. 入库 | 整理变更，生成清晰的 commit message，必要时拆分提交    |
-| `propose` | 5b. 推送 | 准备 PR/MR 描述、测试说明、风险说明和 review checklist |
+| Skill     | 阶段     | 作用                                                        |
+| :-------- | :------- | :---------------------------------------------------------- |
+| `explore` | 0. 理解  | 理解项目结构、技术栈、入口、相关代码和运行方式              |
+| `shape`   | 1. 设计  | 意图澄清 + 出方案（多 mode）                                |
+| `build`   | 2. 执行  | 按 shape 出的方案做最小、可控、符合项目风格的代码修改       |
+| `test`    | 3. 验证  | 补充或执行测试，验证功能、修复和边界场景                    |
+| `review`  | 4. 把关  | 检查代码质量、边界条件、安全、性能和无关改动                |
+| `spec`    | 5. 沉淀  | 把变更的 spec delta 结晶进持久 specs/ 真源，或纠正已有 spec |
+| `commit`  | 6a. 入库 | 整理变更，生成清晰的 commit message，必要时拆分提交         |
+| `propose` | 6b. 推送 | 准备 PR/MR 描述、测试说明、风险说明和 review checklist      |
 
 ## Install
 
@@ -31,17 +32,17 @@ npx skills add .
 - `-y` 跳过确认
 - `--copy` 改为复制；默认是 symlink，编辑仓库内 SKILL.md 立刻生效
 
-装完后触发命令：`/explore` / `/shape` / `/build` / `/test` / `/review` / `/commit` / `/propose`。
+装完后触发命令：`/explore` / `/shape` / `/build` / `/test` / `/review` / `/spec` / `/commit` / `/propose`。
 
 **注意冲突**：squire 的 `/review` 会遮蔽 Claude Code 内置 `/review`（personal skill 优先级高于 command）。如果想用内置 review，先卸载 squire review。`/commit` 跟 `commit-commands` plugin 不撞（plugin 命令有 namespace `/commit-commands:commit`），但用户级 `/commit` 仍走 squire。
 
 ## 工作流
 
 ```
-explore → shape → build → test → review → commit → propose
+explore → shape → build → test → review → spec → commit → propose
 ```
 
-每个 skill 完成后**默认停下，等用户决定下一步**。技能不自动串联——技能之间的转移是用户的明确动作。
+每个 skill 完成后**默认停下，等用户决定下一步**。技能不自动串联——技能之间的转移是用户的明确动作。`spec` 是条件环节——变更改变了对外行为时才介入，把行为契约沉淀进 `specs/` 真源。
 
 ## shape 的 mode
 

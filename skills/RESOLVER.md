@@ -34,7 +34,13 @@
 | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
 | "review" / "look at the changes" / "把关" / "check before merge" / `/review` / 5-dimension scan, look-don't-touch; supports an aspect filter | `skills/review/SKILL.md` |
 
-### 5. Land / Push
+### 5. Crystallize
+
+| trigger                                                                                                                                                                | skill                  |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| "record this behavior" / "crystallize the spec" / "update specs/X" / `/spec` / merge a built change's spec delta into the source of truth, or correct an existing spec | `skills/spec/SKILL.md` |
+
+### 6. Land / Push
 
 | trigger                                                                                                          | skill                     |
 | ---------------------------------------------------------------------------------------------------------------- | ------------------------- |
@@ -52,7 +58,9 @@ Skills don't chain automatically. Each one stops when done and waits for the use
 Base loop:
 
 ```
-explore → shape → build → test → review → commit → propose
+explore → shape → build → test → review → spec → commit → propose
 ```
 
 shape branches internally by intent: default / fix / feat / refactor / perf.
+
+spec runs at the tail when a change alters behavior worth recording — it crystallizes the plan's spec delta into the persistent `specs/` source of truth, or corrects an existing spec. It's conditional, not every change touches it.
