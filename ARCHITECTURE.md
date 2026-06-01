@@ -309,7 +309,7 @@ Mode Picker
 
 v1 阶段没有 codegen，版本号只在 package.json 一处。
 
-### 场景 3：新增第 8 个 skill `inspect`
+### 场景 3：新增下一个 skill `inspect`
 
 ```
 1. mkdir skills/inspect
@@ -317,7 +317,7 @@ v1 阶段没有 codegen，版本号只在 package.json 一处。
 3. 在 skills/RESOLVER.md 加一行
 4. pnpm test
    ├── smoke 自动发现新 skill 并跑所有 check
-   ├── 触发词 Jaccard 检查它跟现有 7 个不撞车
+   ├── 触发词 Jaccard 检查它跟现有 skill 不撞车
    └── 路由一致性检查（RESOLVER.md 是否列出）
 5. git commit
 ```
@@ -362,7 +362,7 @@ Claude Code skill 触发是双轨：
 
 ## 关键设计决策记录
 
-### 为什么 7 个 skill，不是 13 个？
+### 为什么先做 7 个 skill，不是 13 个？（后增至 8）
 
 原始 demo.md 有 13 个 skill（explore / plan / implement / test / review / commit / diagnose / clarify / refactor / optimize / submit / document / release）。决策过程：
 
@@ -375,7 +375,7 @@ Claude Code skill 触发是双轨：
 
 最终（v1）：explore / shape / build / test / review / commit / propose。
 
-后续新增 `spec`（第 8 个）——把"持久 spec 真源管理"纳入闭环（review 与 commit 之间的 Crystallize 阶段），产物模型借鉴 OpenSpec（specs/ 真源 + plan 内 spec delta + 完成时合并）。这是 `document` 设想里闭环内的一面；对外文档管理仍排除，见 PRODUCT.md 边界 #2 的 2026-06-01 修订。
+后续新增 `spec`（第 8 个）——把"持久 spec 真源管理"纳入闭环（review 与 commit 之间的记录阶段），产物模型借鉴 OpenSpec（specs/ 真源 + plan 内 spec delta + 完成时合并）。这是 `document` 设想里闭环内的一面；对外文档管理仍排除，见 PRODUCT.md 边界 #2 的 2026-06-01 修订。
 
 ### 为什么 shape 用 mode 而不是多个 skill？
 
