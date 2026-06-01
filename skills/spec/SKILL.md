@@ -1,35 +1,35 @@
 ---
 name: spec
-description: "Maintain the persistent specs/ source of truth — crystallize a built change's spec delta into the living specification, and correct existing specs on demand. Use when a feature has landed and its behavior contract should be recorded, or when an existing spec has drifted and needs correcting. Not for one-off change plans (use shape), implementation (use build), or project-wide drift detection (a future health skill)."
-when_to_use: "spec, specification, behavior contract, source of truth, record behavior, crystallize spec, update spec, 规格, 规格说明, 行为契约, 真源, 沉淀规格, 更新规格"
-dispatch_intent: "Crystallize and maintain the persistent specs/ source of truth from change deltas"
+description: "Maintain the persistent specs/ source of truth — record a built change's spec delta into the persistent specification, and correct existing specs on demand. Use when a feature has landed and its behavior contract should be recorded, or when an existing spec has drifted and needs correcting. Not for one-off change plans (use shape), implementation (use build), or project-wide drift detection (a future health skill)."
+when_to_use: "spec, specification, behavior contract, source of truth, record behavior, record spec, update spec, 规格, 规格说明, 行为契约, 真源, 记录规格, 更新规格"
+dispatch_intent: "Record and maintain the persistent specs/ source of truth from change deltas"
 ---
 
 # Spec
 
-Spec maintains a persistent `specs/` source of truth — the behavior contract for what the system _currently is_, not how any one change gets made. Every rule here exists so that **the spec stays a trustworthy contract**: it records observable behavior a reader can verify, never implementation detail that rots the moment the code is refactored. Spec runs at the tail of the loop, after a change is built and validated; it crystallizes what landed, it doesn't redesign it.
+Spec maintains a persistent `specs/` source of truth — the behavior contract for what the system _currently is_, not how any one change gets made. Every rule here exists so that **the spec stays a trustworthy contract**: it records observable behavior a reader can verify, never implementation detail that rots the moment the code is refactored. Spec runs at the tail of the loop, after a change is built and validated; it records what landed, it doesn't redesign it.
 
 Unfamiliar project? Run `/explore` first — writing a spec for a system you haven't mapped invents a contract nobody agreed to.
 
-Spec follows the project: the prose describing behavior follows the target project's language and domain vocabulary — a spec is a product the project keeps, not a squire artifact. The structural keywords below (`Requirement` / `Scenario` / GIVEN-WHEN-THEN / SHALL) default to English so RFC 2119 keeps its normative precision and stays machine-anchorable; a fully-localized project may override that. (squire's own `specs/` are for the maintainer, so their prose is Chinese like README/ARCHITECTURE, with English keywords.)
+Spec follows the project the way any technical doc does. The requirement and scenario **sentences** — including the RFC 2119 modal verb (SHALL/MUST → 必须, SHOULD → 应当, MAY → 可以) — are written in the target project's language; literal code, paths, and identifiers stay as-is. Only the **structural labels** stay English, as scannable anchors: the `## Requirements` / `### Requirement:` / `#### Scenario:` headers, the GIVEN/WHEN/THEN bullet prefixes, and the delta's `ADDED` / `MODIFIED` / `REMOVED` section names. Don't weld an English modal into a localized sentence (`The system SHALL 做X` reads broken); write the whole sentence in one language under the English label. (squire's own `specs/` are for the maintainer, so their sentences are Chinese like README/ARCHITECTURE, under English structural labels.)
 
 Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
 ## Outcome Contract
 
 - Outcome: the persistent `specs/<domain>/spec.md` reflects the system's current behavior contract, after a change or a correction
-- Done when: crystallize → the plan's spec delta is merged into `specs/`; correct → the named requirement reads as intended; the file follows the spec format
+- Done when: record → the plan's spec delta is merged into `specs/`; correct → the named requirement reads as intended; the file follows the spec format
 - Evidence: the plan's `## Spec delta` section / the code whose behavior is being recorded / the before-and-after of the spec file
 - Output: the spec files written + which requirements were ADDED / MODIFIED / REMOVED + anything that couldn't be merged and why
 
 ## Two modes (routed by the message)
 
-| cue in the user's message                                                | mode        |
-| ------------------------------------------------------------------------ | ----------- |
-| "record this" / "crystallize the spec" / right after a feat/fix is built | crystallize |
-| "the spec for X is wrong / out of date" / "update specs/auth to say ..." | correct     |
+| cue in the user's message                                                | mode    |
+| ------------------------------------------------------------------------ | ------- |
+| "record this" / "record the spec" / right after a feat/fix is built      | record  |
+| "the spec for X is wrong / out of date" / "update specs/auth to say ..." | correct |
 
-Both run only **after** shape — you crystallize a change shape already planned, or correct a spec because you've realized (shaped) what it should say. Spec never authors a contract from raw, un-shaped intent; that convergence is shape's job.
+Both run only **after** shape — you record a change shape already planned, or correct a spec because you've realized (shaped) what it should say. Spec never authors a contract from raw, un-shaped intent; that convergence is shape's job.
 
 ## Spec format
 
@@ -60,7 +60,7 @@ The system SHALL <observable behavior>.
 - **Scenarios are the "when"** — concrete, testable examples in GIVEN/WHEN/THEN, covering happy path and the edges that matter.
 - **The test for what belongs**: if the implementation can change without changing externally visible behavior, it does not belong in the spec. Internal class/function names, library choices, and step-by-step implementation are out — those live in the plan or the code.
 
-## Crystallize: merge a delta
+## Record: merge a delta
 
 shape writes a `## Spec delta` into the plan when a change alters behavior worth recording. The delta is structured the same way, in three sections, and merging is mechanical — by requirement name:
 
@@ -85,7 +85,7 @@ Use the lightest level that still makes the behavior verifiable:
 - **Lite (default)** — short behavior-first requirements, clear scope and non-goals, a few concrete acceptance scenarios. **Most specs stay here.**
 - **Full (higher risk only)** — API/contract changes, migrations, security/privacy concerns, or cross-module changes where ambiguity causes expensive rework.
 
-**When not to write a spec at all**: a change with no externally observable effect (internal refactor, a rename, a perf tweak that holds behavior) has nothing to crystallize — skip it rather than pad `specs/` with entries that rot. Over-fine granularity is how a spec system decays into an unmaintained second copy of the code.
+**When not to write a spec at all**: a change with no externally observable effect (internal refactor, a rename, a perf tweak that holds behavior) has nothing to record — skip it rather than pad `specs/` with entries that rot. Over-fine granularity is how a spec system decays into an unmaintained second copy of the code.
 
 ## Boundaries
 

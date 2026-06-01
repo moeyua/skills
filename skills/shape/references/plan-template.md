@@ -43,7 +43,7 @@ Changes to API / schema / config / CLI / file interfaces. If none → "None".
 
 ## Spec delta
 
-If this change alters externally observable behavior, state the change to the persistent `specs/<domain>/spec.md` as a delta, for the spec skill to crystallize after build. If it changes no observable behavior (pure refactor / perf holding behavior) → "None".
+If this change alters externally observable behavior, state the change to the persistent `specs/<domain>/spec.md` as a delta, for the spec skill to record after build. If it changes no observable behavior (pure refactor / perf holding behavior) → "None".
 
 ```markdown
 ## ADDED Requirements

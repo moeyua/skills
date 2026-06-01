@@ -9,7 +9,7 @@ status: done
 
 ## Building
 
-给 squire 加第 8 个 skill `spec`:维护一个持久的 `specs/` 真源层,记录"系统当前该是什么"(行为契约)。它在一次变更**落地之后**(build/test/review 之后)介入,把 shape 写在 plan 里的 **spec delta**(ADDED / MODIFIED / REMOVED requirements)结晶进 `specs/<domain>/spec.md`;也支持随时直接纠正已有 spec。格式与产物模型借鉴 [OpenSpec](https://github.com/Fission-AI/OpenSpec)(实证自其 `docs/concepts.md` 与真实 spec 文件),但**只取产物模型 + 格式 + progressive rigor,不引入它那套 propose/apply/archive 命令**——那些已被 squire 的 shape/build/commit 覆盖。
+给 squire 加第 8 个 skill `spec`:维护一个持久的 `specs/` 真源层,记录"系统当前该是什么"(行为契约)。它在一次变更**落地之后**(build/test/review 之后)介入,把 shape 写在 plan 里的 **spec delta**(ADDED / MODIFIED / REMOVED requirements)合并进 `specs/<domain>/spec.md`;也支持随时直接纠正已有 spec。格式与产物模型借鉴 [OpenSpec](https://github.com/Fission-AI/OpenSpec)(实证自其 `docs/concepts.md` 与真实 spec 文件),但**只取产物模型 + 格式 + progressive rigor,不引入它那套 propose/apply/archive 命令**——那些已被 squire 的 shape/build/commit 覆盖。
 
 因为这个能力正面落在 PRODUCT.md 边界 #2(文档管理),plan 的第一步是**按 PRODUCT.md 自己规定的流程修订边界**(shape discussion → 改 PRODUCT.md),把"spec 真源管理"从"文档管理"里外科式切出,同时保留"对外文档(README / 接口文档 / changelog)仍不做"。
 
@@ -35,9 +35,9 @@ squire 的 skill 是 prose 指令、不是可执行代码,所以"把 delta 按 r
 | proposal + design + tasks     | shape 的 `plans/<slug>.md`(本就合一) | 已有             |
 | change 的 `specs/` delta      | plan 新增 `## Spec delta` 段         | plan-template 加 |
 | 持久 `specs/<domain>/spec.md` | 新建 `specs/` 真源层                 | spec skill 维护  |
-| `/opsx:archive` 合并 delta    | spec skill 的结晶步骤(agent 执行)    | 新 skill 核心    |
+| `/opsx:archive` 合并 delta    | spec skill 的合并步骤(agent 执行)    | 新 skill 核心    |
 
-**最小可行版**(衡量"几乎不做"的下界):只新增 `skills/spec/SKILL.md` + RESOLVER 一行,定义格式与合并规则,不碰 plan-template、不写种子 spec。否决理由:没有 plan 里的 delta 入口,结晶步骤就得让 agent 逆向推导代码,可靠性差,违背"契约在前"。所以选完整版(含 plan-template delta 段 + 一份种子 spec)。
+**最小可行版**(衡量"几乎不做"的下界):只新增 `skills/spec/SKILL.md` + RESOLVER 一行,定义格式与合并规则,不碰 plan-template、不写种子 spec。否决理由:没有 plan 里的 delta 入口,合并步骤就得让 agent 逆向推导代码,可靠性差,违背"契约在前"。所以选完整版(含 plan-template delta 段 + 一份种子 spec)。
 
 ## Premise collapse
 
@@ -49,7 +49,7 @@ squire 的 skill 是 prose 指令、不是可执行代码,所以"把 delta 按 r
 
 1. **spec 用 RFC 2119(SHALL/MUST/SHOULD)+ Requirement + Scenario(GIVEN/WHEN/THEN)格式** —— 与 philosophy #5(SKILL.md 不堆 MUST)不冲突:#5 管的是"给 agent 的指令",spec 是"给目标系统的行为契约",是另一种文体,RFC 2119 正是其可验证性的来源。OpenSpec 实证此格式与 agent 配合良好。
 2. **格式关键词锁英文,prose 内容跟目标项目语言走** —— Requirement / Scenario / GIVEN / WHEN / THEN / SHALL 是结构;具体行为描述跟被开发项目走(spec 是给别的项目用的产物,锁死英文不合理)。squire 自己 dogfood 时写英文。
-3. **spec 位于闭环尾端(build/test/review 之后,commit 前后)** —— 它结晶"已验证、已落地"的事实。RESOLVER 新增一个 stage 安放它。
+3. **spec 位于闭环尾端(build/test/review 之后,commit 前后)** —— 它记录"已验证、已落地"的事实。RESOLVER 新增一个 stage 安放它。
 4. **delta 三段 ADDED / MODIFIED / REMOVED,按 requirement 名合并** —— ADDED 追加、MODIFIED 替换、REMOVED 删除;合并机械可预测。
 5. **不新增 TS 代码、不新增 check 函数** —— 合并由 agent 执行;新 skill 自动进 smoke 的 8 项检查。
 6. **PRODUCT.md 边界 #2 做外科切割,不推翻哲学 #2** —— 论证"持久 spec 是闭环绕之运转的设计真源,属闭环内",对外文档仍排除。改动面尽量小、好辩护。
@@ -66,9 +66,9 @@ squire 的 skill 是 prose 指令、不是可执行代码,所以"把 delta 按 r
 
 **`spec` skill 暴露**:
 
-- **触发**:`/spec`,或自然语言("沉淀规格" / "更新 spec" / "record the behavior")。
+- **触发**:`/spec`,或自然语言("记录规格" / "更新 spec" / "record the behavior")。
 - **输入**:
-  - 结晶模式:一个刚 build 完的 plan(读其 `## Spec delta` 段)+ 实际代码作核对。
+  - 记录模式:一个刚 build 完的 plan(读其 `## Spec delta` 段)+ 实际代码作核对。
   - 纠正模式:用户直接指出某 `specs/<domain>/spec.md` 的某 requirement 要改。
 - **输出 / side effects**:**只写 `specs/<domain>/spec.md`**(新建或按 ADDED/MODIFIED/REMOVED 合并);不改源码、不改 plan、不动 README/ARCHITECTURE。
 - **spec 文件结构**(固定):`# <Domain> Specification` → `## Purpose` → `## Requirements`(`### Requirement: <名>` + `#### Scenario: <名>` GIVEN/WHEN/THEN)。
@@ -82,21 +82,21 @@ squire 的 skill 是 prose 指令、不是可执行代码,所以"把 delta 按 r
 
 ```yaml
 name: spec
-description: "Maintain the persistent specs/ source of truth — crystallize a built change's spec delta into the living specification, and correct existing specs on demand. Use when a feature has landed and its behavior contract should be recorded, or when an existing spec has drifted and needs correcting. Not for one-off change plans (use shape), implementation (use build), or project-wide drift detection (a future health skill)."
-when_to_use: "spec, specification, behavior contract, source of truth, record behavior, crystallize spec, update spec, 规格, 规格说明, 行为契约, 真源, 沉淀规格, 更新规格"
-dispatch_intent: "Crystallize and maintain the persistent specs/ source of truth from change deltas"
+description: "Maintain the persistent specs/ source of truth — record a built change's spec delta into the persistent specification, and correct existing specs on demand. Use when a feature has landed and its behavior contract should be recorded, or when an existing spec has drifted and needs correcting. Not for one-off change plans (use shape), implementation (use build), or project-wide drift detection (a future health skill)."
+when_to_use: "spec, specification, behavior contract, source of truth, record behavior, record spec, update spec, 规格, 规格说明, 行为契约, 真源, 记录规格, 更新规格"
+dispatch_intent: "Record and maintain the persistent specs/ source of truth from change deltas"
 ```
 
 (已核对:`when_to_use` 各逗号项与现有 7 个 skill 无重复 → Jaccard = 0,远低于 0.5 阈值。)
 
 ## Acceptance scenarios
 
-1. **happy / 结晶到已有 domain**:Given `specs/auth/spec.md` 已存在、且一个 plan 含 `## ADDED Requirements` 一条新 requirement,When 调 `/spec` 指向该 plan,Then 新 requirement 被**追加**进 `specs/auth/spec.md` 的 `## Requirements`,格式合规,其余 requirement 不动。
+1. **happy / 合并到已有 domain**:Given `specs/auth/spec.md` 已存在、且一个 plan 含 `## ADDED Requirements` 一条新 requirement,When 调 `/spec` 指向该 plan,Then 新 requirement 被**追加**进 `specs/auth/spec.md` 的 `## Requirements`,格式合规,其余 requirement 不动。
 2. **新建 domain**:Given `specs/` 无 `payments/`,When plan 的 delta 针对 `payments`,Then 创建 `specs/payments/spec.md`,含 `## Purpose` + 该 requirement。
 3. **MODIFIED 合并**:Given 某 requirement 已存在,When delta 的 `## MODIFIED Requirements` 同名条目,Then **替换**原条目(含其 scenarios),并保留 `(Previously: ...)` 痕迹。
 4. **REMOVED 合并**:Given 某 requirement 存在,When delta 的 `## REMOVED Requirements` 同名,Then 从持久 spec **删除**该 requirement。
 5. **主动纠正(无 delta)**:Given 用户说"specs/auth 的 Session Expiration 应是 15 分钟",When 调 `/spec`,Then 直接编辑该 requirement,不需要任何漂移检测、不依赖 plan。
-6. **error / delta 缺失**:Given plan 无 `## Spec delta` 段,When 调结晶模式,Then spec **停下并说明**"该 plan 没有 spec delta,请确认要为哪个 domain 记录什么",不擅自逆向代码猜测。
+6. **error / delta 缺失**:Given plan 无 `## Spec delta` 段,When 调记录模式,Then spec **停下并说明**"该 plan 没有 spec delta,请确认要为哪个 domain 记录什么",不擅自逆向代码猜测。
 7. **error / MODIFIED 目标不存在**:Given delta `## MODIFIED` 一个 `specs/` 里不存在的 requirement,When 合并,Then 报"目标 requirement 不存在,应放入 ADDED 还是确有同名?",不静默新建。
 8. **edge / progressive rigor**:Given 一个低风险小改动,When 产出 spec,Then 默认 **Lite**(短 requirement + non-goals + 少量验收),不强制 Full。
 9. **机械一致**:When 任意步骤后跑 `pnpm test`,Then 8 个 check 全绿(新 skill 的 frontmatter / description / Outcome Contract / references / links / Jaccard / RESOLVER 一致性全过)。
@@ -112,13 +112,13 @@ dispatch_intent: "Crystallize and maintain the persistent specs/ source of truth
    - change:`skills/spec/references/anti-patterns.md` → `../../../rules/anti-patterns.md`;`skills/spec/references/durable-context.md` → `../../../rules/durable-context.md`(与其余 skill 一致)。
    - verify:`ls -la skills/spec/references/` 两个 symlink 解析到 rules/。
 3. **写 `skills/spec/SKILL.md`**
-   - change:用 Key decision 里的 frontmatter;主体含 Outcome Contract 四字段、统一的两条 rule 指针段(同其他 SKILL.md 顶部)、spec 与 delta 的格式定义、ADDED/MODIFIED/REMOVED 合并规则、Progressive Rigor(默认 Lite / 高风险 Full / 何时不建 spec)、与 shape(plan vs spec)和 health(检测 vs 写)的边界、结晶模式与纠正模式两条流程、When to stop(无 delta 不逆向猜、MODIFIED 目标缺失不静默新建)。
+   - change:用 Key decision 里的 frontmatter;主体含 Outcome Contract 四字段、统一的两条 rule 指针段(同其他 SKILL.md 顶部)、spec 与 delta 的格式定义、ADDED/MODIFIED/REMOVED 合并规则、Progressive Rigor(默认 Lite / 高风险 Full / 何时不建 spec)、与 shape(plan vs spec)和 health(检测 vs 写)的边界、记录模式与纠正模式两条流程、When to stop(无 delta 不逆向猜、MODIFIED 目标缺失不静默新建)。
    - verify:该步针对 SKILL.md 自身的 check 过(name=dir / description 规范 / Outcome Contract / references / links);整库 `pnpm test` 此时 **checkResolverConsistency 仍红**(spec 未进 RESOLVER),由步 4 转绿——故步 3、4 同 commit。
 4. **更新 `skills/RESOLVER.md`**
-   - change:新增一个尾端 stage(如 `### 4.5 Crystallize` 或 `### 6. Spec`),加一行把 spec 的 trigger 映射到 `skills/spec/SKILL.md`;Chaining 段的 base loop 顺带提及 spec 的位置。
+   - change:新增一个尾端 stage(如 `### 4.5 Record` 或 `### 6. Spec`),加一行把 spec 的 trigger 映射到 `skills/spec/SKILL.md`;Chaining 段的 base loop 顺带提及 spec 的位置。
    - verify:`pnpm test` —— checkResolverConsistency(RESOLVER 恰好列出含 spec 在内的全部 skill)绿。
 5. **plan-template 加 `## Spec delta` 段**
-   - change:`skills/shape/references/plan-template.md` 的 File structure 加可选 `## Spec delta`(ADDED/MODIFIED/REMOVED 骨架 + 一句"无规格影响则写 None");`skills/shape/references/mode-feat.md`(及 fix/refactor)补一句"若改动改变对外行为,在 plan 写 Spec delta 供 spec 结晶"。
+   - change:`skills/shape/references/plan-template.md` 的 File structure 加可选 `## Spec delta`(ADDED/MODIFIED/REMOVED 骨架 + 一句"无规格影响则写 None");`skills/shape/references/mode-feat.md`(及 fix/refactor)补一句"若改动改变对外行为,在 plan 写 Spec delta 供 spec 合并"。
    - verify:`pnpm test`(links 解析);plan-template 现含 delta 段。
 6. **写一份种子 spec 作格式锚点**
    - change:`specs/spec/spec.md` —— 用 spec 自己的格式,描述 `spec` skill 这个能力(Purpose + 若干 Requirement + Scenario,取本 plan 的 Acceptance scenarios 改写)。这同时是 dogfood 与"格式范本"。
@@ -131,7 +131,7 @@ dispatch_intent: "Crystallize and maintain the persistent specs/ source of truth
 
 - command:`pnpm test`(= `vp test run`)—— 单元测试 + 整库 smoke 8 项 check 全绿,尤其 checkTriggerJaccard(spec vs 其余 7)与 checkResolverConsistency。
 - checklist(manual):
-  - [ ] `/spec` 在结晶模式下能把示例 plan 的 delta 正确合并进 `specs/<domain>/spec.md`(happy + 新建 domain + MODIFIED + REMOVED 四场景)
+  - [ ] `/spec` 在记录模式下能把示例 plan 的 delta 正确合并进 `specs/<domain>/spec.md`(happy + 新建 domain + MODIFIED + REMOVED 四场景)
   - [ ] 纠正模式无需 delta、无需漂移检测即可改已有 requirement
   - [ ] 无 delta / MODIFIED 目标缺失时 spec 停下发问,不擅自猜
   - [ ] PRODUCT.md 边界 #2 修订后:允许 spec 真源、仍排除对外文档
@@ -151,3 +151,10 @@ dispatch_intent: "Crystallize and maintain the persistent specs/ source of truth
 - **机械化 spec 文件校验缺位**:v1 不 lint `specs/*/spec.md` 结构;**v2**:在 `scripts/checks.ts` 加 spec-format check(Purpose/Requirements/Scenario 结构、RFC 2119 关键词),纳入 smoke。
 - **自动漂移同步缺位**:依赖未来 `health` 提供"哪份 spec 漂了"的信号;在那之前"更新"只靠人主动发起。**owner**:health skill(v2),**blocker**:否(v1 不需要)。
 - **Unknown**:RESOLVER 里 spec 这个 stage 叫什么、放第几位(4.5 还是并入 Land)—— owner:build 时按 RESOLVER 现有编号习惯定,**blocker**:否(不影响 check)。
+
+## 实施修订(build / review 后)
+
+记录与上文决策的偏离,以本节为准:
+
+- **RESOLVER stage**:定为 stage 5 "Record",Land/Push 顺延为 6(上文 Unknown 已解)。
+- **语言规则**(推翻 Key decision #2 的"格式关键词锁英文"):结构标签(`Requirement:` / `Scenario:` / GIVEN-WHEN-THEN / ADDED-MODIFIED-REMOVED)留英文作锚点;**句子与 RFC 2119 语气词跟项目语言**(必须/应当/可以),不把 SHALL 焊进中文句。squire 自身 specs 用中文句 + 英文标签——seed spec [specs/spec/spec.md](../specs/spec/spec.md) 即按此重写。
