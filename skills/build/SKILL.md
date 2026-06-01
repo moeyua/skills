@@ -26,7 +26,7 @@ Do these in parallel:
 
 1. **Locate the plan**: if the user's message has a path, use it; otherwise take the newest `status: approved` plan under `plans/` (sorted by YYYY-MM-DD). If there is none, report the state and ask the user to point to one or run `/shape` first — don't guess the goal.
 2. **Read the whole plan**: the plan is the only ground truth for this run; starting without reading it is guessing.
-3. **Scan the project skeleton**: `git status --short` for a dirty tree, `git log --oneline -5` to learn the commit style, `ls package.json pnpm-lock.yaml Cargo.toml ...` to identify the project type and test framework.
+3. **Scan the project skeleton**: `git status --short` for a dirty tree, `git branch --show-current` for the current branch, `git log --oneline -5` to learn the commit style, `ls package.json pnpm-lock.yaml Cargo.toml ...` to identify the project type and test framework.
 
 If any of these conditions fails, report the state and stop — let the user decide, don't push through:
 
@@ -34,6 +34,12 @@ If any of these conditions fails, report the state and stop — let the user dec
 - **No placeholders** (`TBD` / `TODO` / `implement later` / `similar to step N`) — these signal an unfinished plan; go back to shape to complete it.
 - **Clean working tree** — a dirty tree may hide unsaved changes that a blind run would overwrite; let the user decide whether to commit or discard first.
 - **The files and interfaces the plan assumes still exist** — grep the paths and function names the plan names. Drift means the plan is out of sync with the code; go back to shape to fix the plan.
+
+## Branch setup: don't build on a protected branch
+
+Before the first edit, check `git branch --show-current`. If it's a protected branch (`main` / `master` / `develop`) or empty (detached HEAD), create a working branch: `git checkout -b <plan-slug>`, where the slug is the plan filename minus the `YYYY-MM-DD-` date prefix (`plans/2026-06-01-feat-rbac.md` → `feat-rbac`). If that branch name already exists, `git checkout` it instead of failing — a name collision is almost always the same plan resumed. If you're already on a non-protected branch, keep it.
+
+This keeps the work off the mainline so the later commit and PR have a branch to live on — propose refuses to push a protected branch, so landing the work there just forces a detour later. Building on a clean working tree (Preflight already required it) means `git checkout -b` carries nothing unexpected across. Report which branch you're on before editing.
 
 ## Standard flow
 
@@ -98,6 +104,8 @@ Build's most common failure is pushing through where it should stop. In these ca
 
 ```
 Built plans/<path>.md (now status: done)
+
+Branch: <name> (created from <protected-branch> / existing)
 
 Changes:
 - <file>: <one-line description>
