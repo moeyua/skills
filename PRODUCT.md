@@ -16,9 +16,9 @@ squire 的所有设计决策都从下面 5 条派生。它们不是教条，是�
 
 ### 2. 聚焦闭环 — 只做代码开发
 
-squire 的范围严格限定在代码开发闭环：explore → shape → build → test → review → commit → propose。不扩展到产品决策、文档管理、发布管理、Agent 自审计、内容输入处理（详见下面"边界"段）。
+squire 的范围严格限定在代码开发闭环：explore → shape → build → test → review → spec → commit → propose。不扩展到产品决策、**对外文档管理**（README / 接口文档 / changelog）、发布管理、Agent 自审计、内容输入处理（详见下面"边界"段）。其中 **spec 真源**（系统当前该是什么的行为契约）算闭环的一部分——它是闭环绕之运转的设计记忆，不是替别的项目管对外文档。
 
-扩大 scope 就成了什么都做不精。克制要求每个 skill 做好一件事，整个套件加起来覆盖一条完整闭环，但不超出闭环。v2 可能加的 health / release / document skill 都还在等"想清楚边界"的状态——边界没想清楚就不加。
+扩大 scope 就成了什么都做不精。克制要求每个 skill 做好一件事，整个套件加起来覆盖一条完整闭环，但不超出闭环。v2 可能加的 health / release skill 仍在等"想清楚边界"的状态——边界没想清楚就不加。（原列在此的 document skill，其闭环内的一面已收敛为 spec skill 落地；对外文档管理仍排除，见边界 #2。）
 
 ### 3. 用户决定串联 — skill 间不自动跑
 
@@ -48,11 +48,13 @@ SKILL.md 的 prose 风格不堆 MUST / NEVER / Hard Stop 长尾。主体讲清�
 
 squire 处理"决定做之后怎么做"，不处理"该不该做"。后者是产品决策——属于人或专门的产品工具，不属于代码开发闭环。shape skill 的 Default Mode 段明确写："用户问值不值得做时，明确说这不是 squire 处理的"。
 
-### 2. 文档管理（README / 接口文档 / 变更说明）
+### 2. 对外文档管理（README / 接口文档 / changelog）
 
 **根因**：哲学 #2 + #1。
 
-替别的项目管文档让 scope 失控——文档跟代码不同，演化逻辑、读者、风格都不一样。注意：squire **自己**的文档（README / ARCHITECTURE / 本文件）不算"做文档管理"——那是任何项目都要有的，跟 squire skills 提供给别的项目的能力是两回事。
+替别的项目管**对外文档**让 scope 失控——README / 接口文档 / changelog 跟代码不同，演化逻辑、读者（使用者，不是闭环）、风格都不一样。注意：squire **自己**的文档（README / ARCHITECTURE / 本文件）不算"做文档管理"——那是任何项目都要有的，跟 squire skills 提供给别的项目的能力是两回事。
+
+> **2026-06-01 边界修订**：本条原为"文档管理（README / 接口文档 / 变更说明）"，一刀排除所有文档。经 shape discussion 后做外科切割：**闭环内的 spec 真源管理（系统该是什么的行为契约，见 spec skill）划入 scope**——spec 是开发闭环绕之运转的设计记忆，受众是闭环本身而非外部使用者；**对外文档（README / 接口文档 / changelog）仍排除**，根因不变（哲学 #2 + #1）。
 
 ### 3. 发布管理（上线检查 / release notes / 回滚）
 
