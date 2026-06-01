@@ -73,10 +73,12 @@ status: done
 每条 reviewer 可逐项验证。
 
 **语言改写（每个 SKILL.md）**：
+
 - Given 改写后的 SKILL.md，then 正文无中文 prose（中文仅出现在 `description`/`when_to_use` 的触发词、示例用户原话），且原"避免的坑"逐条仍能在英文版找到（措辞/语言可变）。
 - Given `pnpm test`，then 全 8 个 check green（frontmatter / description 规范 / Outcome Contract / references / links / no-root-skill / Jaccard / RESOLVER）。
 
 **触发词（提案集，最终以 Jaccard green 为准）**：
+
 - explore: `explore, understand, codebase, project structure, entry point, how to run, 看项目, 项目结构, 入口, 怎么跑, 整体了解, 不熟悉的模块`
 - think: `think, plan, design, brainstorm, approach, 想想, 出方案, 设计, 怎么做, 头脑风暴`
 - implement: `implement, build, write code, apply the plan, 实现, 落实, 写代码, 按方案做, 开始动手`（删 整/可以干/直接改）
@@ -87,6 +89,7 @@ status: done
 - Given 以上集，then 任意两 skill 的 `when_to_use` Jaccard < 0.5（`checkTriggerJaccard` 验）。撞了就调，调到 green。
 
 **加载机制**：
+
 - Given 干净环境跑 `setup-rule.sh output-style claude-code`，then `~/.claude/rules/output-style.md` 存在 且 `~/.claude/CLAUDE.md` 含标记块 + `@import` 行。
 - Given 再跑一次同命令，then CLAUDE.md 无重复块（幂等）。
 - Given `setup-rule.sh output-style codex`，then `~/.codex/AGENTS.md` 含标记块 + 规则内容。
@@ -102,6 +105,7 @@ status: done
 - think 的 references/ 五个文件的产出契约（plan-template 骨架、fix 的 Root cause 句式、perf 的 Baseline 字段等）信息密度保留——只改语言，不删字段。
 
 **明确允许变（不是 invariant，是有意改动）**：
+
 - prose 语言 → 英文；触发词集 → 双语精选（所以 Jaccard 要重验，不是保留旧集）；行数。
 
 ## Implementation steps

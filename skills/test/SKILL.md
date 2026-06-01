@@ -24,11 +24,11 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 
 ## Three work scenarios (routed by the message)
 
-| cue in the user's message                              | work    |
-| ------------------------------------------------------ | ------- |
-| `/test` / "run the tests" / "do the tests pass"        | run     |
-| "add tests" / "add a regression for X" / "cover module Y" | coverage |
-| "this is failing, help me look" / "flaky?" / "why is this test breaking" | debug   |
+| cue in the user's message                                                | work     |
+| ------------------------------------------------------------------------ | -------- |
+| `/test` / "run the tests" / "do the tests pass"                          | run      |
+| "add tests" / "add a regression for X" / "cover module Y"                | coverage |
+| "this is failing, help me look" / "flaky?" / "why is this test breaking" | debug    |
 
 No mode system needed — the message content routes naturally.
 

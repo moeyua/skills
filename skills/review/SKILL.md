@@ -31,13 +31,13 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 
 ## The 5 dimensions
 
-| dimension                  | focus                                                                                  |
-| -------------------------- | -------------------------------------------------------------------------------------- |
-| **plan** (plan consistency) | are the changes within plan scope / scope creep / a dependency the plan didn't name    |
-| **quality** (code quality) | bugs / logic errors / project guidelines (CLAUDE.md/AGENTS.md) compliance / naming / dead code |
-| **errors** (error handling) | silent failures / over-broad catch / improper fallback / mock in production code / missing logging |
-| **tests** (test coverage)  | are the plan's acceptance scenarios covered / edge cases / are tests grounded in real behavior / duplicate coverage |
-| **simplify** (simplification) | complexity / nesting / duplication / over-abstraction / over-engineering             |
+| dimension                     | focus                                                                                                               |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **plan** (plan consistency)   | are the changes within plan scope / scope creep / a dependency the plan didn't name                                 |
+| **quality** (code quality)    | bugs / logic errors / project guidelines (CLAUDE.md/AGENTS.md) compliance / naming / dead code                      |
+| **errors** (error handling)   | silent failures / over-broad catch / improper fallback / mock in production code / missing logging                  |
+| **tests** (test coverage)     | are the plan's acceptance scenarios covered / edge cases / are tests grounded in real behavior / duplicate coverage |
+| **simplify** (simplification) | complexity / nesting / duplication / over-abstraction / over-engineering                                            |
 
 ## Aspect Filter
 
@@ -55,11 +55,11 @@ Map Chinese / near-synonyms to the nearest dimension by meaning ("测试" → te
 
 Give each finding a 0-100 confidence. **Aggressive filter — quality over quantity**: a review with 5 high-confidence findings is far more useful than 30 mixed ones. Mixing in low-confidence findings is a slow killer of reviewer trust.
 
-| grade          | confidence | what this grade looks like                                                          |
-| -------------- | ---------- | ----------------------------------------------------------------------------------- |
-| **Critical**   | 91-100     | will definitely break: critical bug, clear project-guideline violation, silent failure in production code |
-| **Important**  | 80-89      | strongly suspected but not merge-blocking: likely to break, the author should respond |
-| **Suggestion** | 60-79      | suggested but optional: style / minor duplication / local simplification; the author can take it or leave it |
+| grade          | confidence | what this grade looks like                                                                                          |
+| -------------- | ---------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Critical**   | 91-100     | will definitely break: critical bug, clear project-guideline violation, silent failure in production code           |
+| **Important**  | 80-89      | strongly suspected but not merge-blocking: likely to break, the author should respond                               |
+| **Suggestion** | 60-79      | suggested but optional: style / minor duplication / local simplification; the author can take it or leave it        |
 | —              | < 60       | not reported — high false-positive risk / noise; a miss costs less than a false alarm, so let it go rather than pad |
 
 **"Style preference" is Suggestion at most**, unless it violates an explicit project-guideline rule — treating taste as Critical is abuse of authority.

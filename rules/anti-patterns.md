@@ -4,8 +4,8 @@
 >
 > Every anti-pattern should come from a real failure, **not an imagined one**. Start empty; append one each time the agent slips up.
 
-| #   | Pattern                                     | Wrong                                                                                                         | Right                                                                                                                                              |
-| --- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| #   | Pattern                                           | Wrong                                                                                                                                                          | Right                                                                                                                                                                                              |
+| --- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | Answering about tools / APIs / syntax from memory | Answering "Claude Code skills have no explicit trigger syntax" or "library X has API Y" from a training-data impression — and inventing facts that don't exist | Fetch the docs / test it / read the reference implementation first. "I don't know, I need to check" beats a plausible-but-wrong answer. The cost of misleading far outweighs the cost of checking. |
 
 ## When to add one

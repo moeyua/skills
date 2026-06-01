@@ -41,13 +41,13 @@ If the user says "you decide" or "whatever you think is best", give a recommenda
 
 Set the mode from the Clarify result:
 
-| user's cue                                          | mode       | plan file |
-| --------------------------------------------------- | ---------- | --------- |
+| user's cue                                                | mode       | plan file |
+| --------------------------------------------------------- | ---------- | --------- |
 | fuzzy idea / exploratory / "I want to..." / "should I..." | (default)  | none      |
-| error / exception / regression / "why doesn't it work" | `fix`      | yes       |
-| new feature / new capability                        | `feat`     | yes       |
-| restructure / no external behavior change           | `refactor` | yes       |
-| performance / slow / laggy                          | `perf`     | yes       |
+| error / exception / regression / "why doesn't it work"    | `fix`      | yes       |
+| new feature / new capability                              | `feat`     | yes       |
+| restructure / no external behavior change                 | `refactor` | yes       |
+| performance / slow / laggy                                | `perf`     | yes       |
 
 When it's ambiguous ("I want to optimize this code" — refactor or perf?), ask one more: is it for **readable structure** (refactor) or **better numbers** (perf)?
 

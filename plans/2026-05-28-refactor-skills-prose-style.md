@@ -20,7 +20,7 @@ status: done
 - 不删 Hard Stops / Gotchas 的**内容**（即避免的坑）——用户选 B：保留内容、允许换措辞和位置
 - 不引入新工程依赖（不加 eval framework / skill-test / scripts/）
 - 不改 RESOLVER.md / rules/ / ARCHITECTURE.md
-- 不动 think 的 references/（mode-*.md 和 plan-template.md 不在本 plan）
+- 不动 think 的 references/（mode-\*.md 和 plan-template.md 不在本 plan）
 - 不补 examples 文件夹、不补 scripts/——除非某个 SKILL 主体能因为抽离而显著瘦身
 - 不做模型行为 eval（with-skill vs baseline）——用户明确 vibe-driven 验收
 
@@ -29,6 +29,7 @@ status: done
 **先做一个 implement 当 style 锚点**，改完停下让用户确认 style 方向，再套其余 6 个。
 
 为什么选 implement 当锚点：
+
 - 当前最臃肿（140 行 + 8 Hard Stops + 10 Gotchas）
 - 改完瘦身效果最明显，用户最容易判断 style 方向
 - 是用户最常用的 skill 之一，重写质量收益最大
@@ -132,7 +133,7 @@ status: done
 - 改动：`skills/think/SKILL.md`（references/ 不动）
 - 目标行数：80-100（当前 131）
 - 套 Step 1 确认的 style；Phase 1-5 结构保留但每段说人话 + why
-- references 指针保留（mode-*.md / plan-template.md）
+- references 指针保留（mode-\*.md / plan-template.md）
 - verify：`pnpm test` green + Gotchas / red flags 11 条内容点全保留
 
 ### Step 3: 重写 `skills/review/SKILL.md`

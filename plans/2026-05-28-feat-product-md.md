@@ -31,6 +31,7 @@ PRODUCT.md 的存在目的是：未来任何 praxis 改动（加 skill / 改 SKI
 单方案，tradeoff 不接近不给备选。
 
 写一份 80-100 行 PRODUCT.md，结构是：
+
 1. 一句话定位
 2. 设计哲学（5 条，每条「定义 + why + 一个具体例」）
 3. 边界（5 项，每项「说明 + 链回哲学」）
@@ -49,6 +50,7 @@ PRODUCT.md 的存在目的是：未来任何 praxis 改动（加 skill / 改 SKI
 如果不成立——PR review 时没人引用 PRODUCT.md、SKILL.md 更新时不参考它、agent 不会触发引用——PRODUCT.md 就是死信，锚点白立。
 
 Mitigation：
+
 - README 头部加一句指向 PRODUCT.md 的指针，让访问 README 的人不可能错过它的存在
 - 未来 SKILL.md / commit message / PR 描述涉及边界判断时显式引用 `PRODUCT.md §X`——给文档建立流通入口
 - 这次实施时直接产出第一个"引用范例"：commit message 里写 `首次落地 PRODUCT.md。后续涉及边界的改动可引用 PRODUCT.md §<section>`
@@ -74,12 +76,14 @@ Mitigation：
 ## Interface boundary
 
 **PRODUCT.md 暴露**：
+
 - 一句话定位（praxis 是什么）
 - 5 条设计哲学（praxis 怎么想）
 - 5 条边界（praxis 不做什么）
 - 怎么用本文档（如何对照判断）
 
 **PRODUCT.md 不暴露**：
+
 - 安装步骤 / 命令 / 工作流（属 README）
 - 技术架构 / 七层职责 / 数据流（属 ARCHITECTURE）
 - v2 规划（属 ARCHITECTURE 末尾）

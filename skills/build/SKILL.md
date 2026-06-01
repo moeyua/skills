@@ -65,12 +65,12 @@ When every step is done → run the full plan verification → set the plan's `s
 
 ### TDD applicability matrix
 
-| plan mode  | TDD        | how                                                       |
-| ---------- | ---------- | --------------------------------------------------------- |
-| `fix`      | strong fit | regression test red first → fix to green                  |
-| `feat`     | strong fit | acceptance scenarios red first → implement to green       |
-| `refactor` | no fit     | existing tests guard the invariant; keep them green       |
-| `perf`     | no fit     | baseline → optimize → measure again to target             |
+| plan mode  | TDD        | how                                                 |
+| ---------- | ---------- | --------------------------------------------------- |
+| `fix`      | strong fit | regression test red first → fix to green            |
+| `feat`     | strong fit | acceptance scenarios red first → implement to green |
+| `refactor` | no fit     | existing tests guard the invariant; keep them green |
+| `perf`     | no fit     | baseline → optimize → measure again to target       |
 
 Refactor and perf skip TDD because their invariant is "behavior unchanged" or "a performance number" — neither is expressible as "write a red test, then go green." Existing tests are the better guard net.
 

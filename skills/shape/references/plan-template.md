@@ -87,12 +87,12 @@ Add extra fields per mode; see the matching reference:
 
 Derived from the plan topic; short, readable, kebab-case:
 
-| plan topic            | slug                     |
-| --------------------- | ------------------------ |
-| fix the login loop    | `fix-login-loop`         |
-| add RBAC permissions  | `feat-rbac`              |
+| plan topic             | slug                     |
+| ---------------------- | ------------------------ |
+| fix the login loop     | `fix-login-loop`         |
+| add RBAC permissions   | `feat-rbac`              |
 | refactor storage layer | `refactor-storage-layer` |
-| optimize first paint  | `perf-initial-load`      |
+| optimize first paint   | `perf-initial-load`      |
 
 ## Status field
 
