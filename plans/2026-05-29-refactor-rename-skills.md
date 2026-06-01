@@ -1,13 +1,13 @@
 ---
 mode: refactor
-title: 重命名三个 skill（think→shape / implement→build / push→propose），项目名待定
+title: 重命名三个 skill（think→shape / implement→build / push→propose）+ 项目改名 praxis→squire
 created: 2026-05-29
-status: draft
+status: approved
 ---
 
-# Rename skills
+# Rename skills + 项目改名
 
-> 本 plan 故意不完整：skill 名已定，**项目名 praxis 改成什么还没定**，所以涉及项目名的改动（package.json name、README/ARCHITECTURE/PRODUCT 里的 "praxis" 字样）留空，等名字定了再补一节。
+> 项目名已定:**praxis → squire**(扈从:备好兵器、递到手上,但上阵的是你——克制、专精、不越位,正是 squire 反 superpowers 强约束的内核)。原先留空的项目名一节现已补齐(见下"项目改名 praxis → squire")。
 
 ## Building
 
@@ -21,10 +21,24 @@ status: draft
 
 最终七个：`explore · shape · build · test · review · commit · propose`。
 
+## 项目改名 praxis → squire
+
+把项目名 `praxis` 改成 `squire`,**仅限文件内容**:
+
+- `package.json` 的 `name: "praxis"` → `"squire"`。
+- README / ARCHITECTURE / PRODUCT / RESOLVER 里的 `praxis` / `Praxis` 字样:含 README 标题 `# Praxis`、定位语、致谢段。
+- 7 个 SKILL.md 顶部的 "all praxis work" 指针 + think(→shape)里 2 处 "praxis doesn't handle" 之类的 prose。
+- 代码/测试里的 `praxis` 字样——全是**注释**(`Frontmatter parser for praxis skill files` 等)和**测试临时目录前缀**(`mkdtemp` 的 `"praxis-fix-"` / `"praxis-test-"`,纯字符串、无断言依赖):改成 squire 求一致,不影响逻辑。
+
+并且**一并改透**外层:
+
+- **GitHub repo**:`gh repo rename squire`(`moeyua/praxis` → `moeyua/squire`;GitHub 自动重定向旧 URL,并同步更新本地 remote)。
+- **本地文件夹**:`/Users/.../Workspace/praxis` → `/Users/.../Workspace/squire`。**放最后一步做**——它会让当前 shell 的工作目录失效,改完需在 IDE 里重新打开新路径。
+
 ## Not building
 
 - **不改任何 skill 的能力、流程、Outcome Contract**——纯改名。
-- **不动项目名 praxis**——还没定，单独一节后补。
+- **不动代码逻辑**——`praxis` 在代码里只出现在注释和临时目录前缀,改的是字符串字面,不动任何标识符/键名/控制流。
 - **不动 `git push` 等真实命令**：propose 这个 skill 仍然执行 `git push`，SKILL.md 里 `git push` / force-push / 推到 main 这些是 git 操作，保留；只改"作为 skill 身份"的 push。
 - **不动普通词义的出现**：implement SKILL.md 里 "pushing through"（普通动词）、anti-patterns 里 "reference implementation"、`scripts/checks.ts` 与 `tests/checks.test.ts` 里的 `Array.push()`——全部保留。
 - **不动 plans/ 历史文件**：它们是带日期的决策记录，当时就叫 think/implement/push，改了等于篡改历史。
@@ -44,6 +58,7 @@ status: draft
 - 目录/触发命令：`/think`→`/shape`、`/implement`→`/build`、`/push`→`/propose`。
 - frontmatter `name`：三处。
 - 触发词（when_to_use）：自然语言触发词（"open PR"/"推送"/"提评审"等用户真会说的）保留，按需补 "propose"；保证 Jaccard < 0.5 仍成立。
+- `package.json` 的 `name`：`praxis` → `squire`（项目仍 `private: true`，不发布，无 npm 命名冲突顾虑）。
 
 ## Implementation steps
 
@@ -53,7 +68,11 @@ status: draft
 2. 改三个 SKILL.md 的 frontmatter `name` + 标题 + "X does Y" 开头；propose 里区分 skill 身份 vs `git push` 命令。
 3. 改 7 个 SKILL.md 里对这三个名的交叉引用（`/think fix`、"go back to think"、"use push" 等）。
 4. 改 README / ARCHITECTURE / PRODUCT / RESOLVER 里的 skill 名引用（含工作流图 `explore → think → ...`、think mode 段标题等）。
-5. `pnpm test` 全绿（frontmatter / Outcome Contract / RESOLVER 路由一致性 / Jaccard / markdown 链接）。
+5. 项目改名 `praxis` → `squire`：`package.json` name；README 标题/定位语/致谢；7 个 SKILL.md 的 "praxis work" 指针 + think 里 "praxis doesn't handle"；ARCHITECTURE / PRODUCT 全文；代码/测试注释 + 临时目录前缀。
+6. `pnpm test` 全绿（frontmatter / Outcome Contract / RESOLVER 路由一致性 / Jaccard / markdown 链接）。
+7. commit + push 改名（到当前 `moeyua/praxis`）。
+8. `gh repo rename squire`：GitHub repo 改名,本地 remote 自动更新。
+9. **最后一步**:本地文件夹 `praxis` → `squire`(让 shell cwd 失效,IDE 需重开新路径)。
 
 ## Verification
 
@@ -64,6 +83,8 @@ status: draft
   - [ ] 无 stale 的 `/think` `/implement` `/push` 引用（plans/ 除外）
   - [ ] `git push` 等真实命令、`Array.push()`、"reference implementation" 未被误改
   - [ ] RESOLVER 列出 shape/build/propose
+  - [ ] 全仓库无 stale 的 `praxis`（plans/ 除外；本地文件夹 / GitHub repo 名按设计不动）
+  - [ ] `package.json` name 为 `squire`
 
 ## Rollback
 
@@ -71,5 +92,6 @@ status: draft
 
 ## Risks & Unknowns
 
-- **Unknown: 项目名 praxis 改成什么** —— 未定。涉及 package.json `name`、README/ARCHITECTURE/PRODUCT 的 "praxis" 字样、致谢等，**本 plan 不覆盖**，定名后补一节。owner: 用户，blocker: 否（skill 改名不依赖项目名）。
-- **Risk: 漏改或误改**（skill 名 vs git push 命令 vs 普通动词混在一起）。Mitigation: 逐文件按上下文改，不全局替换；`pnpm test` 的路由一致性 + 链接检查兜底。
+- **~~Unknown: 项目名~~ 已定:praxis → squire**,且**一并改透**(文件内容 + GitHub repo + 本地文件夹)。
+- **Risk: 本地文件夹改名让会话 cwd 失效**。Mitigation: 放最后一步;改完明确告知用户在 IDE 重开 `squire` 路径。GitHub repo 改名可逆(rename 回去 + 旧 URL 自动重定向)。
+- **Risk: 漏改或误改**（skill 名 vs git push 命令 vs 普通动词混在一起；`praxis` 注释/前缀 vs 逻辑）。Mitigation: 逐文件按上下文改，不全局无脑替换；`pnpm test` 的路由一致性 + 链接检查兜底。
