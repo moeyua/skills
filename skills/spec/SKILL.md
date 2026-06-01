@@ -18,18 +18,19 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 ## Outcome Contract
 
 - Outcome: the persistent `specs/<domain>/spec.md` reflects the system's current behavior contract, after a change or a correction
-- Done when: record → the plan's spec delta is merged into `specs/`; correct → the named requirement reads as intended; the file follows the spec format
+- Done when: record → the plan's spec delta is merged into `specs/`; correct → the named requirement reads as intended; backfill → an existing capability gets a spec from its authoritative behavior source; the file follows the spec format
 - Evidence: the plan's `## Spec delta` section / the code whose behavior is being recorded / the before-and-after of the spec file
 - Output: the spec files written + which requirements were ADDED / MODIFIED / REMOVED + anything that couldn't be merged and why
 
-## Two modes (routed by the message)
+## Three modes (routed by the message)
 
-| cue in the user's message                                                | mode    |
-| ------------------------------------------------------------------------ | ------- |
-| "record this" / "record the spec" / right after a feat/fix is built      | record  |
-| "the spec for X is wrong / out of date" / "update specs/auth to say ..." | correct |
+| cue in the user's message                                                | mode     |
+| ------------------------------------------------------------------------ | -------- |
+| "record this" / "record the spec" / right after a feat/fix is built      | record   |
+| "the spec for X is wrong / out of date" / "update specs/auth to say ..." | correct  |
+| "backfill the spec for X" / onboarding a capability that already exists  | backfill |
 
-Both run only **after** shape — you record a change shape already planned, or correct a spec because you've realized (shaped) what it should say. Spec never authors a contract from raw, un-shaped intent; that convergence is shape's job.
+record and correct run **after** shape — you record a change shape already planned, or correct a spec you've realized (shaped) is wrong. backfill is different: it onboards a capability that predates any squire plan, so it has no preceding shape — but it reads an authoritative behavior source, never invents a contract. In no mode does spec author a contract from raw, un-shaped intent or from guessing at implementation.
 
 ## Spec format
 
@@ -78,6 +79,10 @@ When the plan has **no** spec delta, or a MODIFIED/REMOVED names a requirement t
 
 When a spec is wrong or stale and someone has named what it should say, edit the requirement directly. This needs no delta and no drift detection — it's a deliberate, human-aware correction. Keep the format; if the change is large enough to reshape the contract, that reshaping is shape's job first.
 
+## Backfill: spec an existing capability
+
+When a capability already exists with no plan or delta — onboarding a brownfield codebase, or recording squire's own skills — author its spec from an **authoritative behavior source**: an established SKILL.md, API docs, or the maintainer's stated intent. This is not reverse-engineering: you record what the behavior is _defined_ to be, not what you guess the implementation does. If the only available source is implementation you'd have to infer from, stop and ask instead. When backfilling many at once, confirm the domain split and granularity with the user first, and keep each spec Lite.
+
 ## Progressive rigor — keep it lightweight
 
 Use the lightest level that still makes the behavior verifiable:
@@ -97,7 +102,7 @@ Use the lightest level that still makes the behavior verifiable:
 
 Spec's failure mode is writing a contract that wasn't earned — guessed, or copied from implementation. Stop and report in these cases:
 
-- **The plan has no spec delta and you're tempted to reverse-engineer one from the code** — ask which domain and what behavior to record; don't infer the contract.
+- **In record mode the plan has no spec delta** — ask which domain and what behavior to record; don't reverse-engineer it from the code. (Backfill is the deliberate no-delta mode, and even it reads an authoritative source, never guesses from implementation.)
 - **A MODIFIED/REMOVED requirement isn't in the spec** — report it; don't silently create it (it was likely meant as ADDED, or the name is wrong).
 - **The change has no externally observable behavior** — there's nothing to spec; say so rather than manufacture an entry.
 - **You'd need to reshape the contract, not just record it** — that's intent work; route back to `/shape` instead of redesigning inside spec.
