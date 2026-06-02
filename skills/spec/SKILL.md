@@ -48,7 +48,7 @@ One or two lines: what this domain is.
 ### Requirement: <name>
 
 The system SHALL <observable behavior>.
-Verify: [<test name>](<relative/path/to/test>)
+Verify: [<test name>](relative/path/to/test)
 
 ### Requirement: <name of an un-automatable behavior>
 
@@ -60,7 +60,7 @@ Verify: manual(visual)
 - **`Verify:` says how each requirement is checked** — exactly one line per requirement, in one of three forms:
   - `Verify: [name](path)` — a markdown link to the test that verifies it. The given/when/then detail lives in that test (its `it(...)` name and body), not duplicated here.
   - `Verify: manual(visual)` — a perceptual judgment only a human can make (looks/feels right, aligns with the design). Irreducible.
-  - `Verify: manual(integration)` — behavior that *could* be tested, but whose only test would be too slow or flaky to trust. A candidate to push down into a cheap test later.
+  - `Verify: manual(integration)` — behavior that _could_ be tested, but whose only test would be too slow or flaky to trust. A candidate to push down into a cheap test later.
   - A test link is validated by the existing `checkMarkdownLinks` check, so a deleted or moved test becomes a red build — free drift protection. `manual(...)` carries no link, and that absence is itself the honest signal that the requirement is not automatically verified.
 - **The test for what belongs**: if the implementation can change without changing externally visible behavior, it does not belong in the spec. Internal class/function names, library choices, and step-by-step implementation are out — those live in the plan or the code.
 
