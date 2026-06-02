@@ -11,7 +11,7 @@ Spec maintains a persistent `specs/` source of truth — the behavior contract f
 
 Unfamiliar project? Run `/explore` first — writing a spec for a system you haven't mapped invents a contract nobody agreed to.
 
-Spec follows the project the way any technical doc does. The requirement and scenario **sentences** — including the RFC 2119 modal verb (SHALL/MUST → 必须, SHOULD → 应当, MAY → 可以) — are written in the target project's language; literal code, paths, and identifiers stay as-is. Only the **structural labels** stay English, as scannable anchors: the `## Requirements` / `### Requirement:` / `#### Scenario:` headers, the GIVEN/WHEN/THEN bullet prefixes, and the delta's `ADDED` / `MODIFIED` / `REMOVED` section names. Don't weld an English modal into a localized sentence (`The system SHALL 做X` reads broken); write the whole sentence in one language under the English label. (squire's own `specs/` are for the maintainer, so their sentences are Chinese like README/ARCHITECTURE, under English structural labels.)
+Spec follows the project the way any technical doc does. The requirement **sentences** — including the RFC 2119 modal verb (SHALL/MUST → 必须, SHOULD → 应当, MAY → 可以) — are written in the target project's language; literal code, paths, and identifiers stay as-is. Only the **structural labels** stay English, as scannable anchors: the `## Requirements` / `### Requirement:` headers, the `Verify:` field, and the delta's `ADDED` / `MODIFIED` / `REMOVED` section names. Don't weld an English modal into a localized sentence (`The system SHALL 做X` reads broken); write the whole sentence in one language under the English label. (squire's own `specs/` are for the maintainer, so their sentences are Chinese like README/ARCHITECTURE, under English structural labels.)
 
 Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
@@ -48,17 +48,20 @@ One or two lines: what this domain is.
 ### Requirement: <name>
 
 The system SHALL <observable behavior>.
+Verify: [<test name>](<relative/path/to/test>)
 
-#### Scenario: <name>
+### Requirement: <name of an un-automatable behavior>
 
-- GIVEN <precondition>
-- WHEN <action>
-- THEN <observable outcome>
-- AND <...>
+The system SHALL <observable behavior>.
+Verify: manual(visual)
 ```
 
 - **Requirements are the "what"** — observable behavior, inputs, outputs, error conditions, external constraints (security / privacy / reliability / compatibility). RFC 2119 keywords carry intent: **SHALL/MUST** absolute, **SHOULD** recommended, **MAY** optional. (This is the target system's contract — it is not the squire prose style; SKILL.md prose still avoids MUST walls.)
-- **Scenarios are the "when"** — concrete, testable examples in GIVEN/WHEN/THEN, covering happy path and the edges that matter.
+- **`Verify:` says how each requirement is checked** — exactly one line per requirement, in one of three forms:
+  - `Verify: [name](path)` — a markdown link to the test that verifies it. The given/when/then detail lives in that test (its `it(...)` name and body), not duplicated here.
+  - `Verify: manual(visual)` — a perceptual judgment only a human can make (looks/feels right, aligns with the design). Irreducible.
+  - `Verify: manual(integration)` — behavior that *could* be tested, but whose only test would be too slow or flaky to trust. A candidate to push down into a cheap test later.
+  - A test link is validated by the existing `checkMarkdownLinks` check, so a deleted or moved test becomes a red build — free drift protection. `manual(...)` carries no link, and that absence is itself the honest signal that the requirement is not automatically verified.
 - **The test for what belongs**: if the implementation can change without changing externally visible behavior, it does not belong in the spec. Internal class/function names, library choices, and step-by-step implementation are out — those live in the plan or the code.
 
 ## Record: merge a delta
@@ -71,7 +74,7 @@ shape writes a `## Spec delta` into the plan when a change alters behavior worth
 | `## MODIFIED Requirements` | replace the existing same-named requirement (keep a `(Previously: ...)` note) |
 | `## REMOVED Requirements`  | delete the named requirement from the domain spec                             |
 
-If the domain spec doesn't exist yet, create it with a `## Purpose` and the ADDED requirements. Read the landed code alongside the delta to confirm the contract matches what was actually built — the delta states intent, the code is the reality.
+If the domain spec doesn't exist yet, create it with a `## Purpose` and the ADDED requirements. Read the landed code alongside the delta to confirm the contract matches what was actually built — the delta states intent, the code is the reality. Each requirement in a delta carries its own `Verify:` line, exactly as in the spec.
 
 When the plan has **no** spec delta, or a MODIFIED/REMOVED names a requirement that isn't there, stop and ask — don't reverse-engineer a contract from the code or silently create what was meant to be a modification. Guessing here writes a contract nobody agreed to.
 
@@ -87,7 +90,7 @@ When a capability already exists with no plan or delta — onboarding a brownfie
 
 Use the lightest level that still makes the behavior verifiable:
 
-- **Lite (default)** — short behavior-first requirements, clear scope and non-goals, a few concrete acceptance scenarios. **Most specs stay here.**
+- **Lite (default)** — a few short, behavior-first requirements, each with a `Verify:`, plus clear scope and non-goals. **Most specs stay here.**
 - **Full (higher risk only)** — API/contract changes, migrations, security/privacy concerns, or cross-module changes where ambiguity causes expensive rework.
 
 **When not to write a spec at all**: a change with no externally observable effect (internal refactor, a rename, a perf tweak that holds behavior) has nothing to record — skip it rather than pad `specs/` with entries that rot. Over-fine granularity is how a spec system decays into an unmaintained second copy of the code.
