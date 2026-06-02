@@ -8,28 +8,20 @@ review skill 是合并前的最后一道关：找出可能绊倒 reviewer、用�
 
 ### Requirement: 只看不改
 
-review 必须不修改任何文件，不给完整补丁（只给方向），不替作者调用其他 skill，不改 plan 状态、不提交、不推送。
-
-#### Scenario: review 中想顺手修一处
-
-- GIVEN review 过程中发现一个能立刻修掉的小问题
-- WHEN 产生"顺手改掉"的冲动
-- THEN 停手，把它写成 finding，而非动手——一旦动手就失去 review 的身份
+review 必须不修改任何文件，不给完整补丁（只给方向），不替作者调用其他 skill，不改 plan 状态、不提交、不推送；过程中想顺手修的，写成 finding 而非动手。
+Verify: manual(integration)
 
 ### Requirement: 5 维扫描 + confidence 过滤
 
-review 必须扫 5 个维度（plan / quality / errors / tests / simplify），或用户指定的 aspect；只报告 confidence ≥ 80 的 finding，按 Critical / Important / Suggestion 分级。
-
-#### Scenario: 一堆低置信度疑点
-
-- GIVEN 扫出若干 confidence < 80 的疑点
-- WHEN 产出报告
-- THEN 不列入，宁可漏报也不用噪音稀释 reviewer 的信任
+review 必须扫 5 个维度（plan / quality / errors / tests / simplify），或用户指定的 aspect；只报告 confidence ≥ 80 的 finding，按 Critical / Important / Suggestion 分级，宁可漏报也不用低置信噪音稀释信任。
+Verify: manual(integration)
 
 ### Requirement: 必给正面肯定
 
 review 必须给出 Strengths 段，哪怕只有一两条。
+Verify: manual(integration)
 
 ### Requirement: 指向对应 skill 而非接管
 
 review 发现某类问题时必须指向对应 skill（简化→shape refactor、缺测试→test、bug→shape fix、scope 蔓延→交用户决定），不接管去做。
+Verify: manual(integration)

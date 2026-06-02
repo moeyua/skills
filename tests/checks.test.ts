@@ -20,6 +20,7 @@ import {
   checkNoRootSkill,
   checkTriggerJaccard,
   checkResolverConsistency,
+  checkSpecFormat,
 } from "../scripts/checks.ts";
 
 // ---------- fixture helper ----------
@@ -94,6 +95,34 @@ beforeEach(() => {
 afterEach(() => {
   for (const r of activeRoots) rmSync(r, { recursive: true, force: true });
 });
+
+function specRepo(specs: { name: string; body: string }[]): string {
+  const root = mkdtempSync(join(tmpdir(), "squire-spec-"));
+  for (const s of specs) {
+    const dir = join(root, "specs", s.name);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, "spec.md"), s.body);
+  }
+  activeRoots.push(root);
+  return root;
+}
+
+const VALID_SPEC = `# X Specification
+
+## Purpose
+
+What this domain is.
+
+## Requirements
+
+### Requirement: foo
+The system SHALL do foo.
+Verify: manual(integration)
+
+### Requirement: bar
+The system SHALL do bar.
+Verify: [t](../../test/x.test.ts)
+`;
 
 // ---------- tests ----------
 
@@ -315,5 +344,66 @@ describe("checkResolverConsistency", () => {
     });
     const map = checkSkillFiles(root);
     expect(() => checkResolverConsistency(root, map)).toThrow(/RESOLVER STALE.*ghost/);
+  });
+});
+
+describe("checkSpecFormat", () => {
+  it("passes a valid spec (manual + link Verify)", () => {
+    const root = specRepo([{ name: "x", body: VALID_SPEC }]);
+    expect(() => checkSpecFormat(root)).not.toThrow();
+  });
+
+  it("accepts a markdown-link Verify without checking the link target", () => {
+    const body = `# X Specification\n\n## Purpose\n\np\n\n## Requirements\n\n### Requirement: foo\nThe system SHALL do foo.\nVerify: [t](./does/not/matter.test.ts)\n`;
+    const root = specRepo([{ name: "x", body }]);
+    expect(() => checkSpecFormat(root)).not.toThrow();
+  });
+
+  it("rejects an external-URL Verify link (would slip past checkMarkdownLinks)", () => {
+    const body = `# X Specification\n\n## Purpose\n\np\n\n## Requirements\n\n### Requirement: foo\nThe system SHALL do foo.\nVerify: [t](https://example.com/x.test.ts)\n`;
+    const root = specRepo([{ name: "x", body }]);
+    expect(() => checkSpecFormat(root)).toThrow(/VERIFY INVALID/);
+  });
+
+  it("throws when a requirement has no Verify", () => {
+    const body = `# X Specification\n\n## Purpose\n\np\n\n## Requirements\n\n### Requirement: foo\nThe system SHALL do foo.\n`;
+    const root = specRepo([{ name: "x", body }]);
+    expect(() => checkSpecFormat(root)).toThrow(/VERIFY COUNT.*foo/);
+  });
+
+  it("throws on an invalid Verify value", () => {
+    const body = `# X Specification\n\n## Purpose\n\np\n\n## Requirements\n\n### Requirement: foo\nThe system SHALL do foo.\nVerify: manual(typo)\n`;
+    const root = specRepo([{ name: "x", body }]);
+    expect(() => checkSpecFormat(root)).toThrow(/VERIFY INVALID/);
+  });
+
+  it("throws when a requirement has two Verify lines", () => {
+    const body = `# X Specification\n\n## Purpose\n\np\n\n## Requirements\n\n### Requirement: foo\nThe system SHALL do foo.\nVerify: manual(visual)\nVerify: manual(integration)\n`;
+    const root = specRepo([{ name: "x", body }]);
+    expect(() => checkSpecFormat(root)).toThrow(/VERIFY COUNT/);
+  });
+
+  it("throws when ## Purpose is missing", () => {
+    const body = `# X Specification\n\n## Requirements\n\n### Requirement: foo\nThe system SHALL do foo.\nVerify: manual(integration)\n`;
+    const root = specRepo([{ name: "x", body }]);
+    expect(() => checkSpecFormat(root)).toThrow(/MISSING PURPOSE/);
+  });
+
+  it("throws when the ## Requirements heading is missing", () => {
+    const body = `# X Specification\n\n## Purpose\n\np\n`;
+    const root = specRepo([{ name: "x", body }]);
+    expect(() => checkSpecFormat(root)).toThrow(/MISSING REQUIREMENTS/);
+  });
+
+  it("throws when there are no requirements", () => {
+    const body = `# X Specification\n\n## Purpose\n\np\n\n## Requirements\n`;
+    const root = specRepo([{ name: "x", body }]);
+    expect(() => checkSpecFormat(root)).toThrow(/NO REQUIREMENTS/);
+  });
+
+  it("is a no-op when specs/ does not exist", () => {
+    const root = mkdtempSync(join(tmpdir(), "squire-nospec-"));
+    activeRoots.push(root);
+    expect(() => checkSpecFormat(root)).not.toThrow();
   });
 });
