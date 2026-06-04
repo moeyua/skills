@@ -289,6 +289,20 @@ describe("checkMarkdownLinks", () => {
     ]);
     expect(() => checkMarkdownLinks(root)).not.toThrow();
   });
+
+  it("ignores markdown files under the repo-root plans/ (historical, point-in-time refs)", () => {
+    const root = repo([{ name: "x" }]);
+    mkdirSync(join(root, "plans"));
+    writeFileSync(join(root, "plans", "2026-01-01-foo.md"), "# Plan\n\n[gone](../deleted/file.md)\n");
+    expect(() => checkMarkdownLinks(root)).not.toThrow();
+  });
+
+  it("still checks a nested plans/ dir (only the repo-root plans/ is exempt)", () => {
+    const root = repo([{ name: "x" }]);
+    mkdirSync(join(root, "skills", "x", "plans"));
+    writeFileSync(join(root, "skills", "x", "plans", "p.md"), "[gone](./nope.md)\n");
+    expect(() => checkMarkdownLinks(root)).toThrow(/BROKEN MARKDOWN LINK/);
+  });
 });
 
 describe("checkNoRootSkill", () => {
