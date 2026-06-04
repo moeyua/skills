@@ -30,7 +30,7 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 | "run the tests" / "do the tests pass" / "flaky?"                            | test  |
 | "check it works" / "verify the feature" / "screenshot it" / "does X behave" | e2e   |
 
-The message routes naturally; modes can combine ("review + verify it runs"). Run each requested mode and give one combined verdict.
+The message routes naturally; modes can combine ("review + verify it runs"). When more than one mode is requested, **run each in its own subagent, in parallel** — the modes are independent (review only reads; test/e2e run), so there's no shared state to serialize, and the wall-clock cost is the slowest mode, not their sum. Then synthesize the subagents' results into one combined verdict. A single mode runs inline — don't pay subagent overhead for one.
 
 ## review mode
 
