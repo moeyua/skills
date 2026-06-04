@@ -132,6 +132,9 @@ function collectMarkdownFiles(root: string): string[] {
   const visit = (dir: string): void => {
     for (const entry of readdirSync(dir)) {
       if (entry.startsWith(".") || entry === "node_modules") continue;
+      // The repo-root plans/ holds historical, point-in-time records: a past plan
+      // legitimately links to files later renamed or deleted, so don't gate on them.
+      if (entry === "plans" && dir === root) continue;
       const full = join(dir, entry);
       const st = statSync(full);
       if (st.isDirectory()) {
