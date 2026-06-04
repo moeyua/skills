@@ -19,6 +19,7 @@ import {
   checkTriggerJaccard,
   checkResolverConsistency,
   checkSpecFormat,
+  checkMemoryCatalog,
 } from "../../scripts/checks.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -61,5 +62,9 @@ describe("repo skill verifier (smoke)", () => {
 
   it("checkSpecFormat: every specs/*/spec.md is structurally valid with a legal Verify per requirement", () => {
     expect(() => checkSpecFormat(REPO_ROOT)).not.toThrow();
+  });
+
+  it("checkMemoryCatalog: rules/memory-catalog.md and skills/persist/references/formats/ stay in sync", () => {
+    expect(() => checkMemoryCatalog(REPO_ROOT)).not.toThrow();
   });
 });

@@ -305,3 +305,39 @@ export function checkSpecFormat(root: string): void {
     }
   }
 }
+
+// ---------- memory catalog <-> formats sync ----------
+
+// The catalog indexes each memory artifact and points to its format spec via a
+// `references/formats/<name>.md` reference. persist owns those format files.
+// Keep the index and the files in lockstep (cf. checkResolverConsistency).
+const FORMAT_REF_RE = /references\/formats\/([a-z0-9-]+\.md)/g;
+
+export function checkMemoryCatalog(root: string): void {
+  const catalogPath = join(root, "rules", "memory-catalog.md");
+  if (!existsSync(catalogPath)) return; // no catalog → nothing to check
+  const text = readFileSync(catalogPath, "utf-8");
+
+  const referenced = new Set<string>();
+  FORMAT_REF_RE.lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = FORMAT_REF_RE.exec(text)) !== null) referenced.add(match[1]!);
+
+  const formatsDir = join(root, "skills", "persist", "references", "formats");
+  const actual = new Set<string>(
+    existsSync(formatsDir) ? readdirSync(formatsDir).filter((f) => f.endsWith(".md")) : [],
+  );
+
+  const missing = [...referenced].filter((f) => !actual.has(f));
+  if (missing.length > 0) {
+    throw new Error(
+      `MEMORY FORMAT MISSING: catalog points to ${missing.sort().join(", ")} but no such file under skills/persist/references/formats/`,
+    );
+  }
+  const orphan = [...actual].filter((f) => !referenced.has(f));
+  if (orphan.length > 0) {
+    throw new Error(
+      `MEMORY FORMAT ORPHAN: ${orphan.sort().join(", ")} under skills/persist/references/formats/ is not referenced by rules/memory-catalog.md`,
+    );
+  }
+}

@@ -21,6 +21,7 @@ import {
   checkTriggerJaccard,
   checkResolverConsistency,
   checkSpecFormat,
+  checkMemoryCatalog,
 } from "../scripts/checks.ts";
 
 // ---------- fixture helper ----------
@@ -419,5 +420,53 @@ describe("checkSpecFormat", () => {
     const root = mkdtempSync(join(tmpdir(), "squire-nospec-"));
     activeRoots.push(root);
     expect(() => checkSpecFormat(root)).not.toThrow();
+  });
+});
+
+function catalogRepo(catalogBody: string, formatFiles: string[]): string {
+  const root = mkdtempSync(join(tmpdir(), "squire-cat-"));
+  mkdirSync(join(root, "rules"), { recursive: true });
+  writeFileSync(join(root, "rules", "memory-catalog.md"), catalogBody);
+  const fdir = join(root, "skills", "persist", "references", "formats");
+  mkdirSync(fdir, { recursive: true });
+  for (const f of formatFiles) writeFileSync(join(fdir, f), "# fmt\n");
+  activeRoots.push(root);
+  return root;
+}
+
+describe("checkMemoryCatalog", () => {
+  // PRODUCT intentionally has no format file (content via /shape), so it must
+  // not count as a missing reference.
+  const CATALOG = `# Memory Catalog
+
+## behavior
+- **Format**: \`references/formats/behavior.md\`
+
+## ARCHITECTURE
+- **Format**: \`references/formats/architecture.md\`
+
+## PRODUCT
+- **Format**: 无（内容经 /shape）
+`;
+
+  it("passes when referenced format files exist and none are orphaned", () => {
+    const root = catalogRepo(CATALOG, ["behavior.md", "architecture.md"]);
+    expect(() => checkMemoryCatalog(root)).not.toThrow();
+  });
+
+  it("throws when a catalog-referenced format file is missing", () => {
+    const root = catalogRepo(CATALOG, ["behavior.md"]);
+    expect(() => checkMemoryCatalog(root)).toThrow(/MEMORY FORMAT MISSING.*architecture/);
+  });
+
+  it("throws on an orphan format file not referenced by the catalog", () => {
+    const root = catalogRepo(CATALOG, ["behavior.md", "architecture.md", "extra.md"]);
+    expect(() => checkMemoryCatalog(root)).toThrow(/MEMORY FORMAT ORPHAN.*extra/);
+  });
+
+  it("is a no-op when the catalog does not exist", () => {
+    const root = mkdtempSync(join(tmpdir(), "squire-nocat-"));
+    activeRoots.push(root);
+    expect(() => checkMemoryCatalog(root)).not.toThrow();
   });
 });
