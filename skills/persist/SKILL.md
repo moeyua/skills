@@ -34,17 +34,13 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 
 record and correct run **after** shape — you record a change shape already planned, or correct an artifact you've realized (shaped) is wrong. backfill onboards a capability that predates any squire plan, reading an authoritative source. In no mode does persist author truth from raw, un-shaped intent or from guessing at implementation.
 
-## Pick the target, then the source — from the catalog
+## Pick the target, then load its format
 
-Which artifact you touch, and where its content legitimately comes from, is defined per target in `references/memory-catalog.md`. The shape differs by target:
+The catalog (`references/memory-catalog.md`, the index) tells you **which** artifacts exist, **when** each is needed, and **where** its content comes from. Once you know the target, **load its format spec — the matching file under `references/formats/` (behavior / architecture / design / workflow / roadmap / readme) — and follow its Sections / Source / Boundary.** Load only the target you're writing; the formats are split per document precisely so you read one, not six.
 
-- **behavior** (`specs/<domain>/spec.md`) — sourced from the plan's `## Spec delta`, merged mechanically by requirement name (below). The rigorous, structured target.
-- **ARCHITECTURE** — sourced from the code's current structure + the plan's `## Key decisions`; only what currently holds, never future/deferred items (those go to ROADMAP).
-- **DESIGN / WORKFLOW / ROADMAP** — sourced from the maintainer's stated intent; ROADMAP is record-only (no prioritizing, no scheduling, no worth-judging).
-- **README** — synthesized from PRODUCT + ARCHITECTURE (its entry projection); never invented positioning.
-- **PRODUCT** — persist does **not** author its content; a content change to philosophy/boundaries is shape's job. Persist may at most create an empty skeleton and route back to `/shape`.
+**Anti-invention is per target and absolute**: write from the Source the format names; if that source is absent, stop and ask — don't reverse-engineer from code, don't fill from imagination. If the target doesn't exist yet, create it (create-if-missing), born with real content from its source.
 
-**Anti-invention is per target and absolute**: write from the source the catalog names; if that source is absent, stop and ask — don't reverse-engineer from code, don't fill from imagination. If the target doesn't exist yet, create it (create-if-missing), born with real content from its source.
+**PRODUCT is special** — persist does not author its content (it has no format file); a change to philosophy/boundaries is shape's job. Persist may at most create an empty skeleton and route back to `/shape`.
 
 ## Record: merge a behavior delta
 

@@ -47,3 +47,8 @@ Verify: manual(integration)
 
 本 skill 写 behavior 必须默认产出 Lite spec(behavior-first 的短 requirement、各带 `Verify:`、scope 与 non-goals),仅在高风险变更(API/契约变更、迁移、安全)时升到 Full;无对外可见行为的变更不记录。
 Verify: manual(integration)
+
+### Requirement: 照对应 format 规范写
+
+本 skill 写任一记忆 artifact 必须加载并遵循 `skills/persist/references/formats/<artifact>.md` 的 Sections / Source / Boundary;按需只加载当前 target 那份。format 只规定结构与源,不规定段内措辞。记忆目录与 format 文件须保持同步(由 checkMemoryCatalog 机械守)。
+Verify: [checkMemoryCatalog](../../tests/checks.test.ts)
