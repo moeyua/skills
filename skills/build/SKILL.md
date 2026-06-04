@@ -74,6 +74,16 @@ When every step is done → run the full plan verification → set the plan's `s
 
 Refactor and perf skip TDD because their invariant is "behavior unchanged" or "a performance number" — neither is expressible as "write a red test, then go green." Existing tests are the better guard net.
 
+## Test work (writing tests is build's, with or without a plan)
+
+Writing tests is build's job — both a plan's TDD and standalone test work that has no plan: add coverage for a module, add a regression for a found bug, fix a flaky test. Small test-only work doesn't need a full plan file; the acceptance is the test itself going red → green.
+
+- **Add coverage / regression**: read the code under test for its real behavior first, then write the test. A test that's green the moment you write it doesn't cover the target — stop and fix the test, don't tweak the code to fit.
+- **Flaky**: retry once only; still failing means it's failing, not flaky. Never `.skip`, delete, or `--no-verify` to make it pass.
+- **A failure that reflects a real bug is not build's to patch here** — route to `/shape fix`.
+
+Running the suite as a merge gate, code review, and end-to-end checking belong to `/verify`, not build — build runs tests to confirm its own work; verify runs them to gate the change.
+
 ## Engineering constraints
 
 These all share one root: don't re-judge intent while implementing. Intent was judged in shape; reopening it here is where scope creep starts.

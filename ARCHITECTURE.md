@@ -12,6 +12,8 @@ squire 的架构 = **真源层 + 内容层 + 索引层 + 生成层 + 验证层 +
 squire/
 ├── README.md                         # 给使用者
 ├── ARCHITECTURE.md                   # 本文件
+├── PRODUCT.md                        # 定位 / 哲学 / 边界
+├── ROADMAP.md                        # 搁置 / 未来项（record-only）
 ├── LICENSE
 ├── package.json                      # private: true，纯 dev 工具用
 ├── tsconfig.json
@@ -26,17 +28,17 @@ squire/
 │   │       ├── mode-feat.md
 │   │       ├── mode-refactor.md
 │   │       └── mode-perf.md
-│   ├── build/SKILL.md
-│   ├── test/SKILL.md
-│   ├── review/SKILL.md
-│   ├── spec/SKILL.md                 # 持久 specs/ 真源的产出与维护
+│   ├── build/SKILL.md                # 改造：含写测试（TDD + 不挂 plan 的补覆盖/回归）
+│   ├── verify/SKILL.md               # 校验：review / test / e2e 三模式
+│   ├── persist/SKILL.md              # 记忆：照记忆目录维护持久真源
 │   ├── commit/SKILL.md
 │   └── propose/SKILL.md
-├── specs/                            # 持久规格真源（spec skill 维护，按 domain 一份）
-│   └── <domain>/spec.md              # 行为契约：Purpose + Requirements + Scenarios
-├── rules/                            # 跨 skill 规则的单一真源（symlink 进各 skill 的 references/）
+├── specs/                            # 持久行为契约（persist 的 behavior 目标，按 domain 一份）
+│   └── <domain>/spec.md              # 行为契约：Purpose + Requirements（各带 Verify）
+├── rules/                            # 跨 skill 规则 / 共享真源（symlink 进相关 skill 的 references/）
 │   ├── anti-patterns.md
-│   └── durable-context.md
+│   ├── durable-context.md
+│   └── memory-catalog.md             # 记忆目录：explore 读 / persist 写 / health 查
 ├── scripts/                          # 库代码（被 tests/ 调用）
 │   ├── frontmatter.ts                # 手写 parser，零运行时依赖
 │   └── checks.ts                     # 各种 check 函数
@@ -89,6 +91,7 @@ skills/<name>/SKILL.md          # skill 主体，agent 触发时全文加载
 skills/shape/references/*.md    # 多 mode 时的子文件，按需加载
 rules/anti-patterns.md          # 跨 skill 的反模式（单一真源，symlink 进各 skill references/）
 rules/durable-context.md        # 跨 skill 的 memory 前置规则（同上）
+rules/memory-catalog.md         # 记忆目录：explore 读 / persist 写 / health 查（symlink 进这三个的 references/）
 ```
 
 **SKILL.md vs references/**：
@@ -349,7 +352,7 @@ Claude Code skill 触发是双轨：
 
 | 冲突                                                      | 行为                                                                                 |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `/review`（Claude Code 内置）vs squire review skill       | squire 接管 `/review`                                                                |
+| `/verify`（Claude Code 内置）vs squire verify skill       | squire 接管 `/verify`                                                                |
 | `/commit`（commit-commands plugin）vs squire commit skill | plugin 有 namespace（`/commit-commands:commit`），不冲突；用户输 `/commit` 走 squire |
 
 ### 默认 symlink
@@ -375,7 +378,17 @@ Claude Code skill 触发是双轨：
 
 最终（v1）：explore / shape / build / test / review / commit / propose。
 
-后续新增 `spec`（第 8 个）——把"持久 spec 真源管理"纳入闭环（review 与 commit 之间的记录阶段），产物模型借鉴 OpenSpec（specs/ 真源 + plan 内 spec delta + 完成时合并）。这是 `document` 设想里闭环内的一面；对外文档管理仍排除，见 PRODUCT.md 边界 #2 的 2026-06-01 修订。
+后续新增 `spec`（第 8 个）——把"持久 spec 真源管理"纳入闭环（review 与 commit 之间的记录阶段），产物模型借鉴 OpenSpec（specs/ 真源 + plan 内 spec delta + 完成时合并）。
+
+### 2026-06-04 记忆支柱重构（8 → 7 skill，6 支柱）
+
+把闭环重组成 **6 支柱**：理解 `explore` / 设计 `shape` / 改造 `build` / 校验 `verify` / 记忆 `persist` / 交付 `commit`·`propose`。三处动作：
+
+- **spec 升级为 `persist`**——「持久 spec 真源」泛化为「持久记忆」：沿用 record/correct/backfill 三 mode，目标从 `specs/` 单一泛化到 `rules/memory-catalog.md` 里任一 artifact（行为契约 / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README）。记忆从此是一等支柱，而非 spec 一根半截柱。
+- **校验合成 `verify`**——`review` + 原 `test` 的「跑」+ e2e 合为一个 skill 的三 mode（review / test / e2e）；review mode 承 code-review 的成熟做法，e2e mode 据内置 verify/run 设计。
+- **解散 `test`**——它横跨改造与校验两柱：写测试归 `build`、跑/判测试归 `verify`、调失败根因归 `shape fix`。解散后支柱零跨柱。
+
+同时重定 PRODUCT.md 哲学/边界 #2：从「只做代码闭环」到「开发 + 记忆」，记忆/文档（含 README）由记忆目录封顶进入 scope。详见 [plans/2026-06-04-feat-memory-pillar.md](plans/2026-06-04-feat-memory-pillar.md) 与 PRODUCT.md 边界 #2 的 2026-06-04 修订。
 
 ### 为什么 shape 用 mode 而不是多个 skill？
 
@@ -420,27 +433,6 @@ Claude Code plugin marketplace 是另一条独立的安装路径，需要维护 
 
 代价：失去独立 `pnpm verify` 命令——但 `vp test run --filter=verify-skills` 等价，且实际上很少需要分开跑。
 
-## v2 规划
+## 未来规划
 
-以下能力暂不进入 v1，待想清楚或有真实需求再加：
-
-### Skill 层面
-
-- `shape` 的 `arch` mode：架构调整、技术选型、模块重组
-- `document` skill：其闭环内的一面已落地为 `spec` skill（持久 specs/ 真源）；剩下的对外文档管理仍排除（PRODUCT.md 边界 #2）。explore 的"必读文档清单"已含 `specs/`
-- `release` skill：发布流程——各项目差异大，需要提炼跨项目的通用机制（参考 Waza `/check` 的 Project Context Extraction 思路）
-- `health` skill：项目体检——文档与代码的漂移检测、依赖陈旧、CI 状态、文件大小热点等。explore 故意只读不验证，把"文档说的 vs 代码实际"的对照工作留给 health。spec 的**自动漂移同步**依赖 health 提供"哪份 spec 漂了"的信号——在 health 落地前，spec 的"更新"只靠人主动发起
-
-### 架构层面
-
-- `scripts/build-metadata.ts`：codegen，如果加 marketplace.json 或 README install URL 自动 pin
-- `.claude-plugin/marketplace.json`：plugin marketplace 支持
-- `AGENTS.md` / `CLAUDE.md`：协作 agent 的 contributor guide
-- Marker（🥷 等价物）：反 hallucination invariant，如果出现体感问题
-- `rules/squire-routing.md`：可选注入 host 的路由提示（给 Codex / Pi 等没有自动路由的 agent）
-
-### 分发渠道
-
-- Codex / Pi / Claude Desktop 多 host 支持
-- npm 发布
-- Claude Code plugin marketplace
+搁置 / 未来项见 [ROADMAP.md](ROADMAP.md)（record-only）——设计文档只讲当下，未来项归 ROADMAP。这本身是 persist 写 ROADMAP 目标的 dogfood。主要待办：`health` skill（校验支柱的正交审计半边）、`shape` 的 `arch` mode、`release` skill，以及 marketplace / 多 host 分发等。

@@ -43,7 +43,7 @@ Changes to API / schema / config / CLI / file interfaces. If none → "None".
 
 ## Spec delta
 
-If this change alters externally observable behavior, state the change to the persistent `specs/<domain>/spec.md` as a delta, for the spec skill to record after build. If it changes no observable behavior (pure refactor / perf holding behavior) → "None".
+If this change alters externally observable behavior, state the change to the persistent `specs/<domain>/spec.md` as a delta, for the persist skill to record after build. If it changes no observable behavior (pure refactor / perf holding behavior) → "None".
 
 ```markdown
 ## ADDED Requirements
@@ -130,7 +130,7 @@ Semantics of the frontmatter `status` field:
 
 - `draft`: think just wrote it, waiting for the user to approve
 - `approved`: changed after the user says "implement this plan"
-- `done`: changed after implement + review + commit complete (updated by the implement / review skill)
+- `done`: changed after build + verify + commit complete (updated by the build skill)
 
-In v1, support `draft` / `approved` first; leave `done` to v2, handled by the review skill.
+In v1, support `draft` / `approved` first; leave `done` to v2, handled by the build skill.
 ```

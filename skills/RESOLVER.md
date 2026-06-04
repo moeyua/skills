@@ -24,23 +24,17 @@
 
 ### 3. Verify
 
-| trigger                                                                                                                                  | skill                  |
-| ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
-| "run the tests" / "add tests" / "add a regression" / "coverage" / "this test is failing" / "flaky?" / `/test` / run, add, or debug tests | `skills/test/SKILL.md` |
-
-### 4. Gate
-
 | trigger                                                                                                                                      | skill                    |
 | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| "review" / "look at the changes" / "把关" / "check before merge" / `/review` / 5-dimension scan, look-don't-touch; supports an aspect filter | `skills/review/SKILL.md` |
+| "review" / "run the tests" / "check it works" / "把关" / "验证" / `/verify` / review + test + e2e gate before merge, verdict only — no code changes | `skills/verify/SKILL.md` |
 
-### 5. Record
+### 4. Record
 
 | trigger                                                                                                                                                           | skill                  |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
-| "record this behavior" / "record the spec" / "update specs/X" / `/spec` / merge a built change's spec delta into the source of truth, or correct an existing spec | `skills/spec/SKILL.md` |
+| "record this" / "persist the spec" / "update ARCHITECTURE / specs/X" / `/persist` / record a built change into the right memory artifact per the catalog, or correct / backfill | `skills/persist/SKILL.md` |
 
-### 6. Land / Push
+### 5. Land / Push
 
 | trigger                                                                                                          | skill                     |
 | ---------------------------------------------------------------------------------------------------------------- | ------------------------- |
@@ -58,9 +52,9 @@ Skills don't chain automatically. Each one stops when done and waits for the use
 Base loop:
 
 ```
-explore → shape → build → test → review → spec → commit → propose
+explore → shape → build → verify → persist → commit → propose
 ```
 
-shape branches internally by intent: default / fix / feat / refactor / perf.
+shape branches internally by intent: default / fix / feat / refactor / perf. verify checks one of three ways: review / test / e2e.
 
-spec runs at the tail when a change alters behavior worth recording — it records the plan's spec delta into the persistent `specs/` source of truth, or corrects an existing spec. It's conditional, not every change touches it.
+persist runs at the tail when a change produces durable memory worth recording — it records into the right catalog artifact (behavior spec / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README) per `rules/memory-catalog.md`, or corrects an existing one. It's conditional, not every change touches it. The orthogonal `health` audit (drift/gaps) is planned — see ROADMAP.

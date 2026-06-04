@@ -50,14 +50,9 @@ Every explore run **starts with the Overview Phase**. When the user named a scop
 
 Scan the root and the usual locations, and **read in full every doc that exists** — reading only titles is guessing at the contents, and downstream skills will act on the wrong thing.
 
-> **v1 starter list** (will shift as the document skill evolves):
+> The recommended **memory artifacts** are defined once in `references/memory-catalog.md` (the shared memory catalog persist writes to) — read every one that exists: `README` / `ARCHITECTURE` / `PRODUCT` / `DESIGN` / `WORKFLOW` / `ROADMAP` / every `.md` under `specs/`. Beyond the catalog, also read any other docs present:
 >
-> - `README*`
-> - `ARCHITECTURE*`
-> - `PRODUCT*`
-> - `DESIGN*`
 > - `CLAUDE.md` / `AGENTS.md`
-> - every `.md` under `specs/`
 > - every `.md` under `docs/`
 > - `.cursorrules` / `.windsurfrules` / other IDE rules
 > - other `.md` files at the root
