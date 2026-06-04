@@ -10,6 +10,7 @@
 - **`shape` 的 `arch` mode**:架构调整、技术选型、模块重组。
 - **`release` skill**:发布流程——各项目差异大,需要提炼跨项目的通用机制(参考 Waza `/check` 的 Project Context Extraction 思路)。
 - **persist 的 `DESIGN` / `WORKFLOW` 目标在 squire 自身的落地**:squire 无 UI,DESIGN 按目录判「不需要」;WORKFLOW 待有特定流程约定时再补。
+- **persist format 的 section 结构待跟维护者敲定**:`skills/persist/references/formats/*.md` 的 section 是 AI 擅自定的、未经维护者确认(讽刺:本就是为修「全靠 AI 发挥」而建)。需逐份过格式、按维护者意图重订。交接见 `plans/2026-06-04-handoff-persist-formats.md`。
 
 ## 架构层面
 
