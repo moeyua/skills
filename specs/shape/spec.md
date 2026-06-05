@@ -30,3 +30,18 @@ Verify: manual(integration)
 
 用户问"值不值得做"时，shape 必须明说这不是 squire 处理的层次，只给一句观察、不下"该不该做"的结论。
 Verify: manual(integration)
+
+### Requirement: 整体与细节之间往返
+
+shape 必须按"整体→细节→整体"往返推进：下钻某个细节前点明它服务于哪个整体，解决后回到整体复核整体是否仍成立，再进入下一个细节。当下钻由用户发起时，shape 必须跟进回答，但在答完后主动重新提出仍未合上的整体方向问题，且不把"用户在追问细节"当作整体已经清楚的信号。
+Verify: manual(integration)
+
+### Requirement: 决策点把串联交回用户
+
+shape 必须在每个真决策处（mode 选择 / approach / 已解决的脆弱假设 / 划定的 scope 边界）命名该决策、说明它如何移动整体，然后停下把下一步交回用户，绝不把判断无声地并入方案；用户不反对即视为同意。这不要求每步都征得批准。
+Verify: manual(integration)
+
+### Requirement: Clarify 阶段为提问打地基
+
+shape 必须在 Clarify 期间读相关代码、文档与历史为提问打地基，并对方案依赖的任何外部定义、工具、库或 API 对照权威文档核实，不凭训练记忆断言。
+Verify: manual(integration)
