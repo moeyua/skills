@@ -274,7 +274,7 @@ export function checkSpecFormat(root: string): void {
     const lines = text.split("\n");
     const reqStarts: number[] = [];
     for (let i = 0; i < lines.length; i++) {
-      if (/^### Requirement:/.test(lines[i]!)) reqStarts.push(i);
+      if (lines[i]!.startsWith("### Requirement:")) reqStarts.push(i);
     }
     if (reqStarts.length === 0) {
       throw new Error(`SPEC NO REQUIREMENTS: ${specPath} has no "### Requirement:" entries`);
@@ -283,12 +283,12 @@ export function checkSpecFormat(root: string): void {
       const name = lines[start]!.replace(/^### Requirement:\s*/, "").trim();
       let end = lines.length;
       for (let i = start + 1; i < lines.length; i++) {
-        if (/^#{2,3} /.test(lines[i]!)) {
+        if (lines[i]!.startsWith("## ") || lines[i]!.startsWith("### ")) {
           end = i;
           break;
         }
       }
-      const verifies = lines.slice(start + 1, end).filter((l) => /^Verify:/.test(l));
+      const verifies = lines.slice(start + 1, end).filter((l) => l.startsWith("Verify:"));
       if (verifies.length !== 1) {
         throw new Error(
           `SPEC VERIFY COUNT: ${specPath} requirement "${name}" has ${verifies.length} Verify lines, need exactly 1`,
