@@ -25,7 +25,7 @@ Verify: manual(integration)
 
 ### Requirement: 设计记忆不含未来、ROADMAP 只记不裁决
 
-本 skill 写 ARCHITECTURE / DESIGN 必须不含未来 / 搁置项(归 ROADMAP);写 ROADMAP 必须只记维护者已决定搁置 / 规划的项,不排优先级、不排期、不做「值不值得」的判断。
+本 skill 写 ARCHITECTURE / DESIGN 必须不含未来 / 搁置项(归 ROADMAP);写 ROADMAP 必须只记维护者已决定搁置 / 规划的项,persist 自身不主动排优先级、不排期、不做「值不值得」的判断,但维护者已决定的优先级 / 时间安排照记不挡。
 Verify: manual(integration)
 
 ### Requirement: 守目录边界、PRODUCT 指回 shape
