@@ -19,7 +19,6 @@
 ## 架构层面
 
 - **`scripts/build-metadata.ts`**:codegen,如果加 marketplace.json 或 README install URL 自动 pin。
-- **`.claude-plugin/marketplace.json`**:plugin marketplace 支持。
 - **`AGENTS.md` / `CLAUDE.md`**:协作 agent 的 contributor guide。
 - **Marker(🥷 等价物)**:反 hallucination invariant,如果出现「搞不清 skill 是否触发」的体感问题。
 - **`rules/squire-routing.md`**:可选注入 host 的路由提示(给 Codex / Pi 等没有自动路由的 agent)。
@@ -28,4 +27,4 @@
 
 - Codex / Pi / Claude Desktop 多 host 支持。
 - npm 发布。
-- Claude Code plugin marketplace。
+- Claude Code plugin marketplace(需 `.claude-plugin/marketplace.json`)。
