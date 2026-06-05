@@ -6,11 +6,15 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "install": "skills add . -g --all",
     "test": "vp test run",
     "check": "vp check",
     "lint": "vp lint",
     "format": "vp fmt",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "skills": "^1.5.10"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

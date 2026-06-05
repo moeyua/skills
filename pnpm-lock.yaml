@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      skills:
+        specifier: ^1.5.10
+        version: 1.5.10
     devDependencies:
       '@types/node':
         specifier: ^25.9.1
@@ -16,10 +20,10 @@ importers:
         version: 6.0.3
       vite:
         specifier: ^8.0.14
-        version: 8.0.14(@types/node@25.9.1)
+        version: 8.0.14(@types/node@25.9.1)(yaml@2.9.0)
       vite-plus:
         specifier: ^0.1.22
-        version: 0.1.22(@types/node@25.9.1)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1))
+        version: 0.1.22(@types/node@25.9.1)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(yaml@2.9.0))(yaml@2.9.0)
 
 packages:
 
@@ -746,6 +750,11 @@ packages:
     resolution: {integrity: sha512-2wcC/oGxHis/BoHkkPwldgiPSYcpZK3JU28WoMVv55yHJgcZ8rlXvuG9iZggz+sU1d4bRgIGASwyWqjxu3FM0g==}
     engines: {node: '>=18'}
 
+  skills@1.5.10:
+    resolution: {integrity: sha512-5d9lKHeF4qcF/7LRd8h1arnPGJtRu6GxVoWyt9hh0u1RUe+UrjzXIc6PITE+HMzgqR8sZ/vJtGDi8lrOZTGS7w==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
@@ -842,6 +851,11 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
+
+  yaml@2.9.0:
+    resolution: {integrity: sha512-2AvhNX3mb8zd6Zy7INTtSpl1F15HW6Wnqj0srWlkKLcpYl/gMIMJiyuGq2KeI2YFxUPjdlB+3Lc10seMLtL4cA==}
+    engines: {node: '>= 14.6'}
+    hasBin: true
 
 snapshots:
 
@@ -1079,7 +1093,7 @@ snapshots:
     dependencies:
       undici-types: 7.24.6
 
-  '@voidzero-dev/vite-plus-core@0.1.22(@types/node@25.9.1)(typescript@6.0.3)':
+  '@voidzero-dev/vite-plus-core@0.1.22(@types/node@25.9.1)(typescript@6.0.3)(yaml@2.9.0)':
     dependencies:
       '@oxc-project/runtime': 0.129.0
       '@oxc-project/types': 0.129.0
@@ -1089,6 +1103,7 @@ snapshots:
       '@types/node': 25.9.1
       fsevents: 2.3.3
       typescript: 6.0.3
+      yaml: 2.9.0
 
   '@voidzero-dev/vite-plus-darwin-arm64@0.1.22':
     optional: true
@@ -1108,11 +1123,11 @@ snapshots:
   '@voidzero-dev/vite-plus-linux-x64-musl@0.1.22':
     optional: true
 
-  '@voidzero-dev/vite-plus-test@0.1.22(@types/node@25.9.1)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1))':
+  '@voidzero-dev/vite-plus-test@0.1.22(@types/node@25.9.1)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(yaml@2.9.0))(yaml@2.9.0)':
     dependencies:
       '@standard-schema/spec': 1.1.0
       '@types/chai': 5.2.3
-      '@voidzero-dev/vite-plus-core': 0.1.22(@types/node@25.9.1)(typescript@6.0.3)
+      '@voidzero-dev/vite-plus-core': 0.1.22(@types/node@25.9.1)(typescript@6.0.3)(yaml@2.9.0)
       es-module-lexer: 1.7.0
       obug: 2.1.1
       pixelmatch: 7.2.0
@@ -1122,7 +1137,7 @@ snapshots:
       tinybench: 2.9.0
       tinyexec: 1.2.2
       tinyglobby: 0.2.16
-      vite: 8.0.14(@types/node@25.9.1)
+      vite: 8.0.14(@types/node@25.9.1)(yaml@2.9.0)
       ws: 8.21.0
     optionalDependencies:
       '@types/node': 25.9.1
@@ -1321,6 +1336,10 @@ snapshots:
       mrmime: 2.0.1
       totalist: 3.0.1
 
+  skills@1.5.10:
+    dependencies:
+      yaml: 2.9.0
+
   source-map-js@1.2.1: {}
 
   std-env@4.1.0: {}
@@ -1345,12 +1364,12 @@ snapshots:
 
   undici-types@7.24.6: {}
 
-  vite-plus@0.1.22(@types/node@25.9.1)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)):
+  vite-plus@0.1.22(@types/node@25.9.1)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(yaml@2.9.0))(yaml@2.9.0):
     dependencies:
       '@oxc-project/types': 0.129.0
       '@oxlint/plugins': 1.61.0
-      '@voidzero-dev/vite-plus-core': 0.1.22(@types/node@25.9.1)(typescript@6.0.3)
-      '@voidzero-dev/vite-plus-test': 0.1.22(@types/node@25.9.1)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1))
+      '@voidzero-dev/vite-plus-core': 0.1.22(@types/node@25.9.1)(typescript@6.0.3)(yaml@2.9.0)
+      '@voidzero-dev/vite-plus-test': 0.1.22(@types/node@25.9.1)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(yaml@2.9.0))(yaml@2.9.0)
       oxfmt: 0.48.0
       oxlint: 1.63.0(oxlint-tsgolint@0.22.1)
       oxlint-tsgolint: 0.22.1
@@ -1394,7 +1413,7 @@ snapshots:
       - vite
       - yaml
 
-  vite@8.0.14(@types/node@25.9.1):
+  vite@8.0.14(@types/node@25.9.1)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.4
@@ -1404,5 +1423,8 @@ snapshots:
     optionalDependencies:
       '@types/node': 25.9.1
       fsevents: 2.3.3
+      yaml: 2.9.0
 
   ws@8.21.0: {}
+
+  yaml@2.9.0: {}
