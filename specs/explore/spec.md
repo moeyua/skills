@@ -13,7 +13,7 @@ Verify: manual(integration)
 
 ### Requirement: 先 Overview 再深入
 
-explore 必须先完成 Overview（确认项目身份、读全部存在的关键文档、摸清结构），用户指定范围时才进入 Scoped Deep-dive；即便用户只点名某模块，也先做 Overview 建骨架，不直接跳进去。
+explore 必须先完成 Overview（确认项目身份、读全部存在的关键文档、摸清结构），用户指定范围时才进入 Scoped Deep-dive；即便用户只点名某模块，也先做 Overview 建骨架，不直接跳进去。Overview 中必须先读 `references/memory-catalog.md` 全文——它是判断「本项目什么算持久记忆」的规则，先于、且区别于读它所列的各份 artifact。（Previously: 只笼统要求「读全部存在的关键文档」，未把 catalog 列为先于 artifact 的必读。）
 Verify: manual(integration)
 
 ### Requirement: 引用文档标注来源
