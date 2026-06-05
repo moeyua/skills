@@ -13,4 +13,4 @@ What the maintainer has decided to defer or plan. Append when a new deferral is 
 
 ## Boundary
 
-**Record, don't judge.** No prioritization (no P0/P1, no ordering-as-ranking), no scheduling (no dates / sprints / timelines), no "is it worth it" verdict. The moment ROADMAP ranks or schedules, it's left record-only and become planning — which is out of scope.
+**This constrains persist's own authoring, not the maintainer's content.** When persist writes the roadmap it records what the maintainer decided to defer — on its own it does **not** add priorities (P0/P1, ordering-as-ranking), impose a schedule (dates / sprints / timelines), or pass an "is it worth it" verdict. Those are the maintainer's calls. If the maintainer has decided on horizons (now / next / later) or priorities, persist records them faithfully — it just never invents or imposes them. (squire's own `ROADMAP.md` chooses to stay record-only; that's squire's choice, not a rule forced on every project.)

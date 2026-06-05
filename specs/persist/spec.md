@@ -2,25 +2,25 @@
 
 ## Purpose
 
-persist skill 维护项目的持久记忆——记录系统当前该是什么。它由 spec skill 升级而来:沿用 record/correct/backfill 三动作 mode,但把目标从「`specs/` 单一」泛化为「`rules/memory-catalog.md` 里任一 artifact」(行为契约 / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README)。本文件既是 persist skill 自身的契约,也是本仓所有 spec 的格式锚点:结构标签用英文,句子用中文(因为 squire 的 specs 给维护者看,跟 README/PRODUCT/ARCHITECTURE 同语言)。
+persist skill 维护项目的持久记忆——记录系统当前该是什么。它由 spec skill 升级而来:沿用 record/correct/backfill 三动作 mode,但把目标从「`specs/` 单一」泛化为「`rules/memory-catalog.md` 里任一 artifact」(spec(行为契约) / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README)。本文件既是 persist skill 自身的契约,也是本仓所有 spec 的格式锚点:结构标签用英文,句子用中文(因为 squire 的 specs 给维护者看,跟 README/PRODUCT/ARCHITECTURE 同语言)。
 
 > 说明:persist 的行为是 agent 遵循 SKILL.md 的 prose,没有自动化测试可背书,所以下面每条都标 `manual(integration)`——靠实跑 `/persist` 验。
 
 ## Requirements
 
-### Requirement: 合并 behavior delta
+### Requirement: 合并 spec delta
 
-record 模式写 behavior 目标时,本 skill 必须按 requirement 名把 plan 的 `## Spec delta` 合并进 `specs/<domain>/spec.md`:ADDED 段追加、MODIFIED 段替换同名 requirement、REMOVED 段删除;domain 不存在则新建(含 `## Purpose`)。
+record 模式写 spec 目标时,本 skill 必须按 requirement 名把 plan 的 `## Spec delta` 合并进 `specs/<domain>/spec.md`:ADDED 段追加、MODIFIED 段替换同名 requirement、REMOVED 段删除;domain 不存在则新建(含 `## Purpose`)。
 Verify: manual(integration)
 
 ### Requirement: 目录驱动的多目标记忆
 
-本 skill 必须按 `rules/memory-catalog.md` 决定写哪份 artifact 及如何写;behavior 写 `specs/`,architecture/design/workflow/roadmap/readme 写对应文档。目标不存在时 create-if-missing,出生即带来自其权威源的内容。
+本 skill 必须按 `rules/memory-catalog.md` 决定写哪份 artifact 及如何写;spec 写 `specs/`,architecture/design/workflow/roadmap/readme 写对应文档。目标不存在时 create-if-missing,出生即带来自其权威源的内容。
 Verify: manual(integration)
 
 ### Requirement: 逐目标 anti-invention
 
-本 skill 写任一目标必须依据该目标在目录里声明的权威源;源缺失必须停下发问,不从代码逆推、不凭空创作。behavior 的「无 `## Spec delta` 即停问」门槛不因泛化而降低。
+本 skill 写任一目标必须依据该目标在目录里声明的权威源;源缺失必须停下发问,不从代码逆推、不凭空创作。spec 的「无 `## Spec delta` 即停问」门槛不因泛化而降低。
 Verify: manual(integration)
 
 ### Requirement: 设计记忆不含未来、ROADMAP 只记不裁决
@@ -45,7 +45,7 @@ Verify: manual(integration)
 
 ### Requirement: 默认产出轻量记忆
 
-本 skill 写 behavior 必须默认产出 Lite spec(behavior-first 的短 requirement、各带 `Verify:`、scope 与 non-goals),仅在高风险变更(API/契约变更、迁移、安全)时升到 Full;无对外可见行为的变更不记录。
+本 skill 写 spec 必须默认产出 Lite spec(behavior-first 的短 requirement、各带 `Verify:`、scope 与 non-goals),仅在高风险变更(API/契约变更、迁移、安全)时升到 Full;无对外可见行为的变更不记录。
 Verify: manual(integration)
 
 ### Requirement: 照对应 format 规范写

@@ -1,4 +1,4 @@
-# Behavior format — `specs/<domain>/spec.md`
+# Spec format — `specs/<domain>/spec.md`
 
 The persistent behavior contract: what the system _currently is_, organized by domain — a logical grouping (`auth/`, `payments/`, `search/`), by feature area, component, or bounded context.
 

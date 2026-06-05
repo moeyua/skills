@@ -12,14 +12,14 @@
 
 ---
 
-## behavior
+## spec
 
 - **Purpose**:行为契约——系统当前该是什么,按 domain 一份(`specs/<domain>/spec.md`),可观察行为 + 各带 `Verify:`。
 - **Audience**:internal
 - **When needed**:有对外可见行为的项目(几乎都)。
 - **Source**:plan 的 `## Spec delta` + 落地代码。
 - **Boundary**:不记实现细节(类名/库选型/步骤);无 delta 即停问。
-- **Format**:`references/formats/behavior.md`
+- **Format**:`references/formats/spec.md`
 
 ## ARCHITECTURE
 
@@ -32,11 +32,11 @@
 
 ## DESIGN
 
-- **Purpose**:UI 设计——界面、交互、视觉规范。
+- **Purpose**:视觉身份——颜色 / 字体 / 间距 / 形状 / 组件等视觉规范(design.md 两层:token + 理由)。
 - **Audience**:internal
-- **When needed**:**有 UI 的项目**;纯库/CLI/后端不需要。
-- **Source**:维护者陈述 + 设计稿。
-- **Boundary**:不是技术架构;不含未来项。
+- **When needed**:**有 UI / 视觉身份的项目**;纯库/CLI/后端不需要。
+- **Source**:维护者陈述 + 设计稿 + `design.md` 规范(google-labs-code/design.md)。
+- **Boundary**:只管视觉身份,不含交互流程 / 用户旅程(属行为,归 `specs/`);不是技术架构;不含未来项。
 - **Format**:`references/formats/design.md`
 
 ## WORKFLOW

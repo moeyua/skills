@@ -1,19 +1,19 @@
 ---
 name: persist
-description: "Maintain the project's persistent memory — what the project currently is. Record a built change into the right memory artifact (behavior spec / ARCHITECTURE / DESIGN / ROADMAP / README), or correct / backfill. Use when a change has landed and its contract / architecture / decision should be recorded, or an existing memory is wrong. Not for one-off change plans (use shape), implementation (use build), or project-wide drift detection (a future health skill)."
+description: "Maintain the project's persistent memory — what the project currently is. Record a built change into the right memory artifact (spec / ARCHITECTURE / DESIGN / ROADMAP / README), or correct / backfill. Use when a change has landed and its contract / architecture / decision should be recorded, or an existing memory is wrong. Not for one-off change plans (use shape), implementation (use build), or project-wide drift detection (a future health skill)."
 when_to_use: "persist, record, source of truth, behavior contract, architecture memory, roadmap, 记忆, 持久化, 真源, 记录, 沉淀, 行为契约, 更新文档"
 dispatch_intent: "Record and maintain the project's persistent memory from change deltas and authoritative sources"
 ---
 
 # Persist
 
-Persist maintains the project's **persistent memory** — the source of truth for what the project _currently is_, not how any one change got made. The recommended memory set lives in one place, `references/memory-catalog.md`: behavior contracts (`specs/`), ARCHITECTURE, DESIGN, WORKFLOW, ROADMAP, README. Every rule here exists so that **memory stays trustworthy**: each artifact records what an authoritative source actually says, never a contract or a structure reverse-engineered from a guess. Persist runs at the tail of the loop, after a change is built and validated; it records what landed, it doesn't redesign it.
+Persist maintains the project's **persistent memory** — the source of truth for what the project _currently is_, not how any one change got made. The recommended memory set lives in one place, `references/memory-catalog.md`: spec (behavior contracts in `specs/`), ARCHITECTURE, DESIGN, WORKFLOW, ROADMAP, README. Every rule here exists so that **memory stays trustworthy**: each artifact records what an authoritative source actually says, never a contract or a structure reverse-engineered from a guess. Persist runs at the tail of the loop, after a change is built and validated; it records what landed, it doesn't redesign it.
 
 Unfamiliar project? Run `/explore` first — writing memory for a system you haven't mapped invents a truth nobody agreed to.
 
 The memory catalog is the single source for **which** artifacts to maintain, **what** each holds, **where** its content comes from, and **what** it must not hold. Read `references/memory-catalog.md` and act per the target's entry; don't carry a hardcoded list in your head.
 
-For the **behavior** target (`specs/`), the requirement **sentences** — including the RFC 2119 modal verb (SHALL/MUST → 必须, SHOULD → 应当, MAY → 可以) — are written in the target project's language; literal code, paths, and identifiers stay as-is. Only the **structural labels** stay English as scannable anchors: the `## Requirements` / `### Requirement:` headers, the `Verify:` field, and the delta's `ADDED` / `MODIFIED` / `REMOVED` section names. (squire's own `specs/` are for the maintainer, so their sentences are Chinese like README/ARCHITECTURE, under English structural labels.)
+For the **spec** target (`specs/`), the requirement **sentences** — including the RFC 2119 modal verb (SHALL/MUST → 必须, SHOULD → 应当, MAY → 可以) — are written in the target project's language; literal code, paths, and identifiers stay as-is. Only the **structural labels** stay English as scannable anchors: the `## Requirements` / `### Requirement:` headers, the `Verify:` field, and the delta's `ADDED` / `MODIFIED` / `REMOVED` section names. (squire's own `specs/` are for the maintainer, so their sentences are Chinese like README/ARCHITECTURE, under English structural labels.)
 
 Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
@@ -36,13 +36,13 @@ record and correct run **after** shape — you record a change shape already pla
 
 ## Pick the target, then load its format
 
-The catalog (`references/memory-catalog.md`, the index) tells you **which** artifacts exist, **when** each is needed, and **where** its content comes from. Once you know the target, **load its format spec — the matching file under `references/formats/` (behavior / architecture / design / workflow / roadmap / readme) — and follow its Sections / Source / Boundary.** Load only the target you're writing; the formats are split per document precisely so you read one, not six.
+The catalog (`references/memory-catalog.md`, the index) tells you **which** artifacts exist, **when** each is needed, and **where** its content comes from. Once you know the target, **load its format spec — the matching file under `references/formats/` (spec / architecture / design / workflow / roadmap / readme) — and follow its Sections / Source / Boundary.** Load only the target you're writing; the formats are split per document precisely so you read one, not six.
 
 **Anti-invention is per target and absolute**: write from the Source the format names; if that source is absent, stop and ask — don't reverse-engineer from code, don't fill from imagination. If the target doesn't exist yet, create it (create-if-missing), born with real content from its source.
 
 **PRODUCT is special** — persist does not author its content (it has no format file); a change to philosophy/boundaries is shape's job. Persist may at most create an empty skeleton and route back to `/shape`.
 
-## Record: merge a behavior delta
+## Record: merge a spec delta
 
 shape writes a `## Spec delta` into the plan when a change alters behavior worth recording. Merging is mechanical, by requirement name:
 
@@ -66,12 +66,12 @@ When a capability already exists with no plan or delta — onboarding a brownfie
 
 ## Progressive rigor — keep it lightweight
 
-Use the lightest level that still makes the truth verifiable. For behavior specs:
+Use the lightest level that still makes the truth verifiable. For the spec target:
 
 - **Lite (default)** — a few short, behavior-first requirements, each with a `Verify:`, plus scope and non-goals. **Most stay here.**
 - **Full (higher risk only)** — API/contract changes, migrations, security/privacy, or cross-module changes where ambiguity causes expensive rework.
 
-**When not to record at all**: a change with no externally observable effect (internal refactor, a rename, a perf tweak that holds behavior) has nothing to add to behavior memory — skip it rather than pad `specs/` with entries that rot. Over-fine granularity is how a memory system decays into an unmaintained second copy of the code.
+**When not to record at all**: a change with no externally observable effect (internal refactor, a rename, a perf tweak that holds behavior) has nothing to add to spec memory — skip it rather than pad `specs/` with entries that rot. Over-fine granularity is how a memory system decays into an unmaintained second copy of the code.
 
 ## Boundaries
 
@@ -85,9 +85,9 @@ Use the lightest level that still makes the truth verifiable. For behavior specs
 
 Persist's failure mode is writing truth that wasn't earned — guessed, or copied from implementation. Stop and report in these cases:
 
-- **In record mode the plan has no spec delta** (behavior) / **no Key decisions or stated source** (other targets) — ask what to record; don't reverse-engineer from code.
+- **In record mode the plan has no spec delta** (spec target) / **no Key decisions or stated source** (other targets) — ask what to record; don't reverse-engineer from code.
 - **A MODIFIED/REMOVED requirement isn't in the spec** — report it; don't silently create it.
-- **The change has no externally observable behavior** (for behavior memory) — there's nothing to record; say so.
+- **The change has no externally observable behavior** (for spec memory) — there's nothing to record; say so.
 - **The target is PRODUCT's content** — that's philosophy work; route to `/shape`.
 - **The target is outside the catalog** (changelog / release notes / API reference) — refuse and say it's out of scope (PRODUCT.md boundary #2/#3).
 - **You'd need to reshape, not just record** — that's intent work; route back to `/shape`.
