@@ -33,7 +33,7 @@ squire/
 │   ├── persist/SKILL.md              # 记忆：照记忆目录维护持久真源
 │   ├── commit/SKILL.md
 │   └── propose/SKILL.md
-├── specs/                            # 持久行为契约（persist 的 behavior 目标，按 domain 一份）
+├── specs/                            # 持久行为契约（persist 的 spec 目标，按 domain 一份）
 │   └── <domain>/spec.md              # 行为契约：Purpose + Requirements（各带 Verify）
 ├── rules/                            # 跨 skill 规则 / 共享真源（symlink 进相关 skill 的 references/）
 │   ├── anti-patterns.md

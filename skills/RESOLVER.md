@@ -24,14 +24,14 @@
 
 ### 3. Verify
 
-| trigger                                                                                                                                      | skill                    |
-| -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| trigger                                                                                                                                             | skill                    |
+| --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
 | "review" / "run the tests" / "check it works" / "把关" / "验证" / `/verify` / review + test + e2e gate before merge, verdict only — no code changes | `skills/verify/SKILL.md` |
 
 ### 4. Record
 
-| trigger                                                                                                                                                           | skill                  |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| trigger                                                                                                                                                                         | skill                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
 | "record this" / "persist the spec" / "update ARCHITECTURE / specs/X" / `/persist` / record a built change into the right memory artifact per the catalog, or correct / backfill | `skills/persist/SKILL.md` |
 
 ### 5. Land / Push
@@ -57,4 +57,4 @@ explore → shape → build → verify → persist → commit → propose
 
 shape branches internally by intent: default / fix / feat / refactor / perf. verify checks one of three ways: review / test / e2e.
 
-persist runs at the tail when a change produces durable memory worth recording — it records into the right catalog artifact (behavior spec / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README) per `rules/memory-catalog.md`, or corrects an existing one. It's conditional, not every change touches it. The orthogonal `health` audit (drift/gaps) is planned — see ROADMAP.
+persist runs at the tail when a change produces durable memory worth recording — it records into the right catalog artifact (spec / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README) per `rules/memory-catalog.md`, or corrects an existing one. It's conditional, not every change touches it. The orthogonal `health` audit (drift/gaps) is planned — see ROADMAP.

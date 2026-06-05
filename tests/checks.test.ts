@@ -294,7 +294,10 @@ describe("checkMarkdownLinks", () => {
   it("ignores markdown files under the repo-root plans/ (historical, point-in-time refs)", () => {
     const root = repo([{ name: "x" }]);
     mkdirSync(join(root, "plans"));
-    writeFileSync(join(root, "plans", "2026-01-01-foo.md"), "# Plan\n\n[gone](../deleted/file.md)\n");
+    writeFileSync(
+      join(root, "plans", "2026-01-01-foo.md"),
+      "# Plan\n\n[gone](../deleted/file.md)\n",
+    );
     expect(() => checkMarkdownLinks(root)).not.toThrow();
   });
 
@@ -439,8 +442,8 @@ describe("checkMemoryCatalog", () => {
   // not count as a missing reference.
   const CATALOG = `# Memory Catalog
 
-## behavior
-- **Format**: \`references/formats/behavior.md\`
+## spec
+- **Format**: \`references/formats/spec.md\`
 
 ## ARCHITECTURE
 - **Format**: \`references/formats/architecture.md\`
@@ -450,17 +453,17 @@ describe("checkMemoryCatalog", () => {
 `;
 
   it("passes when referenced format files exist and none are orphaned", () => {
-    const root = catalogRepo(CATALOG, ["behavior.md", "architecture.md"]);
+    const root = catalogRepo(CATALOG, ["spec.md", "architecture.md"]);
     expect(() => checkMemoryCatalog(root)).not.toThrow();
   });
 
   it("throws when a catalog-referenced format file is missing", () => {
-    const root = catalogRepo(CATALOG, ["behavior.md"]);
+    const root = catalogRepo(CATALOG, ["spec.md"]);
     expect(() => checkMemoryCatalog(root)).toThrow(/MEMORY FORMAT MISSING.*architecture/);
   });
 
   it("throws on an orphan format file not referenced by the catalog", () => {
-    const root = catalogRepo(CATALOG, ["behavior.md", "architecture.md", "extra.md"]);
+    const root = catalogRepo(CATALOG, ["spec.md", "architecture.md", "extra.md"]);
     expect(() => checkMemoryCatalog(root)).toThrow(/MEMORY FORMAT ORPHAN.*extra/);
   });
 
