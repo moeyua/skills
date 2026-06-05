@@ -6,11 +6,15 @@
 
 ## Skill 层面
 
-- **`health` skill**:项目体检——文档↔代码漂移检测、依赖陈旧、CI 状态、文件大小热点等。它是「校验」支柱的**正交审计**那一半(explore/verify 之外),不在线性 loop。persist 的**自动漂移同步**依赖 health 提供「哪份记忆漂了」的信号——在 health 落地前,persist 的更新只靠人主动发起。
-- **`shape` 的 `arch` mode**:架构调整、技术选型、模块重组。
-- **`release` skill**:发布流程——各项目差异大,需要提炼跨项目的通用机制(参考 Waza `/check` 的 Project Context Extraction 思路)。
-- **persist 的 `DESIGN` / `WORKFLOW` 目标在 squire 自身的落地**:squire 无 UI,DESIGN 按目录判「不需要」;WORKFLOW 待有特定流程约定时再补。
-- **persist format 的 section 结构待跟维护者敲定**:`skills/persist/references/formats/*.md` 的 section 是 AI 擅自定的、未经维护者确认(讽刺:本就是为修「全靠 AI 发挥」而建)。需逐份过格式、按维护者意图重订。交接见 `plans/2026-06-04-handoff-persist-formats.md`。
+- **`explore` 局部深度探索强化**:整体探索之外,确保 / 加强对单模块的聚焦深挖(现有 Scoped Deep-dive Phase 的强化)。
+- **`shape` 思考深度对标 brainstorm**:shape 的探索 / 思考程度不够深,应对标 brainstorm(README 致谢的 superpowers/brainstorming)做深。
+- **`shape` 先锁整体意图再谈细节**:shape 应时刻保证对整体意图的理解到位,再下钻细节,避免过早陷入局部问题。
+- **`shape` 不该一路自顾推进**:shape 容易从 clarify 一口气推到出 plan,应在每个决策点多停、把串联交回用户(呼应哲学 #3)。
+- **`shape` 的 `arch` mode / 产出架构**:架构调整、技术选型、模块重组需要一个 mode;plan 需要时 shape 应产出架构(结构 / 图),参考 feature-dev。
+- **`verify` 的 review / e2e 也走 subagent**:目前仅多 mode 并行才起 subagent;review 与 e2e 单跑也应各起 subagent 执行。
+- **`persist` 的 `DESIGN` / `WORKFLOW` 目标在 squire 自身的落地**:squire 无 UI,DESIGN 按目录判「不需要」;WORKFLOW 待有特定流程约定时再补。
+- **`health` skill**:项目体检——文档↔代码漂移检测、依赖陈旧、CI 状态、文件大小热点等。「校验」支柱的**正交审计**那一半(explore/verify 之外),不在线性 loop。persist 的**自动漂移同步**依赖 health 提供「哪份记忆漂了」的信号——在它落地前,persist 的更新只靠人主动发起。
+- **`release` skill**:发布流程——各项目差异大,需提炼跨项目的通用机制(参考 Waza `/check` 的 Project Context Extraction 思路)。
 
 ## 架构层面
 
