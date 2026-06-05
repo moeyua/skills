@@ -50,12 +50,14 @@ Every explore run **starts with the Overview Phase**. When the user named a scop
 
 Scan the root and the usual locations, and **read in full every doc that exists** — reading only titles is guessing at the contents, and downstream skills will act on the wrong thing.
 
-> The recommended **memory artifacts** are defined once in `references/memory-catalog.md` (the shared memory catalog persist writes to) — read every one that exists: `README` / `ARCHITECTURE` / `PRODUCT` / `DESIGN` / `WORKFLOW` / `ROADMAP` / every `.md` under `specs/`. Beyond the catalog, also read any other docs present:
->
-> - `CLAUDE.md` / `AGENTS.md`
-> - every `.md` under `docs/`
-> - `.cursorrules` / `.windsurfrules` / other IDE rules
-> - other `.md` files at the root
+**First read `references/memory-catalog.md` in full** — this is a required read, not optional, and not the same as reading the artifacts it lists. The catalog is the _rules_: for each kind of durable memory it defines what it holds, who it's for, where its authority comes from, and its boundary. You need those definitions to judge what counts as durable memory in _this_ project — and the more the project's layout differs from the catalog's defaults, the more it matters, because that's exactly when guessing does the most damage.
+
+Then **read in full every memory artifact that exists**: `README` / `ARCHITECTURE` / `PRODUCT` / `DESIGN` / `WORKFLOW` / `ROADMAP` / every `.md` under `specs/`. Beyond the catalog's artifacts, also read any other docs present:
+
+- `CLAUDE.md` / `AGENTS.md`
+- every `.md` under `docs/`
+- `.cursorrules` / `.windsurfrules` / other IDE rules
+- other `.md` files at the root
 
 For each doc you read, record: the path + a one-line summary (based on what you actually read).
 
