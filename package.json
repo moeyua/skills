@@ -8,22 +8,20 @@
   "scripts": {
     "install": "skills add . -g --all",
     "test": "vp test run",
-    "check": "vp check",
+    "check": "vp check --fix",
     "lint": "vp lint",
-    "format": "vp fmt",
-    "typecheck": "tsc --noEmit"
+    "format": "vp fmt"
   },
-  "dependencies": {
-    "skills": "^1.5.10"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/node": "^25.9.1",
+    "skills": "^1.5.10",
     "typescript": "^6.0.3",
-    "vite": "^8.0.14",
-    "vite-plus": "^0.1.22"
+    "vite": "^8.0.16",
+    "vite-plus": "^0.1.24"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
-  "packageManager": "pnpm@11.3.0"
+  "packageManager": "pnpm@11.5.1"
 }
