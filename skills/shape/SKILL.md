@@ -22,6 +22,20 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 - Evidence: `git status` / project files read / the user's answers to clarify questions
 - Output: named mode → plan file path + summary + after-approval prompt; default → a conclusion summary in the conversation
 
+## Two altitudes
+
+Shape runs at two altitudes: the **whole** (what problem are we really solving, what's the overall shape of the answer) and the **detail** (this one decision). The failure mode isn't being shallow everywhere — it's dropping to detail altitude and never climbing back: you get snagged on one concrete question, settle it, start pushing toward the plan, and the overall intent has quietly drifted out of view.
+
+So the rhythm is **whole → detail → whole**, on repeat. Before drilling a detail, say which whole it serves. After resolving it, climb back and say what it changed about the whole — does the overall shape still hold? — then drop into the next detail. A detail settled in isolation is a guess about the whole wearing the costume of progress.
+
+That pull into detail often comes from the user — they pick a few specific points out of a larger idea and drill. Go down and answer, but you, not they, own knowing whether the overall direction is settled. So after answering the detail, resurface the whole-level questions still open ("settled — but we still haven't pinned down X about the direction"). Don't read the user's drilling as a signal that the whole is clear; treat it as clear only when they say so.
+
+## Hand the wheel back at each decision
+
+squire's #3 — the user owns the chaining, skills don't auto-run — applies _inside_ shape too, not just between skills. Within one session it's easy to auto-chain clarify → detail → plan in one breath, silently absorbing every judgment on the way. Don't. Each real decision — the mode, the approach, a fragile assumption you had to resolve, a scope line you drew — is a fork that belongs to the user. Name it as a decision, say how it moves the whole, and pause.
+
+This is not "ask permission for every keystroke" — that's a floor, not a ceiling, and it's exhausting. The line is: never fold a judgment into the plan silently. A decision the user can't see is one they can't redirect. Surface it; if they don't object, that's assent, and you move on.
+
 ## Phase 1: Clarify
 
 The first move on entering the skill is always Clarify. **Ask one question at a time** — multiple-choice first ("A or B?"), open-ended as backup. Firing 3-5 questions at once overloads the other person and gets you vaguer answers, not clearer ones.
@@ -36,6 +50,10 @@ The bar for "clarified enough" (meet it before Phase 2):
 **Knowing the intent ≠ not needing to clarify.** Even when the user says `/shape refactor this`, you may still need to ask "which API behavior stays? how much risk is acceptable? which regression tests run?" — a clear mode doesn't mean clear constraints.
 
 If the user says "you decide" or "whatever you think is best", give a recommendation + a one-line reason and let them confirm or object, rather than silently deciding for them — silently deciding robs them of the chance to push back.
+
+Clarify isn't only interviewing the user — it's grounding yourself. Read the code, docs, and history the idea touches, before and between questions, so the questions are sharp and the depth is real rather than performed. Asking what the repo already answers wastes the user's turn; accepting their first framing without probing the problem behind it is how shape stays shallow. Depth comes from pressure-testing the premise ("is the stated problem the real one?"), not from more rounds of surface questions.
+
+Grounding extends past this repo. Any external definition, tool, library, or API the plan leans on gets verified against authoritative docs — not recalled from training memory, which is how plausible-but-wrong facts slip into a plan (see `references/anti-patterns.md`). "I need to check the docs" beats a confident guess that build later discovers was never true.
 
 ## Phase 2: Mode Picker
 
