@@ -24,11 +24,11 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 
 ## Three modes (routed by the message)
 
-| cue in the user's message                                                   | mode  |
-| --------------------------------------------------------------------------- | ----- |
-| "review" / "look at the changes" / "把关" / an aspect keyword                | review |
-| "run the tests" / "do the tests pass" / "flaky?"                            | test  |
-| "check it works" / "verify the feature" / "screenshot it" / "does X behave" | e2e   |
+| cue in the user's message                                                   | mode   |
+| --------------------------------------------------------------------------- | ------ |
+| "review" / "look at the changes" / "把关" / an aspect keyword               | review |
+| "run the tests" / "do the tests pass" / "flaky?"                            | test   |
+| "check it works" / "verify the feature" / "screenshot it" / "does X behave" | e2e    |
 
 The message routes naturally; modes can combine ("review + verify it runs"). When more than one mode is requested, **run each in its own subagent, in parallel** — the modes are independent (review only reads; test/e2e run), so there's no shared state to serialize, and the wall-clock cost is the slowest mode, not their sum. Then synthesize the subagents' results into one combined verdict. A single mode runs inline — don't pay subagent overhead for one.
 
@@ -36,13 +36,13 @@ The message routes naturally; modes can combine ("review + verify it runs"). Whe
 
 Find the changes that could trip up a reviewer, a user, or production; give a direction; leave the decision with the author. Scan 5 dimensions (or the specified aspect):
 
-| dimension                     | focus                                                                                          |
-| ----------------------------- | ---------------------------------------------------------------------------------------------- |
-| **plan** (plan consistency)   | within plan scope / scope creep / a dependency the plan didn't name                            |
-| **quality** (code quality)    | bugs / logic errors / project-guideline (CLAUDE.md/AGENTS.md) compliance / naming / dead code  |
+| dimension                     | focus                                                                                              |
+| ----------------------------- | -------------------------------------------------------------------------------------------------- |
+| **plan** (plan consistency)   | within plan scope / scope creep / a dependency the plan didn't name                                |
+| **quality** (code quality)    | bugs / logic errors / project-guideline (CLAUDE.md/AGENTS.md) compliance / naming / dead code      |
 | **errors** (error handling)   | silent failures / over-broad catch / improper fallback / mock in production code / missing logging |
-| **tests** (test coverage)     | acceptance scenarios covered / edge cases / tests grounded in real behavior / duplicate coverage |
-| **simplify** (simplification) | complexity / nesting / duplication / over-abstraction / over-engineering                        |
+| **tests** (test coverage)     | acceptance scenarios covered / edge cases / tests grounded in real behavior / duplicate coverage   |
+| **simplify** (simplification) | complexity / nesting / duplication / over-abstraction / over-engineering                           |
 
 **Aspect filter**: a recognized keyword (`plan` / `quality` / `errors` / `tests` / `simplify`, case-insensitive, map Chinese/synonyms by meaning) scopes the scan to that dimension; none → run all 5. If a keyword is unrecognizable, report the available aspects and let the user re-pick.
 
@@ -53,7 +53,7 @@ Find the changes that could trip up a reviewer, a user, or production; give a di
 | **Critical**   | 91-100     | will definitely break: critical bug, clear guideline violation, silent prod failure |
 | **Important**  | 80-89      | strongly suspected, not merge-blocking: likely to break; the author should respond  |
 | **Suggestion** | 60-79      | optional: style / minor duplication / local simplification                          |
-| —              | < 60       | not reported — a miss costs less than a false alarm                                  |
+| —              | < 60       | not reported — a miss costs less than a false alarm                                 |
 
 "Style preference" is Suggestion at most, unless it violates an explicit project-guideline rule. **Always give a Strengths section**, even 1-2 items — a purely negative review makes the author stop absorbing it. When a plan dimension is in scope but no plan file is found, skip it and note so; don't guess plan content.
 

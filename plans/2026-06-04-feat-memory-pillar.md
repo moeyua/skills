@@ -11,14 +11,14 @@ status: done
 
 重构后支柱 / skill:
 
-| 支柱 | skill |
-|---|---|
-| 理解 | explore |
-| 设计 | shape |
-| 改造 | **build(含写测试)** |
+| 支柱 | skill                                                                 |
+| ---- | --------------------------------------------------------------------- |
+| 理解 | explore                                                               |
+| 设计 | shape                                                                 |
+| 改造 | **build(含写测试)**                                                   |
 | 校验 | **verify(test/review/e2e,线性)** + **health(正交审计,后续独立 plan)** |
-| 记忆 | **persist(由 spec 升级)** |
-| 交付 | commit + propose |
+| 记忆 | **persist(由 spec 升级)**                                             |
+| 交付 | commit + propose                                                      |
 
 线性 loop(7 站):explore → shape → build → **verify** → **persist** → commit → propose
 正交:**health**(按需审计,findings 喂回 shape/persist/build)
@@ -93,6 +93,7 @@ skill 数:本 plan 后 8 → 7(`test`+`review`→`verify`;`spec`→`persist`);he
 **persist**:命令 `/persist`;mode record/correct/backfill;目标由消息+目录决定(behavior→specs/、architecture→ARCHITECTURE.md、…)。写记忆文件(create-if-missing/update);不碰代码/git/目录外文档;PRODUCT 内容指回 shape。
 
 **verify**:命令 `/verify`;mode review/test/e2e(可单可组合)。
+
 - 输入:diff(默认)/ 指定 scope;e2e 需可启动的 app。
 - 输出:裁决(过/不过)+ 问题按 Critical/Important + file:line + 修法方向;review 只给方向不接管、指向对应 skill。
 - Side effects:test/e2e **执行**代码/起 app(只读式观察,不改源);review 纯读。不改文件、不 git、不替作者调用别的 skill。
@@ -117,37 +118,45 @@ skill 数:本 plan 后 8 → 7(`test`+`review`→`verify`;`spec`→`persist`);he
 ## MODIFIED Requirements
 
 ### Requirement: 合并 spec delta
+
 persist 的 behavior 目标必须按 requirement 名把 plan 的 `## Spec delta` 合并进 `specs/<domain>/spec.md`(ADDED 追加 / MODIFIED 替换 / REMOVED 删除;domain 不存在则新建)。(Previously: 隶属 spec skill,仅行为契约)
 Verify: manual(integration)
 
 ### Requirement: 有测试框架且 fix/feat 走 TDD（build,扩后）
+
 build 在有测试框架时:fix/feat 走 TDD(红→绿,一写就绿即停下修测试);承接不挂 plan 的写测试工作(补覆盖/回归同样红→绿、基于真实行为)。(Previously: 仅 plan 内 TDD,测试工作另属 test skill)
 Verify: manual(integration)
 
 ## ADDED Requirements
 
 ### Requirement: 目录驱动的多目标记忆
+
 persist 必须按 `rules/memory-catalog.md` 决定写哪份 artifact 及如何写;目标缺失则 create-if-missing。
 Verify: manual(integration)
 
 ### Requirement: 逐目标 anti-invention
+
 persist 写任一目标必须依据该目标在目录声明的权威源;源缺失必须停下发问,不逆推、不凭空创作;behavior 的「无 delta 即停问」门槛不因泛化降低。
 Verify: manual(integration)
 
 ### Requirement: 设计记忆不含未来、ROADMAP 只记不裁决
+
 persist 写 ARCHITECTURE/DESIGN 必须不含未来/搁置项(归 ROADMAP);写 ROADMAP 只记维护者已决定搁置的项,不排优先级、不排期、不裁决。
 Verify: manual(integration)
 
 ### Requirement: verify 三 mode 与裁决
+
 verify 必须支持 review/test/e2e 三 mode(可单可组合):review 照 code-review 做法多维扫、只报置信≥80、Critical/Important 分级、不报 linter 可抓项、给方向不接管;test 跑套件、flaky 最多重试一次、真失败指向 shape fix、不 skip;e2e 先找项目启动 skill 否则按类型起 app、观察真实行为。verify 只读式校验,不改源、不修 bug(指向 shape fix)、不写测试(指向 build)。
 Verify: manual(integration)
 
 ## REMOVED Requirements
 
 ### Requirement: （specs/test/spec.md 全部）
+
 (Deprecated：test 解散——跑→verify test mode、写→build、调→shape fix)
 
 ### Requirement: （specs/review/spec.md 全部）
+
 (Migrated：并入 verify 的 review mode,要求逐条保留)
 ```
 
@@ -181,7 +190,7 @@ Verify: manual(integration)
     - test mode = 原 test 的跑(flaky 重试一次 / 真失败→shape fix / 不 skip);
     - e2e mode 据内置 verify/run 描述(先找项目启动 skill、否则按类型起 app、观察真实行为)。
     - frontmatter `name: verify`、触发词避撞、Outcome Contract、两条 rules 指针。
-    verify: `pnpm test` frontmatter/description/Outcome/Jaccard。
+      verify: `pnpm test` frontmatter/description/Outcome/Jaccard。
 12. `git mv specs/review specs/verify`;改写 `specs/verify/spec.md`:迁入 review 全部 requirement + test 跑相关 + e2e requirement(各带 Verify)。verify: `pnpm test` spec 格式。
 13. `git rm -r skills/review`。verify: smoke 不再发现 review;`pnpm test`。
 14. RESOLVER/README:review→verify、补 e2e/test 触发词、Verify 阶段表述改 verify。verify: `pnpm test` 路由一致性。

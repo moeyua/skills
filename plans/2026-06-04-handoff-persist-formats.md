@@ -14,6 +14,7 @@
 squire 重构成 **6 支柱**:理解 explore / 设计 shape / 改造 build(含写测试)/ 校验 verify(review·test·e2e)/ 记忆 persist / 交付 commit·propose。`spec→persist`、`review+test→verify`、`test` 解散,均已在 main。
 
 本分支(76b6cdf)在此之上,给 persist 补「格式规范」:
+
 - `skills/persist/references/formats/*.md` —— 6 份,每 artifact 一份(behavior/architecture/design/workflow/roadmap/readme),按需加载。
 - `rules/memory-catalog.md` 瘦成索引 + `Format:` 指针。
 - persist SKILL「读索引 → 按需加载 format → 照 Sections/Source/Boundary 写」。
@@ -28,14 +29,14 @@ squire 重构成 **6 支柱**:理解 explore / 设计 shape / 改造 build(含�
 
 **我(AI)擅自定的 section,作为讨论起点(全部可推翻)**:
 
-| 文档 | 现有 Sections | 备注 |
-|---|---|---|
-| `behavior` | Domain / Purpose / Requirements + Verify | 从旧 spec(`git show d588f85:skills/spec/SKILL.md` 的 `## Spec format`)**恢复**,非新造,但维护者同样可改 |
-| `architecture` | 目录结构 / 技术栈选型 / 数据流 / 关键决策记录 | AI 拍的 |
-| `design` | 界面结构 / 交互流程 / 视觉规范 | AI 拍的 |
-| `workflow` | 流程阶段 / 各阶段约定 / 工具与命令 | AI 拍的 |
-| `roadmap` | 按主题分组平铺「X — 因为 Y」(record-only) | AI 拍的 |
-| `readme` | 一句话定位 / 上手 / 用法 / 链接 | AI 拍的 |
+| 文档           | 现有 Sections                                 | 备注                                                                                                   |
+| -------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `behavior`     | Domain / Purpose / Requirements + Verify      | 从旧 spec(`git show d588f85:skills/spec/SKILL.md` 的 `## Spec format`)**恢复**,非新造,但维护者同样可改 |
+| `architecture` | 目录结构 / 技术栈选型 / 数据流 / 关键决策记录 | AI 拍的                                                                                                |
+| `design`       | 界面结构 / 交互流程 / 视觉规范                | AI 拍的                                                                                                |
+| `workflow`     | 流程阶段 / 各阶段约定 / 工具与命令            | AI 拍的                                                                                                |
+| `roadmap`      | 按主题分组平铺「X — 因为 Y」(record-only)     | AI 拍的                                                                                                |
+| `readme`       | 一句话定位 / 上手 / 用法 / 链接               | AI 拍的                                                                                                |
 
 每份 format 文件的结构契约是「Sections / Source / Boundary」三块——改 section 时维持这三块骨架。
 

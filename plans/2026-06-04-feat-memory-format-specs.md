@@ -7,7 +7,7 @@ status: done
 
 # persist 记忆格式规范
 
-给 persist 补上**规范**(每个记忆 artifact 的格式定义)与可机械守的**约束**,解决两个问题:(1) 重构 spec→persist 时丢失的 behavior `## Spec format` 定义;(2) 散文目标(ARCHITECTURE/DESIGN/WORKFLOW/ROADMAP/README)从来没有格式规范、内容全靠当场发挥。规范**按文档拆分、按需加载**(沿用 shape 的 mode-*.md 传统)。
+给 persist 补上**规范**(每个记忆 artifact 的格式定义)与可机械守的**约束**,解决两个问题:(1) 重构 spec→persist 时丢失的 behavior `## Spec format` 定义;(2) 散文目标(ARCHITECTURE/DESIGN/WORKFLOW/ROADMAP/README)从来没有格式规范、内容全靠当场发挥。规范**按文档拆分、按需加载**(沿用 shape 的 mode-\*.md 传统)。
 
 ## Building
 
@@ -52,7 +52,7 @@ skills/persist/references/formats/  # 格式规范:每文档一份,persist 写�
 
 ## Key decisions
 
-1. **按文档拆分 + 按需加载**(用户要求):每 artifact 一份 format 文件,persist 写时只加载当前 target 的那份,不一次性吞全部——沿用 shape mode-*.md 的 reference 按需加载传统,省 token。
+1. **按文档拆分 + 按需加载**(用户要求):每 artifact 一份 format 文件,persist 写时只加载当前 target 的那份,不一次性吞全部——沿用 shape mode-\*.md 的 reference 按需加载传统,省 token。
 2. **索引/格式分层**:catalog = 薄索引(共享),formats/ = 厚规范(persist 私有按需)。
 3. **behavior format 恢复而非重写**:照搬 git 历史,避免二次发明。
 4. **约束收敛为一条结构检查**:`checkMemoryCatalog`(catalog↔formats 同步),放弃脆弱的 prose 内容检查;诚实承认 prose 内容机械守不住,且 `checks.ts` 只约束 squire 自身、管不到外部项目。
@@ -89,6 +89,7 @@ skills/persist/references/formats/  # 格式规范:每文档一份,persist 写�
 ## ADDED Requirements
 
 ### Requirement: 照对应 format 规范写
+
 persist 写任一记忆 artifact 必须加载并遵循 `skills/persist/references/formats/<artifact>.md` 的 Sections / Source / Boundary;按需只加载当前 target 那份。format 只规定结构与源,不规定段内措辞。
 Verify: [checkMemoryCatalog](../../tests/checks.test.ts)
 ```
