@@ -52,3 +52,8 @@ Verify: manual(integration)
 
 本 skill 写任一记忆 artifact 必须加载并遵循 `skills/persist/references/formats/<artifact>.md` 的 Sections / Source / Boundary;按需只加载当前 target 那份。format 只规定结构与源,不规定段内措辞。记忆目录与 format 文件须保持同步(由 checkMemoryCatalog 机械守)。
 Verify: [checkMemoryCatalog](../../tests/checks.test.ts)
+
+### Requirement: 不够 memory-worthy 不开新位置
+
+本 skill 写任一记忆 artifact 前必须判断该内容是否够格占一个位置:不够 memory-worthy 的内容,必须不开新段、不新建 artifact、不加新条目,而非追加凑数。此约束跨所有目标(spec / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README);spec 的「无对外可见行为不记录」是它的一个实例。约束写成 persist 自身的行为(persist 不加),不写成内容禁令(项目不许有该内容)。
+Verify: manual(integration)

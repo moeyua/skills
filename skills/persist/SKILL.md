@@ -64,14 +64,15 @@ When an artifact is wrong or stale and someone has named what it should say, edi
 
 When a capability already exists with no plan or delta — onboarding a brownfield codebase, or recording squire's own skills — author its memory from an **authoritative behavior source**: an established SKILL.md, API docs, or the maintainer's stated intent. Not reverse-engineering: record what the behavior is _defined_ to be, not what you guess the implementation does. If the only source is implementation you'd have to infer from, stop and ask. When backfilling many at once, confirm domain split and granularity with the user first, and keep each spec Lite.
 
-## Progressive rigor — keep it lightweight
+## Restraint — earn the place before adding
 
-Use the lightest level that still makes the truth verifiable. For the spec target:
+Before adding anything to any artifact, judge whether it earns a place. Content that isn't memory-worthy gets no new section, no new artifact, no new entry — across every target (spec / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README), not only spec. Padding an artifact with sub-worthy content is how a memory system decays into an unmaintained second copy of the code; when in doubt whether something earns its place, it doesn't — say so and skip it. This restrains _whether_ to add; for _how_ to edit once you do, reshape to the whole instead of bolting on a patch (see `references/anti-patterns.md`).
+
+**Spec rigor (the spec target's instance)** — use the lightest level that still makes the truth verifiable:
 
 - **Lite (default)** — a few short, behavior-first requirements, each with a `Verify:`, plus scope and non-goals. **Most stay here.**
 - **Full (higher risk only)** — API/contract changes, migrations, security/privacy, or cross-module changes where ambiguity causes expensive rework.
-
-**When not to record at all**: a change with no externally observable effect (internal refactor, a rename, a perf tweak that holds behavior) has nothing to add to spec memory — skip it rather than pad `specs/` with entries that rot. Over-fine granularity is how a memory system decays into an unmaintained second copy of the code.
+- **When not to record at all** — a change with no externally observable effect (internal refactor, a rename, a perf tweak that holds behavior) has nothing to add to spec memory — skip it rather than pad `specs/` with entries that rot.
 
 ## Boundaries
 
@@ -87,7 +88,7 @@ Persist's failure mode is writing truth that wasn't earned — guessed, or copie
 
 - **In record mode the plan has no spec delta** (spec target) / **no Key decisions or stated source** (other targets) — ask what to record; don't reverse-engineer from code.
 - **A MODIFIED/REMOVED requirement isn't in the spec** — report it; don't silently create it.
-- **The change has no externally observable behavior** (for spec memory) — there's nothing to record; say so.
+- **The content doesn't earn a place in its target** (a change with no externally observable behavior for spec, a sub-worthy detail for any other artifact) — there's nothing to add; say so.
 - **The target is PRODUCT's content** — that's philosophy work; route to `/shape`.
 - **The target is outside the catalog** (changelog / release notes / API reference) — refuse and say it's out of scope (PRODUCT.md boundary #2/#3).
 - **You'd need to reshape, not just record** — that's intent work; route back to `/shape`.
