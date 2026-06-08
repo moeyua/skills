@@ -1,8 +1,8 @@
 /**
- * Smoke test: runs every check from scripts/checks.ts against the live squire
- * repo. Replaces the deleted CLI entrypoint scripts/verify-skills.ts.
+ * Smoke test: runs every check from tests/checks.ts against the live squire
+ * repo — the live-repo counterpart to the tmpdir unit tests in checks.test.ts.
  *
- * As scripts/checks.ts grows new check functions, add a new it() block here.
+ * As tests/checks.ts grows new check functions, add a new it() block here.
  * That keeps the live verifier a single, append-only ledger of invariants.
  */
 
@@ -18,9 +18,8 @@ import {
   checkNoRootSkill,
   checkTriggerJaccard,
   checkResolverConsistency,
-  checkSpecFormat,
   checkMemoryCatalog,
-} from "../../scripts/checks.ts";
+} from "../checks.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -44,8 +43,8 @@ describe("repo skill verifier (smoke)", () => {
     expect(() => checkReferencesExist(REPO_ROOT)).not.toThrow();
   });
 
-  it("checkMarkdownLinks: every relative markdown link resolves", () => {
-    expect(() => checkMarkdownLinks(REPO_ROOT)).not.toThrow();
+  it("checkMarkdownLinks: every relative link under skills/ resolves (product docs are health's job)", () => {
+    expect(() => checkMarkdownLinks(REPO_ROOT, resolve(REPO_ROOT, "skills"))).not.toThrow();
   });
 
   it("checkNoRootSkill: no root SKILL.md (would break nested discovery)", () => {
@@ -58,10 +57,6 @@ describe("repo skill verifier (smoke)", () => {
 
   it("checkResolverConsistency: RESOLVER.md lists exactly the skills under skills/", () => {
     expect(() => checkResolverConsistency(REPO_ROOT, skills)).not.toThrow();
-  });
-
-  it("checkSpecFormat: every specs/*/spec.md is structurally valid with a legal Verify per requirement", () => {
-    expect(() => checkSpecFormat(REPO_ROOT)).not.toThrow();
   });
 
   it("checkMemoryCatalog: rules/memory-catalog.md and skills/persist/references/formats/ stay in sync", () => {

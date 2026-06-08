@@ -10,7 +10,7 @@
 - **`shape` 的 `arch` mode / 产出架构**:架构调整、技术选型、模块重组需要一个 mode;plan 需要时 shape 应产出架构(结构 / 图),参考 feature-dev。
 - **`verify` 的 review / e2e 也走 subagent**:目前仅多 mode 并行才起 subagent;review 与 e2e 单跑也应各起 subagent 执行。
 - **`persist` 的 `DESIGN` / `WORKFLOW` 目标在 squire 自身的落地**:squire 无 UI,DESIGN 按目录判「不需要」;WORKFLOW 待有特定流程约定时再补。
-- **`health` skill**:项目体检——文档↔代码漂移检测、依赖陈旧、CI 状态、文件大小热点等。「校验」支柱的**正交审计**那一半(explore/verify 之外),不在线性 loop。persist 的**自动漂移同步**依赖 health 提供「哪份记忆漂了」的信号——在它落地前,persist 的更新只靠人主动发起。
+- **`persist` 的自动漂移同步**:`health` 已落地,能照出「哪份记忆漂了」,但把这个信号**自动**接进 persist 去更新尚未做——目前 persist 的更新仍靠人看完 `/health` 报告主动发起。(health skill 本身已完成,见 ARCHITECTURE 决策记录。)
 - **`release` skill**:发布流程——各项目差异大,需提炼跨项目的通用机制(参考 Waza `/check` 的 Project Context Extraction 思路)。
 
 ## 架构层面

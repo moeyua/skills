@@ -32,19 +32,22 @@ squire/
 │   ├── verify/SKILL.md               # 校验：review / test / e2e 三模式
 │   ├── persist/SKILL.md              # 记忆：照记忆目录维护持久真源
 │   ├── commit/SKILL.md
-│   └── propose/SKILL.md
+│   ├── propose/SKILL.md
+│   └── health/                       # 校验·正交审计（loop 外，项目体检）
+│       ├── SKILL.md
+│       └── scripts/checker.ts        # 随 skill 装的零依赖确定性检查器（node 24 直跑 .ts）
 ├── specs/                            # 持久行为契约（persist 的 spec 目标，按 domain 一份）
 │   └── <domain>/spec.md              # 行为契约：Purpose + Requirements（各带 Verify）
 ├── rules/                            # 跨 skill 规则 / 共享真源（symlink 进相关 skill 的 references/）
 │   ├── anti-patterns.md
 │   ├── durable-context.md
 │   └── memory-catalog.md             # 记忆目录：explore 读 / persist 写 / health 查
-├── scripts/                          # 库代码（被 tests/ 调用）
-│   ├── frontmatter.ts                # 手写 parser，零运行时依赖
-│   └── checks.ts                     # 各种 check 函数
-└── tests/
+└── tests/                            # squire 自检：check 库 + 单测 + 整库 smoke（私有 CI，不随 skill 走）
+    ├── checks.ts                     # 各种 check 函数（库代码，被下面的测试调用）
+    ├── frontmatter.ts                # 手写 parser，零运行时依赖
     ├── frontmatter.test.ts           # parser 单元测试
     ├── checks.test.ts                # check 函数单元测试
+    ├── checker.test.ts               # health checker 单元测试（fixture）
     └── smoke/
         └── verify-skills.test.ts     # 整库 smoke：跑当前 repo 过所有 check
 ```
@@ -119,7 +122,7 @@ skills/RESOLVER.md              # 给人看的路由索引
 - **Agent 路由**：Claude Code 读所有 SKILL.md 的 frontmatter `description`，匹配用户消息——隐式的
 - **人类路由**：开发者查"X 场景该用哪个 skill"——看 RESOLVER.md，显式的
 
-两份不一致会出问题（agent 实际匹配 A，文档说该用 B）。`tests/smoke/verify-skills.test.ts` 通过调用 `scripts/checks.ts` 强制两者锁步。
+两份不一致会出问题（agent 实际匹配 A，文档说该用 B）。`tests/smoke/verify-skills.test.ts` 通过调用 `tests/checks.ts` 强制两者锁步。
 
 ### 4. 生成（Codegen）
 
@@ -130,18 +133,18 @@ skills/RESOLVER.md              # 给人看的路由索引
 ### 5. 验证（Lint）
 
 ```
-scripts/frontmatter.ts          # parser，零依赖
-scripts/checks.ts               # 各种 check 函数（库代码）
+tests/checks.ts                 # 各种 check 函数（库代码，被单测与 smoke 调用）
+tests/frontmatter.ts            # parser，零依赖
 tests/smoke/verify-skills.test.ts  # 整库验证 smoke（CI 入口）
 ```
 
-**为什么不要独立 CLI 入口**：
+**为什么 check 库住在 `tests/`、没有独立 CLI 入口**：
 
-`scripts/` 下只有库代码，没有可执行 CLI。验证由 `tests/smoke/verify-skills.test.ts` 触发——一个 vitest 测试，跑当前 repo 的 skill 文件验证整体一致。这样：
+这套 check 库就是测试支撑代码——只被 `tests/` 调用，且（跟 `npx skills add` 不安装它一样）出不了仓、不是可移植的库，所以它跟自己的测试一起住在 `tests/`（`tests/checks.ts`），不再单列一个 `scripts/` 层。验证由 `tests/smoke/verify-skills.test.ts` 触发——一个 vitest 测试，跑当前 repo 的 skill 文件验证整体一致。这样：
 
 - 单一入口（`vp test run` 一次跑完单元测试 + 整库验证）
-- 单元测试和整库验证用同一份逻辑（`scripts/checks.ts`），没有 CLI 与 vitest 之间的同步成本
-- 加新 check 时只在 `scripts/checks.ts` 加函数 + 在 smoke 里加 `it()`，不需要改 CLI
+- 单元测试和整库验证用同一份逻辑（`tests/checks.ts`），没有 CLI 与 vitest 之间的同步成本
+- 加新 check 时只在 `tests/checks.ts` 加函数 + 在 smoke 里加 `it()`，不需要改 CLI
 
 **v1 必含的检查**（精简自 Waza 13 项的 8 项）：
 
@@ -185,7 +188,7 @@ v1 暂不写 `AGENTS.md` / `CLAUDE.md`——squire 当前是单人项目，等�
               │
               ▼
          [库代码层]
-   scripts/frontmatter.ts + checks.ts
+   tests/frontmatter.ts + tests/checks.ts
               │
    ┌──────────┼──────────┐
    ▼          ▼          ▼
@@ -421,18 +424,26 @@ Claude Code plugin marketplace 是另一条独立的安装路径，需要维护 
 
 原本设计是 `scripts/verify-skills.ts` 作为 CLI 入口 + `tests/*.test.ts` 跑单元测试，两条路径。问题：
 
-- 同一份 check 逻辑（`scripts/checks.ts`）有两个调用入口，加新 check 要同步两处
+- 同一份 check 逻辑（当时在 `scripts/checks.ts`，现已收进 `tests/checks.ts`）有两个调用入口，加新 check 要同步两处
 - `pnpm test` 实际跑 `pnpm verify && vp test run`，两步骤难维护
 - `tsx` 仅为这个 CLI 而引入，作为额外的运行时依赖
 
 合并到 vitest 后：
 
-- `scripts/` 下只有库代码，没有可执行入口
+- check 库只剩库代码、无可执行入口（这套库后来直接收进了 `tests/`——见上文「5. 验证」段）
 - 所有验证通过 `tests/smoke/verify-skills.test.ts` 触发，跟单元测试同管线
 - `vp test run` 一个命令搞定全部，`tsx` 依赖可以移除
 
 代价：失去独立 `pnpm verify` 命令——但 `vp test run --filter=verify-skills` 等价，且实际上很少需要分开跑。
 
+### 为什么 health 是带脚本的 skill，而不是把 checks.ts 做成可移植的？
+
+squire 自己的 check 库（`tests/checks.ts`）是**私有 CI**：只在 `pnpm test` 时跑 squire 自己这个仓，`npx skills add` 只扫 `skills/`、不安装 `tests/`——它出不了 squire 仓，没法审计「用 squire 的别的项目」。凡是要落到消费项目上的检查，只能由唯一会装过去的东西承载——skill。所以 health 把确定性机械层做成一个**随 skill 一起装**的脚本 `skills/health/scripts/checker.ts`，在任何使用项目上由 agent `node` 直跑。（这也正是 squire 自己的 check 库住在 `tests/` 而非某个伪「库」目录的原因——它本就出不了仓。）
+
+### 为什么 health 的脚本重新出现了"可执行入口"？
+
+squire 自己的 check 库（`tests/checks.ts`）没有 CLI 入口——由 vitest 调用就够了。health 的 `checker.ts` 是**另一回事**：它在 skill 目录内，必须能被 agent 在消费项目上独立调用，所以带一个 CLI shim（`node checker.ts <root> [--json]`）；同时 `export` 各函数供 `tests/` 做 fixture 单测（查工具）。这**不是** codegen——`.ts` 原样发、Node 24 类型擦除直跑，无构建产物、不引入新依赖。
+
 ## 未来规划
 
-搁置 / 未来项见 [ROADMAP.md](ROADMAP.md)（record-only）——设计文档只讲当下，未来项归 ROADMAP。这本身是 persist 写 ROADMAP 目标的 dogfood。主要待办：`health` skill（校验支柱的正交审计半边）、`shape` 的 `arch` mode、`release` skill，以及 marketplace / 多 host 分发等。
+搁置 / 未来项见 [ROADMAP.md](ROADMAP.md)（record-only）——设计文档只讲当下，未来项归 ROADMAP。这本身是 persist 写 ROADMAP 目标的 dogfood。主要待办：`shape` 的 `arch` mode、`release` skill，以及 marketplace / 多 host 分发等。（`health` 已落地——校验支柱的正交审计半边。）
