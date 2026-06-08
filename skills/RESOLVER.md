@@ -41,6 +41,12 @@
 | "commit" / "stage and commit" / "入库" / `/commit` / land code after editing                                     | `skills/commit/SKILL.md`  |
 | "open a PR" / "push it" / "提评审" / `/propose` / push to the remote and open a PR after committing; GitHub-only | `skills/propose/SKILL.md` |
 
+### Orthogonal: project audit (outside the loop)
+
+| trigger                                                                                                                                               | skill                    |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| "health check" / "what has drifted" / "体检" / "审计" / `/health` / whole-project audit: docs-vs-code drift + dependency/CI/file staleness, read-only | `skills/health/SKILL.md` |
+
 ## Disambiguation
 
 > Rules for resolving when multiple skills could match. TODO: fill in after each SKILL.md is finalized.
@@ -57,4 +63,6 @@ explore → shape → build → verify → persist → commit → propose
 
 shape branches internally by intent: default / fix / feat / refactor / perf. verify checks one of three ways: review / test / e2e.
 
-persist runs at the tail when a change produces durable memory worth recording — it records into the right catalog artifact (spec / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README) per `rules/memory-catalog.md`, or corrects an existing one. It's conditional, not every change touches it. The orthogonal `health` audit (drift/gaps) is planned — see ROADMAP.
+persist runs at the tail when a change produces durable memory worth recording — it records into the right catalog artifact (spec / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README) per `rules/memory-catalog.md`, or corrects an existing one. It's conditional, not every change touches it.
+
+`health` is the orthogonal audit — a read-only, whole-project checkup (docs-vs-code drift + dependency/CI/file staleness) that runs outside this linear loop, on demand. It only detects and reports; persist writes any correction it surfaces.

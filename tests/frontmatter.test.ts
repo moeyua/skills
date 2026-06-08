@@ -2,11 +2,7 @@ import { describe, it, expect } from "vite-plus/test";
 import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import {
-  parseFrontmatter,
-  parseWhenToUseKeywords,
-  FrontmatterError,
-} from "../scripts/frontmatter.ts";
+import { parseFrontmatter, parseWhenToUseKeywords, FrontmatterError } from "./frontmatter.ts";
 
 function writeStub(content: string): string {
   const dir = mkdtempSync(join(tmpdir(), "squire-test-"));

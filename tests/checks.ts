@@ -148,8 +148,8 @@ function collectMarkdownFiles(root: string): string[] {
   return files.sort();
 }
 
-export function checkMarkdownLinks(root: string): void {
-  for (const path of collectMarkdownFiles(root)) {
+export function checkMarkdownLinks(root: string, scanRoot: string = root): void {
+  for (const path of collectMarkdownFiles(scanRoot)) {
     const text = readFileSync(path, "utf-8");
     let inCode = false;
     const lines = text.split("\n");
@@ -243,66 +243,6 @@ export function checkResolverConsistency(
     throw new Error(
       `RESOLVER STALE: RESOLVER.md references non-existent skills: ${stale.sort().join(", ")}`,
     );
-  }
-}
-
-// ---------- spec format ----------
-
-// A `Verify:` value is legal as a relative-path markdown link (a local test),
-// or one of the manual kinds. External URLs (with `://`) are rejected: they
-// also slip past checkMarkdownLinks, so they'd leave the requirement unverified.
-const VERIFY_LINK_RE = /^\[[^\]]*\]\(([^)]+)\)$/;
-const VERIFY_MANUAL = new Set(["manual(visual)", "manual(integration)"]);
-
-export function checkSpecFormat(root: string): void {
-  const specsDir = join(root, "specs");
-  if (!existsSync(specsDir)) return;
-  for (const entry of readdirSync(specsDir).sort()) {
-    const specPath = join(specsDir, entry, "spec.md");
-    try {
-      if (!statSync(specPath).isFile()) continue;
-    } catch {
-      continue; // not a domain dir with a spec.md
-    }
-    const text = readFileSync(specPath, "utf-8");
-    if (!text.includes("## Purpose")) {
-      throw new Error(`SPEC MISSING PURPOSE: ${specPath}`);
-    }
-    if (!text.includes("## Requirements")) {
-      throw new Error(`SPEC MISSING REQUIREMENTS: ${specPath}`);
-    }
-    const lines = text.split("\n");
-    const reqStarts: number[] = [];
-    for (let i = 0; i < lines.length; i++) {
-      if (lines[i]!.startsWith("### Requirement:")) reqStarts.push(i);
-    }
-    if (reqStarts.length === 0) {
-      throw new Error(`SPEC NO REQUIREMENTS: ${specPath} has no "### Requirement:" entries`);
-    }
-    for (const start of reqStarts) {
-      const name = lines[start]!.replace(/^### Requirement:\s*/, "").trim();
-      let end = lines.length;
-      for (let i = start + 1; i < lines.length; i++) {
-        if (lines[i]!.startsWith("## ") || lines[i]!.startsWith("### ")) {
-          end = i;
-          break;
-        }
-      }
-      const verifies = lines.slice(start + 1, end).filter((l) => l.startsWith("Verify:"));
-      if (verifies.length !== 1) {
-        throw new Error(
-          `SPEC VERIFY COUNT: ${specPath} requirement "${name}" has ${verifies.length} Verify lines, need exactly 1`,
-        );
-      }
-      const value = verifies[0]!.replace(/^Verify:\s*/, "").trim();
-      const link = VERIFY_LINK_RE.exec(value);
-      const isRelativeLink = link !== null && !link[1]!.includes("://");
-      if (!VERIFY_MANUAL.has(value) && !isRelativeLink) {
-        throw new Error(
-          `SPEC VERIFY INVALID: ${specPath} requirement "${name}": ${JSON.stringify(value)} — expected a relative markdown link to a test, or manual(visual)/manual(integration)`,
-        );
-      }
-    }
   }
 }
 

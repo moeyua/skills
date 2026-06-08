@@ -30,7 +30,7 @@ squire 的范围限定在两件事：**开发**一个项目，**记住**这个�
 
 ### 4. 机械保证一致 — 能让工具守的不靠纪律
 
-squire 自己的元数据（SKILL.md frontmatter、Outcome Contract、触发词、RESOLVER 一致性）全部由 `vp test` 通过 `scripts/checks.ts` 跑 smoke 守住。8 个 check 函数覆盖 frontmatter / Outcome Contract / 触发词 Jaccard / markdown links 等结构 invariant。
+squire 自己的元数据（SKILL.md frontmatter、Outcome Contract、触发词、RESOLVER 一致性）全部由 `vp test` 通过 `tests/checks.ts` 跑 smoke 守住。8 个 check 函数覆盖 frontmatter / Outcome Contract / 触发词 Jaccard / markdown links 等结构 invariant。
 
 靠"记得这样做"的纪律不可持续，特别是多人协作或 agent 协作时。一致性是可测的，那就测它——手维护多份必漂移。每次 SKILL.md 改动都跑 `pnpm test` 验证。
 
