@@ -37,7 +37,7 @@ Cover at least:
 
 Each scenario maps to at least 1 implementation step + at least 1 acceptance check.
 
-If the feature changes externally observable behavior, also fill the common skeleton's `## Spec delta` (usually `## ADDED Requirements`) — the acceptance scenarios above map directly onto the spec's scenarios, so the persist skill can record them into `specs/` after build.
+If the feature changes externally observable behavior, also fill the common skeleton's `## Spec delta` (usually `## ADDED Requirements`) — the acceptance scenarios above map directly onto the spec's scenarios, so the document skill can record them into `specs/` after build.
 
 ## Anti-patterns
 

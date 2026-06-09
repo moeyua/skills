@@ -1,6 +1,6 @@
 ---
 name: verify
-description: 'Verify a change holds up before merge — by code review, by running the test suite, or by driving the app end-to-end. Use when the user says "review" / "run the tests" / "check this works" / "把关" / "验证", or before committing. Not for fixing the bugs it finds (use shape fix), writing the implementation or its tests (use build), or recording what landed (use persist).'
+description: 'Verify a change holds up before merge — by code review, by running the test suite, or by driving the app end-to-end. Use when the user says "review" / "run the tests" / "check this works" / "把关" / "验证", or before committing. Not for fixing the bugs it finds (use plan fix), writing the implementation or its tests (use build), or recording what landed (use document).'
 when_to_use: "verify, review, code review, run tests, e2e, end to end, check it works, 验证, 评审, 把关, 跑测试, 端到端, 合并前检查"
 dispatch_intent: "Confirm a change holds up before merge — review / test / e2e; verdicts and directions, no code changes"
 ---
@@ -65,7 +65,7 @@ Detect the framework + command (`package.json` scripts / `Cargo.toml` / `pyproje
 
 **Flaky suspicion**: when a test looks timing- or resource-sensitive, **retry once only**; still failing means it's failing, not flaky. Passing after many retries and calling it green is waiting for luck, not verifying.
 
-A failure that reflects a real bug routes to `/shape fix` — verify reports it, it doesn't fix it. Never `.skip` / delete a test / add `--no-verify` to make it pass; the failure is the signal.
+A failure that reflects a real bug routes to `/plan fix` — verify reports it, it doesn't fix it. Never `.skip` / delete a test / add `--no-verify` to make it pass; the failure is the signal.
 
 ## e2e mode
 
@@ -76,10 +76,10 @@ Confirm the change actually works by running the real app and observing behavior
 ## Boundaries
 
 - **vs build** — build writes code and its tests; verify runs and reads them, never edits.
-- **vs shape fix** — verify finds and reports a bug; shape fix diagnoses root cause and plans the fix.
-- **vs persist** — verify judges whether a change holds up; persist records what it established.
+- **vs plan fix** — verify finds and reports a bug; plan fix diagnoses root cause and plans the fix.
+- **vs document** — verify judges whether a change holds up; document records what it established.
 
-When you find a class of problem, point the author to the matching skill instead of taking over: bug → `/shape fix`; missing/weak tests → `/build` (add coverage); simplification → `/shape refactor`; scope creep → flag it, let the user decide.
+When you find a class of problem, point the author to the matching skill instead of taking over: bug → `/plan fix`; missing/weak tests → `/build` (add coverage); simplification → `/plan refactor`; scope creep → flag it, let the user decide.
 
 ## When done, report
 
@@ -102,7 +102,7 @@ Verdict: holds up / needs work
 - <1-2 positives>
 
 ## Recommended Next
-- <Critical first: e.g. /shape fix> / <commit if clean>
+- <Critical first: e.g. /plan fix> / <commit if clean>
 ```
 
 With no high-confidence findings and a clean run, say so plainly and mark "Ready to commit/push".
@@ -114,6 +114,6 @@ Verify's failure mode isn't "forcing through", it's "touching" — and "faking a
 - **The urge to "just fix it real quick"** — write the finding instead; the moment verify touches, it loses its standing.
 - **The working tree matches HEAD (nothing to review)** / **detached HEAD or rebase in progress** — report the state; don't review history the user didn't ask for.
 - **A test still fails after one retry** — treat it as failing; don't `.skip`, delete, or retry to luck.
-- **A failure reflects a real bug** — report it and route to `/shape fix`; don't patch the test to pass.
+- **A failure reflects a real bug** — report it and route to `/plan fix`; don't patch the test to pass.
 - **No test framework (and not an empty project)** — report it; don't conjure test infrastructure.
 - **The app won't launch in e2e** — report that as the finding; don't edit source to force it up.

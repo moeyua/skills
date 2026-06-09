@@ -18,7 +18,7 @@ Verify: manual(integration)
 
 ### Requirement: test 模式跑套件、失败是信号
 
-test 模式必须检测并运行项目的测试命令,完整报告 pass/fail;疑似 flaky 最多重试一次,再失败即按失败处理;必须不靠 `.skip`、删测试、`--no-verify` 让测试通过;失败若反映真实 bug,指向 `/shape fix`,不就地修。
+test 模式必须检测并运行项目的测试命令,完整报告 pass/fail;疑似 flaky 最多重试一次,再失败即按失败处理;必须不靠 `.skip`、删测试、`--no-verify` 让测试通过;失败若反映真实 bug,指向 `/plan fix`,不就地修。
 Verify: manual(integration)
 
 ### Requirement: e2e 模式跑真实 app 观察行为
@@ -28,5 +28,5 @@ Verify: manual(integration)
 
 ### Requirement: 指向对应 skill 而非接管
 
-verify 发现某类问题时必须指向对应 skill(bug→shape fix、缺/弱测试→build 补覆盖、简化→shape refactor、scope 蔓延→交用户决定),不接管去做。
+verify 发现某类问题时必须指向对应 skill(bug→plan fix、缺/弱测试→build 补覆盖、简化→plan refactor、scope 蔓延→交用户决定),不接管去做。
 Verify: manual(integration)

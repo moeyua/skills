@@ -21,7 +21,7 @@ squire/
 ├── skills/                           # 内容层（npx skills add 扫描这里）
 │   ├── RESOLVER.md                   # 人类可读路由索引
 │   ├── explore/SKILL.md
-│   ├── shape/
+│   ├── plan/
 │   │   ├── SKILL.md                  # 主体 + clarify phase + mode picker
 │   │   └── references/
 │   │       ├── mode-fix.md
@@ -30,18 +30,18 @@ squire/
 │   │       └── mode-perf.md
 │   ├── build/SKILL.md                # 改造：含写测试（TDD + 不挂 plan 的补覆盖/回归）
 │   ├── verify/SKILL.md               # 校验：review / test / e2e 三模式
-│   ├── persist/SKILL.md              # 记忆：照记忆目录维护持久真源
+│   ├── document/SKILL.md             # 文档化：照记忆目录维护持久真源；也处理用户指定文档
 │   ├── commit/SKILL.md
-│   ├── propose/SKILL.md
-│   └── health/                       # 校验·正交审计（loop 外，项目体检）
+│   ├── pull-request/SKILL.md
+│   └── health/                       # 正交工具（loop 外，项目体检）
 │       ├── SKILL.md
 │       └── scripts/checker.ts        # 随 skill 装的零依赖确定性检查器（node 24 直跑 .ts）
-├── specs/                            # 持久行为契约（persist 的 spec 目标，按 domain 一份）
+├── specs/                            # 持久行为契约（document 的 spec 目标，按 domain 一份）
 │   └── <domain>/spec.md              # 行为契约：Purpose + Requirements（各带 Verify）
 ├── rules/                            # 跨 skill 规则 / 共享真源（symlink 进相关 skill 的 references/）
 │   ├── anti-patterns.md
 │   ├── durable-context.md
-│   └── memory-catalog.md             # 记忆目录：explore 读 / persist 写 / health 查
+│   └── memory-catalog.md             # 记忆目录：explore 读 / document 写 / health 查
 └── tests/                            # squire 自检：check 库 + 单测 + 整库 smoke（私有 CI，不随 skill 走）
     ├── checks.ts                     # 各种 check 函数（库代码，被下面的测试调用）
     ├── frontmatter.ts                # 手写 parser，零运行时依赖
@@ -91,16 +91,16 @@ v1 因为不做 codegen，真源只是"开发者必须只编辑这里"的约定�
 
 ```
 skills/<name>/SKILL.md          # skill 主体，agent 触发时全文加载
-skills/shape/references/*.md    # 多 mode 时的子文件，按需加载
+skills/plan/references/*.md     # 多 mode 时的子文件，按需加载
 rules/anti-patterns.md          # 跨 skill 的反模式（单一真源，symlink 进各 skill references/）
 rules/durable-context.md        # 跨 skill 的 memory 前置规则（同上）
-rules/memory-catalog.md         # 记忆目录：explore 读 / persist 写 / health 查（symlink 进这三个的 references/）
+rules/memory-catalog.md         # 记忆目录：explore 读 / document 写 / health 查（symlink 进这三个的 references/）
 ```
 
 **SKILL.md vs references/**：
 
 - SKILL.md 全文加载——必须精简
-- 当 skill 超 ~200 行（比如 shape 有 5 个 mode），mode-specific 内容拆 references/
+- 当 skill 超 ~200 行（比如 plan 有 5 个 mode），mode-specific 内容拆 references/
 - agent 读完 SKILL.md，根据 mode picker 决定**再加载哪个 reference**——按需加载省 token
 
 **rules/ vs skills/**：
@@ -248,9 +248,9 @@ dispatch_intent: "一句话意图，给路由表用"
 |---|---|
 ```
 
-`shape` 比其他 skill 多 **Clarify Phase** 和 **Mode Picker** 两个 section；mode-specific 内容拆到 `references/mode-*.md`。
+`plan` 比其他 skill 多 **Clarify Phase** 和 **Mode Picker** 两个 section；mode-specific 内容拆到 `references/mode-*.md`。
 
-## shape 的 mode 系统（详细）
+## plan 的 mode 系统（详细）
 
 | Mode       | 触发条件                                   | Clarify 关注               | 输出结构                       |
 | ---------- | ------------------------------------------ | -------------------------- | ------------------------------ |
@@ -263,9 +263,9 @@ dispatch_intent: "一句话意图，给路由表用"
 **mode 识别流程**：
 
 ```
-用户 /shape <内容>
+用户 /plan <内容>
   ↓
-shape SKILL.md 加载
+plan SKILL.md 加载
   ↓
 Clarify Phase（共通）
   ├── 提问澄清意图
@@ -283,7 +283,7 @@ Mode Picker
 
 - 默认无 mode 即是探索状态——不需要单独 brainstorm skill
 - mode 不是用户指定，是 agent 在 clarify 过程中识别
-- 知道意图 ≠ 不需要澄清（用户说 `/shape 重构这块`，agent 仍可能问"重构成什么样？保留哪些 API？"）
+- 知道意图 ≠ 不需要澄清（用户说 `/plan 重构这块`，agent 仍可能问"重构成什么样？保留哪些 API？"）
 - 出方案前不写任何代码 / scaffolding / pseudo-code
 - 不同 mode 的 plan 关注点不同：
   - fix 关注根因和回归测试
@@ -336,7 +336,7 @@ squire 通过 [vercel-labs/skills](https://github.com/vercel-labs/skills) CLI �
 
 Personal/project skill 的触发命令**取目录名**，不是 frontmatter 的 `name` 字段（[Claude Code skills 文档](https://code.claude.com/docs/en/skills)）。
 
-squire 的 `skills/shape/SKILL.md` 装到 `~/.claude/skills/shape/` 后，触发命令是 `/shape`。即使 frontmatter 写 `name: something-else` 也不改这点。
+squire 的 `skills/plan/SKILL.md` 装到 `~/.claude/skills/plan/` 后，触发命令是 `/plan`。即使 frontmatter 写 `name: something-else` 也不改这点。
 
 ### 触发方式：auto + manual
 
@@ -364,7 +364,7 @@ Claude Code skill 触发是双轨：
 
 ### 不在 description 里放 `/<name>` trigger phrases
 
-`/<name>` 是 manual invocation 语法，**不走** description-based auto-routing。在 description / when_to_use 里写 `/shape` / `/commit` 等关键词没意义（不影响自动匹配，也不影响手动触发）。只放自然语言关键词（"想想" / "出方案" / "提交"等）。
+`/<name>` 是 manual invocation 语法，**不走** description-based auto-routing。在 description / when_to_use 里写 `/plan` / `/commit` 等关键词没意义（不影响自动匹配，也不影响手动触发）。只放自然语言关键词（"想想" / "出方案" / "提交"等）。
 
 ## 关键设计决策记录
 
@@ -372,41 +372,51 @@ Claude Code skill 触发是双轨：
 
 原始 demo.md 有 13 个 skill（explore / plan / implement / test / review / commit / diagnose / clarify / refactor / optimize / submit / document / release）。决策过程：
 
-- `clarify` 并入 `shape` 作为 Clarify Phase——澄清几乎不独立发生
-- `refactor` / `optimize` / `diagnose` 并入 `shape` 作为 mode——它们都是"出方案"的不同类型
-- `plan` 改名 `think`（后再改名 `shape`）——更承载"思考 + 探索"的语义
+- `clarify` 并入当前 `plan` 的 Clarify Phase——澄清几乎不独立发生
+- `refactor` / `optimize` / `diagnose` 并入当前 `plan` 作为 mode——它们都是"出方案"的不同类型
+- 设计入口最终收敛为 `plan`——直接表达"澄清后产出方案"的用户心智
 - `document` v2 再考虑——野心更大，需要想清楚（其闭环内的一面后来收敛为 `spec` skill 落地，见下）
 - `release` v2 再考虑——各项目差异大，需要提炼通用机制
-- `submit` 改名 `push`（后再改名 `propose`）——push 更贴 git 语义，propose 更准地表达"开 PR 待评审"
+- `submit` 改名 `push`（后再改名为当前 `pull-request`）——最终直接表达"开 PR"这一交付动作
 
-最终（v1）：explore / shape / build / test / review / commit / propose。
+最终（v1）：explore / plan / build / test / review / commit / pull-request。
 
 后续新增 `spec`（第 8 个）——把"持久 spec 真源管理"纳入闭环（review 与 commit 之间的记录阶段），产物模型借鉴 OpenSpec（specs/ 真源 + plan 内 spec delta + 完成时合并）。
 
 ### 2026-06-04 记忆支柱重构（8 → 7 skill，6 支柱）
 
-把闭环重组成 **6 支柱**：理解 `explore` / 设计 `shape` / 改造 `build` / 校验 `verify` / 记忆 `persist` / 交付 `commit`·`propose`。三处动作：
+把闭环重组成 **6 支柱**：理解 `explore` / 设计 `plan` / 改造 `build` / 校验 `verify` / 记忆 `document` / 交付 `commit`·`pull-request`。三处动作：
 
-- **spec 升级为 `persist`**——「持久 spec 真源」泛化为「持久记忆」：沿用 record/correct/backfill 三 mode，目标从 `specs/` 单一泛化到 `rules/memory-catalog.md` 里任一 artifact（行为契约 / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README）。记忆从此是一等支柱，而非 spec 一根半截柱。
+- **spec 升级为当前 `document`**——「持久 spec 真源」泛化为「持久记忆」：沿用 record/correct/backfill 三 mode，目标从 `specs/` 单一泛化到 `rules/memory-catalog.md` 里任一 artifact（行为契约 / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README）。记忆从此是一等支柱，而非 spec 一根半截柱。
 - **校验合成 `verify`**——`review` + 原 `test` 的「跑」+ e2e 合为一个 skill 的三 mode（review / test / e2e）；review mode 承 code-review 的成熟做法，e2e mode 据内置 verify/run 设计。
-- **解散 `test`**——它横跨改造与校验两柱：写测试归 `build`、跑/判测试归 `verify`、调失败根因归 `shape fix`。解散后支柱零跨柱。
+- **解散 `test`**——它横跨改造与校验两柱：写测试归 `build`、跑/判测试归 `verify`、调失败根因归 `plan fix`。解散后支柱零跨柱。
 
 同时重定 PRODUCT.md 哲学/边界 #2：从「只做代码闭环」到「开发 + 记忆」，记忆/文档（含 README）由记忆目录封顶进入 scope。详见 [plans/2026-06-04-feat-memory-pillar.md](plans/2026-06-04-feat-memory-pillar.md) 与 PRODUCT.md 边界 #2 的 2026-06-04 修订。
 
-### 为什么 shape 用 mode 而不是多个 skill？
+### 2026-06-09 core loop 收窄与命名重整
 
-设计 A（意图即 skill，每个独立）vs 设计 B（shape 统一入口 + mode）的取舍：
+把当前产品分层拆成三类：
+
+- **Core loop**：`explore -> plan -> build -> verify -> document`，只表达一次变更从理解、设计、实现、验证到文档化当前事实的最小闭环。
+- **Workflow-managed stages**：`commit -> pull-request`，仍是 squire skills，但是否出现、何时出现由项目的 WORKFLOW 或维护者流程决定。
+- **Orthogonal tools**：`health`，按需触发，不进入默认主线。
+
+三处直接 rename，不保留旧 alias：`shape -> plan`、`persist -> document`、`propose -> pull-request`。`document` 的边界同时扩成两条 lane：默认维护 `rules/memory-catalog.md` 内的 durable memory；只有用户明确指定目标路径、文档类型或具体文档产物时，才维护 catalog 外项目文档。这样保留 core loop 的清晰度，同时不把发布、交接、项目特定流程硬写进默认闭环。
+
+### 为什么 plan 用 mode 而不是多个 skill？
+
+设计 A（意图即 skill，每个独立）vs 设计 B（plan 统一入口 + mode）的取舍：
 
 - 设计 A 假设**用户主动声明意图**
 - 设计 B 假设**意图是聊出来的**——"自己都不知道想要什么"
 
 观察到很多开发是"边聊边明白"的，B 更贴合真实场景。
 
-代价：shape SKILL.md 不能太大，所以 mode-specific 内容拆 references/。
+代价：plan SKILL.md 不能太大，所以 mode-specific 内容拆 references/。
 
 ### 为什么默认 mode 没有名字？
 
-默认状态承载"探索 / 头脑风暴 / 价值判断"——brainstorm 就是没有任何 mode 的 shape。给它命名（比如 `brainstorm` mode）反而增加认知负担，不命名让"默认状态 = 探索"成为天然的事实。
+默认状态承载"探索 / 头脑风暴 / 价值判断"——brainstorm 就是没有任何 mode 的 plan。给它命名（比如 `brainstorm` mode）反而增加认知负担，不命名让"默认状态 = 探索"成为天然的事实。
 
 ### 为什么不做 Marker（Waza 的 🥷）？
 
@@ -446,4 +456,4 @@ squire 自己的 check 库（`tests/checks.ts`）没有 CLI 入口——由 vite
 
 ## 未来规划
 
-搁置 / 未来项见 [ROADMAP.md](ROADMAP.md)（record-only）——设计文档只讲当下，未来项归 ROADMAP。这本身是 persist 写 ROADMAP 目标的 dogfood。主要待办：`shape` 的 `arch` mode、`release` skill，以及 marketplace / 多 host 分发等。（`health` 已落地——校验支柱的正交审计半边。）
+搁置 / 未来项见 [ROADMAP.md](ROADMAP.md)（record-only）——设计文档只讲当下，未来项归 ROADMAP。这本身是 document 写 ROADMAP 目标的 dogfood。主要待办：`plan` 的 `arch` mode、`handoff` / `release` skill，以及 marketplace / 多 host 分发等。（`health` 已落地——正交项目体检。）

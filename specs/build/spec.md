@@ -8,7 +8,7 @@ build skill 把已批准的方案落实成符合项目风格的代码：按步�
 
 ### Requirement: 基于已批准的方案
 
-build 必须基于一份方案执行；找不到方案、或方案与代码漂移（路径错、函数缺、假设不成立）时必须停下并回 shape，不悄悄改路径凑合。
+build 必须基于一份方案执行；找不到方案、或方案与代码漂移（路径错、函数缺、假设不成立）时必须停下并回 plan，不悄悄改路径凑合。
 Verify: manual(integration)
 
 ### Requirement: 不在受保护分支上动工
@@ -18,7 +18,7 @@ Verify: manual(integration)
 
 ### Requirement: 有测试框架且 fix/feat 走 TDD
 
-项目有测试框架且方案 mode 为 fix 或 feat 时，build 必须先写红测试再实现到绿；一写就绿说明没覆盖该场景，必须停下修测试。build 也承接不挂 plan 的写测试工作（补覆盖 / 回归）——同样基于真实行为、红→绿；疑似 flaky 最多重试一次，再失败按失败处理；失败若反映真实 bug 则回 shape fix，不就地改测试凑过。无框架或 refactor/perf 则按方案的 verification 验证，不硬造测试基建。
+项目有测试框架且方案 mode 为 fix 或 feat 时，build 必须先写红测试再实现到绿；一写就绿说明没覆盖该场景，必须停下修测试。build 也承接不挂 plan 的写测试工作（补覆盖 / 回归）——同样基于真实行为、红→绿；疑似 flaky 最多重试一次，再失败按失败处理；失败若反映真实 bug 则回 plan fix，不就地改测试凑过。无框架或 refactor/perf 则按方案的 verification 验证，不硬造测试基建。
 Verify: manual(integration)
 
 ### Requirement: 守方案范围
