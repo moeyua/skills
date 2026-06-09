@@ -125,7 +125,7 @@ Verify: manual(integration)
    - verify: `pnpm test` 通过。
 
 8. **记录未来规划,但不新增 skill**
-   - change: `ROADMAP.md` 保留 `release skill` 未来项,增加 `handoff skill` 未来项;说明二者本次不落地。`release` 标记为 workflow-managed stage 候选,`handoff` 标记为可能的 orthogonal tool 或 WORKFLOW-managed stage,待后续 shape 决定。
+   - change: `ROADMAP.md` 保留 `release skill` 未来项,增加 `handoff skill` 未来项;说明二者本次不落地。`release` 标记为 workflow-managed stage 候选,`handoff` 标记为可能的 orthogonal tool 或 WORKFLOW-managed stage,待后续 plan 决定。
    - verify: `rg -n "handoff|release" ROADMAP.md` 能看到未来项;`rg --files skills specs | rg "(handoff|release)"` 无输出。
 
 ## Verification
@@ -133,13 +133,13 @@ Verify: manual(integration)
 - command: `pnpm test`
 - command: `node skills/health/scripts/checker.ts . --json`
 - manual checklist:
-  - [ ] README 的 core loop 显示为 `explore -> plan -> build -> verify -> document`。
-  - [ ] README/RESOLVER 明确 `commit -> pull-request` 属于 workflow-managed stages。
-  - [ ] `health` 仍是 orthogonal tool,未进入 core loop。
-  - [ ] `/shape`、`/persist`、`/propose` 没有作为当前命令出现。
-  - [ ] `/document` 默认 catalog-bound,且只有用户明确指定时才允许 catalog 外文档。
-  - [ ] `handoff`、`release` 只在 ROADMAP 出现,未新增 skill/spec。
-  - [ ] `commit` 名称和边界保持不变。
+  - [x] README 的 core loop 显示为 `explore -> plan -> build -> verify -> document`。
+  - [x] README/RESOLVER 明确 `commit -> pull-request` 属于 workflow-managed stages。
+  - [x] `health` 仍是 orthogonal tool,未进入 core loop。
+  - [x] `/shape`、`/persist`、`/propose` 没有作为当前命令出现。
+  - [x] `/document` 默认 catalog-bound,且只有用户明确指定时才允许 catalog 外文档。
+  - [x] `handoff`、`release` 只在 ROADMAP 出现,未新增 skill/spec。
+  - [x] `commit` 名称和边界保持不变。
 
 ## Rollback
 

@@ -68,7 +68,7 @@ commit → pull-request
 
 **核心设计**：
 
-- 默认无 mode 即是探索状态——brainstorm / 价值判断 / 头脑风暴都落在默认状态，不需要单独 skill
+- 默认无 mode 即是探索状态——brainstorm / tradeoff framing / 头脑风暴都落在默认状态，不需要单独 skill；真正的“该不该做”价值判断仍交回用户
 - mode 由 agent 在 clarify 过程中识别，不是用户指定
 - 知道意图 ≠ 不需要澄清
 - 出方案前不写任何代码
