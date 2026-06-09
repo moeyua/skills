@@ -10,7 +10,7 @@ health skill 给项目做只读体检:审计「文档说的」与「代码做的
 
 ### Requirement: 只读、只指路、不接管
 
-health 必须不修改任何文件,不提交、不推送、不自动调用其他 skill;脚本与观察命令(node checker / pnpm outdated / gh / git log)只采集事实,不改。发现问题指向对应 skill(文档漂移→persist、代码 bug→shape fix、简化→shape refactor、scope 蔓延→交用户),不接管去做。
+health 必须不修改任何文件,不提交、不推送、不自动调用其他 skill;脚本与观察命令(node checker / pnpm outdated / gh / git log)只采集事实,不改。发现问题指向对应 skill(文档漂移→document、代码 bug→plan fix、简化→plan refactor、scope 蔓延→交用户),不接管去做。
 Verify: manual(integration)
 
 ### Requirement: 主检查——文档声称 vs 代码实际

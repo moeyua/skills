@@ -1,15 +1,15 @@
 ---
-name: shape
+name: plan
 description: 'Clarify a fuzzy idea into an executable plan. Modes: default (explore / brainstorm) / fix / feat / refactor / perf; named modes write a plan file to plans/. Use when the user says "think it through" / "how should we do this" / "出方案" / "想想", or anything that needs thinking through before coding. Not for executing an existing plan (use build), value judgments ("is this worth doing"), or a plain API-usage question.'
 when_to_use: "think, plan, design, brainstorm, approach, 想想, 出方案, 设计, 怎么做, 头脑风暴"
 dispatch_intent: "Clarify intent and produce a plan; named modes write a plan file"
 ---
 
-# Shape
+# Plan
 
-Shape is the stage for judging intent — clarify a fuzzy idea into clear intent, then translate that into an executable plan. It writes no code, touches no scaffolding, leaves no placeholders. Every rule here exists so that by the time a plan is approved, it already holds up to strict execution in build — no discovering mid-build that "this part was never actually thought through".
+Plan is the stage for judging intent — clarify a fuzzy idea into clear intent, then translate that into an executable plan. It writes no code, touches no scaffolding, leaves no placeholders. Every rule here exists so that by the time a plan is approved, it already holds up to strict execution in build — no discovering mid-build that "this part was never actually thought through".
 
-Unfamiliar project or module? Run `/explore` first — shape assumes you already understand the project; forcing it without that base invites hallucination.
+Unfamiliar project or module? Run `/explore` first — plan assumes you already understand the project; forcing it without that base invites hallucination.
 
 Give your opinion directly; take a position. Avoid "that's a great question" / "there are many ways" / "you could consider" — hedging dodges the judgment, and the other person, handed a vague answer, just has to ask again; you both lose time. If you're unsure, say what evidence would change your judgment, so they know it's a position, not stubbornness.
 
@@ -24,7 +24,7 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 
 ## Two altitudes
 
-Shape runs at two altitudes: the **whole** (what problem are we really solving, what's the overall shape of the answer) and the **detail** (this one decision). The failure mode isn't being shallow everywhere — it's dropping to detail altitude and never climbing back: you get snagged on one concrete question, settle it, start pushing toward the plan, and the overall intent has quietly drifted out of view.
+Plan runs at two altitudes: the **whole** (what problem are we really solving, what's the overall shape of the answer) and the **detail** (this one decision). The failure mode isn't being shallow everywhere — it's dropping to detail altitude and never climbing back: you get snagged on one concrete question, settle it, start pushing toward the plan, and the overall intent has quietly drifted out of view.
 
 So the rhythm is **whole → detail → whole**, on repeat. Before drilling a detail, say which whole it serves. After resolving it, climb back and say what it changed about the whole — does the overall shape still hold? — then drop into the next detail. A detail settled in isolation is a guess about the whole wearing the costume of progress.
 
@@ -32,7 +32,7 @@ That pull into detail often comes from the user — they pick a few specific poi
 
 ## Hand the wheel back at each decision
 
-squire's #3 — the user owns the chaining, skills don't auto-run — applies _inside_ shape too, not just between skills. Within one session it's easy to auto-chain clarify → detail → plan in one breath, silently absorbing every judgment on the way. Don't. Each real decision — the mode, the approach, a fragile assumption you had to resolve, a scope line you drew — is a fork that belongs to the user. Name it as a decision, say how it moves the whole, and pause.
+squire's #3 — the user owns the chaining, skills don't auto-run — applies _inside_ plan too, not just between skills. Within one session it's easy to auto-chain clarify → detail → plan in one breath, silently absorbing every judgment on the way. Don't. Each real decision — the mode, the approach, a fragile assumption you had to resolve, a scope line you drew — is a fork that belongs to the user. Name it as a decision, say how it moves the whole, and pause.
 
 This is not "ask permission for every keystroke" — that's a floor, not a ceiling, and it's exhausting. The line is: never fold a judgment into the plan silently. A decision the user can't see is one they can't redirect. Surface it; if they don't object, that's assent, and you move on.
 
@@ -47,11 +47,11 @@ The bar for "clarified enough" (meet it before Phase 2):
 - the key constraints are known (interface boundary / behavior to preserve / baseline numbers / what can't be touched)
 - no blocking ambiguity (two reasonable readings with a big cost difference must be resolved first)
 
-**Knowing the intent ≠ not needing to clarify.** Even when the user says `/shape refactor this`, you may still need to ask "which API behavior stays? how much risk is acceptable? which regression tests run?" — a clear mode doesn't mean clear constraints.
+**Knowing the intent ≠ not needing to clarify.** Even when the user says `/plan refactor this`, you may still need to ask "which API behavior stays? how much risk is acceptable? which regression tests run?" — a clear mode doesn't mean clear constraints.
 
 If the user says "you decide" or "whatever you think is best", give a recommendation + a one-line reason and let them confirm or object, rather than silently deciding for them — silently deciding robs them of the chance to push back.
 
-Clarify isn't only interviewing the user — it's grounding yourself. Read the code, docs, and history the idea touches, before and between questions, so the questions are sharp and the depth is real rather than performed. Asking what the repo already answers wastes the user's turn; accepting their first framing without probing the problem behind it is how shape stays shallow. Depth comes from pressure-testing the premise ("is the stated problem the real one?"), not from more rounds of surface questions.
+Clarify isn't only interviewing the user — it's grounding yourself. Read the code, docs, and history the idea touches, before and between questions, so the questions are sharp and the depth is real rather than performed. Asking what the repo already answers wastes the user's turn; accepting their first framing without probing the problem behind it is how plan stays shallow. Depth comes from pressure-testing the premise ("is the stated problem the real one?"), not from more rounds of surface questions.
 
 Grounding extends past this repo. Any external definition, tool, library, or API the plan leans on gets verified against authoritative docs — not recalled from training memory, which is how plausible-but-wrong facts slip into a plan (see `references/anti-patterns.md`). "I need to check the docs" beats a confident guess that build later discovers was never true.
 
@@ -86,7 +86,7 @@ Output shapes: draft directions / option comparisons / a list of open questions.
 
 When to converge into a named mode: the user's goal sharpens ("OK, I'll do X") → switch to the matching mode → Phase 3. When stuck in brainstorm with no exit, propose converging yourself: "Based on this I lean toward X mode — want to go that way?" — exploring forever without converging is also a form of dodging.
 
-**Value judgments are out of shape's scope.** If the user asks "is this worth doing" / "should we do this", say plainly that squire doesn't handle that — squire decides how, not whether. You can offer a one-line observation ("this looks like a tradeoff between X and Y"), but don't reach a "should / shouldn't do it" verdict for them.
+**Value judgments are out of plan's scope.** If the user asks "is this worth doing" / "should we do this", say plainly that squire doesn't handle that — squire decides how, not whether. You can offer a one-line observation ("this looks like a tradeoff between X and Y"), but don't reach a "should / shouldn't do it" verdict for them.
 
 ## Phase 3: Propose Approach (named mode)
 
@@ -141,7 +141,7 @@ If the user approves and then says "actually, let me reconsider...", don't redo 
 
 ## When to stop
 
-Shape's failure mode is always "should have paused, but pushed ahead". Stop and handle these, don't force through:
+Plan's failure mode is always "should have paused, but pushed ahead". Stop and handle these, don't force through:
 
 - **Clarify hasn't met the checklist but you want to jump to propose** — Phase 1 is the convergence gate; jumping early means guessing the intent.
 - **You want to write a plan file during brainstorm** — default mode writes no plan; forcing one out pretends the intent converged.

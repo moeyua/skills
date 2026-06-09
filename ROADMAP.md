@@ -2,16 +2,17 @@
 
 > 搁置 / 未来项的记录——**record-only**:维护者决定做不做、何时做,本文件只按格式记,不排优先级、不排期、不裁决「值不值得」。
 >
-> 从 ARCHITECTURE.md 的「v2 规划」迁入(2026-06-04 记忆支柱重构)——设计文档只讲当下,未来项归这里。这正是 persist 写 ROADMAP 目标的 dogfood。
+> 从 ARCHITECTURE.md 的「v2 规划」迁入(2026-06-04 记忆支柱重构)——设计文档只讲当下,未来项归这里。这正是 document 写 ROADMAP 目标的 dogfood。
 
 ## Skill 层面
 
 - **`explore` 局部深度探索强化**:整体探索之外,确保 / 加强对单模块的聚焦深挖(现有 Scoped Deep-dive Phase 的强化)。
-- **`shape` 的 `arch` mode / 产出架构**:架构调整、技术选型、模块重组需要一个 mode;plan 需要时 shape 应产出架构(结构 / 图),参考 feature-dev。
+- **`plan` 的 `arch` mode / 产出架构**:架构调整、技术选型、模块重组需要一个 mode;plan 需要时应产出架构(结构 / 图),参考 feature-dev。
 - **`verify` 的 review / e2e 也走 subagent**:目前仅多 mode 并行才起 subagent;review 与 e2e 单跑也应各起 subagent 执行。
-- **`persist` 的 `DESIGN` / `WORKFLOW` 目标在 squire 自身的落地**:squire 无 UI,DESIGN 按目录判「不需要」;WORKFLOW 待有特定流程约定时再补。
-- **`persist` 的自动漂移同步**:`health` 已落地,能照出「哪份记忆漂了」,但把这个信号**自动**接进 persist 去更新尚未做——目前 persist 的更新仍靠人看完 `/health` 报告主动发起。(health skill 本身已完成,见 ARCHITECTURE 决策记录。)
-- **`release` skill**:发布流程——各项目差异大,需提炼跨项目的通用机制(参考 Waza `/check` 的 Project Context Extraction 思路)。
+- **`document` 的 `DESIGN` / `WORKFLOW` 目标在 squire 自身的落地**:squire 无 UI,DESIGN 按目录判「不需要」;WORKFLOW 待有特定流程约定时再补。
+- **`document` 的自动漂移同步**:`health` 已落地,能照出「哪份记忆漂了」,但把这个信号**自动**接进 document 去更新尚未做——目前 document 的更新仍靠人看完 `/health` 报告主动发起。
+- **`handoff` skill**:会话连续性 / 协作交接。未来需先决定它是 orthogonal tool,还是某些 WORKFLOW 阶段结束时的 workflow-managed stage。
+- **`release` skill**:发布流程候选的 workflow-managed stage——各项目差异大,需提炼跨项目的通用机制(参考 Waza `/check` 的 Project Context Extraction 思路)。
 
 ## 架构层面
 

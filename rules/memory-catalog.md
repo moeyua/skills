@@ -2,13 +2,13 @@
 
 > 项目持久记忆的推荐目录——「记忆支柱」绕之运转的单一真源(索引层)。
 >
-> 三方共用:**explore** 照它知道该读哪些记忆、**persist** 照它定写哪份、将来的 **health** 照它查缺失与漂移。改记忆该有哪些、各装什么,只改这一处(哲学 #4)。
+> 三方共用:**explore** 照它知道该读哪些记忆、**document** 照它定写哪份、将来的 **health** 照它查缺失与漂移。改记忆该有哪些、各装什么,只改这一处(哲学 #4)。
 >
-> 本文件是**索引**:每个 artifact 一节,给摘要 + 一行 `Format:` 指针。**详细格式规范按文档拆分在 `references/formats/<artifact>.md`,persist 写哪份才加载哪份**(按需,省 token)。
+> 本文件是**索引**:每个 artifact 一节,给摘要 + 一行 `Format:` 指针。**详细格式规范按文档拆分在 `references/formats/<artifact>.md`,document 写哪份才加载哪份**(按需,省 token)。
 
 每节字段:**Purpose**(装什么)/ **Audience**(`internal` 维护者·agent | `external` 使用者)/ **When needed**(何时需要)/ **Source**(权威源,缺则停下发问)/ **Boundary**(不该装什么)/ **Format**(格式规范文件)。
 
-`internal` 是闭环设计记忆;唯一的 `external` 条目 README 是其入口投影(PRODUCT.md 边界 #2 的 2026-06-04 修订)。目录**不收**目录外的对外内容(changelog / release notes / API 接口文档)。
+`internal` 是闭环设计记忆;唯一的 `external` 条目 README 是其入口投影(PRODUCT.md 边界 #2 的 2026-06-04 修订)。目录只定义默认 durable memory;用户明确指定的 catalog 外项目文档不进入本目录,由 `/document` 按指定目标单独维护。
 
 ---
 
@@ -72,5 +72,5 @@
 - **Audience**:internal
 - **When needed**:有明确产品取舍的项目。
 - **Source**:维护者陈述的意图。
-- **Boundary**:**persist 不写 PRODUCT 内容**——内容性变更走 `/shape`;persist 至多 create 空骨架并指回。
-- **Format**:无(内容经 `/shape`,persist 不 author)。
+- **Boundary**:**document 不写 PRODUCT 内容**——内容性变更走 `/plan`;document 至多 create 空骨架并指回。
+- **Format**:无(内容经 `/plan`,document 不 author)。

@@ -1,6 +1,6 @@
 ---
 name: commit
-description: 'Turn working-tree changes into clean git history matching the project style; auto-split when there are clearly multiple topics. Use when the user says "commit" / "stage and commit" / "提交" / "入库". Not for pushing to a remote or opening a PR (use propose), or writing release notes.'
+description: 'Turn working-tree changes into clean git history matching the project style; auto-split when there are clearly multiple topics. Use when the user says "commit" / "stage and commit" / "提交" / "入库". Not for pushing to a remote or opening a PR (use pull-request), or writing release notes.'
 when_to_use: "commit, stage changes, commit message, 提交, 入库, 整理变更, 拆提交"
 dispatch_intent: "Build clean git commits matching the project's history style"
 ---

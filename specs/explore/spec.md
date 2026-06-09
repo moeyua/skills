@@ -2,7 +2,7 @@
 
 ## Purpose
 
-explore skill 为下游工作(shape / build / review)建立项目的事实级理解：读关键文档、摸清结构，产出一份结构化报告。它严格只读。
+explore skill 为下游工作(plan / build / review)建立项目的事实级理解：读关键文档、摸清结构，产出一份结构化报告。它严格只读。
 
 ## Requirements
 

@@ -59,7 +59,7 @@ describe("repo skill verifier (smoke)", () => {
     expect(() => checkResolverConsistency(REPO_ROOT, skills)).not.toThrow();
   });
 
-  it("checkMemoryCatalog: rules/memory-catalog.md and skills/persist/references/formats/ stay in sync", () => {
+  it("checkMemoryCatalog: rules/memory-catalog.md and skills/document/references/formats/ stay in sync", () => {
     expect(() => checkMemoryCatalog(REPO_ROOT)).not.toThrow();
   });
 });

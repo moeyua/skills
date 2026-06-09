@@ -1,6 +1,6 @@
 ---
 name: health
-description: "Audit a whole project's health — first whether its docs still match the code, then dependency/CI/file-size staleness and broken references. A bundled deterministic script does the mechanical checks; model judgment does the docs-vs-code part. Use when you want a project-wide checkup or to find what has drifted; read-only and advisory. Not for change-scoped pre-merge review (use verify), writing the fixes it finds (use persist), or fixing flagged code (use shape fix)."
+description: "Audit a whole project's health — first whether its docs still match the code, then dependency/CI/file-size staleness and broken references. A bundled deterministic script does the mechanical checks; model judgment does the docs-vs-code part. Use when you want a project-wide checkup or to find what has drifted; read-only and advisory. Not for change-scoped pre-merge review (use verify), writing the fixes it finds (use document), or fixing flagged code (use plan fix)."
 when_to_use: "health, audit, checkup, drift, doc drift, stale docs, dependency staleness, broken references, 体检, 健康, 漂移, 文档漂移, 陈旧, 审计"
 dispatch_intent: "Project-wide read-only health audit — docs-vs-code consistency first, plus a bundled mechanical checker; advisory only"
 allowed-tools: "Bash(node *), Bash(pnpm outdated*), Bash(npm outdated*), Bash(gh run list*), Bash(git log*)"
@@ -25,18 +25,18 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 
 ## Look here first: what the docs say vs what the code does
 
-This is health's main check and the reason it exists. The rest of squire's loop keeps memory current as changes land (persist records each one); nothing checks whether the _accumulated_ memory still describes the code after many changes. Persist's own contract says it "acts on awareness from health" — health is the source of that awareness: the signal "which doc has drifted from the code".
+This is health's main check and the reason it exists. The rest of squire's loop keeps memory current as changes land (document records each one); nothing checks whether the _accumulated_ memory still describes the code after many changes. Document's own contract says it "acts on awareness from health" — health is the source of that awareness: the signal "which doc has drifted from the code".
 
 This check is model judgment — mechanical checks can't tell whether prose still matches behavior. Method, to keep it bounded:
 
 - **squire-format docs** (a `specs/<domain>/spec.md` with `### Requirement:` entries): take each requirement as one discrete claim and check the code still does it. Bounded, claim by claim.
 - **prose docs** (README / ARCHITECTURE / design notes): pull out the behavior/architecture claims you _can_ check ("uses Redux", "auth issues a JWT") and verify them against the code. What you can't pin down, don't force a verdict on — say so.
 
-Report a docs-vs-code finding only at confidence ≥ 80, graded Critical / Important / Suggestion, each routed (usually `/persist` to fix the doc, or `/shape fix` if the code is the wrong one).
+Report a docs-vs-code finding only at confidence ≥ 80, graded Critical / Important / Suggestion, each routed (usually `/document` to fix the doc, or `/plan fix` if the code is the wrong one).
 
 ## Two kinds of target
 
-1. **The project's memory** — docs squire's persist maintains (specs/, ARCHITECTURE, README, …) in a known format. Here health checks both format conformance and drift-vs-code.
+1. **The project's memory** — docs squire's document maintains (specs/, ARCHITECTURE, README, …) in a known format. Here health checks both format conformance and drift-vs-code.
 2. **The project itself** — any project, no squire assumption: stale dependencies, red CI, oversized files, references that no longer resolve. This is the **secondary** half.
 
 "Any project" describes the second kind only; the first assumes squire's format. Health carries **no per-project-type logic** — it adapts a universal check to the local toolchain (detect the package manager, then run _its_ outdated command), it never grows a branch of checks special to one ecosystem. That branching is the trap that keeps a general auditor from ever being general.
@@ -71,14 +71,14 @@ No argument → full checkup. A recognized category (`docs` / `deps` / `ci`) or 
 Scope: <full / docs|deps|ci / path>   Ran: docs-vs-code, checker, deps   Skipped: CI (no gh remote)
 
 ## Docs vs code (main)
-- [Important] README says "uses Redux" but the code uses Context (conf 85) → confirm, then /persist or /shape fix
+- [Important] README says "uses Redux" but the code uses Context (conf 85) → confirm, then /document or /plan fix
 
 ## Mechanical (deterministic)
 - [fact] docs/foo.md:12 link [x](./gone.md) points at a missing file
 - [fact] 3 dependencies are ≥1 major behind
 
 ## Next
-- doc drift → /persist; code bug → /shape fix; nothing here is auto-fixed
+- doc drift → /document; code bug → /plan fix; nothing here is auto-fixed
 ```
 
 Mechanical findings are stated as facts; model findings carry a confidence and a grade; skipped checks are listed.
@@ -86,17 +86,17 @@ Mechanical findings are stated as facts; model findings carry a confidence and a
 ## Boundaries
 
 - **vs verify** — verify checks one change before merge (a diff); health checks the whole project, outside the loop. Different scope.
-- **vs persist** — health _detects_ drift and reports it; persist _writes_ the correction. Health never owns the fix.
+- **vs document** — health _detects_ drift and reports it; document _writes_ the correction. Health never owns the fix.
 - **vs explore** — explore builds a map of an unfamiliar project; health audits a (mapped) project for drift. Health may reuse explore's reading, but its output is a drift report, not a map.
-- **vs shape fix** — health reports a suspected code bug; shape fix diagnoses the root cause and plans the fix.
+- **vs plan fix** — health reports a suspected code bug; plan fix diagnoses the root cause and plans the fix.
 
-When you find a class of problem, point the author to the matching skill instead of taking over: doc drift → `/persist`; code bug → `/shape fix`; simplification → `/shape refactor`; scope creep → flag it, let the user decide.
+When you find a class of problem, point the author to the matching skill instead of taking over: doc drift → `/document`; code bug → `/plan fix`; simplification → `/plan refactor`; scope creep → flag it, let the user decide.
 
 ## When to stop
 
 Health's failure mode is "touching" — fixing, or chaining onward, when it should only report. Stop and report in these cases:
 
-- **The urge to "just fix the doc"** — write the finding and route to `/persist`; the moment health edits, it loses its standing.
+- **The urge to "just fix the doc"** — write the finding and route to `/document`; the moment health edits, it loses its standing.
 - **The urge to auto-run the next skill** — give the recommendation; the user owns the chaining.
 - **You want a check special to this project type** — don't; adapt a universal probe instead, or skip and note it.
 - **A probe's dependency is missing** (no Node 24, no manifest, no remote, no docs) — skip it and say so; don't fake a result or error out.
