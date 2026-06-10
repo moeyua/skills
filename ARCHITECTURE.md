@@ -365,7 +365,7 @@ Claude Code skill 触发是双轨：
 
 ### 默认 symlink
 
-`npx skills add .` 默认创建 symlink 而非 copy——编辑仓库内的 SKILL.md 全局立刻生效。需要纯 copy 加 `--copy` flag。
+`npx skills add .` 默认在 agent 目录(如 `~/.claude/skills/`)创建 symlink,指向 `~/.agents` 共享 store——但 store 里的内容是**安装时的拷贝快照**(这正是「删源仓库后仍自包含」成立的原因),编辑仓库内的 SKILL.md **不会**即时生效,需重跑 `npx skills add .`(实测 2026-06-10:仓库已改、装出的副本仍是旧版)。需要纯 copy 布局加 `--copy` flag。
 
 ### 不在 description 里放 `/<name>` trigger phrases
 
