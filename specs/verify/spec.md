@@ -30,3 +30,8 @@ Verify: manual(integration)
 
 verify 发现某类问题时必须指向对应 skill(bug→plan fix、缺/弱测试→build 补覆盖、简化→plan refactor、scope 蔓延→交用户决定),不接管去做。
 Verify: manual(integration)
+
+### Requirement: 无明确 mode 线索时默认全面把关
+
+用户消息无明确 mode 线索(含裸 `/verify`)时,verify 必须默认跑 review + test 两个 mode,并在改动触及用户可见行为且项目有可启动路径时加跑 e2e;被跳过的 mode 必须在报告中标明及原因。显式 mode 线索仍收窄到对应 mode,不默认扩展。
+Verify: manual(integration)

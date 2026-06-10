@@ -1,6 +1,6 @@
 ---
 name: verify
-description: 'Verify a change holds up before merge — by code review, by running the test suite, or by driving the app end-to-end. Use when the user says "review" / "run the tests" / "check this works" / "把关" / "验证", or before committing. Not for fixing the bugs it finds (use plan fix), writing the implementation or its tests (use build), or recording what landed (use document).'
+description: 'Verify a change holds up before merge — by code review, by running the test suite, or by driving the app end-to-end; with no mode named it runs the full gate (review + test, e2e when applicable). Use when the user says "review" / "run the tests" / "check this works" / "把关" / "验证", or before committing. Not for fixing the bugs it finds (use plan fix), writing the implementation or its tests (use build), or recording what landed (use document).'
 when_to_use: "verify, review, code review, run tests, e2e, end to end, check it works, 验证, 评审, 把关, 跑测试, 端到端, 合并前检查"
 dispatch_intent: "Confirm a change holds up before merge — review / test / e2e; verdicts and directions, no code changes"
 ---
@@ -18,19 +18,22 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 ## Outcome Contract
 
 - Outcome: a verdict (holds up / doesn't) plus graded findings or observed behavior, with the decision left to the author
-- Done when: review → the dimensions (or specified aspect) are scanned and findings ≥ 80 confidence listed with Strengths; test → the suite ran and pass/fail is fully reported; e2e → the app ran and the observed behavior is reported against the expectation
+- Done when: review → the dimensions (or specified aspect) are scanned and findings ≥ 80 confidence listed with Strengths; test → the suite ran and pass/fail is fully reported; e2e → the app ran and the observed behavior is reported against the expectation; in all cases every mode in the run's set either ran or is named as skipped with its reason
 - Evidence: `git diff` / the actual test output / the running app's observed behavior / project guidelines (CLAUDE.md / AGENTS.md) / the plan (if any)
 - Output: a verdict + findings/observations + a next-step recommendation
 
 ## Three modes (routed by the message)
 
-| cue in the user's message                                                   | mode   |
-| --------------------------------------------------------------------------- | ------ |
-| "review" / "look at the changes" / "把关" / an aspect keyword               | review |
-| "run the tests" / "do the tests pass" / "flaky?"                            | test   |
-| "check it works" / "verify the feature" / "screenshot it" / "does X behave" | e2e    |
+| cue in the user's message                                                   | mode                                          |
+| --------------------------------------------------------------------------- | --------------------------------------------- |
+| "review" / "look at the changes" / "把关" / an aspect keyword               | review                                        |
+| "run the tests" / "do the tests pass" / "flaky?"                            | test                                          |
+| "check it works" / "verify the feature" / "screenshot it" / "does X behave" | e2e                                           |
+| no mode cue (bare `/verify` / "验证一下" with no lean)                      | full gate: review + test, e2e when applicable |
 
-The message routes naturally; modes can combine ("review + verify it runs"). When more than one mode is requested, **run each in its own subagent, in parallel** — the modes are independent (review only reads; test/e2e run), so there's no shared state to serialize, and the wall-clock cost is the slowest mode, not their sum. Then synthesize the subagents' results into one combined verdict. A single mode runs inline — don't pay subagent overhead for one.
+The message routes naturally; an explicit cue narrows to its mode ("跑下测试" runs test alone), and modes can combine ("review + verify it runs"). **No cue means the full gate** — a gate whose width depends on how the author happened to phrase the request isn't a gate. Review and test always run: one is judgment, the other is ground truth, and both are cheap. e2e joins when the change touches user-visible behavior and the project has a way to launch — against a docs-only change it's noise, not signal. Every mode that doesn't run is named in the report with the reason, so the author sees the gate's actual width instead of assuming it.
+
+**Each mode runs in its own subagent, in parallel; the main session only routes, collects, and synthesizes one combined verdict.** Two reasons beyond wall-clock. Objectivity: the most common sequence is build → verify, and a context that just wrote the code reviewing that same code tends to confirm itself — a clean-context subagent has to rebuild the judgment independently. Isolation: the full diff, a failing suite's output, and an e2e tool transcript stay in the subagent; the main session keeps only the verdict. The subagent can't see the session, so the spawning prompt carries everything its mode needs: the mode's rules from this file, the diff and the plan, the test command or app launch path, and any constraints the author stated along the way. If the host can't spawn subagents, run the same mode set sequentially inline and note that in the report — the gate's width never depends on the execution model.
 
 ## review mode
 
@@ -86,7 +89,7 @@ When you find a class of problem, point the author to the matching skill instead
 ```
 # Verify Summary
 
-Modes: <review / test / e2e (or a subset)>   Scope: <git diff base..HEAD / suite / app path>
+Modes: ran <review, test, ...> / skipped <mode> (reason)   Scope: <git diff base..HEAD / suite / app path>
 Verdict: holds up / needs work
 
 ## Critical (X) / Important (X) / Suggestions (X)        ← review
@@ -105,7 +108,7 @@ Verdict: holds up / needs work
 - <Critical first: e.g. /plan fix> / <commit if clean>
 ```
 
-With no high-confidence findings and a clean run, say so plainly and mark "Ready to commit/push".
+With no high-confidence findings and a clean run, say so plainly and mark "Ready to commit/push". A mode that belonged to this run's set — requested, or part of the default gate — but didn't run is listed as skipped with its reason; silence reads as "checked" when it wasn't. A mode the author explicitly narrowed away isn't "skipped", it was never in the set.
 
 ## When to stop
 
