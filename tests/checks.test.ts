@@ -20,7 +20,7 @@ import {
   checkNoRootSkill,
   checkTriggerJaccard,
   checkResolverConsistency,
-  checkMemoryCatalog,
+  checkSpecPairing,
 } from "./checks.ts";
 
 // ---------- fixture helper ----------
@@ -336,50 +336,33 @@ describe("checkResolverConsistency", () => {
   });
 });
 
-function catalogRepo(catalogBody: string, formatFiles: string[]): string {
-  const root = mkdtempSync(join(tmpdir(), "squire-cat-"));
-  mkdirSync(join(root, "rules"), { recursive: true });
-  writeFileSync(join(root, "rules", "memory-catalog.md"), catalogBody);
-  const fdir = join(root, "skills", "document", "references", "formats");
-  mkdirSync(fdir, { recursive: true });
-  for (const f of formatFiles) writeFileSync(join(fdir, f), "# fmt\n");
-  activeRoots.push(root);
-  return root;
+function addSpec(root: string, domain: string): void {
+  const dir = join(root, "specs", domain);
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "spec.md"), "# Spec\n\n## Purpose\n\nstub\n");
 }
 
-describe("checkMemoryCatalog", () => {
-  // PRODUCT intentionally has no format file (content via /plan), so it must
-  // not count as a missing reference.
-  const CATALOG = `# Memory Catalog
-
-## spec
-- **Format**: \`references/formats/spec.md\`
-
-## ARCHITECTURE
-- **Format**: \`references/formats/architecture.md\`
-
-## PRODUCT
-- **Format**: 无（内容经 /plan）
-`;
-
-  it("passes when referenced format files exist and none are orphaned", () => {
-    const root = catalogRepo(CATALOG, ["spec.md", "architecture.md"]);
-    expect(() => checkMemoryCatalog(root)).not.toThrow();
+describe("checkSpecPairing", () => {
+  it("passes when every skill has a spec and every spec has a skill", () => {
+    const root = repo([{ name: "a" }, { name: "b" }]);
+    addSpec(root, "a");
+    addSpec(root, "b");
+    const map = checkSkillFiles(root);
+    expect(() => checkSpecPairing(root, map)).not.toThrow();
   });
 
-  it("throws when a catalog-referenced format file is missing", () => {
-    const root = catalogRepo(CATALOG, ["spec.md"]);
-    expect(() => checkMemoryCatalog(root)).toThrow(/MEMORY FORMAT MISSING.*architecture/);
+  it("fails when a skill has no spec (also covers a missing specs/ dir)", () => {
+    const root = repo([{ name: "a" }, { name: "b" }]);
+    addSpec(root, "a");
+    const map = checkSkillFiles(root);
+    expect(() => checkSpecPairing(root, map)).toThrow(/SPEC MISSING.*b/);
   });
 
-  it("throws on an orphan format file not referenced by the catalog", () => {
-    const root = catalogRepo(CATALOG, ["spec.md", "architecture.md", "extra.md"]);
-    expect(() => checkMemoryCatalog(root)).toThrow(/MEMORY FORMAT ORPHAN.*extra/);
-  });
-
-  it("is a no-op when the catalog does not exist", () => {
-    const root = mkdtempSync(join(tmpdir(), "squire-nocat-"));
-    activeRoots.push(root);
-    expect(() => checkMemoryCatalog(root)).not.toThrow();
+  it("fails on an orphan spec domain with no matching skill", () => {
+    const root = repo([{ name: "a" }]);
+    addSpec(root, "a");
+    addSpec(root, "ghost");
+    const map = checkSkillFiles(root);
+    expect(() => checkSpecPairing(root, map)).toThrow(/SPEC ORPHAN.*ghost/);
   });
 });

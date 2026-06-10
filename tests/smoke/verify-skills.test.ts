@@ -18,6 +18,7 @@ import {
   checkNoRootSkill,
   checkTriggerJaccard,
   checkResolverConsistency,
+  checkSpecPairing,
   checkMemoryCatalog,
 } from "../checks.ts";
 
@@ -57,6 +58,10 @@ describe("repo skill verifier (smoke)", () => {
 
   it("checkResolverConsistency: RESOLVER.md lists exactly the skills under skills/", () => {
     expect(() => checkResolverConsistency(REPO_ROOT, skills)).not.toThrow();
+  });
+
+  it("checkSpecPairing: every skill has a specs/<name>/spec.md and no spec is orphaned", () => {
+    expect(() => checkSpecPairing(REPO_ROOT, skills)).not.toThrow();
   });
 
   it("checkMemoryCatalog: rules/memory-catalog.md and skills/document/references/formats/ stay in sync", () => {
