@@ -14,6 +14,7 @@ squire/
 ├── ARCHITECTURE.md                   # 本文件
 ├── PRODUCT.md                        # 定位 / 哲学 / 边界
 ├── ROADMAP.md                        # 搁置 / 未来项（record-only）
+├── WORKFLOW.md                       # 本项目开发流程（agent 遵守；变更按大小分级）
 ├── LICENSE
 ├── package.json                      # private: true，纯 dev 工具用
 ├── tsconfig.json
@@ -178,6 +179,7 @@ tests/smoke/verify-skills.test.ts  # 整库 smoke（替代旧的 verify-skills C
 PRODUCT.md                      # 产品定位 / 设计哲学 / 边界
 README.md                       # 给使用者看
 ARCHITECTURE.md                 # 给开发者和协作 agent 看（本文件）
+WORKFLOW.md                     # 本项目开发流程（变更分级:实质变更走 loop + PR,小修直 commit）
 LICENSE
 ```
 
