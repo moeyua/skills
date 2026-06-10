@@ -45,9 +45,10 @@ These are squire skills, but not part of the core loop. A project's WORKFLOW.md 
 
 ## Orthogonal Tools
 
-| trigger                                                                                                                                               | skill                    |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| "health check" / "what has drifted" / "体检" / "审计" / `/health` / whole-project audit: docs-vs-code drift + dependency/CI/file staleness, read-only | `skills/health/SKILL.md` |
+| trigger                                                                                                                                               | skill                     |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| "health check" / "what has drifted" / "体检" / "审计" / `/health` / whole-project audit: docs-vs-code drift + dependency/CI/file staleness, read-only | `skills/health/SKILL.md`  |
+| "hand over" / "continue in a new session" / "context summary" / "交接" / "新会话继续" / `/handoff` / read-only handoff summary to continue elsewhere  | `skills/handoff/SKILL.md` |
 
 ## Disambiguation
 
@@ -74,3 +75,5 @@ Plan branches internally by intent: default / fix / feat / refactor / perf. Veri
 Document runs at the tail when a change produces durable memory worth recording — it writes into the right catalog artifact (spec / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README) per `rules/memory-catalog.md`, or updates a concrete catalog-external project doc only when the user names that target.
 
 `health` is the orthogonal audit — a read-only, whole-project checkup (docs-vs-code drift + dependency/CI/file staleness) that runs outside the core loop, on demand. It only detects and reports; document writes any correction it surfaces.
+
+`handoff` is the other orthogonal tool — a read-only, host-neutral session-handoff summary, generated on demand when a session ends or moves to another agent. It never chains onward and writes nothing; the user carries its output to the next session.

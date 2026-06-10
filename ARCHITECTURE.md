@@ -33,9 +33,10 @@ squire/
 │   ├── document/SKILL.md             # 文档化：照记忆目录维护持久真源；也处理用户指定文档
 │   ├── commit/SKILL.md
 │   ├── pull-request/SKILL.md
-│   └── health/                       # 正交工具（loop 外，项目体检）
-│       ├── SKILL.md
-│       └── scripts/checker.ts        # 随 skill 装的零依赖确定性检查器（node 24 直跑 .ts）
+│   ├── health/                       # 正交工具（loop 外，项目体检）
+│   │   ├── SKILL.md
+│   │   └── scripts/checker.ts        # 随 skill 装的零依赖确定性检查器（node 24 直跑 .ts）
+│   └── handoff/SKILL.md              # 正交工具（loop 外，会话交接摘要）
 ├── specs/                            # 持久行为契约（document 的 spec 目标，按 domain 一份）
 │   └── <domain>/spec.md              # 行为契约：Purpose + Requirements（各带 Verify）
 ├── rules/                            # 跨 skill 规则 / 共享真源（symlink 进相关 skill 的 references/）
@@ -47,6 +48,7 @@ squire/
     ├── frontmatter.ts                # 手写 parser，零运行时依赖
     ├── frontmatter.test.ts           # parser 单元测试
     ├── checks.test.ts                # check 函数单元测试
+    ├── memory-catalog.test.ts        # 记忆目录↔format 锁步检查单测（自带独立 fixture）
     ├── checker.test.ts               # health checker 单元测试（fixture）
     └── smoke/
         └── verify-skills.test.ts     # 整库 smoke：跑当前 repo 过所有 check
@@ -164,6 +166,7 @@ tests/smoke/verify-skills.test.ts  # 整库验证 smoke（CI 入口）
 ```
 tests/frontmatter.test.ts          # parser 单元测试
 tests/checks.test.ts               # check 函数单元测试
+tests/memory-catalog.test.ts       # 记忆目录↔format 锁步检查单测
 tests/smoke/verify-skills.test.ts  # 整库 smoke（替代旧的 verify-skills CLI）
 ```
 
@@ -368,7 +371,7 @@ Claude Code skill 触发是双轨：
 
 ## 关键设计决策记录
 
-### 为什么先做 7 个 skill，不是 13 个？（后增至 8）
+### 为什么先做 7 个 skill，不是 13 个？（后增至 9）
 
 原始 demo.md 有 13 个 skill（explore / plan / implement / test / review / commit / diagnose / clarify / refactor / optimize / submit / document / release）。决策过程：
 
@@ -402,6 +405,10 @@ Claude Code skill 触发是双轨：
 - **Orthogonal tools**：`health`，按需触发，不进入默认主线。
 
 三处直接 rename，不保留旧 alias：`shape -> plan`、`persist -> document`、`propose -> pull-request`。`document` 的边界同时扩成两条 lane：默认维护 `rules/memory-catalog.md` 内的 durable memory；只有用户明确指定目标路径、文档类型或具体文档产物时，才维护 catalog 外项目文档。这样保留 core loop 的清晰度，同时不把发布、交接、项目特定流程硬写进默认闭环。
+
+### 2026-06-10 handoff 作为 orthogonal tool
+
+`handoff` 是第二个 orthogonal tool（第 9 个 skill）：只读收集当前会话与项目状态，在对话中输出可粘贴到新会话的 `HANDOFF CONTEXT` 纯文本摘要。定位结论：会话交接不依附于任何一次变更的闭环阶段，也不属于 `commit -> pull-request` 交付，所以与 `health` 同层、不进默认主线（ROADMAP 原留的「orthogonal tool 还是 workflow-managed stage」开放决策就此关闭）。关键边界：host-neutral（不绑定 OpenCode 等专属 API 或 TUI 步骤）、不写文件（摘要是临时物，写文件会制造持久文档的范围与清理问题）、敏感值只标注已省略、拿不到的 host 数据写 `Not available` 不猜测。PRODUCT 哲学 #2 的正交工具表述同步修订。详见 [plans/2026-06-09-feat-handoff-skill.md](plans/2026-06-09-feat-handoff-skill.md)。
 
 ### 为什么 plan 用 mode 而不是多个 skill？
 
@@ -456,4 +463,4 @@ squire 自己的 check 库（`tests/checks.ts`）没有 CLI 入口——由 vite
 
 ## 未来规划
 
-搁置 / 未来项见 [ROADMAP.md](ROADMAP.md)（record-only）——设计文档只讲当下，未来项归 ROADMAP。这本身是 document 写 ROADMAP 目标的 dogfood。主要待办：`plan` 的 `arch` mode、`handoff` / `release` skill，以及 marketplace / 多 host 分发等。（`health` 已落地——正交项目体检。）
+搁置 / 未来项见 [ROADMAP.md](ROADMAP.md)（record-only）——设计文档只讲当下，未来项归 ROADMAP。这本身是 document 写 ROADMAP 目标的 dogfood。主要待办：`plan` 的 `arch` mode、`release` skill，以及 marketplace / 多 host 分发等。（`health`、`handoff` 已落地——loop 外正交工具。）

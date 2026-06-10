@@ -16,7 +16,9 @@ squire 的所有设计决策都从下面 5 条派生。它们不是教条，是�
 
 ### 2. 聚焦开发 + 记忆 — 不只改代码，也记住代码
 
-squire 的范围限定在两件事：**开发**一个项目，**记住 / 文档化**这个项目持久地是什么。核心闭环是理解（explore）、设计（plan）、改造（build）、校验（verify）、文档化（document）。`commit` / `pull-request` 是 workflow-managed stages，由项目流程决定是否接在后面；`health` 是正交工具。squire 不扩展到产品决策、发布管理、Agent 自审计、内容输入处理（详见下面"边界"段）。
+squire 的范围限定在两件事：**开发**一个项目，**记住 / 文档化**这个项目持久地是什么。核心闭环是理解（explore）、设计（plan）、改造（build）、校验（verify）、文档化（document）。`commit` / `pull-request` 是 workflow-managed stages，由项目流程决定是否接在后面；`health` / `handoff` 是正交工具。squire 不扩展到产品决策、发布管理、Agent 自审计、内容输入处理（详见下面"边界"段）。
+
+> **2026-06-10 修订**：正交工具增列 `handoff`（会话交接摘要，经 plan discussion 确认）。它服务于闭环的连续运转——把当前会话的工作状态只读交接给下个会话——不是新的产品能力域，「开发 + 记忆」的 scope 不因此扩大。
 
 **文档化是一等支柱，不是外挂**：行为契约、架构、设计、流程、搁置项、入口文档——这些"项目持久地是什么"由 document 照 `rules/memory-catalog.md` 这份记忆目录维护。它的受众是闭环本身（维护者 / 协作 agent），是闭环绕之运转的设计记忆，不是替别的项目做对外文案。
 
@@ -30,7 +32,7 @@ squire 的范围限定在两件事：**开发**一个项目，**记住 / 文档�
 
 ### 4. 机械保证一致 — 能让工具守的不靠纪律
 
-squire 自己的元数据（SKILL.md frontmatter、Outcome Contract、触发词、RESOLVER 一致性）全部由 `vp test` 通过 `tests/checks.ts` 跑 smoke 守住。8 个 check 函数覆盖 frontmatter / Outcome Contract / 触发词 Jaccard / markdown links 等结构 invariant。
+squire 自己的元数据（SKILL.md frontmatter、Outcome Contract、触发词、RESOLVER 一致性）全部由 `vp test` 通过 `tests/checks.ts` 跑 smoke 守住。10 个 check 函数覆盖 frontmatter / Outcome Contract / 触发词 Jaccard / markdown links / skill↔spec 配对等结构 invariant。
 
 靠"记得这样做"的纪律不可持续，特别是多人协作或 agent 协作时。一致性是可测的，那就测它——手维护多份必漂移。每次 SKILL.md 改动都跑 `pnpm test` 验证。
 
@@ -72,7 +74,7 @@ squire 维护一份**有界的记忆目录**（`rules/memory-catalog.md`，含 R
 
 **根因**：哲学 #2 + #4。
 
-Agent 自审计是 meta 层面——跟代码开发闭环正交。而且漂移检测靠机械（如 squire 自己的 `checks.ts`）比靠 agent skill 更可靠。未来 health skill 可能填一些缝（文档跟代码漂移、依赖陈旧、CI 状态），但 v1 不在 scope。
+Agent 自审计是 meta 层面——跟代码开发闭环正交。而且漂移检测靠机械（如 squire 自己的 `checks.ts`）比靠 agent skill 更可靠。文档跟代码漂移、依赖陈旧、CI 状态这些缝已由 `health` 正交工具填上（2026-06-08 落地）；agent 自身的 hooks / MCP / config 漂移审计仍不做。
 
 ### 5. 内容输入处理（URL / PDF 抓取、深度研究）
 

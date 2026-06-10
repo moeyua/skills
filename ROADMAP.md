@@ -11,7 +11,6 @@
 - **`verify` 的 review / e2e 也走 subagent**:目前仅多 mode 并行才起 subagent;review 与 e2e 单跑也应各起 subagent 执行。
 - **`document` 的 `DESIGN` / `WORKFLOW` 目标在 squire 自身的落地**:squire 无 UI,DESIGN 按目录判「不需要」;WORKFLOW 待有特定流程约定时再补。
 - **`document` 的自动漂移同步**:`health` 已落地,能照出「哪份记忆漂了」,但把这个信号**自动**接进 document 去更新尚未做——目前 document 的更新仍靠人看完 `/health` 报告主动发起。
-- **`handoff` skill**:会话连续性 / 协作交接。未来需先决定它是 orthogonal tool,还是某些 WORKFLOW 阶段结束时的 workflow-managed stage。
 - **`release` skill**:发布流程候选的 workflow-managed stage——各项目差异大,需提炼跨项目的通用机制(参考 Waza `/check` 的 Project Context Extraction 思路)。
 
 ## 架构层面
