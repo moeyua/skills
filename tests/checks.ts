@@ -246,6 +246,32 @@ export function checkResolverConsistency(
   }
 }
 
+// ---------- skill <-> spec pairing ----------
+
+// Every skill carries a behavior contract in specs/<name>/spec.md, and every
+// spec domain must still have its skill (cf. checkResolverConsistency).
+export function checkSpecPairing(root: string, skills: Map<string, SkillFrontmatter>): void {
+  const specsDir = join(root, "specs");
+  const domains = new Set<string>();
+  if (existsSync(specsDir)) {
+    for (const entry of readdirSync(specsDir)) {
+      if (existsSync(join(specsDir, entry, "spec.md"))) domains.add(entry);
+    }
+  }
+  const missing = [...skills.keys()].filter((s) => !domains.has(s));
+  if (missing.length > 0) {
+    throw new Error(
+      `SPEC MISSING: skills without specs/<name>/spec.md: ${missing.sort().join(", ")}`,
+    );
+  }
+  const orphan = [...domains].filter((d) => !skills.has(d));
+  if (orphan.length > 0) {
+    throw new Error(
+      `SPEC ORPHAN: specs/ domains without a matching skill: ${orphan.sort().join(", ")}`,
+    );
+  }
+}
+
 // ---------- memory catalog <-> formats sync ----------
 
 // The catalog indexes each memory artifact and points to its format spec via a
