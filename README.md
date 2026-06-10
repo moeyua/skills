@@ -35,7 +35,7 @@ npx skills add .
 - `-g` 全局（`~/.claude/skills/`），不加是 project 级（`.claude/skills/`）
 - `-a claude-code` 指定 agent，不加会询问
 - `-y` 跳过确认
-- `--copy` 改为复制；默认是 symlink，编辑仓库内 SKILL.md 立刻生效
+- `--copy` 改为纯复制布局；默认 symlink 进 `~/.agents` 共享 store，但 store 内容是**安装时的快照**——改仓库后需重跑 `npx skills add .` 才生效
 
 装完后触发命令：`/explore` / `/plan` / `/build` / `/verify` / `/document` / `/commit` / `/pull-request`，以及正交工具 `/health` / `/handoff`。
 

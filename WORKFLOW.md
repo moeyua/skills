@@ -30,5 +30,5 @@ pnpm lint                                         # = vp lint
 pnpm format                                       # = vp fmt
 pnpm check                                        # = vp check --fix
 node skills/health/scripts/checker.ts . --json    # 随 health skill 装的零依赖确定性检查器(advisory)
-npx skills add . -g -a claude-code -y             # 手动装/重装 skills 到 Claude Code(默认 symlink,改仓内文件即时生效)
+npx skills add . -g -a claude-code -y             # 手动装/重装 skills 到 Claude Code(共享 store 存安装时快照,改仓内文件后重跑本命令生效)
 ```
