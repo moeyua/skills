@@ -1,5 +1,5 @@
 /**
- * Unit tests for skills/health/scripts/checker.ts — the health skill's bundled
+ * Unit tests for skills/doctor/scripts/checker.ts — the doctor skill's bundled
  * deterministic checker. checker.ts is tool code; exercising it on tmpdir
  * fixtures is checking the tool, not running it on squire's real products.
  *
@@ -16,7 +16,7 @@ import {
   checkInternalAnchors,
   checkPlaceholders,
   checkFileSizes,
-} from "../skills/health/scripts/checker.ts";
+} from "../skills/doctor/scripts/checker.ts";
 
 let roots: string[] = [];
 

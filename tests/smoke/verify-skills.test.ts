@@ -44,7 +44,7 @@ describe("repo skill verifier (smoke)", () => {
     expect(() => checkReferencesExist(REPO_ROOT)).not.toThrow();
   });
 
-  it("checkMarkdownLinks: every relative link under skills/ resolves (product docs are health's job)", () => {
+  it("checkMarkdownLinks: every relative link under skills/ resolves (product docs are doctor's job)", () => {
     expect(() => checkMarkdownLinks(REPO_ROOT, resolve(REPO_ROOT, "skills"))).not.toThrow();
   });
 
@@ -64,7 +64,7 @@ describe("repo skill verifier (smoke)", () => {
     expect(() => checkSpecPairing(REPO_ROOT, skills)).not.toThrow();
   });
 
-  it("checkMemoryCatalog: rules/memory-catalog.md and skills/document/references/formats/ stay in sync", () => {
+  it("checkMemoryCatalog: rules/memory-catalog.md and skills/docs/references/formats/ stay in sync", () => {
     expect(() => checkMemoryCatalog(REPO_ROOT)).not.toThrow();
   });
 });

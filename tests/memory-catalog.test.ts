@@ -26,7 +26,7 @@ function catalogRepo(catalogBody: string, formatFiles: string[]): string {
   const root = mkdtempSync(join(tmpdir(), "squire-cat-"));
   mkdirSync(join(root, "rules"), { recursive: true });
   writeFileSync(join(root, "rules", "memory-catalog.md"), catalogBody);
-  const fdir = join(root, "skills", "document", "references", "formats");
+  const fdir = join(root, "skills", "docs", "references", "formats");
   mkdirSync(fdir, { recursive: true });
   for (const f of formatFiles) writeFileSync(join(fdir, f), "# fmt\n");
   activeRoots.push(root);
@@ -34,7 +34,7 @@ function catalogRepo(catalogBody: string, formatFiles: string[]): string {
 }
 
 describe("checkMemoryCatalog", () => {
-  // PRODUCT intentionally has no format file (content via /plan), so it must
+  // PRODUCT intentionally has no format file (content via /shape), so it must
   // not count as a missing reference.
   const CATALOG = `# Memory Catalog
 
@@ -45,7 +45,7 @@ describe("checkMemoryCatalog", () => {
 - **Format**: \`references/formats/architecture.md\`
 
 ## PRODUCT
-- **Format**: 无（内容经 /plan）
+- **Format**: 无（内容经 /shape）
 `;
 
   it("passes when referenced format files exist and none are orphaned", () => {

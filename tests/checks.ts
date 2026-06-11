@@ -289,7 +289,7 @@ export function checkMemoryCatalog(root: string): void {
   let match: RegExpExecArray | null;
   while ((match = FORMAT_REF_RE.exec(text)) !== null) referenced.add(match[1]!);
 
-  const formatsDir = join(root, "skills", "document", "references", "formats");
+  const formatsDir = join(root, "skills", "docs", "references", "formats");
   const actual = new Set<string>(
     existsSync(formatsDir) ? readdirSync(formatsDir).filter((f) => f.endsWith(".md")) : [],
   );
@@ -297,13 +297,13 @@ export function checkMemoryCatalog(root: string): void {
   const missing = [...referenced].filter((f) => !actual.has(f));
   if (missing.length > 0) {
     throw new Error(
-      `MEMORY FORMAT MISSING: catalog points to ${missing.sort().join(", ")} but no such file under skills/document/references/formats/`,
+      `MEMORY FORMAT MISSING: catalog points to ${missing.sort().join(", ")} but no such file under skills/docs/references/formats/`,
     );
   }
   const orphan = [...actual].filter((f) => !referenced.has(f));
   if (orphan.length > 0) {
     throw new Error(
-      `MEMORY FORMAT ORPHAN: ${orphan.sort().join(", ")} under skills/document/references/formats/ is not referenced by rules/memory-catalog.md`,
+      `MEMORY FORMAT ORPHAN: ${orphan.sort().join(", ")} under skills/docs/references/formats/ is not referenced by rules/memory-catalog.md`,
     );
   }
 }
