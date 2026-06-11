@@ -73,12 +73,24 @@ Organize it per the template below.
 
 **Precondition**: the Overview Phase is done.
 
-For the scope the user named (module / directory / file):
+The deep-dive's job is to make the scope the user named (module / directory / file) genuinely understood, not just located. Dig along seven dimensions — together they answer the questions downstream work will actually ask. The list is one unified set: how much of it you cover varies with the depth signal below, and a dimension that doesn't apply to this scope gets an explicit `N/A` — padding an irrelevant dimension is guessing in a nicer costume.
 
-- entry points and the public interface in scope (with `file:line` references)
-- key data flows / call chains (traced via grep / read)
-- where the docs relevant to this scope live
-- entry-point suggestions for the follow-up work
+**Core dimensions** (every deep-dive):
+
+1. **Responsibility & boundary** — what the scope owns and what it explicitly does not. Downstream scoping starts here; most scope creep traces back to a boundary nobody stated.
+2. **Interface & usage** — entry points, public API, and the config surface (options / env vars / flags), each with `file:line`. This is the part callers — and the next change — actually touch.
+3. **Internal structure** — the core logic paths and the key data structures moving through them (traced via grep / read). Logic and data are read together; splitting them yields two half-pictures.
+4. **Dependencies & blast radius** — what it depends on, and who depends on it (reverse dependencies). The reverse direction is what tells shape / implement how far a change will ripple.
+5. **Related docs** — where the docs covering this scope live and what they claim, with source attribution (`per README` etc.), so downstream can tell "documented" from "observed".
+
+**Extended dimensions** (only on an explicit depth signal):
+
+6. **Quality picture** — which behaviors the tests actually cover (and how to run them), plus the error / edge handling paths.
+7. **History & known issues** — recent change hotspots in git history, TODO / FIXME markers, known limitations, ROADMAP mentions.
+
+**Depth has no flag.** Default coverage is the five core dimensions — enough for downstream to start shaping. When the user's own language asks for depth ("深度探索 X" / "彻底搞明白 X" / "deep dive into X"), cover all seven — the extra digging pays off only when the scope is about to undergo real surgery. Judge from the user's words, not your own enthusiasm.
+
+Close the deep-dive with entry-point suggestions for the follow-up work.
 
 ## Budget awareness
 
@@ -113,11 +125,15 @@ Explore slips easily into "the more I read the better" — reading 100 files bur
 
 ## Scoped Deep-dive: <module>
 
-> only when the user named a scope
+> only when the user named a scope; core dimensions always, extended ones on an explicit depth signal; a dimension that doesn't apply → `N/A`
 
-- entry points and public interface (`file:line`)
-- key data flows / call chains
-- where the relevant docs live
+- responsibility & boundary (what / what-not)
+- interface & usage (`file:line`)
+- internal structure: core logic paths + key data structures
+- dependencies & blast radius (both directions)
+- related docs (with source attribution)
+- quality picture: test coverage + error handling — extended
+- history & known issues: hotspots / TODOs / limitations — extended
 - follow-up entry points
 
 ## Where to Start
@@ -133,4 +149,5 @@ Like review, explore's failure mode is "acting / overstepping". Stop in these ca
 - **The user says "look at auth" and you want to skip Overview straight to the deep-dive** — always do Overview first, or downstream loses the skeleton.
 - **You want to run doc-vs-code drift detection** — not explore's job (leave it to `/doctor`); when you suspect drift, record it in the report for downstream to judge, don't verify it yourself.
 - **You want to invent "it's probably X"** — "didn't find it / doesn't exist / this project has no X" beats inventing; a guess pollutes downstream skills' judgment.
+- **A deep-dive dimension doesn't apply but you want to fill it anyway** — force-filling an irrelevant dimension is inventing; mark it `N/A` and move on.
 - **You want to modify a file** — explore is strictly read-only; write what you find into the report, and route fixes back to the right skill (`/shape` / `/implement`).
