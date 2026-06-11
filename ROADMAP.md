@@ -6,7 +6,6 @@
 
 ## Core Loop 强化
 
-- **`explore` 局部深度探索强化**:整体探索之外,确保 / 加强对单模块的聚焦深挖(现有 Scoped Deep-dive Phase 的强化)。
 - **`shape` 的 `arch` mode / 产出架构**:架构调整、技术选型、模块重组需要一个 mode;shape 需要时应产出架构(结构 / 图),参考 feature-dev。
 
 ## Workflow-Managed Stages
