@@ -1,18 +1,18 @@
 ---
 name: explore
-description: 'Build a working, fact-level understanding of a project or unfamiliar module so downstream work (plan / build / review) starts from reliable context — read the key docs (README / ARCHITECTURE / PRODUCT / DESIGN / specs / docs) and map the structure. Use when entering a new repo, facing an unfamiliar module, or the user says "look at this project" / "先看看" / "整体了解一下". Not for debugging (use plan fix mode), proposing a plan (use plan), or a plain API-usage question (just grep the code).'
+description: 'Build a working, fact-level understanding of a project or unfamiliar module so downstream work (shape / implement / check) starts from reliable context — read the key docs (README / ARCHITECTURE / PRODUCT / DESIGN / specs / docs) and map the structure. Use when entering a new repo, facing an unfamiliar module, or the user says "look at this project" / "先看看" / "整体了解一下". Not for debugging (use shape fix mode), proposing a plan (use shape), or a plain API-usage question (just grep the code).'
 when_to_use: "explore, understand, codebase, project structure, entry point, how to run, 看项目, 项目结构, 入口, 怎么跑, 整体了解, 不熟悉的模块"
 dispatch_intent: "Build project context for downstream work; read key docs and map the structure"
 ---
 
 # Explore
 
-Explore isn't an end in itself — it's the front end for other skills, building a working, fact-level understanding for plan / build / test / review. Every rule here exists to make the context downstream skills inherit **trustworthy**: grounded in what was actually read and in the code's current state, not in guesses or stale assumptions.
+Explore isn't an end in itself — it's the front end for other skills, building a working, fact-level understanding for shape / implement / check. Every rule here exists to make the context downstream skills inherit **trustworthy**: grounded in what was actually read and in the code's current state, not in guesses or stale assumptions.
 
 Explore reads, never writes:
 
 - Modify no file — strictly read-only.
-- Don't check whether the docs match the code — that's a future health skill's job.
+- Don't check whether the docs match the code — that's the doctor skill's job.
 - Don't guess — "didn't find it / doesn't exist" beats inventing "it's probably X".
 
 When you cite a doc, **mark the source**: `per README` / `per ARCHITECTURE` / `the docs claim`. This tells downstream skills that something is "what the docs say", not "what the code does". The two are often out of sync, and downstream needs the attribution to resolve the conflict.
@@ -131,6 +131,6 @@ Like review, explore's failure mode is "acting / overstepping". Stop in these ca
 
 - **Guessing at the architecture before reading the key docs** — Step 2 is mandatory; scan for existence first, then read in full every doc that exists.
 - **The user says "look at auth" and you want to skip Overview straight to the deep-dive** — always do Overview first, or downstream loses the skeleton.
-- **You want to run doc-vs-code drift detection** — not explore's job (leave it to a future health skill); when you suspect drift, record it in the report for downstream to judge, don't verify it yourself.
+- **You want to run doc-vs-code drift detection** — not explore's job (leave it to `/doctor`); when you suspect drift, record it in the report for downstream to judge, don't verify it yourself.
 - **You want to invent "it's probably X"** — "didn't find it / doesn't exist / this project has no X" beats inventing; a guess pollutes downstream skills' judgment.
-- **You want to modify a file** — explore is strictly read-only; write what you find into the report, and route fixes back to the right skill (`/plan` / `/build`).
+- **You want to modify a file** — explore is strictly read-only; write what you find into the report, and route fixes back to the right skill (`/shape` / `/implement`).

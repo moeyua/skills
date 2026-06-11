@@ -1,13 +1,13 @@
 ---
 name: handoff
-description: "Generate a self-contained handoff summary so work can continue in a fresh session or with another agent. Use when the current session is ending, context is getting long, or the user asks to preserve what matters for continuation. Not for project documentation (use document), whole-project exploration (use explore), or automatically creating new sessions."
+description: "Generate a self-contained handoff summary so work can continue in a fresh session or with another agent. Use when the current session is ending, context is getting long, or the user asks to preserve what matters for continuation. Not for project documentation (use docs), whole-project exploration (use explore), or automatically creating new sessions."
 when_to_use: "handoff, hand over, continue later, new session, context summary, session summary, transfer context, 交接, 交班, 交给下个会话, 新会话继续, 上下文总结"
 dispatch_intent: "Generate a host-neutral, read-only handoff summary for continuing work in a fresh session"
 ---
 
 # Handoff
 
-Handoff packages what matters from the current session into a self-contained summary that a fresh session — or another agent — can pick up and continue from. It is an orthogonal tool, like health: it serves the continuity of the loop, not any single change inside it, so it sits outside the core loop and the delivery stages. Every rule here exists to keep the summary **honest and portable**: built only from what this session can actually see, readable by any host, and never a write into the project.
+Handoff packages what matters from the current session into a self-contained summary that a fresh session — or another agent — can pick up and continue from. It is an orthogonal tool, like doctor: it serves the continuity of the loop, not any single change inside it, so it sits outside the core loop and the delivery stages. Every rule here exists to keep the summary **honest and portable**: built only from what this session can actually see, readable by any host, and never a write into the project.
 
 Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
@@ -20,7 +20,7 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 
 ## Read-only, output stays in the conversation
 
-Handoff modifies nothing: no file writes, no commits, no pushes, no new sessions, no calling other skills. The summary's one use is being pasted into the next session — it is transient by nature. Writing it to a file would mint a durable artifact that someone then has to track and clean up, and would blur the line with project documentation, which `/document` owns. The user decides what to do with the output; handoff just hands it over.
+Handoff modifies nothing: no file writes, no commits, no pushes, no new sessions, no calling other skills. The summary's one use is being pasted into the next session — it is transient by nature. Writing it to a file would mint a durable artifact that someone then has to track and clean up, and would blur the line with project documentation, which `/docs` owns. The user decides what to do with the output; handoff just hands it over.
 
 ## Validate: is there anything to hand off?
 
@@ -88,6 +88,6 @@ End with one short instruction the user can act on anywhere: paste the HANDOFF C
 Handoff's failure mode is overreaching — doing more than reading and summarizing. Stop in these cases:
 
 - **No substantive work in the session** — say there's nothing to hand off; don't fabricate a summary.
-- **The urge to write the summary to a file** — output lives in the conversation; files are `/document`'s territory.
+- **The urge to write the summary to a file** — output lives in the conversation; files are `/docs`' territory.
 - **Host data you can't see** — mark it `Not available`; don't reconstruct it from memory or guess.
-- **The summary ballooning into project documentation** — durable project truth goes to `/document`, project understanding to `/explore`; handoff carries only what continuation needs.
+- **The summary ballooning into project documentation** — durable project truth goes to `/docs`, project understanding to `/explore`; handoff carries only what continuation needs.
