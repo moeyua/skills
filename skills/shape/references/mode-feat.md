@@ -42,7 +42,8 @@ If the feature changes externally observable behavior, also fill the common skel
 ## Anti-patterns
 
 - "Support type X" — without saying which types, how the user passes them, how error types are reported.
-- Burying an architecture decision inside a feature plan ("refactor the storage layer while we're at it") — split it out into refactor mode.
+- The feature's own architecture decisions buried inside implementation steps — they go in the plan's `## Architecture` section, explicitly.
+- "Refactor the storage layer while we're at it" — an unrelated drive-by refactor is its own work; split it out into refactor mode.
 - Acceptance scenarios written as "basically works" — they must be verifiable item by item.
 - Interface boundary lists only the happy path — error returns must be designed in the feat, not left to implement.
 - Writing "might add Y later" into the current feat's interface — design only the MVP; extensibility is a v2 concern.

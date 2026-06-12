@@ -37,6 +37,16 @@ status: draft
 1. <decision> — <reasoning>
 2. ...
 
+## Architecture
+
+Required when the change crosses module boundaries, introduces a new layer or service, or swaps a tech dependency. If no trigger applies → "None" — filling it for a single-module change is padding, not rigor.
+
+- **Current → target structure**: the shape of the system before and after. More than 3 components exchanging data → draw an ASCII diagram and look for cycles (fewer needs no diagram; drawing one is noise).
+- **Components & data flow**: each touched component's responsibility and what moves between them.
+- **Phased migration**: the stages from current to target, each independently shippable — they become the spine of the implementation steps (a phase that can't ship on its own is a plan red flag).
+
+The architecture decisions this change makes belong here, explicitly — not buried inside implementation steps, and not pushed off to another mode. An unrelated drive-by refactor is still split out; this section carries only this change's own structure.
+
 ## Public surface changes
 
 Changes to API / schema / config / CLI / file interfaces. If none → "None".

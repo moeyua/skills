@@ -13,6 +13,8 @@ The core of `refactor` is **behavior unchanged** — the externally observable o
 
 ## Required plan fields (beyond the common skeleton)
 
+A structural refactor — module reorganization, introducing a layer — usually meets the common skeleton's `## Architecture` triggers; fill that section (current → target structure, phased migration) instead of describing the target structure ad hoc. The behavior bar doesn't move: architecture here changes structure, never observable behavior.
+
 ### `## Behavior invariants`
 
 The explicit list of behaviors **this refactor guarantees won't change**. Each is an assertion a reviewer can verify.
