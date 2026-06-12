@@ -9,6 +9,8 @@ dispatch_intent: "Execute an approved plan file into code, strictly"
 
 Implement turns an approved plan into code that fits the project. The intent work is already done in shape; here you only execute — no redesigning, no drive-by fixes, no drifting from the plan. Every rule below exists to stop you from reopening intent decisions mid-execution.
 
+The plan hands you decision-level steps — an outcome, a path-level scope, a verify. The mechanical decisions inside a step — locating the exact line, phrasing the final change, ordering the micro-edits — are yours to make, not gaps in the plan; making them is execution, not deviation. Two disciplines come with that. Locate before you edit: the first move of every step is reading the files in its scope to find where the change lands — the preflight's global scan doesn't substitute for it. And scope is intent: if a step's outcome turns out to require touching files outside its declared scope, that's plan drift (see When to stop), not a mechanical call you get to make.
+
 No plan yet? Run `/shape` first.
 
 Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
@@ -102,7 +104,7 @@ These all share one root: don't re-judge intent while implementing. Intent was j
 
 Implement's most common failure is pushing through where it should stop. In these cases, report the state and let the user decide — don't find a way around them:
 
-- **The plan doesn't match the code** (wrong path, missing function, assumption broken) — that's plan drift; go back to plan to fix the plan, don't quietly adjust a path to make it line up.
+- **The plan doesn't match the code** (wrong path, missing function, assumption broken, or a step's outcome needs files outside its declared scope) — that's plan drift; go back to plan to fix the plan, don't quietly adjust a path — or widen a scope — to make it line up.
 - **You'd need a dependency the plan didn't name** — go back to plan to fix the plan, or use what the project already has. Never run a silent `pnpm add`.
 - **A TDD test is green the moment you write it** — it doesn't really cover that scenario; fix the test and try again.
 - **Verify fails and one retry still fails** — don't silently skip it or delete the test; report the failure output and let the user decide.

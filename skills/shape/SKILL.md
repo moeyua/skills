@@ -18,7 +18,7 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 ## Outcome Contract
 
 - Outcome: an approved plan (named mode) or an exploration conclusion (default mode)
-- Done when: named mode → a plan file written to `plans/`, every step executable without further decisions; default mode → the direction and next step are clear
+- Done when: named mode → a plan file written to `plans/`, every step executable without further intent decisions; default mode → the direction and next step are clear
 - Evidence: `git status` / project files read / the user's answers to clarify questions
 - Output: named mode → plan file path + summary + after-approval prompt; default → a conclusion summary in the conversation
 
@@ -111,9 +111,11 @@ Self-check before the plan is done — this prevents "looks complete but build h
 - [ ] every external API key / token / third-party account is listed (don't leave it to be sorted out mid-build)
 - [ ] every dependency — MCP / external API / CLI — is verified reachable before it goes in the plan; check the docs or read existing code rather than writing it from memory (see `references/anti-patterns.md`)
 
+A plan settles the **intent decisions** — what to build and not build, the interface boundary, acceptance, the key tradeoffs. The **mechanical decisions** — which exact line to touch, the final phrasing, the micro-order of edits — belong to implement. So steps state outcome + scope (path level) + verify, and "executable" in the Done when means executable without further _intent_ decisions; the why behind this split lives in `references/plan-template.md`.
+
 **Plan red flags** (any one means the plan isn't done — go back and fix it):
 
-- a placeholder (`TBD` / `TODO` / `build later` / `similar to step N`) — a sign of "thought through but not written down", which is equivalent to improvising at build time.
+- an intent-level placeholder (`TBD` / `TODO` / `build later` / `similar to step N`) — a sign of "thought through but not written down", which is equivalent to improvising at build time. ("implement locates the exact line" is not one.)
 - any phase can't ship on its own (only useful once the next phase lands) — phases chained into one rope means a mid-chain problem forces a full rollback.
 - a "Phase 0: investigate / spike" exists — investigation belongs before the plan, not inside it as a step.
 
