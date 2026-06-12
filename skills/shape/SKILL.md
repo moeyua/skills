@@ -132,7 +132,7 @@ Plan written to plans/YYYY-MM-DD-<slug>.md
 
 [2-3 line summary]
 
-To implement it: say "implement this plan". After implementing, run check to gate it.
+To implement it: say "implement this plan".
 ```
 
 **The user saying "implement this plan" / "go ahead" / "按计划做" → treat it as approval and hand straight to implement.** Don't re-litigate — asking "are you sure?" about a plan they just approved pushes the judgment back onto them, and being bounced right after deciding is annoying.

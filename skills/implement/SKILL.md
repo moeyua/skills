@@ -126,5 +126,7 @@ Tests:
 
 Verify: <command> → pass
 
-Next: run check to gate it / run commit to land it / continue to the next plan
+Next: run check to gate it
+
+(Only when other approved plans are queued: list them here — they continue after this one passes the gate.)
 ```

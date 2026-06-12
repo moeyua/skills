@@ -73,6 +73,10 @@ Before adding anything to any catalog artifact, judge whether it earns a place. 
 - **Full (higher risk only)** — API/contract changes, migrations, security/privacy, or cross-module changes where ambiguity causes expensive rework.
 - **When not to record at all** — a change with no externally observable effect has nothing to add to spec memory; skip it rather than pad `specs/`.
 
+## When done: the core loop ends here
+
+Once the write lands, the core loop is complete. Suggest `/commit` as the default next step — but the project's WORKFLOW owns that edge: when it defines a different delivery flow, defer to it. Docs supplies the common default, never the project's rule.
+
 ## Boundaries
 
 - **vs shape** — the plan is _this change's how_ (ephemeral, archived); documentation is _the project's what_ (persistent, maintained). Don't restate implementation steps into durable memory.
