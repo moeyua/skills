@@ -45,3 +45,8 @@ Verify: manual(integration)
 
 shape 必须在 Clarify 期间读相关代码、文档与历史为提问打地基，并对方案依赖的任何外部定义、工具、库或 API 对照权威文档核实，不凭训练记忆断言。(Previously: plan 执行该职责。)
 Verify: manual(integration)
+
+### Requirement: 跨结构变更产出 Architecture 段
+
+named mode 的 plan 在变更跨模块边界、引入新层或新服务、或更换技术依赖时，必须含 `## Architecture` 段：现状结构 → 目标结构（超过 3 个组件交换数据时附 ASCII 图）、组件职责与数据流、分阶段迁移（每阶段可独立 ship）；未触发时该段写 None，不硬凑。本变更自身的架构决策必须显式出现在该段，不得埋进实施步骤、也不得以「拆去别的 mode」为由外推；无关的顺手重构仍按原反模式拆分。
+Verify: manual(integration)

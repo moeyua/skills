@@ -481,6 +481,12 @@ shape 产出的 plan 从「行号级 edit 清单」收回到「决策级方案�
 
 理由:行号与预写措辞是 plan 中腐烂最快的内容(隔任何一次提交即失效),且 shape 为写出行号必须预做 implement 的阅读——双倍阅读买来的精确感只证明「当时文件长这样」,不证明决策是对的;粗粒度下 implement preflight 的漂移检测(grep 路径与函数名)照常成立。保留项:fix mode 的 Root cause `file:line` 不变——那是诊断证据(根因在哪),不是 edit 指令(去哪改)。这同时让 shape 与其命名出处自洽(Shape Up 的 shaping 即 rough / solved / bounded)。详见 [plans/2026-06-12-feat-plan-granularity.md](plans/2026-06-12-feat-plan-granularity.md)。
 
+### 2026-06-12 架构产出定为跨 mode 维度,否决 arch mode
+
+ROADMAP 原积「`shape` 的 `arch` mode / 产出架构」以否决 mode 读法的方式关闭:四个 named mode 是互斥的意图类型,而架构与它们全部相交(大型 feat 需要架构、结构性 refactor 即架构调整、perf 可经架构)——refactor-vs-perf 消歧问「目标不同」,arch-vs-refactor 只能问「规模大小」,切分轴不同构。本仓三次架构级变更(记忆支柱重构、core loop 收窄、rules symlink 化)的实证也指向缺口是字段标准化而非路由能力:三案都有合法 mode 归宿,即兴的只是架构字段。
+
+承载形态改为 plan-template 的条件段 `## Architecture`(触发:跨模块边界 / 引入新层新服务 / 更换技术依赖;内容:现状→目标结构、组件职责与数据流、分阶段迁移;未触发写 None)。shape Phase 4 自检的「>3 组件画 ASCII 图」并入该段阈值;mode-feat 与 mode-refactor 互推架构决策的反模式同步修正(本变更自身的架构决策进段,无关顺手重构仍拆分)。技术选型不开新归宿——服务于 feat/refactor 时收敛进该 mode,纯决策走 `Key decisions → docs → ARCHITECTURE` 既有通道。feature-dev 的 blueprint 只取维度清单(组件设计 / 数据流 / 构建序列),不取其逐文件粒度(与 plan 粒度决策一致)。详见 [plans/2026-06-12-feat-shape-architecture-dimension.md](plans/2026-06-12-feat-shape-architecture-dimension.md)。
+
 ## 未来规划
 
-搁置 / 未来项见 [ROADMAP.md](ROADMAP.md)（record-only）——设计文档只讲当下，未来项归 ROADMAP。这本身是 docs 写 ROADMAP 目标的 dogfood。主要待办：`shape` 的 `arch` mode、`release` skill，以及 marketplace / 多 host 分发等。（`doctor`、`handoff` 已落地——loop 外正交工具。）
+搁置 / 未来项见 [ROADMAP.md](ROADMAP.md)（record-only）——设计文档只讲当下，未来项归 ROADMAP。这本身是 docs 写 ROADMAP 目标的 dogfood。主要待办：`release` skill，以及 marketplace / 多 host 分发等。（`doctor`、`handoff` 已落地——loop 外正交工具。）

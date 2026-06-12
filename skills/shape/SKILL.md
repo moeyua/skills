@@ -105,7 +105,7 @@ A blocking ambiguity can't be chosen silently — say "the two readings conflict
 Self-check before the plan is done — this prevents "looks complete but build hits a wall when a key thing was never stated".
 
 - [ ] more than 8 files / introduces 1 new service → acknowledge it explicitly (large scope trips up build)
-- [ ] more than 3 components exchange data → draw an ASCII diagram, look for cycles (fewer than 3 needs no diagram; drawing one is noise)
+- [ ] the change crosses a module boundary / introduces a new layer or service / swaps a tech dependency → the plan's `## Architecture` section is filled (content and diagram threshold per the template); no trigger → "None"
 - [ ] listed every meaningful test path (happy / errors / edges)
 - [ ] every step that changes external state has a rollback path
 - [ ] every external API key / token / third-party account is listed (don't leave it to be sorted out mid-build)
