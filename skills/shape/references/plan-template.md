@@ -72,14 +72,19 @@ The system SHALL <new behavior>. (Previously: <old behavior>)
 
 ## Implementation steps
 
+A step states the **outcome**, not the edit. Intent decisions are settled in the plan; locating the exact line, phrasing the final change, and ordering the micro-edits belong to implement. Line numbers and pre-written wording are the fastest-rotting content in a plan — any commit in between invalidates them — and they duplicate the reading implement will do anyway.
+
 Each step must:
 
-- be independently verifiable
+- state an outcome that is true once the step lands
+- name its scope at path level (the files / modules it touches)
+- be independently verifiable — the verify line, not edit precision, carries this
 - not depend on a step not yet written
-- contain no placeholder ("TBD" / "TODO" / "implement later" are all red flags)
+- contain no intent-level placeholder ("TBD" / "TODO" / "implement later" are all red flags; "implement locates the exact line" is not)
 
 1. <step>
-   - change: <file:line or description>
+   - outcome: <what is true after this step>
+   - scope: <paths / modules touched>
    - verify: <specific command or check>
 2. ...
 

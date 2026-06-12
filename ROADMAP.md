@@ -7,7 +7,6 @@
 ## Core Loop 强化
 
 - **`shape` 的 `arch` mode / 产出架构**:架构调整、技术选型、模块重组需要一个 mode;shape 需要时应产出架构(结构 / 图),参考 feature-dev。
-- shape 目前的计划是否过于细节，是否考虑将一部分工作移至 implement
 
 ## Workflow-Managed Stages
 

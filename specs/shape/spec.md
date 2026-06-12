@@ -18,7 +18,7 @@ Verify: manual(integration)
 
 ### Requirement: named mode 产出可执行方案文件
 
-named mode 必须把方案写入 `plans/YYYY-MM-DD-<slug>.md`，每一步可执行、不留占位（TBD / TODO / 待定都是红旗）；default mode 必须不写方案文件，只给方向/选项对比。(Previously: plan 执行该职责。)
+named mode 必须把方案写入 `plans/YYYY-MM-DD-<slug>.md`，每一步以「结果描述 + 触及范围（路径级）+ verify」表述，意图层完整、不留占位（TBD / TODO / 待定都是红旗），但不预写行级定位与最终措辞——那是 implement 的机械决策；default mode 必须不写方案文件，只给方向/选项对比。(Previously: 每一步可执行、不留占位，未区分意图决策与机械决策，实践中步骤常顶格写到 file:line 与预写措辞。)
 Verify: manual(integration)
 
 ### Requirement: 点名最脆弱假设

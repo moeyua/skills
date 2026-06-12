@@ -475,6 +475,12 @@ squire 自己的 check 库（`tests/checks.ts`）没有 CLI 入口——由 vite
 
 两个连带决策:**explore 全静默**——连报告模板的 Where to Start 段与 deep-dive 的 follow-up entry points 一并移除,它们是伪装成报告段落的下一步推荐,与「不需要」模态矛盾;**WORKFLOW.md 的 dogfood 链挪位**——`/docs` 从 `/pr` 之后挪到 `/check` 与 `/commit` 之间,因为本仓门禁 checkSpecPairing 要求 spec 与 skill 同 PR 同步,原顺序与自家门禁矛盾,挪位后持久记忆与代码原子合入。完整模型见 [skills/RESOLVER.md](skills/RESOLVER.md) 的 Chaining 段,决策过程见 [plans/2026-06-11-feat-next-step-modality.md](plans/2026-06-11-feat-next-step-modality.md)。
 
+### 2026-06-12 plan 粒度定为决策级
+
+shape 产出的 plan 从「行号级 edit 清单」收回到「决策级方案」,切分线按**决策类型**画,不按详细程度画:改意图的决定(做什么/不做什么、接口边界、验收场景、spec delta、关键取舍)留 shape;不改意图的机械决定(行级定位、最终措辞、改动微观顺序)移交 implement。步骤标准形态 = 结果描述 + 触及范围(路径级)+ verify;per-step verify 仍是硬要求——「步骤可独立验证」由 verify 承载,不由 edit 精度承载。implement 侧配套两条纪律:每步动手前先读 scope 内文件完成定位(定位先于编辑);scope 路径是意图层声明,结果要求改 scope 外文件即方案漂移回 shape,不算可自行拍板的机械决策。
+
+理由:行号与预写措辞是 plan 中腐烂最快的内容(隔任何一次提交即失效),且 shape 为写出行号必须预做 implement 的阅读——双倍阅读买来的精确感只证明「当时文件长这样」,不证明决策是对的;粗粒度下 implement preflight 的漂移检测(grep 路径与函数名)照常成立。保留项:fix mode 的 Root cause `file:line` 不变——那是诊断证据(根因在哪),不是 edit 指令(去哪改)。这同时让 shape 与其命名出处自洽(Shape Up 的 shaping 即 rough / solved / bounded)。详见 [plans/2026-06-12-feat-plan-granularity.md](plans/2026-06-12-feat-plan-granularity.md)。
+
 ## 未来规划
 
 搁置 / 未来项见 [ROADMAP.md](ROADMAP.md)（record-only）——设计文档只讲当下，未来项归 ROADMAP。这本身是 docs 写 ROADMAP 目标的 dogfood。主要待办：`shape` 的 `arch` mode、`release` skill，以及 marketplace / 多 host 分发等。（`doctor`、`handoff` 已落地——loop 外正交工具。）

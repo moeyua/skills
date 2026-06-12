@@ -30,3 +30,8 @@ Verify: manual(integration)
 
 implement 必须不使用 `--no-verify` / `--force` / `@ts-ignore` / `eslint-disable` 绕过工具；既有测试失败是信号，必须不删、不弱化、不 skip。(Previously: build 执行该职责。)
 Verify: manual(integration)
+
+### Requirement: 承接不改意图的机械决策
+
+implement 必须自行完成方案步骤内不改意图的机械决策——行级定位、具体措辞、改动的微观顺序——不把它们的缺席当作方案不完整而弹回；每步动手前必须先读该步 scope 内文件完成定位，定位是该步的第一个动作。步骤的 scope 路径是意图层声明：结果要求触及 scope 外文件时视为方案漂移，与意图层歧义、路径错、函数缺、假设不成立同等处置——停下回 shape，不自行裁决意图。
+Verify: manual(integration)
