@@ -38,5 +38,5 @@ Verify: manual(integration)
 
 ### Requirement: 产出结构化报告
 
-explore 必须产出含 Project Identity、Structure、Docs Inventory、Where to Start 的报告；用户指定范围时补 Scoped Deep-dive 节，其维度组织与覆盖范围遵循上述「Scoped Deep-dive 按 7 维度组织」与「深度由自然语言信号决定」两条要求。（Previously: Scoped Deep-dive 节只要求 entry points / data flows / docs / follow-up 4 条。）
+explore 必须产出含 Project Identity、Structure、Docs Inventory 的报告；用户指定范围时补 Scoped Deep-dive 节，其维度组织与覆盖范围遵循上述「Scoped Deep-dive 按 7 维度组织」与「深度由自然语言信号决定」两条要求。报告即 explore 的终点：不含 Where to Start 段、不含 follow-up entry points、不推荐下一步 skill——用户带着自己的目的来，理解建立完成即停。（Previously: 报告须含 Where to Start 段给 2-3 个入口建议；deep-dive 以 follow-up entry points 收尾。）
 Verify: manual(integration)

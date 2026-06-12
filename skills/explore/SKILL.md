@@ -22,7 +22,7 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 ## Outcome Contract
 
 - Outcome: a working, fact-level understanding of the project, with the key docs and structure recorded explicitly in a report that downstream skills can build on
-- Done when: the Project Identity / Structure / Docs Inventory sections are filled; the Scoped Deep-dive section too when the user named a scope; Where to Start gives 2-3 entry suggestions
+- Done when: the Project Identity / Structure / Docs Inventory sections are filled; the Scoped Deep-dive section too when the user named a scope
 - Evidence: the full text of docs actually read + the output of `pwd` / `git ls-files` / `Read` / `Grep` and similar
 - Output: a structured Explore Report (see the template)
 
@@ -90,13 +90,13 @@ The deep-dive's job is to make the scope the user named (module / directory / fi
 
 **Depth has no flag.** Default coverage is the five core dimensions — enough for downstream to start shaping. When the user's own language asks for depth ("深度探索 X" / "彻底搞明白 X" / "deep dive into X"), cover all seven — the extra digging pays off only when the scope is about to undergo real surgery. Judge from the user's words, not your own enthusiasm.
 
-Close the deep-dive with entry-point suggestions for the follow-up work.
-
 ## Budget awareness
 
 Explore slips easily into "the more I read the better" — reading 100 files burns tokens and still yields no sense of structure. **Scan the directories and list the docs first, then decide what to read deeply**; don't re-read the same file.
 
 ## Report template
+
+The report is the deliverable, and it is also the end. Explore suggests no next step and no follow-up entry points — the user came with their own purpose, and what to do next is theirs to decide; an "entry suggestion" is a next-step recommendation wearing a report section's costume.
 
 ```markdown
 # Explore Report: <project-name>
@@ -134,11 +134,6 @@ Explore slips easily into "the more I read the better" — reading 100 files bur
 - related docs (with source attribution)
 - quality picture: test coverage + error handling — extended
 - history & known issues: hotspots / TODOs / limitations — extended
-- follow-up entry points
-
-## Where to Start
-
-Based on the above, 2-3 entry suggestions for the follow-up work (each with `file:line`).
 ```
 
 ## When to stop

@@ -6,7 +6,7 @@
 
 变更按大小分级(2026-06-10 维护者确认):
 
-- **实质变更**(新增 skill、行为/契约变更、跨文件改动):走完整 core loop——`/shape` 出方案 → `/implement` 落地(自动开工作分支)→ `/check` 把关 → `/commit` → `/pr` 开 PR 合并 → `/docs` 记录持久记忆(plan 已把文档更新列为实施步骤时,此步常无剩余工作)。不熟悉的模块先 `/explore`。
+- **实质变更**(新增 skill、行为/契约变更、跨文件改动):走完整 core loop——`/shape` 出方案 → `/implement` 落地(自动开工作分支)→ `/check` 把关 → `/docs` 记录持久记忆(plan 已把文档更新列为实施步骤时,此步常无剩余工作;与代码同 PR 原子合入)→ `/commit` → `/pr` 开 PR 合并。不熟悉的模块先 `/explore`。
 - **小修**(typo、文档微调、无行为影响的整理):可直接 commit 到 main,仍须过 pre-commit hook 与 `pnpm test`。
 
 skill 之间不自动串联——每步完成即停,由维护者决定下一步(PRODUCT 哲学 #3)。

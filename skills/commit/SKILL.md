@@ -53,6 +53,10 @@ Learn the project style from `git log --oneline -10`. With no obvious style, use
 
 When in doubt, combine. Don't split into more than 3. **Don't ask the user "should I split?" mid-flow** — that judgment is the commit skill's own job, and asking back pushes the work back onto them.
 
+## When done
+
+Suggest `/pr` as the default next step — but the project's WORKFLOW owns that edge: when the project's flow doesn't open PRs (e.g. small fixes landing straight on main), defer to it. Commit supplies the common default, never the project's rule.
+
 ## When to stop
 
 Commit's failure mode is "forcing it in / bypassing tools". Stop and report in these cases:

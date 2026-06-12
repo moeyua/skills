@@ -469,6 +469,12 @@ squire 自己的 check 库（`tests/checks.ts`）没有 CLI 入口——由 vite
 
 本次显式修订 06-09 的三条 Key decisions：`shape→plan` 回退（06-09 自记的「plan 误导为只写计划文件」风险在维护者体感中兑现——plan 内不止是 plan）；`pull-request`、`document` 让位于开发者实际嘴里的叫法（`pr`、`docs`）。`build→implement` 修开发口语歧义（build = 编译打包）；`verify→check` 顺带解除对 Claude Code 内置 `/verify` 的遮蔽。曾考虑按词性（全动词）/音节（全短词）/隐喻（侍从主题）统一并拆分 brainstorm 独立 skill，均被否：统一定锚在「零陌生感」，拆分会恢复已否决的「意图即 skill」假设。详见 [plans/2026-06-11-feat-dev-convention-renames.md](plans/2026-06-11-feat-dev-convention-renames.md)。
 
+### 2026-06-11 下一步推荐统一为「位置定模态」模型
+
+各 skill 完成后的「下一步」建议从逐份手写的尾部文案,统一为可推导的模型:一次变更是一张状态图,skill 是节点,推荐 = 节点的出边,**位置定模态**。三类边:成功边(core loop 内,产品层硬编码)、失败边(问题类路由表:bug→shape fix、弱测试→implement、漂移→docs 等,原本就跨 skill 一致)、出口边(交付段,项目 WORKFLOW 定义,产品层只给默认值)。四种模态的分配:固定(shape named→implement、implement→check)/ 判断(check 按裁决、shape default、doctor 的 findings 路由)/ 默认可覆盖(docs→commit、commit→pr,覆盖源是项目 WORKFLOW 而非用户——用户的覆盖权由 PRODUCT 哲学 #3 的总规则保证)/ 不需要(explore、pr、handoff)。
+
+两个连带决策:**explore 全静默**——连报告模板的 Where to Start 段与 deep-dive 的 follow-up entry points 一并移除,它们是伪装成报告段落的下一步推荐,与「不需要」模态矛盾;**WORKFLOW.md 的 dogfood 链挪位**——`/docs` 从 `/pr` 之后挪到 `/check` 与 `/commit` 之间,因为本仓门禁 checkSpecPairing 要求 spec 与 skill 同 PR 同步,原顺序与自家门禁矛盾,挪位后持久记忆与代码原子合入。完整模型见 [skills/RESOLVER.md](skills/RESOLVER.md) 的 Chaining 段,决策过程见 [plans/2026-06-11-feat-next-step-modality.md](plans/2026-06-11-feat-next-step-modality.md)。
+
 ## 未来规划
 
 搁置 / 未来项见 [ROADMAP.md](ROADMAP.md)（record-only）——设计文档只讲当下，未来项归 ROADMAP。这本身是 docs 写 ROADMAP 目标的 dogfood。主要待办：`shape` 的 `arch` mode、`release` skill，以及 marketplace / 多 host 分发等。（`doctor`、`handoff` 已落地——loop 外正交工具。）

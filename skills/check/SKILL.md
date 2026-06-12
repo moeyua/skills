@@ -105,10 +105,12 @@ Verdict: holds up / needs work
 - <1-2 positives>
 
 ## Recommended Next
-- <Critical first: e.g. /shape fix> / <commit if clean>
+- <findings → route by class, Critical first: e.g. /shape fix>
+- <clean + durable memory worth recording → /docs>
+- <clean + nothing to record → core loop complete; delivery per the project's workflow (commonly /commit)>
 ```
 
-With no high-confidence findings and a clean run, say so plainly and mark "Ready to commit/push". A mode that belonged to this run's set — requested, or part of the default gate — but didn't run is listed as skipped with its reason; silence reads as "checked" when it wasn't. A mode the author explicitly narrowed away isn't "skipped", it was never in the set.
+The three branches are exclusive — the verdict picks the edge. With no high-confidence findings and a clean run, say so plainly and mark the core loop complete — delivery proceeds per the project's workflow. A mode that belonged to this run's set — requested, or part of the default gate — but didn't run is listed as skipped with its reason; silence reads as "checked" when it wasn't. A mode the author explicitly narrowed away isn't "skipped", it was never in the set.
 
 ## When to stop
 
