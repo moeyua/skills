@@ -90,8 +90,10 @@ shape 取 Shape Up（Basecamp）的 shaping——把模糊想法捏成 rough / s
 - [superpowers](https://www.skills.sh/obra/superpowers/brainstorming)
 - [Shape Up](https://basecamp.com/shapeup)
 - [OpenSpec](https://github.com/Fission-AI/OpenSpec)
-- feature-dev（Anthropic 官方 plugin）
-- Google Labs `design.md`（`google-labs-code/design.md`）
+- [feature-dev](https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev)
+- [design.md](https://github.com/google-labs-code/design.md)
+- [mattpocock/skills](https://github.com/mattpocock/skills)
+- [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent)
 
 ## License
 
