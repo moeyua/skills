@@ -84,7 +84,14 @@ shape 取 Shape Up（Basecamp）的 shaping——把模糊想法捏成 rough / s
 
 ## 致谢
 
-Squire 的架构思路参考了 [Waza](https://github.com/tw93/Waza)，shape 的 default mode 设计受 [superpowers/brainstorming](https://www.skills.sh/obra/superpowers/brainstorming) 启发，shape 之名取自 [Shape Up](https://basecamp.com/shapeup)。
+以下项目对 Squire 有所启发，在此致谢（不分先后，欢迎补充）：
+
+- [Waza](https://github.com/tw93/Waza)
+- [superpowers](https://www.skills.sh/obra/superpowers/brainstorming)
+- [Shape Up](https://basecamp.com/shapeup)
+- [OpenSpec](https://github.com/Fission-AI/OpenSpec)
+- feature-dev（Anthropic 官方 plugin）
+- Google Labs `design.md`（`google-labs-code/design.md`）
 
 ## License
 

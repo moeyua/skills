@@ -149,7 +149,7 @@ tests/smoke/verify-skills.test.ts  # 整库验证 smoke（CI 入口）
 - 单元测试和整库验证用同一份逻辑（`tests/checks.ts`），没有 CLI 与 vitest 之间的同步成本
 - 加新 check 时只在 `tests/checks.ts` 加函数 + 在 smoke 里加 `it()`，不需要改 CLI
 
-**v1 必含的检查**（精简自 Waza 13 项的 8 项）：
+**v1 必含的检查**（8 项）：
 
 1. frontmatter 解析与字段完整性
 2. description 规范（"Use when" + "Not for"、长度 40-500）
@@ -386,7 +386,7 @@ Claude Code skill 触发是双轨：
 
 最终（v1）：explore / plan / build / test / review / commit / pull-request。
 
-后续新增 `spec`（第 8 个）——把"持久 spec 真源管理"纳入闭环（review 与 commit 之间的记录阶段），产物模型借鉴 OpenSpec（specs/ 真源 + plan 内 spec delta + 完成时合并）。
+后续新增 `spec`（第 8 个）——把"持久 spec 真源管理"纳入闭环（review 与 commit 之间的记录阶段），产物模型为 specs/ 真源 + plan 内 spec delta + 完成时合并。
 
 ### 2026-06-04 记忆支柱重构（8 → 7 skill，6 支柱）
 
@@ -427,9 +427,9 @@ Claude Code skill 触发是双轨：
 
 默认状态承载"探索 / 头脑风暴 / 价值判断"——brainstorm 就是没有任何 mode 的 shape。给它命名（比如 `brainstorm` mode）反而增加认知负担，不命名让"默认状态 = 探索"成为天然的事实。
 
-### 为什么不做 Marker（Waza 的 🥷）？
+### 为什么不加 hallucination marker？
 
-Marker 的主要价值是"反 hallucination invariant"——强制 agent 输出来自 SKILL.md。对单人维护的项目而言收益有限。v1 不加，未来出现"搞不清 skill 是否触发"的体感问题时再加（可逆决策）。
+这种 marker 的主要价值是"反 hallucination invariant"——强制 agent 输出来自 SKILL.md。对单人维护的项目而言收益有限。v1 不加，未来出现"搞不清 skill 是否触发"的体感问题时再加（可逆决策）。
 
 ### 为什么不发 npm 包？
 
@@ -485,8 +485,8 @@ shape 产出的 plan 从「行号级 edit 清单」收回到「决策级方案�
 
 ROADMAP 原积「`shape` 的 `arch` mode / 产出架构」以否决 mode 读法的方式关闭:四个 named mode 是互斥的意图类型,而架构与它们全部相交(大型 feat 需要架构、结构性 refactor 即架构调整、perf 可经架构)——refactor-vs-perf 消歧问「目标不同」,arch-vs-refactor 只能问「规模大小」,切分轴不同构。本仓三次架构级变更(记忆支柱重构、core loop 收窄、rules symlink 化)的实证也指向缺口是字段标准化而非路由能力:三案都有合法 mode 归宿,即兴的只是架构字段。
 
-承载形态改为 plan-template 的条件段 `## Architecture`(触发:跨模块边界 / 引入新层新服务 / 更换技术依赖;内容:现状→目标结构、组件职责与数据流、分阶段迁移;未触发写 None)。shape Phase 4 自检的「>3 组件画 ASCII 图」并入该段阈值;mode-feat 与 mode-refactor 互推架构决策的反模式同步修正(本变更自身的架构决策进段,无关顺手重构仍拆分)。技术选型不开新归宿——服务于 feat/refactor 时收敛进该 mode,纯决策走 `Key decisions → docs → ARCHITECTURE` 既有通道。feature-dev 的 blueprint 只取维度清单(组件设计 / 数据流 / 构建序列),不取其逐文件粒度(与 plan 粒度决策一致)。详见 [plans/2026-06-12-feat-shape-architecture-dimension.md](plans/2026-06-12-feat-shape-architecture-dimension.md)。
+承载形态改为 plan-template 的条件段 `## Architecture`(触发:跨模块边界 / 引入新层新服务 / 更换技术依赖;内容:现状→目标结构、组件职责与数据流、分阶段迁移;未触发写 None)。shape Phase 4 自检的「>3 组件画 ASCII 图」并入该段阈值;mode-feat 与 mode-refactor 互推架构决策的反模式同步修正(本变更自身的架构决策进段,无关顺手重构仍拆分)。技术选型不开新归宿——服务于 feat/refactor 时收敛进该 mode,纯决策走 `Key decisions → docs → ARCHITECTURE` 既有通道。该段只取维度清单(组件设计 / 数据流 / 构建序列),不取逐文件粒度(与 plan 粒度决策一致)。详见 [plans/2026-06-12-feat-shape-architecture-dimension.md](plans/2026-06-12-feat-shape-architecture-dimension.md)。
 
 ## 未来规划
 
-搁置 / 未来项见 [ROADMAP.md](ROADMAP.md)（record-only）——设计文档只讲当下，未来项归 ROADMAP。这本身是 docs 写 ROADMAP 目标的 dogfood。主要待办：`release` skill，以及 marketplace / 多 host 分发等。（`doctor`、`handoff` 已落地——loop 外正交工具。）
+搁置 / 未来项见 [ROADMAP.md](ROADMAP.md)（record-only）——设计文档只讲当下，未来项归 ROADMAP。主要待办：`release` skill，以及 marketplace / 多 host 分发等。（`doctor`、`handoff` 已落地——loop 外正交工具。）

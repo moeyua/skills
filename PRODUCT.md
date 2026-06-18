@@ -68,7 +68,7 @@ squire 维护一份**有界的记忆目录**（`rules/memory-catalog.md`，含 R
 
 **根因**：哲学 #2。
 
-各项目发布流程差异巨大——CI/CD、staging、blue-green、feature flag、回滚策略——提炼通用机制成本高，专门为 v1 做不值得。v2 可能加（参考 Waza `/check` 的 Project Context Extraction 思路）。
+各项目发布流程差异巨大——CI/CD、staging、blue-green、feature flag、回滚策略——提炼通用机制成本高，专门为 v1 做不值得。v2 可能加。
 
 ### 4. Agent 自审计（hooks / MCP / config 漂移）
 
