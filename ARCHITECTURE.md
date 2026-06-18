@@ -10,7 +10,8 @@ squire 的架构 = **真源层 + 内容层 + 索引层 + 生成层 + 验证层 +
 
 ```
 squire/
-├── README.md                         # 给使用者
+├── README.md                         # 给使用者（英文，默认）
+├── README.zh-CN.md                   # README 简体中文版
 ├── ARCHITECTURE.md                   # 本文件
 ├── PRODUCT.md                        # 定位 / 哲学 / 边界
 ├── ROADMAP.md                        # 搁置 / 未来项（record-only）

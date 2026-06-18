@@ -1,6 +1,6 @@
 # Squire
 
-> 一套用于 Agent 辅助开发的 Skills，把完整的代码开发闭环沉淀成 Agent 可调用的技能。
+> Your AI agent has the horsepower. Squire gives it the road.
 
 squire 不只是工具集——是一套**克制的指令系统**。Agent 只能做指令允许的事，所以每条指令都是一个 ceiling。这份文档说清 squire 的 ceiling 长什么样、为什么这样长，让未来任何改动都能对照判断。
 
@@ -12,7 +12,7 @@ squire 的所有设计决策都从下面 5 条派生。它们不是教条，是�
 
 每条 rule 限制 agent 能做什么，**不**规定它必须怎么做。SKILL.md 写清楚目标和最关键的约束，剩下让模型用自己的 judgment 完成。
 
-硬约束多了模型只会照念，失去 theory of mind——今天的 LLM 有能力 understand why 一条规则存在，给它 why 比给它命令更有效。这正是为什么 SKILL.md 解释"为什么这条约束存在"而不是堆 ALWAYS / NEVER。
+硬约束多了模型只会照念，失去 theory of mind——今天的 LLM 有能力 understand why 一条规则存在，给它 why 比给它命令更有效。所以 SKILL.md 解释"为什么这条约束存在"，而不是堆 ALWAYS / NEVER。
 
 ### 2. 聚焦开发 + 记忆 — 不只改代码，也记住代码
 
@@ -40,7 +40,7 @@ squire 自己的元数据（SKILL.md frontmatter、Outcome Contract、触发词�
 
 SKILL.md 的 prose 风格不堆 MUST / NEVER / Hard Stop 长尾。主体讲清楚"这个 skill 在做什么、根目的是什么"，所有约束都从根目的派生且补 why。Gotchas 不堆独立表，融进相关流程段。
 
-模型读到"为什么"才能在边角场景自己 judgment；读到"必须 X"只能死按字面。这是哲学 #1 的具体落地——见 git commits `4616554..0216952` 的 SKILL.md refactor 实证，7 个 SKILL.md 开头第一段都是"X 是 Y——做什么。所有约束的根目的是 Z"。
+模型读到"为什么"才能在边角场景自己做判断；读到"必须 X"只能死按字面。这是哲学 #1 的具体落地——见 git commits `4616554..0216952` 的 SKILL.md refactor 实证，7 个 SKILL.md 开头第一段都是"X 是 Y——做什么。所有约束的根目的是 Z"。
 
 ## 边界：明确不做的
 
@@ -50,7 +50,7 @@ SKILL.md 的 prose 风格不堆 MUST / NEVER / Hard Stop 长尾。主体讲清�
 
 **根因**：哲学 #2（聚焦闭环）。
 
-squire 处理"决定做之后怎么做"，不处理"该不该做"。后者是产品决策——属于人或专门的产品工具，不属于代码开发闭环。shape skill 的 Default Mode 段明确写："用户问值不值得做时，明确说这不是 squire 处理的"。
+squire 处理"决定做之后怎么做"，不处理"该不该做"。后者是产品决策——属于人或专门的产品工具，不属于代码开发闭环。shape skill 的 Default Mode 段写明："用户问值不值得做时，明确说这不是 squire 处理的"。
 
 ### 2. 未经指定的目录外文档
 
@@ -93,4 +93,4 @@ PRODUCT.md 是 squire 的判断锚点。未来任何改动（新加 skill / 改 
 
 哲学不是教条——是判断标尺。能力升级时（比如 v2 加 codegen / 加 health skill），先回头看哲学是否需要更新；更新方式：plan discussion 后改 PRODUCT.md，git 历史就是 versioning。
 
-这份文档自己是哲学 #5 的实证——对话式、解释 why、不堆 MUST。要看 squire 的 prose 风格长什么样，PRODUCT.md 跟刚 refactor 完的 SKILL.md 都是范本。
+这份文档自己是哲学 #5 的实证——对话式、解释 why、不堆 MUST。要看 squire 的 prose 风格长什么样，PRODUCT.md 跟 refactor 后的 SKILL.md 都是范本。
