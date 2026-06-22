@@ -6,7 +6,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "install": "skills add . -g --all",
+    "install": "skills add . -g -a claude-code -a codex -y",
     "test": "vp test run",
     "check": "vp check --fix",
     "lint": "vp lint",
