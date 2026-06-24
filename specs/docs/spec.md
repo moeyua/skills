@@ -62,3 +62,8 @@ Verify: [checkMemoryCatalog](../../tests/checks.test.ts)
 
 本 skill 写任一 catalog artifact 前必须判断该内容是否够格占一个位置:不够 memory-worthy 的内容,必须不开新段、不新建 artifact、不加新条目,而非追加凑数。此约束跨所有 catalog 目标(spec / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README);spec 的「无对外可见行为不记录」是它的一个实例。用户明确指定的 catalog 外文档已经获得文件存在的目标,但段落内容仍必须有权威来源且不超出用户指定范围。约束写成 docs 自身的行为(docs 不加),不写成内容禁令(项目不许有该内容)。(Previously: document 执行该职责。)
 Verify: manual(integration)
+
+### Requirement: WORKFLOW 流程阶段以 squire skill pipeline 为骨架访谈
+
+本 skill 生成或更新 WORKFLOW.md 的「流程阶段」section 时,必须以 squire 的 skill pipeline 为默认骨架底稿(explore 仅在模块不熟悉时,继以 shape → implement → check → docs → commit → pr),并以 subtract-and-add 访谈维护者:默认全部阶段在册作为待确认提案,逐条问维护者删哪些、加哪些(如 release / deploy)及加在何处。骨架结构性保证该 section 的完整与顺序——不得漏列既有 skill 步骤(含 docs 自身),不得发明骨架外阶段;留下未经维护者确认的阶段、或将其当作既定事实写入,即属凭空发明。骨架只约束「流程阶段」一段;「各阶段约定与门禁」「构建与命令」两段仍须各自向维护者求源、不得由骨架代填,项目间差异只落在这两段的内容、不落在结构。未访谈即写整篇 WORKFLOW.md 属凭空发明,必须停下先访谈。
+Verify: manual(integration)

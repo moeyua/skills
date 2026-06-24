@@ -39,6 +39,8 @@ The explicit-document lane exists only when the user names the target path, docu
 
 For the **spec** target (`specs/`), the requirement sentences are written in the target project's language; literal code, paths, and identifiers stay as-is. Only structural labels stay English as scannable anchors: `## Requirements`, `### Requirement:`, `Verify:`, and the delta section names `ADDED` / `MODIFIED` / `REMOVED`.
 
+**WORKFLOW is special** — its only authoritative source is the maintainer's own process, so the Stages section must be produced by interviewing against the squire skill-pipeline backbone (explore only when the module is unfamiliar, then shape → implement → check → docs → commit → pr), subtract-and-add per the workflow format spec — never written straight from a template or copied from another project. Writing a full `WORKFLOW.md` without that interview is invention: run the interview before you write.
+
 **PRODUCT is special** — docs does not author its content (it has no format file); a change to philosophy/boundaries is shape's job. Docs may at most create an empty skeleton and route back to `/shape`.
 
 ## Record: merge a spec delta
