@@ -11,6 +11,13 @@ check skill 是合并前的最后一道关:用 review(读 diff 判断)、test(�
 check 必须不修改任何文件(源码 / 测试 / plan),不给完整补丁(只给方向),不替作者调用其他 skill,不提交、不推送;test/e2e 模式可执行代码 / 起 app 以观察,但只观察、不改源。(Previously: verify 执行该职责。)
 Verify: manual(integration)
 
+### Requirement: 把关前缺少项目上下文时先做 explore context preflight
+
+check 在 review / test / e2e 路由与判断前，若当前项目上下文缺失、过期或不足以支撑本次把关，必须调用 explore 的 context mode 建立事实基础。调用时根据 gate 风险选择 core 或 deep，不产出独立 Explore Report，并把读取证据纳入 verdict。
+
+该 preflight 不改变 check 只校验不修改、不替作者调用修复 skill 的边界。
+Verify: manual(integration)
+
 ### Requirement: review 模式 5 维 + confidence 过滤 + 正面肯定
 
 review 模式必须扫 5 个维度(plan / quality / errors / tests / simplify),或用户指定的 aspect;只报告 confidence ≥ 80 的 finding,按 Critical / Important / Suggestion 分级;且必须给出 Strengths 段,哪怕只有一两条。(Previously: verify 执行该职责。)

@@ -43,7 +43,9 @@ Verify: manual(integration)
 
 ### Requirement: Clarify 阶段为提问打地基
 
-shape 必须在 Clarify 期间读相关代码、文档与历史为提问打地基，并对方案依赖的任何外部定义、工具、库或 API 对照权威文档核实，不凭训练记忆断言。(Previously: plan 执行该职责。)
+shape 必须在 Clarify 前和 Clarify 期间读相关代码、文档与历史为提问打地基。若当前项目/模块上下文缺失、过期或不足以支撑本次判断，必须先调用 explore 的 context mode 建立事实基础，根据任务风险选择 core 或 deep，不产出独立 Explore Report，并把读取证据纳入提问与方案。
+
+shape 对方案依赖的任何外部定义、工具、库或 API 仍必须对照权威文档核实，不凭训练记忆断言。(Previously: plan 执行该职责；不要求调用 explore context mode。)
 Verify: manual(integration)
 
 ### Requirement: 跨结构变更产出 Architecture 段

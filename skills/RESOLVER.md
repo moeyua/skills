@@ -2,13 +2,15 @@
 
 > A trigger-to-skill routing table. Claude Code matches automatically via each SKILL.md's `description`; this doc is the human-facing central index, and also the basis `tests/smoke/verify-skills.test.ts` checks against. When you change a skill's scope, update this in sync.
 
-## Core Loop
+## Context / Report
 
-### 0. Understand
+### Explore
 
 | trigger                                                                                                                                       | skill                     |
 | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
 | new repo / unfamiliar module / "look at this project" / "整体了解一下" / "look at the X module" / `/explore` / building a base for later work | `skills/explore/SKILL.md` |
+
+## Core Loop
 
 ### 1. Shape
 
@@ -58,6 +60,11 @@ These are squire skills, but not part of the core loop. A project's WORKFLOW.md 
 
 Skills don't chain automatically. Each one stops when done and waits for the user to decide the next step.
 
+`explore` has two positions:
+
+- **User-facing report** — `/explore` or "look at this project" emits an Explore Report and has no outgoing edge.
+- **Embedded context** — `shape`, `implement`, `check`, `docs`, and `doctor` may use explore in context mode when they lack reliable project facts. That preflight follows explore's reading rules, emits no Explore Report, and carries evidence into the current skill's output. It is not a workflow node and not workflow chaining.
+
 **Next-step suggestions follow one rule: position determines modality.** A change walks a state graph — each skill is a node, its closing "next step" is that node's outgoing edge, and where the node sits decides how the suggestion is made:
 
 - **Fixed** — the success edge inside the core loop is unique: shape (named mode) → implement; implement → check.
@@ -70,8 +77,10 @@ Whatever the modality, a suggestion is only a suggestion — the user walks the 
 Core loop:
 
 ```
-explore → shape → implement → check → docs
+shape → implement → check → docs
 ```
+
+`explore` is omitted from this graph because it is either an explicit report before the loop or embedded grounding inside a node.
 
 Workflow-managed stages commonly follow, but are project-specific:
 

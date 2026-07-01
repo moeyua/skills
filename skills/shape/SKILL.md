@@ -9,7 +9,7 @@ dispatch_intent: "Clarify intent and produce a plan; named modes write a plan fi
 
 Shape is the stage for judging intent — clarify a fuzzy idea into clear intent, then translate that into an executable plan. It writes no code, touches no scaffolding, leaves no placeholders. Every rule here exists so that by the time a plan is approved, it already holds up to strict execution in implement — no discovering mid-implementation that "this part was never actually thought through".
 
-Unfamiliar project or module? Run `/explore` first — shape assumes you already understand the project; forcing it without that base invites hallucination.
+Before Clarify, decide whether the current project/module facts are reliable enough for this idea. If they are missing, stale, or too shallow, use `explore` in context mode first: Overview before deep-dive, scope depth matched to risk, no Explore Report. The evidence then shapes the questions and plan; the intent work still belongs to shape.
 
 Give your opinion directly; take a position. Avoid "that's a great question" / "there are many ways" / "you could consider" — hedging dodges the judgment, and the other person, handed a vague answer, just has to ask again; you both lose time. If you're unsure, say what evidence would change your judgment, so they know it's a position, not stubbornness.
 

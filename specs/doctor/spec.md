@@ -13,6 +13,13 @@ doctor skill 给项目做只读体检:审计「文档说的」与「代码做的
 doctor 必须不修改任何文件,不提交、不推送、不自动调用其他 skill;脚本与观察命令(node checker / pnpm outdated / gh / git log)只采集事实,不改。发现问题指向对应 skill(文档漂移→docs、代码 bug→shape fix、简化→shape refactor、scope 蔓延→交用户),不接管去做。(Previously: health 执行该职责。)
 Verify: manual(integration)
 
+### Requirement: 审计前缺少项目上下文时先做 explore context preflight
+
+doctor 在机械检查和 docs-vs-code 判断前，若当前项目/记忆布局上下文缺失、过期或不足以支撑 drift 判断，必须调用 explore 的 context mode 建立事实基础。调用时根据审计范围选择 core 或 deep，不产出独立 Explore Report，并把读取证据纳入 Health Report。
+
+该 preflight 不改变 doctor 只读、只报告、不自动调用修复 skill 的边界。
+Verify: manual(integration)
+
 ### Requirement: 主检查——文档声称 vs 代码实际
 
 doctor 必须把「文档声称的行为」与「代码实际的行为」是否一致作为首要检查,逐条核实(对 squire 格式文档以每条 `### Requirement:` 为离散 claim 逐条核;对散文文档 best-effort,核不动的不硬判),标出不符处(含散文式架构 / 技术选型声称与代码不符),给 observed-vs-claimed 裁决,报告置于最前;不就地改。(Previously: health 执行该职责。)

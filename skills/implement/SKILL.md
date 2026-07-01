@@ -19,8 +19,8 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 
 - Outcome: every implementation step in the plan is done, verification passes, and the changes match the project's style
 - Done when: every step's verify passes and the plan's frontmatter `status` is set to `done`
-- Evidence: each file you changed + the actual output of the plan's verification commands
-- Output: a change list + verify results + any deviation, surfaced
+- Evidence: each file you changed + context preflight files / commands when used + the actual output of the plan's verification commands
+- Output: a change list + context preflight evidence when used + verify results + any deviation, surfaced
 
 ## Preflight: get the plan, confirm it runs
 
@@ -29,6 +29,8 @@ Do these in parallel:
 1. **Locate the plan**: if the user's message has a path, use it; otherwise take the newest `status: approved` plan under `plans/` (sorted by YYYY-MM-DD). If there is none, report the state and ask the user to point to one or run `/shape` first — don't guess the goal.
 2. **Read the whole plan**: the plan is the only ground truth for this run; starting without reading it is guessing.
 3. **Scan the project skeleton**: `git status --short` for a dirty tree, `git branch --show-current` for the current branch, `git log --oneline -5` to learn the commit style, `ls package.json pnpm-lock.yaml Cargo.toml ...` to identify the project type and test framework.
+
+After those reads, decide whether the project/module facts are reliable enough for the plan's scope. If not, use `explore` in context mode before execution: Overview before deep-dive, depth matched to plan risk, no Explore Report, and evidence carried into the implementation report. This does not replace reading the whole plan or locating files inside each step's declared scope.
 
 If any of these conditions fails, report the state and stop — let the user decide, don't push through:
 

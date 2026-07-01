@@ -9,7 +9,7 @@ dispatch_intent: "Document durable project truth by default, or maintain a user-
 
 Docs maintains written project truth. By default it writes the durable memory catalog: spec (behavior contracts in `specs/`), ARCHITECTURE, DESIGN, WORKFLOW, ROADMAP, and README. When the user explicitly names a target path, document type, or concrete document artifact, it may also maintain catalog-external project docs. Every rule here exists so documentation stays trustworthy: it records an authoritative source, never a truth invented from vibes or guessed from implementation.
 
-Unfamiliar project? Run `/explore` first — writing docs for a system you haven't mapped invents a truth nobody agreed to.
+Before choosing or writing a documentation target, decide whether the project and memory context are reliable enough for that target. If not, use `explore` in context mode first: Overview before deep-dive, depth matched to the target, no Explore Report. This supplies evidence for source selection only; docs still writes from the target's authoritative source, not from inference.
 
 Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
@@ -17,7 +17,7 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 
 - Outcome: the target document reflects the project's current truth, after a change, correction, backfill, or explicit user request
 - Done when: catalog target → the change is merged into the right artifact per the catalog; explicit doc target → the named document is written or updated from authoritative sources; correct → the named item reads as intended; backfill → an existing capability gets documentation from its authoritative source
-- Evidence: the plan's `## Spec delta` / `## Key decisions` / the user's explicit document request / the authoritative source read / the code whose behavior is being documented / the before-and-after of the document
+- Evidence: context preflight files / commands when used + the plan's `## Spec delta` / `## Key decisions` / the user's explicit document request / the authoritative source read / documented code behavior / the before-and-after of the document
 - Output: the files written + what was ADDED / MODIFIED / REMOVED (or which section) + anything that couldn't be written and why
 
 ## Two lanes
@@ -39,7 +39,7 @@ The explicit-document lane exists only when the user names the target path, docu
 
 For the **spec** target (`specs/`), the requirement sentences are written in the target project's language; literal code, paths, and identifiers stay as-is. Only structural labels stay English as scannable anchors: `## Requirements`, `### Requirement:`, `Verify:`, and the delta section names `ADDED` / `MODIFIED` / `REMOVED`.
 
-**WORKFLOW is special** — its only authoritative source is the maintainer's own process, so the Stages section must be produced by interviewing against the squire skill-pipeline backbone (explore only when the module is unfamiliar, then shape → implement → check → docs → commit → pr), subtract-and-add per the workflow format spec — never written straight from a template or copied from another project. Writing a full `WORKFLOW.md` without that interview is invention: run the interview before you write.
+**WORKFLOW is special** — its only authoritative source is the maintainer's own process. Use the squire pipeline as an interview scaffold: `shape → implement → check → docs → commit → pr`, with explicit explore offered as a possible pre-loop report step and context-mode explore treated as embedded grounding. Subtract-and-add per the workflow format spec; writing a full `WORKFLOW.md` without that interview is invention.
 
 **PRODUCT is special** — docs does not author its content (it has no format file); a change to philosophy/boundaries is shape's job. Docs may at most create an empty skeleton and route back to `/shape`.
 

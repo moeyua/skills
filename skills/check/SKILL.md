@@ -9,7 +9,7 @@ dispatch_intent: "Confirm a change holds up before merge — review / test / e2e
 
 Check is the last gate before merge — confirm a change holds up, then hand the author a verdict and a direction. It checks three ways: **review** (read the diff with judgment), **test** (run the suite for ground truth), **e2e** (drive the real app and watch it behave). Every rule here exists to keep check's word **trustworthy**: it reports what it actually found — never a fix slipped in along the way, never a flaky pass dressed up as green. The moment check edits a file, the author loses the chance to see their own feedback.
 
-Unfamiliar project? Run `/explore` first — checking a project you haven't mapped produces noise, not signal.
+Before routing the gate, decide whether the project facts are reliable enough for review/test/e2e judgment. If not, use `explore` in context mode first: Overview before deep-dive, depth matched to gate risk, no Explore Report. Checking a project you haven't mapped produces noise, not signal, so the evidence must feed the verdict.
 
 **Check confirms, it doesn't change.** Specifically: it changes no source / tests / plan; it gives no full patch (only a direction); it doesn't call other skills to do the work for the author; it doesn't commit or push. The `test` and `e2e` modes _execute_ code (run the suite, launch the app) to observe behavior — but observing is not editing.
 
@@ -19,7 +19,7 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 
 - Outcome: a verdict (holds up / doesn't) plus graded findings or observed behavior, with the decision left to the author
 - Done when: review → the dimensions (or specified aspect) are scanned and findings ≥ 80 confidence listed with Strengths; test → the suite ran and pass/fail is fully reported; e2e → the app ran and the observed behavior is reported against the expectation; in all cases every mode in the run's set either ran or is named as skipped with its reason
-- Evidence: `git diff` / the actual test output / the running app's observed behavior / project guidelines (CLAUDE.md / AGENTS.md) / the plan (if any)
+- Evidence: `git diff` / context preflight files or commands when used / actual test output / running app observations / project guidelines (CLAUDE.md / AGENTS.md) / the plan (if any)
 - Output: a verdict + findings/observations + a next-step recommendation
 
 ## Three modes (routed by the message)

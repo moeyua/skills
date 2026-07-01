@@ -11,6 +11,13 @@ implement skill 把已批准的方案落实成符合项目风格的代码：按�
 implement 必须基于一份方案执行；找不到方案、或方案与代码漂移（路径错、函数缺、假设不成立）时必须停下并回 shape，不悄悄改路径凑合。(Previously: build 执行该职责。)
 Verify: manual(integration)
 
+### Requirement: 执行前缺少项目上下文时先做 explore context preflight
+
+implement 在执行方案前，若当前项目/模块上下文缺失、过期或不足以支撑方案 scope，必须调用 explore 的 context mode 建立事实基础。调用时根据方案风险选择 core 或 deep，不产出独立 Explore Report，并把读取证据纳入实现报告。
+
+该 preflight 不替代读取整份 plan，也不替代每步动手前在该步 scope 内定位文件。
+Verify: manual(integration)
+
 ### Requirement: 不在受保护分支上动工
 
 首次编辑前，若当前在受保护分支（main / master / develop）或 detached HEAD，implement 必须先 `git checkout -b <plan-slug>` 开工作分支。(Previously: build 执行该职责。)
