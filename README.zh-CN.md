@@ -10,11 +10,11 @@ AI 的原始产出能力已经很强，但没有结构，这份能力会漂成�
 
 ## 9 个 Skill
 
-按职责分三层：core loop（一次变更的最小闭环）、workflow-managed stages（交付阶段，由项目流程决定是否出现）、orthogonal tools（闭环外的按需工具）。
+Squire 把项目理解和变更闭环分开：`explore` 提供 context 或独立报告；`shape → implement → check → docs` 是 core loop；`commit` / `pr` 是由项目流程决定的交付阶段；`doctor` / `handoff` 保持正交。
 
-| Skill       | 分层                   | 作用                                                           |
+| Skill       | 位置                   | 作用                                                           |
 | :---------- | :--------------------- | :------------------------------------------------------------- |
-| `explore`   | core loop              | 理解项目结构、技术栈、入口与运行方式                           |
+| `explore`   | context / report       | 按需建立项目上下文；只有用户主动要求时才产出报告               |
 | `shape`     | core loop              | 澄清意图 + 出方案（default / fix / feat / refactor / perf）    |
 | `implement` | core loop              | 按方案做最小、可控、合项目风格的改动；含写测试（TDD + 补覆盖） |
 | `check`     | core loop              | review / test / e2e 三模式确认改动立得住，只裁决不改           |
@@ -46,8 +46,10 @@ npx skills add .
 Core loop 是一次变更走过的最小闭环：
 
 ```
-explore → shape → implement → check → docs
+shape → implement → check → docs
 ```
+
+`explore` 不是默认 workflow 步骤。需要独立理解报告时由用户主动触发；否则 `shape`、`implement`、`check`、`docs`、`doctor` 可在内部把它作为 context preflight 使用，并把证据带入自己的输出。
 
 交付阶段按项目的 `WORKFLOW.md` 决定是否接在后面：
 

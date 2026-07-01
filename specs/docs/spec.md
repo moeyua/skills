@@ -18,6 +18,13 @@ Verify: manual(integration)
 未被用户明确指定 catalog 外目标时,本 skill 必须按 `rules/memory-catalog.md` 决定写哪份 artifact 及如何写;spec 写 `specs/`,architecture/design/workflow/roadmap/readme 写对应文档。目标不存在时 create-if-missing,出生即带来自其权威源的内容。(Previously: document 执行该职责。)
 Verify: manual(integration)
 
+### Requirement: 选目标前缺少项目上下文时先做 explore context preflight
+
+docs 在选择或写入文档目标前，若当前项目/记忆上下文缺失、过期或不足以支撑该目标，必须调用 explore 的 context mode 建立事实基础。调用时根据目标风险选择 core 或 deep，不产出独立 Explore Report，并把读取证据纳入 source selection。
+
+该 preflight 只供应上下文，不降低逐目标 anti-invention 要求；docs 仍必须从目标的权威来源写入，不能从实现或上下文反推真源。
+Verify: manual(integration)
+
 ### Requirement: 用户明确指定时可写 catalog 外文档
 
 本 skill 只有在用户明确指定目标路径、文档类型或具体文档产物时,才可以维护 `rules/memory-catalog.md` 外的项目文档;该内容仍必须基于权威来源(用户陈述、已有代码、已有 plan、运行结果或已有文档),不得由 agent 自行发明或主动扩展范围。(Previously: document 执行该职责。)
@@ -65,5 +72,9 @@ Verify: manual(integration)
 
 ### Requirement: WORKFLOW 流程阶段以 squire skill pipeline 为骨架访谈
 
-本 skill 生成或更新 WORKFLOW.md 的「流程阶段」section 时,必须以 squire 的 skill pipeline 为默认骨架底稿(explore 仅在模块不熟悉时,继以 shape → implement → check → docs → commit → pr),并以 subtract-and-add 访谈维护者:默认全部阶段在册作为待确认提案,逐条问维护者删哪些、加哪些(如 release / deploy)及加在何处。骨架结构性保证该 section 的完整与顺序——不得漏列既有 skill 步骤(含 docs 自身),不得发明骨架外阶段;留下未经维护者确认的阶段、或将其当作既定事实写入,即属凭空发明。骨架只约束「流程阶段」一段;「各阶段约定与门禁」「构建与命令」两段仍须各自向维护者求源、不得由骨架代填,项目间差异只落在这两段的内容、不落在结构。未访谈即写整篇 WORKFLOW.md 属凭空发明,必须停下先访谈。
+本 skill 生成或更新 WORKFLOW.md 的「流程阶段」section 时,必须以 squire 的 skill pipeline 为默认骨架底稿:shape → implement → check → docs → commit → pr。explicit explore 只能作为可访谈的 loop 前报告步骤;context-mode explore 是嵌入式 grounding,不是默认 workflow stage。
+
+随后以 subtract-and-add 访谈维护者:默认全部阶段在册作为待确认提案,逐条问维护者删哪些、是否把 explicit explore 纳入本项目流程、加哪些额外阶段(如 release / deploy)及加在何处。骨架结构性保证该 section 的完整与顺序——不得漏列既有 skill 步骤(含 docs 自身),不得发明骨架外阶段;留下未经维护者确认的阶段、或将其当作既定事实写入,即属凭空发明。
+
+骨架只约束「流程阶段」一段;「各阶段约定与门禁」「构建与命令」两段仍须各自向维护者求源、不得由骨架代填,项目间差异只落在这两段的内容、不落在结构。未访谈即写整篇 WORKFLOW.md 属凭空发明,必须停下先访谈。
 Verify: manual(integration)

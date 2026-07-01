@@ -16,7 +16,11 @@ squire 的所有设计决策都从下面 5 条派生。它们不是教条，是�
 
 ### 2. 聚焦开发 + 记忆 — 不只改代码，也记住代码
 
-squire 的范围限定在两件事：**开发**一个项目，**记住 / 文档化**这个项目持久地是什么。核心闭环是理解（explore）、设计（shape）、改造（implement）、校验（check）、文档化（docs）。`commit` / `pr` 是 workflow-managed stages，由项目流程决定是否接在后面；`doctor` / `handoff` 是正交工具。squire 不扩展到产品决策、发布管理、Agent 自审计、内容输入处理（详见下面"边界"段）。
+squire 的范围限定在两件事：**开发**一个项目，**记住 / 文档化**这个项目持久地是什么。
+
+开发主线包含理解、设计、改造、校验、文档化。默认 core loop 是 `shape → implement → check → docs`：`shape` 定意图，`implement` 改造，`check` 把关，`docs` 记录持久记忆。`explore` 提供理解能力，但位置不同——用户主动了解项目时走 report mode；其他 skill 缺可靠事实时以内嵌 context preflight 使用，不成为默认 workflow 节点。
+
+`commit` / `pr` 是 workflow-managed stages，由项目流程决定是否接在后面；`doctor` / `handoff` 是正交工具。squire 不扩展到产品决策、发布管理、Agent 自审计、内容输入处理（详见下面"边界"段）。
 
 > **2026-06-10 修订**：正交工具增列 `handoff`（会话交接摘要，经 plan discussion 确认）。它服务于闭环的连续运转——把当前会话的工作状态只读交接给下个会话——不是新的产品能力域，「开发 + 记忆」的 scope 不因此扩大。
 

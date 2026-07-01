@@ -10,7 +10,7 @@ allowed-tools: "Bash(node *), Bash(pnpm outdated*), Bash(npm outdated*), Bash(gh
 
 Doctor is a project checkup — it audits whether a project's memory still holds up against its code, then reports what has drifted, and stops there. It is the orthogonal-audit half of the check pillar: check gates one change before merge; doctor steps back and looks at the whole project, outside the loop. Every rule here exists to keep doctor's word **trustworthy and advisory**: it reports what it found and points you at the skill that fixes it — it never edits, commits, or chains onward itself.
 
-Unfamiliar project? Run `/explore` first — auditing a project you haven't mapped produces noise, not signal.
+Before auditing, decide whether the project and memory layout are reliable enough for drift judgment. If not, use `explore` in context mode first: Overview before deep-dive, depth matched to audit scope, no Explore Report. Auditing a project you haven't mapped produces noise, not signal, so the evidence must feed the Health Report.
 
 Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
@@ -18,7 +18,7 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 
 - Outcome: an advisory health report — what has drifted / gone stale, graded, each pointing at the skill that resolves it
 - Done when: the mechanical checker has run (or its skip is noted), the main docs-vs-code pass is done, model findings ≥ 80 confidence are graded, and skipped checks are stated
-- Evidence: the checker's output + the actual `pnpm outdated` / `gh run list` / `git log` output + the docs and code you read
+- Evidence: context preflight files / commands when used + checker output + actual `pnpm outdated` / `gh run list` / `git log` output + the docs and code you read
 - Output: a Health Report + a next-step per finding; never a file edit
 
 **Doctor confirms drift, it doesn't fix it.** It writes no file, commits nothing, calls no other skill to act. It runs read-only observation commands (the bundled checker, `pnpm outdated`, `gh run list`, `git log`) — observing is not editing. The moment doctor touches a file, the author loses the chance to decide.
