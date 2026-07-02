@@ -26,7 +26,7 @@ status: draft
 
 ## Approach
 
-[the chosen approach + why. If there's a close-tradeoff alternative, list it briefly; otherwise omit]
+[2-3 approaches considered, with trade-offs. Lead with the recommended approach and explain why. Keep small changes short, but still expose the meaningful design choice.]
 
 ## Premise collapse
 

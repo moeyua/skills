@@ -254,17 +254,17 @@ dispatch_intent: "一句话意图，给路由表用"
 |---|---|
 ```
 
-`shape` 比其他 skill 多 **Clarify Phase** 和 **Mode Picker** 两个 section；mode-specific 内容拆到 `references/mode-*.md`。
+`shape` 比其他 skill 多 **context grounding / Clarify / approach expansion / design gate / Mode Picker**；共享塑形协议放在 `skills/shape/references/shaping-protocol.md`，mode-specific 内容拆到 `references/mode-*.md`。
 
 ## shape 的 mode 系统（详细）
 
-| Mode       | 触发条件                                   | Clarify 关注               | 输出结构                       |
-| ---------- | ------------------------------------------ | -------------------------- | ------------------------------ |
-| (default)  | 想法模糊、探索性、"我想做..."、"该不该..." | 想清楚要解决什么问题       | 设计草案 / 头脑风暴结论        |
-| `fix`      | 报错、行为异常、回归                       | 复现条件、影响面           | 根因报告 + 修复方案            |
-| `feat`     | 新功能、新能力                             | 用户场景、接口边界、验收   | 实施方案 + 影响范围 + 验证方式 |
-| `refactor` | 整理结构、不改外部行为                     | 行为保留边界、回归测试覆盖 | 重构方案 + 行为保留验证        |
-| `perf`     | 性能差、慢、卡顿                           | baseline、目标数字、瓶颈   | baseline + 优化方案 + 测量     |
+| Mode         | 触发条件                                   | Clarify 关注               | 输出结构                       |
+| ------------ | ------------------------------------------ | -------------------------- | ------------------------------ |
+| `brainstorm` | 想法模糊、探索性、"我想做..."、"该不该..." | 想清楚要解决什么问题       | 会话内设计结论，不写文件       |
+| `fix`        | 报错、行为异常、回归                       | 复现条件、影响面           | 根因报告 + 修复方案            |
+| `feat`       | 新功能、新能力                             | 用户场景、接口边界、验收   | 实施方案 + 影响范围 + 验证方式 |
+| `refactor`   | 整理结构、不改外部行为                     | 行为保留边界、回归测试覆盖 | 重构方案 + 行为保留验证        |
+| `perf`       | 性能差、慢、卡顿                           | baseline、目标数字、瓶颈   | baseline + 优化方案 + 测量     |
 
 **mode 识别流程**：
 
@@ -273,23 +273,30 @@ dispatch_intent: "一句话意图，给路由表用"
   ↓
 shape SKILL.md 加载
   ↓
+Context grounding
+  ├── 事实足够 → 带证据继续
+  └── 事实缺失 / 过期 / 过浅 → 调用 explore context mode（无报告）
+  ↓
 Clarify Phase（共通）
   ├── 提问澄清意图
   ├── 收集背景
   └── 识别 mode 信号
   ↓
 Mode Picker
-  ├── 无明确 mode 信号 → 留在 default
+  ├── 模糊 / 探索性 → 留在 brainstorm
   └── 明确 mode 信号 → 加载对应 references/mode-X.md
   ↓
-按 mode 输出对应类型的 plan
+brainstorm → 会话结论 + 下一决策
+named mode → 2-3 approaches → grill 推荐方案 → design summary 确认 → plan 文件
 ```
 
 **核心约束**：
 
-- 默认无 mode 即是探索状态——不需要单独 brainstorm skill
+- `brainstorm` 是 shape 的显式会话 mode，不是独立 skill，不写 plan/design/spec 文件
+- shape 只决定什么时候需要上下文探索；具体怎么探索由 explore context mode 定义
 - mode 不是用户指定，是 agent 在 clarify 过程中识别
 - 知道意图 ≠ 不需要澄清（用户说 `/shape 重构这块`，agent 仍可能问"重构成什么样？保留哪些 API？"）
+- named mode 写 plan 前必须提出 2-3 approaches、grill 推荐方案、展示 design summary 并取得确认
 - 出方案前不写任何代码 / scaffolding / pseudo-code
 - 不同 mode 的 plan 关注点不同：
   - fix 关注根因和回归测试
@@ -424,9 +431,9 @@ Claude Code skill 触发是双轨：
 
 代价：shape SKILL.md 不能太大，所以 mode-specific 内容拆 references/。
 
-### 为什么默认 mode 没有名字？
+### 为什么把默认状态命名为 brainstorm？
 
-默认状态承载"探索 / 头脑风暴 / 价值判断"——brainstorm 就是没有任何 mode 的 shape。给它命名（比如 `brainstorm` mode）反而增加认知负担，不命名让"默认状态 = 探索"成为天然的事实。
+旧设计把没有明确 mode 的状态视为无名 default；实践里这会让 agent 把 default 当成空档，而不是一条要执行的会话协议。现在把它显式命名为 `brainstorm`：它仍不是独立 skill，也不写文件；它的职责是在对话中收敛方向、约束、推荐 approach 和下一决策。想法收敛后，必须把是否进入 `fix` / `feat` / `refactor` / `perf` 交回用户确认，确认后才写 `plans/`。
 
 ### 为什么不加 hallucination marker？
 
@@ -472,7 +479,7 @@ squire 自己的 check 库（`tests/checks.ts`）没有 CLI 入口——由 vite
 
 ### 2026-06-11 下一步推荐统一为「位置定模态」模型
 
-各 skill 完成后的「下一步」建议从逐份手写的尾部文案,统一为可推导的模型:一次变更是一张状态图,skill 是节点,推荐 = 节点的出边,**位置定模态**。三类边:成功边(core loop 内,产品层硬编码)、失败边(问题类路由表:bug→shape fix、弱测试→implement、漂移→docs 等,原本就跨 skill 一致)、出口边(交付段,项目 WORKFLOW 定义,产品层只给默认值)。四种模态的分配:固定(shape named→implement、implement→check)/ 判断(check 按裁决、shape default、doctor 的 findings 路由)/ 默认可覆盖(docs→commit、commit→pr,覆盖源是项目 WORKFLOW 而非用户——用户的覆盖权由 PRODUCT 哲学 #3 的总规则保证)/ 不需要(explore、pr、handoff)。
+各 skill 完成后的「下一步」建议从逐份手写的尾部文案,统一为可推导的模型:一次变更是一张状态图,skill 是节点,推荐 = 节点的出边,**位置定模态**。三类边:成功边(core loop 内,产品层硬编码)、失败边(问题类路由表:bug→shape fix、弱测试→implement、漂移→docs 等,原本就跨 skill 一致)、出口边(交付段,项目 WORKFLOW 定义,产品层只给默认值)。四种模态的分配:固定(shape named→implement、implement→check)/ 判断(check 按裁决、shape brainstorm、doctor 的 findings 路由)/ 默认可覆盖(docs→commit、commit→pr,覆盖源是项目 WORKFLOW 而非用户——用户的覆盖权由 PRODUCT 哲学 #3 的总规则保证)/ 不需要(explore、pr、handoff)。
 
 两个连带决策:**explore 全静默**——连报告模板的 Where to Start 段与 deep-dive 的 follow-up entry points 一并移除,它们是伪装成报告段落的下一步推荐,与「不需要」模态矛盾;**WORKFLOW.md 的 dogfood 链挪位**——`/docs` 从 `/pr` 之后挪到 `/check` 与 `/commit` 之间,因为本仓门禁 checkSpecPairing 要求 spec 与 skill 同 PR 同步,原顺序与自家门禁矛盾,挪位后持久记忆与代码原子合入。完整模型见 [skills/RESOLVER.md](skills/RESOLVER.md) 的 Chaining 段,决策过程见 [plans/2026-06-11-feat-next-step-modality.md](plans/2026-06-11-feat-next-step-modality.md)。
 
@@ -487,6 +494,12 @@ shape 产出的 plan 从「行号级 edit 清单」收回到「决策级方案�
 ROADMAP 原积「`shape` 的 `arch` mode / 产出架构」以否决 mode 读法的方式关闭:四个 named mode 是互斥的意图类型,而架构与它们全部相交(大型 feat 需要架构、结构性 refactor 即架构调整、perf 可经架构)——refactor-vs-perf 消歧问「目标不同」,arch-vs-refactor 只能问「规模大小」,切分轴不同构。本仓三次架构级变更(记忆支柱重构、core loop 收窄、rules symlink 化)的实证也指向缺口是字段标准化而非路由能力:三案都有合法 mode 归宿,即兴的只是架构字段。
 
 承载形态改为 plan-template 的条件段 `## Architecture`(触发:跨模块边界 / 引入新层新服务 / 更换技术依赖;内容:现状→目标结构、组件职责与数据流、分阶段迁移;未触发写 None)。shape Phase 4 自检的「>3 组件画 ASCII 图」并入该段阈值;mode-feat 与 mode-refactor 互推架构决策的反模式同步修正(本变更自身的架构决策进段,无关顺手重构仍拆分)。技术选型不开新归宿——服务于 feat/refactor 时收敛进该 mode,纯决策走 `Key decisions → docs → ARCHITECTURE` 既有通道。该段只取维度清单(组件设计 / 数据流 / 构建序列),不取逐文件粒度(与 plan 粒度决策一致)。详见 [plans/2026-06-12-feat-shape-architecture-dimension.md](plans/2026-06-12-feat-shape-architecture-dimension.md)。
+
+### 2026-07-01 shape 重写为 brainstorm-first 塑形协议
+
+`shape` 从补丁式规则清单收束为一条共享协议：context grounding → Clarify → 2-3 approaches → grill 推荐方案 → design summary gate → plan。旧 `(default)` 改为 `brainstorm`：它是显式会话 mode，不写文件，只在方向收敛后请求进入 named mode。Named modes 仍是 `fix` / `feat` / `refactor` / `perf`，但写 plan 前必须展开可选 approaches、pressure-test 推荐项，并取得 design summary 确认。
+
+主 `SKILL.md` 只保留入口、硬门禁、mode picker 和 reference routing；细节进 `skills/shape/references/shaping-protocol.md`，mode-specific bar 继续留在 `references/mode-*.md`。上下文探索不在 shape 内重写：shape 判断何时需要 grounding，explore context mode 定义如何 Overview / deep-dive / 无报告。详见 [plans/2026-07-01-feat-shape-brainstorming-protocol.md](plans/2026-07-01-feat-shape-brainstorming-protocol.md)。
 
 ## 未来规划
 

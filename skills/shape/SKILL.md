@@ -1,135 +1,86 @@
 ---
 name: shape
-description: 'Shape a fuzzy idea into an executable plan. Modes: default (explore / brainstorm) / fix / feat / refactor / perf; named modes write a plan file to plans/. Use when the user says "think it through" / "how should we do this" / "出方案" / "想想", or anything that needs thinking through before coding. Not for executing an existing plan (use implement), value judgments ("is this worth doing"), or a plain API-usage question.'
+description: 'Shape a fuzzy idea into a grounded design and executable plan. Modes: brainstorm / fix / feat / refactor / perf; brainstorm stays conversational, named modes write to plans/. Use when the user says "think it through" / "how should we do this" / "出方案" / "想想", or anything that needs design before coding. Not for executing an approved plan (use implement), deciding whether something is worth doing, or plain API-usage questions.'
 when_to_use: "think, shape, plan, design, brainstorm, approach, 想想, 出方案, 设计, 怎么做, 头脑风暴"
-dispatch_intent: "Clarify intent and produce a plan; named modes write a plan file"
+dispatch_intent: "Clarify intent, shape a design, and produce a plan when a named mode is approved"
 ---
 
 # Shape
 
-Shape is the stage for judging intent — clarify a fuzzy idea into clear intent, then translate that into an executable plan. It writes no code, touches no scaffolding, leaves no placeholders. Every rule here exists so that by the time a plan is approved, it already holds up to strict execution in implement — no discovering mid-implementation that "this part was never actually thought through".
+Shape turns ideas into designs and, when the intent has converged, executable plans. Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what is being built or changed, propose approaches, pressure-test the recommended one, present the design, and get user approval before writing a plan.
 
-Before Clarify, decide whether the current project/module facts are reliable enough for this idea. If they are missing, stale, or too shallow, use `explore` in context mode first: Overview before deep-dive, scope depth matched to risk, no Explore Report. The evidence then shapes the questions and plan; the intent work still belongs to shape.
-
-Give your opinion directly; take a position. Avoid "that's a great question" / "there are many ways" / "you could consider" — hedging dodges the judgment, and the other person, handed a vague answer, just has to ask again; you both lose time. If you're unsure, say what evidence would change your judgment, so they know it's a position, not stubbornness.
+<HARD-GATE>
+Do NOT write code, scaffold projects, change implementation files, or invoke implementation work until the design has been presented and the user has approved the plan. This applies even when the change looks simple.
+</HARD-GATE>
 
 Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
+Read `references/shaping-protocol.md` before the first clarifying question. Load `references/plan-template.md` and the matching mode reference only when the work enters a named mode.
+
 ## Outcome Contract
 
-- Outcome: an approved plan (named mode) or an exploration conclusion (default mode)
-- Done when: named mode → a plan file written to `plans/`, every step executable without further intent decisions; default mode → the direction and next step are clear
-- Evidence: `git status` / project files read / the user's answers to clarify questions
-- Output: named mode → plan file path + summary + after-approval prompt; default → a conclusion summary in the conversation
+- Outcome: a brainstorm conclusion, or an approved named-mode plan
+- Done when: brainstorm → the direction, constraints, and next decision are clear; named mode → a plan file is written to `plans/` after design approval, with every step executable without further intent decisions
+- Evidence: project files read, context preflight evidence when used, external docs checked when needed, and the user's answers
+- Output: brainstorm → conversation summary; named mode → plan file path + summary + after-approval prompt
 
-## Two altitudes
+## Checklist
 
-Shape runs at two altitudes: the **whole** (what problem are we really solving, what's the overall shape of the answer) and the **detail** (this one decision). The failure mode isn't being shallow everywhere — it's dropping to detail altitude and never climbing back: you get snagged on one concrete question, settle it, start pushing toward the plan, and the overall intent has quietly drifted out of view.
+Work through these items in order:
 
-So the rhythm is **whole → detail → whole**, on repeat. Before drilling a detail, say which whole it serves. After resolving it, climb back and say what it changed about the whole — does the overall shape still hold? — then drop into the next detail. A detail settled in isolation is a guess about the whole wearing the costume of progress.
+1. **Explore project context** — if current facts are missing, stale, or too shallow, use `explore` in context mode. Do not rewrite explore's Overview or Scoped Deep-dive rules here; follow that skill and emit no Explore Report.
+2. **Ask clarifying questions** — one at a time, focused on purpose, constraints, success criteria, and blocking ambiguity.
+3. **Propose 2-3 approaches** — with trade-offs and your recommendation. Lead with your recommendation and explain why.
+4. **Grill the recommended approach** — walk down each branch of the design tree, resolving dependencies between decisions one by one. For each question, provide your recommended answer. If a question can be answered by exploring the codebase, explore the codebase instead.
+5. **Present design** — scale sections to their complexity, cover the important boundaries, and get user approval before writing a plan.
+6. **Write the plan** — only for `fix` / `feat` / `refactor` / `perf`, after approval. `brainstorm` writes no file.
 
-That pull into detail often comes from the user — they pick a few specific points out of a larger idea and drill. Go down and answer, but you, not they, own knowing whether the overall direction is settled. So after answering the detail, resurface the whole-level questions still open ("settled — but we still haven't pinned down X about the direction"). Don't read the user's drilling as a signal that the whole is clear; treat it as clear only when they say so.
+## Mode Picker
 
-## Hand the wheel back at each decision
+| user's cue                                                | mode         | plan file |
+| --------------------------------------------------------- | ------------ | --------- |
+| fuzzy idea / exploratory / "I want to..." / "should I..." | `brainstorm` | none      |
+| error / exception / regression / "why doesn't it work"    | `fix`        | yes       |
+| new feature / new capability                              | `feat`       | yes       |
+| restructure / no external behavior change                 | `refactor`   | yes       |
+| performance / slow / laggy                                | `perf`       | yes       |
 
-squire's #3 — the user owns the chaining, skills don't auto-run — applies _inside_ shape too, not just between skills. Within one session it's easy to auto-chain clarify → detail → plan in one breath, silently absorbing every judgment on the way. Don't. Each real decision — the mode, the approach, a fragile assumption you had to resolve, a scope line you drew — is a fork that belongs to the user. Name it as a decision, say how it moves the whole, and pause.
+When the mode is ambiguous, ask the next dependency-resolving question. Example: "optimize this code" can mean readable structure (`refactor`) or better numbers (`perf`).
 
-This is not "ask permission for every keystroke" — that's a floor, not a ceiling, and it's exhausting. The line is: never fold a judgment into the plan silently. A decision the user can't see is one they can't redirect. Surface it; if they don't object, that's assent, and you move on.
+On entering a named mode, load:
 
-## Phase 1: Clarify
-
-The first move on entering the skill is always Clarify. **Ask one question at a time** — multiple-choice first ("A or B?"), open-ended as backup. Firing 3-5 questions at once overloads the other person and gets you vaguer answers, not clearer ones.
-
-The bar for "clarified enough" (meet it before Phase 2):
-
-- the user's goal fits in one sentence
-- you know whether it's fix / feat / refactor / perf / or default exploration
-- the key constraints are known (interface boundary / behavior to preserve / baseline numbers / what can't be touched)
-- no blocking ambiguity (two reasonable readings with a big cost difference must be resolved first)
-
-**Knowing the intent ≠ not needing to clarify.** Even when the user says `/shape refactor this`, you may still need to ask "which API behavior stays? how much risk is acceptable? which regression tests run?" — a clear mode doesn't mean clear constraints.
-
-If the user says "you decide" or "whatever you think is best", give a recommendation + a one-line reason and let them confirm or object, rather than silently deciding for them — silently deciding robs them of the chance to push back.
-
-Clarify isn't only interviewing the user — it's grounding yourself. Read the code, docs, and history the idea touches, before and between questions, so the questions are sharp and the depth is real rather than performed. Asking what the repo already answers wastes the user's turn; accepting their first framing without probing the problem behind it is how shape stays shallow. Depth comes from pressure-testing the premise ("is the stated problem the real one?"), not from more rounds of surface questions.
-
-Grounding extends past this repo. Any external definition, tool, library, or API the plan leans on gets verified against authoritative docs — not recalled from training memory, which is how plausible-but-wrong facts slip into a plan (see `references/anti-patterns.md`). "I need to check the docs" beats a confident guess that build later discovers was never true.
-
-## Phase 2: Mode Picker
-
-Set the mode from the Clarify result:
-
-| user's cue                                                | mode       | plan file |
-| --------------------------------------------------------- | ---------- | --------- |
-| fuzzy idea / exploratory / "I want to..." / "should I..." | (default)  | none      |
-| error / exception / regression / "why doesn't it work"    | `fix`      | yes       |
-| new feature / new capability                              | `feat`     | yes       |
-| restructure / no external behavior change                 | `refactor` | yes       |
-| performance / slow / laggy                                | `perf`     | yes       |
-
-When it's ambiguous ("I want to optimize this code" — refactor or perf?), ask one more: is it for **readable structure** (refactor) or **better numbers** (perf)?
-
-On entering a named mode, load the matching reference:
-
+- [references/plan-template.md](references/plan-template.md)
 - [references/mode-fix.md](references/mode-fix.md)
 - [references/mode-feat.md](references/mode-feat.md)
 - [references/mode-refactor.md](references/mode-refactor.md)
 - [references/mode-perf.md](references/mode-perf.md)
 
-Plan file structure: see [references/plan-template.md](references/plan-template.md).
+Only load the mode reference that matches the selected mode.
 
-## Default Mode (brainstorm)
+## Brainstorm Mode
 
-Intent hasn't converged — pure exploratory conversation. Multiple rounds are fine, and you **write no plan file** — writing a plan pretends convergence happened; a plan landed before the intent sets will churn.
+`brainstorm` is exploratory conversation. It does not write plan, design, or spec files. It ends with the direction, constraints, recommended approach, unresolved questions, and whether the next decision is to enter a named mode.
 
-Output shapes: draft directions / option comparisons / a list of open questions.
+If the idea converges during brainstorm, hand the wheel back: "I think this is now `<mode>` and can become a plan. Continue?" Only write `plans/` after the user confirms.
 
-When to converge into a named mode: the user's goal sharpens ("OK, I'll do X") → switch to the matching mode → Phase 3. When stuck in brainstorm with no exit, propose converging yourself: "Based on this I lean toward X mode — want to go that way?" — exploring forever without converging is also a form of dodging.
+Value judgments are out of scope. If the user asks whether something is worth doing, say that squire shapes how to do it, not whether to do it; give at most one observation about the trade-off.
 
-**Value judgments are out of shape's scope.** If the user asks "is this worth doing" / "should we do this", say plainly that squire doesn't handle that — squire decides how, not whether. You can offer a one-line observation ("this looks like a tradeoff between X and Y"), but don't reach a "should / shouldn't do it" verdict for them.
+## Named Modes
 
-## Phase 3: Propose Approach (named mode)
+Named modes still follow the full shaping protocol: context, clarifying questions, 2-3 approaches, grilling the recommended approach, design approval, and then a plan file.
 
-Give one recommended approach. **Offer a second only when the tradeoff is genuinely close (>40% chance the user prefers the other)** — multiple options are a useful scarce signal; a three-way comparison every time becomes noise. Always include a minimal option (the smallest viable version), so they can weigh the recommendation against "do nothing".
+The mode reference adds the mode-specific bar:
 
-Name the **most fragile assumption** (premise collapse) explicitly:
+- `fix`: root cause + regression tests
+- `feat`: interface boundary + acceptance scenarios
+- `refactor`: behavior invariants + regression coverage
+- `perf`: baseline + target + measurement
 
-> "This plan assumes X. If X doesn't hold, Y happens."
+Once the design is approved, write `plans/YYYY-MM-DD-<slug>.md` from `references/plan-template.md`. The plan settles intent decisions: what to build, what not to build, the interface boundary, acceptance, key trade-offs, and verification. Line-level locating, final phrasing, and edit order belong to implement.
 
-This step forces you to see the plan's weak point. If the fragile assumption is load-bearing (one fall and the whole plan collapses), **reshape the design so it survives even if the assumption fails** — don't bet on the assumption.
+After writing the plan, output:
 
-A blocking ambiguity can't be chosen silently — say "the two readings conflict at X; A or B?". Choosing silently pushes the judgment down onto the implement stage.
-
-## Phase 4: Validate Before Handing Off
-
-Self-check before the plan is done — this prevents "looks complete but build hits a wall when a key thing was never stated".
-
-- [ ] more than 8 files / introduces 1 new service → acknowledge it explicitly (large scope trips up build)
-- [ ] the change crosses a module boundary / introduces a new layer or service / swaps a tech dependency → the plan's `## Architecture` section is filled (content and diagram threshold per the template); no trigger → "None"
-- [ ] listed every meaningful test path (happy / errors / edges)
-- [ ] every step that changes external state has a rollback path
-- [ ] every external API key / token / third-party account is listed (don't leave it to be sorted out mid-build)
-- [ ] every dependency — MCP / external API / CLI — is verified reachable before it goes in the plan; check the docs or read existing code rather than writing it from memory (see `references/anti-patterns.md`)
-
-A plan settles the **intent decisions** — what to build and not build, the interface boundary, acceptance, the key tradeoffs. The **mechanical decisions** — which exact line to touch, the final phrasing, the micro-order of edits — belong to implement. So steps state outcome + scope (path level) + verify, and "executable" in the Done when means executable without further _intent_ decisions; the why behind this split lives in `references/plan-template.md`.
-
-**Plan red flags** (any one means the plan isn't done — go back and fix it):
-
-- an intent-level placeholder (`TBD` / `TODO` / `build later` / `similar to step N`) — a sign of "thought through but not written down", which is equivalent to improvising at build time. ("implement locates the exact line" is not one.)
-- any phase can't ship on its own (only useful once the next phase lands) — phases chained into one rope means a mid-chain problem forces a full rollback.
-- a "Phase 0: investigate / spike" exists — investigation belongs before the plan, not inside it as a step.
-
-## Phase 5: Write the plan file + After Approval
-
-Once a named mode finishes the plan, write the file to `plans/YYYY-MM-DD-<slug>.md`:
-
-- `<slug>` derived from the plan topic (`fix-login-loop` / `feat-rbac` / `refactor-storage-layer`)
-- file structure follows `references/plan-template.md`
-- mode-specific fields per the matching mode reference
-
-Then output:
-
-```
+```text
 Plan written to plans/YYYY-MM-DD-<slug>.md
 
 [2-3 line summary]
@@ -137,16 +88,14 @@ Plan written to plans/YYYY-MM-DD-<slug>.md
 To implement it: say "implement this plan".
 ```
 
-**The user saying "implement this plan" / "go ahead" / "按计划做" → treat it as approval and hand straight to implement.** Don't re-litigate — asking "are you sure?" about a plan they just approved pushes the judgment back onto them, and being bounced right after deciding is annoying.
+## When to Stop
 
-If the user approves and then says "actually, let me reconsider...", don't redo it; ask "you just approved the plan — which one point do you want to change?" — lock down the smallest edit surface and avoid restarting the whole plan.
+Stop and surface the issue when:
 
-## When to stop
-
-Shape's failure mode is always "should have paused, but pushed ahead". Stop and handle these, don't force through:
-
-- **Clarify hasn't met the checklist but you want to jump to propose** — Phase 1 is the convergence gate; jumping early means guessing the intent.
-- **You want to write a plan file during brainstorm** — default mode writes no plan; forcing one out pretends the intent converged.
-- **Citing an external API / library / CLI from memory** — check the docs or read existing code before it goes in the plan; see `references/anti-patterns.md`.
-- **The user asks whether it's worth doing** — squire doesn't answer at that level; say it's out of scope and give a one-line observation, no more.
-- **Stuck in brainstorm with no exit** — propose converging instead of exploring further; exploring past a certain depth without converging is itself a stop signal.
+- context is too thin and you have not run explore context preflight
+- a blocking ambiguity remains but you want to propose or write a plan
+- the user has not approved the design summary
+- you want to write a plan during `brainstorm`
+- the plan would contain an intent-level placeholder (`TBD` / `TODO` / `build later` / `similar to step N`)
+- a dependency, API, library, or CLI fact is coming from memory instead of code or authoritative docs
+- the user is asking for a value judgment rather than design work

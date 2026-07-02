@@ -4,6 +4,8 @@ Triggers: new feature, new capability, "add an X", "support Y".
 
 The core of `feat` is **the interface boundary** and **acceptance scenarios**. The feature itself may be large, but the shape stage converges it into a plan that can be built in steps.
 
+Follow `references/shaping-protocol.md` before writing the plan: explore context, ask clarifying questions, propose 2-3 approaches, grill the recommended approach, and present the design. In `feat`, the grill should pressure-test the interface boundary, MVP scope, error behavior, and acceptance scenarios.
+
 ## Clarify focus (feat-specific)
 
 - User scenario: who, in what situation, wants to achieve what?

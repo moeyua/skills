@@ -12,17 +12,17 @@ It isn't just a toolkit. It's a **restrained instruction system**: every rule is
 
 Squire separates project understanding from the change loop. `explore` supplies context or a standalone report; `shape → implement → check → docs` is the core loop; `commit` / `pr` are delivery stages owned by each project's workflow; `doctor` / `handoff` stay orthogonal.
 
-| Skill       | Position               | What it does                                                                            |
-| :---------- | :--------------------- | :-------------------------------------------------------------------------------------- |
-| `explore`   | context / report       | Build project context on demand, with a report only when explicitly requested           |
-| `shape`     | core loop              | Clarify intent and produce a plan (default / fix / feat / refactor / perf)              |
-| `implement` | core loop              | Land minimal, controlled, style-fitting changes; includes writing tests (TDD)           |
-| `check`     | core loop              | Confirm a change holds up via review / test / e2e — verdict only, no edits              |
-| `docs`      | core loop              | Maintain durable project truth per the memory catalog; also user-named docs             |
-| `commit`    | workflow-managed stage | Organize changes into clean commits with clear messages, splitting when needed          |
-| `pr`        | workflow-managed stage | Push the branch and build a PR description and test plan from the branch history        |
-| `doctor`    | orthogonal tool        | Project checkup: docs-vs-code drift (primary) + dependency/CI/file staleness; read-only |
-| `handoff`   | orthogonal tool        | Session handoff: a read-only state summary you can paste into a new session             |
+| Skill       | Position               | What it does                                                                                   |
+| :---------- | :--------------------- | :--------------------------------------------------------------------------------------------- |
+| `explore`   | context / report       | Build project context on demand, with a report only when explicitly requested                  |
+| `shape`     | core loop              | Clarify intent, shape a design, and produce a plan (brainstorm / fix / feat / refactor / perf) |
+| `implement` | core loop              | Land minimal, controlled, style-fitting changes; includes writing tests (TDD)                  |
+| `check`     | core loop              | Confirm a change holds up via review / test / e2e — verdict only, no edits                     |
+| `docs`      | core loop              | Maintain durable project truth per the memory catalog; also user-named docs                    |
+| `commit`    | workflow-managed stage | Organize changes into clean commits with clear messages, splitting when needed                 |
+| `pr`        | workflow-managed stage | Push the branch and build a PR description and test plan from the branch history               |
+| `doctor`    | orthogonal tool        | Project checkup: docs-vs-code drift (primary) + dependency/CI/file staleness; read-only        |
+| `handoff`   | orthogonal tool        | Session handoff: a read-only state summary you can paste into a new session                    |
 
 Every name follows one standard — **each is the term developers already use**: git habits (`commit` / `pr`), CLI habits (`doctor` / `check` / `docs`), agent habits (`explore` / `handoff`), and methodology and PR culture (`shape` from Shape Up's shaping, `implement`). The naming decisions are recorded in [ARCHITECTURE.md](./ARCHITECTURE.md).
 
@@ -65,15 +65,15 @@ Each skill stops when done and waits for **you** to decide the next step. Skills
 
 `shape` adapts to intent through modes — the mode isn't user-specified, it's recognized by the agent during clarification:
 
-| Mode       | When                                         | Output                                |
-| :--------- | :------------------------------------------- | :------------------------------------ |
-| (default)  | Idea is fuzzy, needs collaborative exploring | Design draft / brainstorm result      |
-| `fix`      | Error, misbehavior, regression (+ diagnosis) | Root-cause report + fix plan          |
-| `feat`     | New capability                               | Implementation plan + blast radius    |
-| `refactor` | Tidy code without changing external behavior | Refactor plan + behavior-preservation |
-| `perf`     | Performance work                             | Baseline + optimization plan          |
+| Mode         | When                                         | Output                                   |
+| :----------- | :------------------------------------------- | :--------------------------------------- |
+| `brainstorm` | Idea is fuzzy, needs collaborative exploring | Conversational design direction, no file |
+| `fix`        | Error, misbehavior, regression (+ diagnosis) | Root-cause report + fix plan             |
+| `feat`       | New capability                               | Implementation plan + blast radius       |
+| `refactor`   | Tidy code without changing external behavior | Refactor plan + behavior-preservation    |
+| `perf`       | Performance work                             | Baseline + optimization plan             |
 
-The default no-mode state is exploration itself — brainstorming and tradeoff framing live here, no separate skill needed; the genuine "should we even do this" value judgment is still handed back to you. For the detailed mode design and data flow, see [ARCHITECTURE.md](./ARCHITECTURE.md).
+`brainstorm` is the conversational shaping mode. It writes no plan, design, or spec file; once the direction has converged, it can explicitly ask whether to continue into a named mode. Named modes write `plans/` only after context grounding, clarification, 2-3 approaches, grilling the recommended approach, and design approval. For the detailed mode design and data flow, see [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 ## Design philosophy
 

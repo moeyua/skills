@@ -68,7 +68,7 @@ Skills don't chain automatically. Each one stops when done and waits for the use
 **Next-step suggestions follow one rule: position determines modality.** A change walks a state graph — each skill is a node, its closing "next step" is that node's outgoing edge, and where the node sits decides how the suggestion is made:
 
 - **Fixed** — the success edge inside the core loop is unique: shape (named mode) → implement; implement → check.
-- **Judged** — the edge depends on this run's outcome: check routes by verdict (findings → the owning skill; clean → docs, or delivery when there's nothing to record); shape's default mode converges into a named mode or ends; doctor routes its findings.
+- **Judged** — the edge depends on this run's outcome: check routes by verdict (findings → the owning skill; clean → docs, or delivery when there's nothing to record); shape's brainstorm mode converges into a named mode or ends; doctor routes its findings.
 - **Default-but-overridable** — past the core loop's exit the project's WORKFLOW owns the edge; the skill only supplies the common default: docs → commit, commit → pr.
 - **None** — no outgoing edge: explore (the report is the end), pr, handoff.
 
@@ -88,7 +88,7 @@ Workflow-managed stages commonly follow, but are project-specific:
 commit → pr
 ```
 
-Shape branches internally by intent: default / fix / feat / refactor / perf. Check gates one of three ways: review / test / e2e.
+Shape branches internally by intent: brainstorm / fix / feat / refactor / perf. Check gates one of three ways: review / test / e2e.
 
 Docs runs at the loop's tail — after check passes, before delivery — when a change produces durable memory worth recording — it writes into the right catalog artifact (spec / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README) per `rules/memory-catalog.md`, or updates a concrete catalog-external project doc only when the user names that target.
 

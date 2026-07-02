@@ -12,17 +12,17 @@ AI 的原始产出能力已经很强，但没有结构，这份能力会漂成�
 
 Squire 把项目理解和变更闭环分开：`explore` 提供 context 或独立报告；`shape → implement → check → docs` 是 core loop；`commit` / `pr` 是由项目流程决定的交付阶段；`doctor` / `handoff` 保持正交。
 
-| Skill       | 位置                   | 作用                                                           |
-| :---------- | :--------------------- | :------------------------------------------------------------- |
-| `explore`   | context / report       | 按需建立项目上下文；只有用户主动要求时才产出报告               |
-| `shape`     | core loop              | 澄清意图 + 出方案（default / fix / feat / refactor / perf）    |
-| `implement` | core loop              | 按方案做最小、可控、合项目风格的改动；含写测试（TDD + 补覆盖） |
-| `check`     | core loop              | review / test / e2e 三模式确认改动立得住，只裁决不改           |
-| `docs`      | core loop              | 默认照记忆目录维护项目持久真源；用户指定时也维护目录外文档     |
-| `commit`    | workflow-managed stage | 整理变更、生成清晰 commit message，必要时拆分提交              |
-| `pr`        | workflow-managed stage | 推送分支、综合分支历史准备 PR 描述与 test plan                 |
-| `doctor`    | orthogonal tool        | 项目体检：文档↔代码漂移（主）+ 依赖/CI/文件陈旧；只读 advisory |
-| `handoff`   | orthogonal tool        | 会话交接：只读收集当前状态，输出可粘贴到新会话的自包含摘要     |
+| Skill       | 位置                   | 作用                                                                      |
+| :---------- | :--------------------- | :------------------------------------------------------------------------ |
+| `explore`   | context / report       | 按需建立项目上下文；只有用户主动要求时才产出报告                          |
+| `shape`     | core loop              | 澄清意图、塑形设计、产出方案（brainstorm / fix / feat / refactor / perf） |
+| `implement` | core loop              | 按方案做最小、可控、合项目风格的改动；含写测试（TDD + 补覆盖）            |
+| `check`     | core loop              | review / test / e2e 三模式确认改动立得住，只裁决不改                      |
+| `docs`      | core loop              | 默认照记忆目录维护项目持久真源；用户指定时也维护目录外文档                |
+| `commit`    | workflow-managed stage | 整理变更、生成清晰 commit message，必要时拆分提交                         |
+| `pr`        | workflow-managed stage | 推送分支、综合分支历史准备 PR 描述与 test plan                            |
+| `doctor`    | orthogonal tool        | 项目体检：文档↔代码漂移（主）+ 依赖/CI/文件陈旧；只读 advisory            |
+| `handoff`   | orthogonal tool        | 会话交接：只读收集当前状态，输出可粘贴到新会话的自包含摘要                |
 
 命名统一在一条标准上——**每个名字都取开发者已有习惯里的通行叫法**：git 习惯（`commit` / `pr`）、CLI 习惯（`doctor` / `check` / `docs`）、agent 习惯（`explore` / `handoff`）、方法论与 PR 文化（`shape` 取 Shape Up 的 shaping、`implement`）。命名决策记录见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
 
@@ -65,15 +65,15 @@ commit → pr
 
 `shape` 通过 mode 适配不同意图——mode 不由用户指定，而由 agent 在澄清过程中识别：
 
-| Mode       | 何时进入                       | 输出                    |
-| :--------- | :----------------------------- | :---------------------- |
-| (default)  | 想法模糊，需要协作探索         | 设计草案 / 头脑风暴结论 |
-| `fix`      | 报错、行为异常、回归（含诊断） | 根因报告 + 修复方案     |
-| `feat`     | 新功能                         | 实施方案 + 影响范围     |
-| `refactor` | 不改外部行为、整理代码         | 重构方案 + 行为保留验证 |
-| `perf`     | 性能优化                       | baseline + 优化方案     |
+| Mode         | 何时进入                       | 输出                     |
+| :----------- | :----------------------------- | :----------------------- |
+| `brainstorm` | 想法模糊，需要协作探索         | 会话内设计方向，不写文件 |
+| `fix`        | 报错、行为异常、回归（含诊断） | 根因报告 + 修复方案      |
+| `feat`       | 新功能                         | 实施方案 + 影响范围      |
+| `refactor`   | 不改外部行为、整理代码         | 重构方案 + 行为保留验证  |
+| `perf`       | 性能优化                       | baseline + 优化方案      |
 
-默认无 mode 即是探索状态——brainstorm、tradeoff framing 都落在这里，不需要单独的 skill；真正「该不该做」的价值判断仍交回用户。详细的 mode 设计与数据流见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+`brainstorm` 是会话内塑形 mode，不写 plan、design 或 spec 文件；当方向收敛后，它可以显式询问是否继续进入 named mode。Named mode 只有在上下文探索、澄清、2-3 个 approaches、grill 推荐方案和 design summary 确认之后，才写入 `plans/`。详细的 mode 设计与数据流见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
 
 ## 设计哲学
 
