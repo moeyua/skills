@@ -4,6 +4,8 @@ Triggers: slow, laggy, performance, "optimize loading", "first paint takes too l
 
 The core of `perf` is **measure before optimize**. No baseline, no start; no way to measure, no finish.
 
+Follow `references/shaping-protocol.md` before writing the plan: explore context, ask clarifying questions, propose 2-3 approaches, grill the recommended approach, and present the design. In `perf`, the grill should pressure-test the metric, baseline, target, measurement method, and acceptable costs.
+
 ## Clarify focus (perf-specific)
 
 - Performance metric: what are we optimizing? (latency / throughput / memory / bundle size / startup time / something else)

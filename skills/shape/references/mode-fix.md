@@ -4,6 +4,8 @@ Triggers: error, exception, wrong behavior, regression, "why doesn't it work", "
 
 The core of `fix` is **find the root cause first, then design the fix**. No symptom-level patching (seeing a null and slapping on `if (x == null) return`).
 
+Follow `references/shaping-protocol.md` before writing the plan: explore context, ask clarifying questions, propose 2-3 approaches, grill the recommended approach, and present the design. In `fix`, the grill should pressure-test the root cause, blast radius, and regression coverage.
+
 ## Clarify focus (fix-specific)
 
 - Repro conditions: what action, what input, what environment triggers it?

@@ -4,6 +4,8 @@ Triggers: restructure, change internals, "refactor this", "split X apart", "this
 
 The core of `refactor` is **behavior unchanged** — the externally observable output, side effects, and performance characteristics stay the same; only the internals are reorganized.
 
+Follow `references/shaping-protocol.md` before writing the plan: explore context, ask clarifying questions, propose 2-3 approaches, grill the recommended approach, and present the design. In `refactor`, the grill should pressure-test behavior invariants, regression coverage, and whether a structural change triggers the shared `## Architecture` section.
+
 ## Clarify focus (refactor-specific)
 
 - Goal of the refactor: readability / less duplication / decoupling / preparing for the next feat / something else?
