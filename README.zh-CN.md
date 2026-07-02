@@ -87,6 +87,10 @@ commit → pr
 
 展开与 5 条产品边界见 [PRODUCT.md](./PRODUCT.md)。
 
+## 开发
+
+仓库自检用 `pnpm test`(单元测试 + 整库 smoke,校验所有 skill 文件)。在机械一致性之外,仓库还度量**模型是否真的遵守 shape 流程**:[bench/](bench/README.md) 把真实或场景驱动的 shape 会话按 `specs/shape/spec.md` 逐条 Requirement 判卷——用于失败诊断、改 skill 文档前后的回归对比、跨 host 对比。它只是仓库开发工具,不随 skill 安装。
+
 ## 致谢
 
 以下项目对 Squire 有所启发，在此致谢（不分先后，欢迎补充）：

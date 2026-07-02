@@ -87,6 +87,10 @@ Every design decision derives from 5 principles — not dogma, but yardsticks:
 
 The full principles and 5 product boundaries are in [PRODUCT.md](./PRODUCT.md).
 
+## Development
+
+Repo self-checks run with `pnpm test` (unit tests + a whole-repo smoke that validates every skill file). Beyond mechanical consistency, the repo also measures **whether models actually follow the shape protocol**: [bench/](bench/README.md) judges real or scenario-driven shape sessions against `specs/shape/spec.md` requirement by requirement — used for failure diagnosis, regression comparison when editing skill docs, and cross-host comparison. It is repo tooling only and is never installed with the skills.
+
 ## Acknowledgements
 
 The following projects inspired Squire, with thanks (in no particular order, additions welcome):

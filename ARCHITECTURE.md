@@ -41,6 +41,13 @@ squire/
 │   └── handoff/SKILL.md              # 正交工具（loop 外，会话交接摘要）
 ├── specs/                            # 持久行为契约（document 的 spec 目标，按 domain 一份）
 │   └── <domain>/spec.md              # 行为契约：Purpose + Requirements（各带 Verify）
+├── bench/                            # shape 行为评测（仓库开发工具，不随 skill 安装）
+│   ├── README.md                     # 用法 / 架构 / 行为契约 / 校准纪律
+│   ├── src/                          # normalizer / checks / judge / driver / reporter / cli
+│   ├── scenarios/                    # 场景卡（驱动器输入，格式经单测机械校验）
+│   ├── fixtures/                     # 合成小项目（driver 复制到临时目录后现场 git init）
+│   ├── golden/                       # 人工判卷基准 + rubric 修订记录
+│   └── results/                      # 运行产物（gitignored）
 ├── rules/                            # 跨 skill 规则 / 共享真源（symlink 进相关 skill 的 references/）
 │   ├── anti-patterns.md
 │   ├── durable-context.md
@@ -173,6 +180,8 @@ tests/smoke/verify-skills.test.ts  # 整库 smoke（替代旧的 verify-skills C
 ```
 
 全部 vitest（通过 `vp test run`）。run via `pnpm test`。
+
+**tests/ vs bench/ 的分工**:`tests/` 验证仓库自身一致性(frontmatter、路由、spec 配对——机械、快、进 CI);`bench/` 评测 **skill 的行为遵守度**(把真实/驱动出的 shape 会话按 `specs/shape/spec.md` 逐条判定)——模型参与、有成本、手动触发,不进 CI。bench 的纯逻辑部分(normalizer / checker / schema 等)仍有单测,由 `vp test run` 一并覆盖(`bench/src/**/*.test.ts`)。详见 [bench/README.md](bench/README.md)。
 
 ### 7. 元文档
 
@@ -500,6 +509,10 @@ ROADMAP 原积「`shape` 的 `arch` mode / 产出架构」以否决 mode 读法�
 `shape` 从补丁式规则清单收束为一条共享协议：context grounding → Clarify → 2-3 approaches → grill 推荐方案 → design summary gate → plan。旧 `(default)` 改为 `brainstorm`：它是显式会话 mode，不写文件，只在方向收敛后请求进入 named mode。Named modes 仍是 `fix` / `feat` / `refactor` / `perf`，但写 plan 前必须展开可选 approaches、pressure-test 推荐项，并取得 design summary 确认。
 
 主 `SKILL.md` 只保留入口、硬门禁、mode picker 和 reference routing；细节进 `skills/shape/references/shaping-protocol.md`，mode-specific bar 继续留在 `references/mode-*.md`。上下文探索不在 shape 内重写：shape 判断何时需要 grounding，explore context mode 定义如何 Overview / deep-dive / 无报告。详见 [plans/2026-07-01-feat-shape-brainstorming-protocol.md](plans/2026-07-01-feat-shape-brainstorming-protocol.md)。
+
+### 2026-07-02 shape-bench:skill 行为遵守度可测化
+
+「模型无法稳定遵守 shape 流程」此前只能靠人工判卷定性。新增顶层 `bench/`:对已有真实会话与驱动器自动跑出的会话,机械检查硬违规(HARD-GATE、brainstorm 写 plan、占位词、一轮多问)+ LLM judge 按 `specs/shape/spec.md` 逐条判定(阶段切分 → 逐 Requirement → 0-10 总分),经两个人工判卷 gold case 校准(分差 ≤0.5、判分抖动 ±0.5 已量化)。驱动器以 8 张场景卡 + 模拟用户跑完整会话:claude 侧 Agent SDK `canUseTool` 代答 AskUserQuestion,codex 侧 `exec`/`exec resume`。定位:仓库开发工具,与 `doctor`(消费项目体检)、`tests/`(仓库一致性)互不重叠;不进 specs/(`checkSpecPairing` 强制 specs↔skills 配对),对外契约固化在 [bench/README.md](bench/README.md)。首份真实基线:「逐枝 grill」6/6 fail、「design summary gate」与「决策交回用户」各 5/6 fail——反向优化 skill 文档的靶子。详见 [plans/2026-07-02-feat-shape-bench.md](plans/2026-07-02-feat-shape-bench.md)。
 
 ## 未来规划
 
