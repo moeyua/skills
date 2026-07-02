@@ -1,0 +1,10 @@
+{
+  "name": "synthetic-notes-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A tiny notes app used as a shape-bench fixture.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/"
+  }
+}
