@@ -10,7 +10,7 @@ dispatch_intent: "Clarify intent, shape a design, and produce a plan when a name
 Shape turns ideas into designs and, when the intent has converged, executable plans. Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what is being built or changed, propose approaches, pressure-test the recommended one, present the design, and get user approval before writing a plan.
 
 <HARD-GATE>
-Do NOT write code, scaffold projects, change implementation files, or invoke implementation work until the design has been presented and the user has approved the plan. This applies even when the change looks simple.
+Do NOT write code, scaffold projects, change implementation files, or invoke implementation work until the design has been presented and the user has approved the plan. This applies even when the change looks simple. Writing a `plans/` file has its own precondition: a standalone `Design Summary` message was presented and the user confirmed that message.
 </HARD-GATE>
 
 Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
@@ -31,8 +31,8 @@ Work through these items in order:
 1. **Explore project context** — if current facts are missing, stale, or too shallow, use `explore` in context mode. Do not rewrite explore's Overview or Scoped Deep-dive rules here; follow that skill and emit no Explore Report.
 2. **Ask clarifying questions** — one at a time, focused on purpose, constraints, success criteria, and blocking ambiguity.
 3. **Propose 2-3 approaches** — with trade-offs and your recommendation. Lead with your recommendation and explain why.
-4. **Grill the recommended approach** — walk down each branch of the design tree, resolving dependencies between decisions one by one. For each question, provide your recommended answer. If a question can be answered by exploring the codebase, explore the codebase instead.
-5. **Present design** — scale sections to their complexity, cover the important boundaries, and get user approval before writing a plan.
+4. **Grill the recommended approach** — first enumerate the load-bearing decision list and show it; ≤3 items resolve as one combined round with recommendations, ≥4 stop at the list then one question at a time. If a question can be answered by exploring the codebase, explore the codebase instead.
+5. **Present design** — one standalone `Design Summary` message ending with a single confirmation question; only the user's confirmation of that message unlocks the plan.
 6. **Write the plan** — only for `fix` / `feat` / `refactor` / `perf`, after approval. `brainstorm` writes no file.
 
 ## Mode Picker

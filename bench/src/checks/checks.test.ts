@@ -156,6 +156,119 @@ describe("plan-placeholder", () => {
   });
 });
 
+describe("design-gate-skipped", () => {
+  const planWrite = (turn: number): BenchEvent[] =>
+    writeCall(turn, "/repo/plans/2026-07-03-fix-x.md", "---\nmode: fix\n---");
+
+  it("flags a plan written without a prior Design Summary message", () => {
+    const t = transcript([
+      {
+        kind: "assistant-message",
+        turn: 2,
+        timestamp: undefined,
+        text: "推荐方案 A,直接写计划了。",
+      },
+      ...planWrite(3),
+    ]);
+    const hits = runChecks(t).violations.filter((v) => v.check === "design-gate-skipped");
+    expect(hits).toHaveLength(1);
+    expect(hits[0]?.severity).toBe("hard");
+    expect(hits[0]?.evidence).toContain("plans/2026-07-03-fix-x.md");
+  });
+
+  it("stays silent when a Design Summary message precedes the plan", () => {
+    const t = transcript([
+      {
+        kind: "assistant-message",
+        turn: 2,
+        timestamp: undefined,
+        text: "## Design Summary\n\n目标:…\n\n是否确认这份设计?",
+      },
+      { kind: "user-message", turn: 3, timestamp: undefined, text: "确认" },
+      ...planWrite(3),
+    ]);
+    expect(runChecks(t).violations.filter((v) => v.check === "design-gate-skipped")).toHaveLength(
+      0,
+    );
+  });
+
+  it("accepts a bare heading line without markdown hashes", () => {
+    const t = transcript([
+      {
+        kind: "assistant-message",
+        turn: 2,
+        timestamp: undefined,
+        text: "Design Summary\n\n目标:…\n\n是否确认这份设计?",
+      },
+      ...planWrite(3),
+    ]);
+    expect(runChecks(t).violations.filter((v) => v.check === "design-gate-skipped")).toHaveLength(
+      0,
+    );
+  });
+
+  it("does not accept a mere mention of Design Summary mid-paragraph", () => {
+    const t = transcript([
+      {
+        kind: "assistant-message",
+        turn: 2,
+        timestamp: undefined,
+        text: "接下来我会先给出 Design Summary,然后直接写计划。",
+      },
+      ...planWrite(3),
+    ]);
+    expect(runChecks(t).violations.filter((v) => v.check === "design-gate-skipped")).toHaveLength(
+      1,
+    );
+  });
+
+  it("flags only the first plan write when the marker arrives after it", () => {
+    const t = transcript([
+      ...planWrite(2),
+      {
+        kind: "assistant-message",
+        turn: 3,
+        timestamp: undefined,
+        text: "## Design Summary\n\n补一份设计。",
+      },
+      ...writeCall(3, "/repo/plans/2026-07-03-fix-y.md", "---\nmode: fix\n---"),
+    ]);
+    const hits = runChecks(t).violations.filter((v) => v.check === "design-gate-skipped");
+    expect(hits).toHaveLength(1);
+    expect(hits[0]?.evidence).toContain("plans/2026-07-03-fix-x.md");
+  });
+
+  it("ignores sidechain Design Summary messages", () => {
+    const t = transcript([
+      {
+        kind: "assistant-message",
+        turn: 2,
+        timestamp: undefined,
+        text: "Design Summary(仅在子代理里出现)",
+        sidechain: true,
+      },
+      ...planWrite(3),
+    ]);
+    expect(runChecks(t).violations.filter((v) => v.check === "design-gate-skipped")).toHaveLength(
+      1,
+    );
+  });
+
+  it("does not fire when no plan is written (brainstorm sessions)", () => {
+    const t = transcript([
+      {
+        kind: "assistant-message",
+        turn: 2,
+        timestamp: undefined,
+        text: "方向聊清楚了,先不进 named mode。",
+      },
+    ]);
+    expect(runChecks(t).violations.filter((v) => v.check === "design-gate-skipped")).toHaveLength(
+      0,
+    );
+  });
+});
+
 describe("multi-question", () => {
   it("flags a single AskUserQuestion carrying multiple questions", () => {
     const t = transcript([

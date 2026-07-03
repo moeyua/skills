@@ -7,6 +7,7 @@
  * - brainstorm-wrote-plan: plan/design files written in a brainstorm session
  * - plan-placeholder:     plan content carrying intent-level placeholders
  * - multi-question:       more than one question fired in a single turn
+ * - design-gate-skipped:  plan written with no prior Design Summary message
  */
 
 import type { NormalizedTranscript, ToolCallEvent } from "../normalize/events.ts";
@@ -15,7 +16,8 @@ export type CheckName =
   | "hard-gate"
   | "brainstorm-wrote-plan"
   | "plan-placeholder"
-  | "multi-question";
+  | "multi-question"
+  | "design-gate-skipped";
 
 export interface Violation {
   check: CheckName;
@@ -88,6 +90,31 @@ export function runChecks(transcript: NormalizedTranscript, opts: CheckOptions =
   const firstPlanWriteIndex = events.findIndex(
     (e) => e.kind === "file-write" && isPlanPath(e.path),
   );
+
+  // spec: writing a plan is unlocked only by user confirmation of a standalone
+  // `Design Summary` message; mechanically we check a heading-shaped marker
+  // existed at all — whether the confirmation targeted it stays with the judge
+  const DESIGN_SUMMARY_HEADING = /^#{0,6}\s*Design Summary/m;
+  if (firstPlanWriteIndex !== -1) {
+    const gate = events.findIndex(
+      (e, i) =>
+        i < firstPlanWriteIndex &&
+        e.kind === "assistant-message" &&
+        e.sidechain !== true &&
+        DESIGN_SUMMARY_HEADING.test(e.text),
+    );
+    if (gate === -1) {
+      const planEvent = events[firstPlanWriteIndex];
+      if (planEvent?.kind === "file-write") {
+        violations.push({
+          check: "design-gate-skipped",
+          severity: "hard",
+          turn: planEvent.turn,
+          evidence: `写入 ${planEvent.path} 前未出现过 Design Summary 消息`,
+        });
+      }
+    }
+  }
 
   events.forEach((e, i) => {
     if (e.kind !== "file-write") return;

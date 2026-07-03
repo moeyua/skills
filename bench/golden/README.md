@@ -28,6 +28,8 @@ node bench/src/calibrate.ts --repeat 3 # 判 3 次,量化 judge 抖动
 
 解读矩阵时的噪声参考:单会话判分抖动约 ±0.5,分差 ≤0.5 不构成回归信号。
 
+**契约版本注记(2026-07-03)**:`specs/shape/spec.md` 的三条 Requirement(逐枝 grill、design summary gate、决策交回)已 MODIFIED 为机械化表述(枚举分档、`Design Summary` 固定标记)。两个 gold case 的人工基准按旧契约判卷:校准比对时这三条按方向一致(partial 容差)解读,不因新机械要求追溯判罚旧会话;下一个真实会话 gold case 宜按新契约重建。
+
 ## Rubric 修订记录
 
 | 日期       | 修订                                                                                                 | 动因                                                                                                                                                                                                                                                        |

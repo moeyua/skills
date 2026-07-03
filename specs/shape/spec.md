@@ -33,13 +33,13 @@ Verify: manual(integration)
 
 ### Requirement: 逐枝 grill 推荐方案
 
-shape 在选出推荐 approach 后,必须沿推荐方案的设计树逐枝追问关键决策,每次只问一个问题并给出自己的推荐答案和理由。grill 聚焦 load-bearing decisions,例如 scope 边界、公开接口、数据流、错误处理、rollback、测试、迁移顺序、架构触发和脆弱假设。问题若能通过读取代码、文档、测试或历史回答,shape 必须先读取证据,不要把仓库已经能回答的问题转嫁给用户。
-Verify: manual(integration)
+shape 在选出推荐 approach 后,必须先枚举本方案的 load-bearing 决策清单(scope 边界、公开接口、数据流、错误处理、rollback、测试、迁移顺序、架构触发、脆弱假设中实际在场的)并展示给用户;清单 ≤3 条时可合并为一轮确认且每条附推荐答案,≥4 条时必须逐个提问、每问附推荐答案与理由。未经清单确认的决策不得写入 plan 的 Key decisions。问题若能通过读取代码、文档、测试或历史回答,shape 必须先读取证据,不要把仓库已经能回答的问题转嫁给用户。(Previously: 只要求 interview 式逐枝下行、一次一问,无枚举动作与档位判据。)
+Verify: bench 场景 feat-midsize-sharing / fix-multi-constraint-import + judge 逐条判定
 
 ### Requirement: plan 前 design summary gate
 
-shape 在写 named mode plan 前,必须先展示按复杂度缩放的 design summary,覆盖目标、非目标、接口/边界、关键设计决策、错误/边缘处理、测试或验收方式。用户确认 summary 后才能写 plan;用户要求修改时,回到对应问题或 design section,不直接把未确认判断写入 plan。
-Verify: manual(integration)
+shape 在写 named mode plan 前,必须以固定标题 `Design Summary` 开头、独立成一条消息展示按复杂度缩放的设计摘要,覆盖目标、非目标、接口/边界、关键设计决策、错误/边缘处理、测试或验收方式,消息末尾只提出一个问题:是否确认这份设计。只有用户对该消息的确认可解锁写 plan;对其他问题的肯定答复不构成设计确认。用户要求修改时,回到对应问题或 design section,不直接把未确认判断写入 plan。(Previously: 只要求展示 design summary 并询问,无固定标记、独立消息与单一问句约束。)
+Verify: bench 机械 checker design-gate-skipped + judge 判定确认针对性
 
 ### Requirement: named mode 产出可执行方案文件
 
@@ -63,8 +63,8 @@ Verify: manual(integration)
 
 ### Requirement: 决策点把串联交回用户
 
-shape 必须在每个真决策处(mode 选择 / approach 推荐 / grill 解决的脆弱假设 / scope 边界 / design summary 确认)命名该决策、说明它如何移动整体,然后停下把下一步交回用户,绝不把判断无声地并入方案;用户不反对即视为同意。这不要求每步都征得批准。(Previously: plan 执行该职责。)
-Verify: manual(integration)
+shape 必须在每个真决策处(mode 选择 / approach 推荐 / grill 解决的脆弱假设 / scope 边界 / design summary 确认)命名该决策、说明它如何移动整体,然后停下把下一步交回用户,绝不把判断无声地并入方案;用户不反对即视为同意。grill 决策清单的确认与 `Design Summary` 消息的确认是本条的两个强制实例;实质性判定(决策是否真被交回而非形式化列举)按对话证据判。这不要求每步都征得批准。(Previously: 无强制实例点名。)
+Verify: manual(integration) + bench judge 逐条判定
 
 ### Requirement: 跨结构变更产出 Architecture 段
 

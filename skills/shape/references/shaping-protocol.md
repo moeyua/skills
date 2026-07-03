@@ -37,17 +37,18 @@ Do not treat this as a vote. The approaches create the design space; the next st
 
 ## Grill the recommended approach
 
-Interview the plan until there is shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one by one. For each question, provide your recommended answer.
+Once the recommended approach is picked, the first action is mechanical: enumerate this design's load-bearing decisions — scope boundaries, public interface, data flow, error handling, rollback, tests, migration order, architecture triggers, fragile assumptions (only the ones actually present) — and show the list to the user. Every decision must pass through the list and the user's response to it before it may appear in the plan's Key decisions.
 
-Only grill load-bearing decisions: scope boundaries, public interface, data flow, error handling, rollback, tests, migration order, architecture triggers, and fragile assumptions. Do not turn grilling into a long survey of every possible detail.
+The list's length picks the mode, not your judgment:
 
-Ask one question at a time and wait for feedback before continuing. If the answer affects the whole, say how. If the user drills into a detail, answer it, then climb back to the whole and name what remains unsettled.
+- **≤3 items** — the list itself is the combined round: state each decision with your recommended answer and the reason, and let the user confirm or override per item.
+- **≥4 items** — stop at the list: let the user react to its scope first, then walk the items one at a time — one question per turn, each with your recommended answer and the reason, waiting for feedback before the next.
 
-If a question can be answered by exploring the codebase, explore the codebase instead. If answering it requires external API, library, or tool behavior, verify against authoritative docs before it enters the design.
+If the user drills into a detail, answer it, then climb back to the whole and name what remains unsettled. If a question can be answered by exploring the codebase, explore the codebase instead. If answering it requires external API, library, or tool behavior, verify against authoritative docs before it enters the design.
 
 ## Present design
 
-Once you believe you understand what is being built, present the design before writing a plan. Scale each section to its complexity: a few sentences if straightforward, more detail when nuanced.
+Once the decision list is settled, present the design as one standalone message that begins with the fixed heading `Design Summary`. Scale each section to its complexity: a few sentences if straightforward, more detail when nuanced.
 
 Cover the sections that apply:
 
@@ -59,7 +60,7 @@ Cover the sections that apply:
 - tests, acceptance, or measurement
 - risks and premise collapse
 
-Ask whether the design looks right before writing the plan. If the user requests changes, go back to the relevant clarifying question or design branch; do not write the disputed judgment into the plan.
+End that message with exactly one question: is this design confirmed? Only the user's answer to the `Design Summary` message unlocks writing a plan — an affirmative given to any other question is not design approval. If the user requests changes, go back to the relevant clarifying question or design branch; do not write the disputed judgment into the plan.
 
 ## Self-review before writing
 
