@@ -89,7 +89,7 @@ export function runCodexScenario(
   while (turns < maxTurns) {
     turns += 1;
     history += `\n[用户] ${prompt}`;
-    // resume inherits cwd and sandbox from the session and rejects -C / -s
+    // resume rejects -C / -s and follows the process cwd, so pin it via spawnSync cwd
     const args =
       sessionId === ""
         ? [
@@ -108,6 +108,7 @@ export function runCodexScenario(
     args.push(prompt);
 
     const res = spawnSync("codex", args, {
+      cwd: workDir,
       encoding: "utf8",
       input: "",
       timeout,
