@@ -42,7 +42,7 @@ Verify: manual(integration)
 
 ### Requirement: 守默认目录边界、PRODUCT 指回 shape
 
-本 skill 必须拒绝 agent 自行发明的目录外 artifact,并要求用户明确指定目标;PRODUCT 的内容性变更必须指回 `/shape`,docs 不自动写 PRODUCT 内容(至多 create 空骨架)。(Previously: document 执行该职责,PRODUCT 指回 `/plan`。)
+本 skill 必须拒绝 agent 自行发明的目录外 artifact,并要求用户明确指定目标;PRODUCT 的内容性变更必须指回 `/shape`,docs 不自动写 PRODUCT 内容(至多 create 空骨架)。PRODUCT 与 specs 的「从无到有初次创作」由 converge 以维护者访谈产出,是本边界的显式例外;既有文档的内容变更仍指回 shape 与 docs 本身。(Previously: 无 converge 初次创作例外;更早由 document 执行该职责,PRODUCT 指回 `/plan`。)
 Verify: manual(integration)
 
 ### Requirement: 无 delta 时直接纠正
