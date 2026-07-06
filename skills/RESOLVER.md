@@ -47,10 +47,11 @@ These are squire skills, but not part of the core loop. A project's WORKFLOW.md 
 
 ## Orthogonal Tools
 
-| trigger                                                                                                                                               | skill                     |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| "health check" / "what has drifted" / "体检" / "审计" / `/doctor` / whole-project audit: docs-vs-code drift + dependency/CI/file staleness, read-only | `skills/doctor/SKILL.md`  |
-| "hand over" / "continue in a new session" / "context summary" / "交接" / "新会话继续" / `/handoff` / read-only handoff summary to continue elsewhere  | `skills/handoff/SKILL.md` |
+| trigger                                                                                                                                                                                                      | skill                      |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------- |
+| "health check" / "what has drifted" / "体检" / "审计" / `/doctor` / whole-project audit: docs-vs-code drift + dependency/CI/file staleness, read-only                                                        | `skills/doctor/SKILL.md`   |
+| "hand over" / "continue in a new session" / "context summary" / "交接" / "新会话继续" / `/handoff` / read-only handoff summary to continue elsewhere                                                         | `skills/handoff/SKILL.md`  |
+| "initialize squire docs" / "bring the docs up to spec" / "初始化文档" / "上车" / "补齐文档" / "升级后对齐" / `/converge` / batch-converge the memory catalog to current formats, per-document and idempotent | `skills/converge/SKILL.md` |
 
 ## Disambiguation
 
@@ -69,7 +70,7 @@ Skills don't chain automatically. Each one stops when done and waits for the use
 
 - **Fixed** — the success edge inside the core loop is unique: shape (named mode) → implement; implement → check.
 - **Judged** — the edge depends on this run's outcome: check routes by verdict (findings → the owning skill; clean → docs, or delivery when there's nothing to record); shape's brainstorm mode converges into a named mode or ends; doctor routes its findings.
-- **Default-but-overridable** — past the core loop's exit the project's WORKFLOW owns the edge; the skill only supplies the common default: docs → commit, commit → pr.
+- **Default-but-overridable** — past the core loop's exit the project's WORKFLOW owns the edge; the skill only supplies the common default: docs → commit, commit → pr, converge → commit.
 - **None** — no outgoing edge: explore (the report is the end), pr, handoff.
 
 Whatever the modality, a suggestion is only a suggestion — the user walks the graph.
@@ -94,4 +95,6 @@ Docs runs at the loop's tail — after check passes, before delivery — when a 
 
 `doctor` is the orthogonal audit — a read-only, whole-project checkup (docs-vs-code drift + dependency/CI/file staleness) that runs outside the core loop, on demand. It only detects and reports; docs writes any correction it surfaces.
 
-`handoff` is the other orthogonal tool — a read-only, host-neutral session-handoff summary, generated on demand when a session ends or moves to another agent. It never chains onward and writes nothing; the user carries its output to the next session.
+`handoff` is another orthogonal tool — a read-only, host-neutral session-handoff summary, generated on demand when a session ends or moves to another agent. It never chains onward and writes nothing; the user carries its output to the next session.
+
+`converge` is the batch-alignment tool — it converges the whole memory catalog to squire's current formats, judging each document's state and acting per document, idempotently. It runs on demand (onboarding a project, completing a half-covered doc set, realigning after a squire upgrade), stops after its convergence report, and suggests `/commit` as the default next step — the project's WORKFLOW owns that edge.

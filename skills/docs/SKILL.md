@@ -85,6 +85,7 @@ Once the write lands, the core loop is complete. Suggest `/commit` as the defaul
 - **vs implement** — implement writes code and tests; docs writes docs. Docs never touches code or runs git.
 - **vs check** — check judges whether a change holds up; docs records what the change established. Docs doesn't judge correctness.
 - **vs doctor** — doctor detects drift/gaps across the whole project (read-only); docs writes the correction. Docs acts on awareness — from doctor or a person — it never owns detection.
+- **vs converge** — converge batch-converges the whole memory catalog to squire's current formats and may create PRODUCT / specs from nothing via maintainer interview; docs stays single-target and awareness-driven. Once a document exists, content authority returns to its owner — shape for PRODUCT, docs for everything else.
 - **catalog vs explicit docs** — catalog docs are the default memory lane; catalog-external docs require the user to name the target.
 
 ## When to stop

@@ -90,7 +90,7 @@ Mechanical findings are stated as facts; model findings carry a confidence and a
 - **vs explore** — explore builds a map of an unfamiliar project; doctor audits a (mapped) project for drift. Doctor may reuse explore's reading, but its output is a drift report, not a map.
 - **vs shape fix** — doctor reports a suspected code bug; shape fix diagnoses the root cause and plans the fix.
 
-When you find a class of problem, point the author to the matching skill instead of taking over: doc drift → `/docs`; code bug → `/shape fix`; simplification → `/shape refactor`; scope creep → flag it, let the user decide.
+When you find a class of problem, point the author to the matching skill instead of taking over: doc drift → `/docs`; batch catalog format drift → `/converge`; code bug → `/shape fix`; simplification → `/shape refactor`; scope creep → flag it, let the user decide.
 
 ## When to stop
 
