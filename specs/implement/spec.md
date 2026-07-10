@@ -18,6 +18,11 @@ implement 在执行方案前，若当前项目/模块上下文缺失、过期或
 该 preflight 不替代读取整份 plan，也不替代每步动手前在该步 scope 内定位文件。
 Verify: manual(integration)
 
+### Requirement: 仅豁免本次方案的未提交状态
+
+implement 在工作树预检前必须先唯一确定本次执行的 plan。只有该 plan 可以处于新增或修改状态（无论 staged 或 unstaged）；除该精确路径外的任何未提交改动——包括其他 plan——都必须阻止执行。选中的 plan 被删除、重命名或处于冲突状态时也必须停止。implement 不得为满足预检而自动提交、暂存、stash 或丢弃改动；从受保护分支创建工作分支时必须原样携带该 plan。
+Verify: manual(integration)
+
 ### Requirement: 不在受保护分支上动工
 
 首次编辑前，若当前在受保护分支（main / master / develop）或 detached HEAD，implement 必须先 `git checkout -b <plan-slug>` 开工作分支。(Previously: build 执行该职责。)

@@ -26,7 +26,7 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 
 Do these in parallel:
 
-1. **Locate the plan**: if the user's message has a path, use it; otherwise take the newest `status: approved` plan under `plans/` (sorted by YYYY-MM-DD). If there is none, report the state and ask the user to point to one or run `/shape` first — don't guess the goal.
+1. **Locate the plan**: if the user's message has a path, use it; otherwise take the newest `status: approved` plan under `plans/` (sorted by YYYY-MM-DD). If there is none, or multiple candidates tie for newest, report the candidates and ask the user to point to one or run `/shape` first — don't guess the goal, choose among ties, or apply any working-tree exception until one exact path is selected.
 2. **Read the whole plan**: the plan is the only ground truth for this run; starting without reading it is guessing.
 3. **Scan the project skeleton**: `git status --short` for a dirty tree, `git branch --show-current` for the current branch, `git log --oneline -5` to learn the commit style, `ls package.json pnpm-lock.yaml Cargo.toml ...` to identify the project type and test framework.
 
@@ -36,14 +36,14 @@ If any of these conditions fails, report the state and stop — let the user dec
 
 - **Plan status is `approved`** — if it is `draft` and implement was triggered by an approval signal (`/implement`, "apply the plan", "按方案做"), set the status to `approved` and continue; the command itself is the user's approval. `done` means it already ran — stop and ask the user.
 - **No placeholders** (`TBD` / `TODO` / `implement later` / `similar to step N`) — these signal an unfinished plan; go back to shape to complete it.
-- **Clean working tree** — a dirty tree may hide unsaved changes that a blind run would overwrite; let the user decide whether to commit or discard first.
+- **No unrelated working-tree changes** — after selecting the plan, classify every `git status --short` entry against its exact path. That plan may be newly added or modified, staged or unstaged; its own status edits during implement are expected. A deleted, renamed, or conflicted selected plan is not a stable source, so stop. Any other dirty path — including another file under `plans/` — is unrelated work: stop and let the user decide. Never commit, stage, stash, or discard changes just to make preflight pass.
 - **The files and interfaces the plan assumes still exist** — grep the paths and function names the plan names. Drift means the plan is out of sync with the code; go back to shape to fix the plan.
 
 ## Branch setup: don't build on a protected branch
 
 Before the first edit, check `git branch --show-current`. If it's a protected branch (`main` / `master` / `develop`) or empty (detached HEAD), create a working branch: `git checkout -b <plan-slug>`, where the slug is the plan filename minus the `YYYY-MM-DD-` date prefix (`plans/2026-06-01-feat-rbac.md` → `feat-rbac`). If that branch name already exists, `git checkout` it instead of failing — a name collision is almost always the same plan resumed. If you're already on a non-protected branch, keep it.
 
-This keeps the work off the mainline so the later commit and PR have a branch to live on — pr refuses to push a protected branch, so landing the work there just forces a detour later. Building on a clean working tree (Preflight already required it) means `git checkout -b` carries nothing unexpected across. Report which branch you're on before editing.
+This keeps the work off the mainline so the later commit and PR have a branch to live on — pr refuses to push a protected branch, so landing the work there just forces a detour later. Preflight has already excluded unrelated changes; an uncommitted selected plan is expected and travels onto the working branch with the checkout. Don't commit, stage, or stash it as part of branch setup. Report which branch you're on before editing.
 
 ## Standard flow
 
