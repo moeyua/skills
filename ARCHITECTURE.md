@@ -22,9 +22,9 @@ squire/
 ├── pnpm-lock.yaml
 ├── skills/                           # 内容层（npx skills add 扫描这里）
 │   ├── RESOLVER.md                   # 人类可读路由索引
-│   ├── issue/                        # 可选入口：单条自然语言工作 → 中文 GitHub Issue
+│   ├── issue/                        # 可选入口：单条自然语言工作 → 强格式 GitHub Issue
 │   │   ├── SKILL.md                  # 仓库解析、理解确认、label 与 gh mutation 边界
-│   │   └── references/formats.md     # fix / feat / refactor / perf 中文正文格式真源
+│   │   └── references/formats.md     # fix / feat / refactor / perf semantic section 真源
 │   ├── explore/SKILL.md
 │   ├── shape/
 │   │   ├── SKILL.md                  # 主体 + clarify phase + mode picker
@@ -65,7 +65,7 @@ squire/
     ├── checks.test.ts                # check 函数单元测试
     ├── memory-catalog.test.ts        # 记忆目录↔format 锁步检查单测（自带独立 fixture）
     ├── checker.test.ts               # health checker 单元测试（fixture）
-    ├── issue.test.ts                 # issue label 词汇与中文格式真源锁步测试
+    ├── issue.test.ts                 # issue label、semantic schema 与语言行为锁步测试
     └── smoke/
         └── verify-skills.test.ts     # 整库 smoke：跑当前 repo 过所有 check
 ```
@@ -184,7 +184,7 @@ tests/smoke/verify-skills.test.ts  # 整库验证 smoke（CI 入口）
 tests/frontmatter.test.ts          # parser 单元测试
 tests/checks.test.ts               # check 函数单元测试
 tests/memory-catalog.test.ts       # 记忆目录↔format 锁步检查单测
-tests/issue.test.ts                # issue label 词汇与四种中文 section 顺序
+tests/issue.test.ts                # issue label 词汇、四种 semantic schema 与语言行为
 tests/smoke/verify-skills.test.ts  # 整库 smoke（替代旧的 verify-skills CLI）
 ```
 
@@ -539,9 +539,9 @@ ROADMAP 原积「`shape` 的 `arch` mode / 产出架构」以否决 mode 读法�
 
 ### 2026-07-14 issue 作为 create-only 可选入口
 
-第 11 个 skill `issue` 位于 core loop 外：它把一条自然语言开发工作压实为简短理解卡，用户确认后用当前 `gh` 身份创建一个中文强格式 GitHub Issue，返回 URL 即停止。分类不再另造 taxonomy，而只复用 shape 的四个 named modes：`fix` / `feat` / `refactor` / `perf`；每个 Issue 恰好一个同名主 label，缺失时只按需创建当前 label，已有 label 不改元数据。
+第 11 个 skill `issue` 位于 core loop 外：它把一条自然语言开发工作压实为简短理解卡，用户确认后用当前 `gh` 身份按用户语言创建一个强格式 GitHub Issue，返回 URL 即停止。分类不再另造 taxonomy，而只复用 shape 的四个 named modes：`fix` / `feat` / `refactor` / `perf`；每个 Issue 恰好一个同名主 label，缺失时只按需创建当前 label，已有 label 不改元数据。
 
-边界刻意封顶在 create-only：不使用 GitHub Projects、Draft、Issue Type、状态流、同步、拆票、仓库模板或跨 skill 自动化。主流程留在 `skills/issue/SKILL.md`，四种中文 section 顺序集中在 `references/formats.md`，仓库私有测试机械锁定 label 词汇和 headings；v1 不引入 runtime helper。详见 [plans/2026-07-14-feat-issue-skill.md](plans/2026-07-14-feat-issue-skill.md)。
+边界刻意封顶在 create-only：不使用 GitHub Projects、Draft、Issue Type、状态流、同步、拆票、仓库模板或跨 skill 自动化。主流程留在 `skills/issue/SKILL.md`，四种 semantic section key 与顺序集中在 `references/formats.md`，输出 heading 按用户语言自然本地化，仓库私有测试机械锁定 label、schema 与语言行为；v1 不引入 runtime helper。详见初版 [plans/2026-07-14-feat-issue-skill.md](plans/2026-07-14-feat-issue-skill.md) 与语言中立修订 [plans/2026-07-14-feat-language-neutral-issue-format.md](plans/2026-07-14-feat-language-neutral-issue-format.md)。
 
 ## 未来规划
 

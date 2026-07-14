@@ -22,7 +22,7 @@ squire 的范围限定在两件事：**开发**一个项目，**记住 / 文档�
 
 `issue` 是 core loop 外的可选开发入口：它只把一项已经决定记录的开发工作确认并创建为 GitHub Issue，返回 URL 后停止；不替用户做产品价值判断，也不自动进入 `shape`。`commit` / `pr` 是 workflow-managed stages，由项目流程决定是否接在后面；`doctor` / `handoff` 是正交工具。squire 不扩展到通用项目管理、产品决策、发布管理、Agent 自审计或通用内容输入处理（详见下面"边界"段）。
 
-> **2026-07-14 修订**：新增 `issue` 不把 scope 扩成任务管理系统。它的上限是「一项自然语言开发工作 → 简短理解确认 → 一个中文强格式 GitHub Issue」；仓库只从显式输入或当前目录解析，分类只复用 shape 的 `fix` / `feat` / `refactor` / `perf` named modes。它不使用 Project、Draft、状态流、批量同步、拆票、仓库模板或跨 skill 自动化。
+> **2026-07-14 修订**：新增 `issue` 不把 scope 扩成任务管理系统。它的上限是「一项自然语言开发工作 → 简短理解确认 → 一个按用户语言生成的强格式 GitHub Issue」；仓库只从显式输入或当前目录解析，分类只复用 shape 的 `fix` / `feat` / `refactor` / `perf` named modes。它不使用 Project、Draft、状态流、批量同步、拆票、仓库模板或跨 skill 自动化。
 
 > **2026-06-10 修订**：正交工具增列 `handoff`（会话交接摘要，经 plan discussion 确认）。它服务于闭环的连续运转——把当前会话的工作状态只读交接给下个会话——不是新的产品能力域，「开发 + 记忆」的 scope 不因此扩大。
 

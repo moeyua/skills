@@ -1,13 +1,13 @@
 ---
 name: issue
-description: "Create one strongly formatted Chinese GitHub Issue from natural-language development work. Use when the user asks to create, file, capture, or record a GitHub Issue. Not for planning implementation (use shape), editing existing Issues, splitting tickets, or managing Projects and task status."
+description: "Create one strongly formatted GitHub Issue from natural-language development work. Use when the user asks to create, file, capture, or record a GitHub Issue. Not for planning implementation (use shape), editing existing Issues, splitting tickets, or managing Projects and task status."
 when_to_use: "issue, github issue, create issue, file issue, capture work, record task, 创建 issue, 提 issue, 记录工作, 记录任务"
-dispatch_intent: "Confirm one development item, format it in Chinese, and create one labeled GitHub Issue"
+dispatch_intent: "Confirm one development item, format it strongly, and create one labeled GitHub Issue"
 ---
 
 # Issue
 
-Issue is an optional intake tool outside the core development loop. It turns one development item into one Chinese GitHub Issue, labels it with the matching named `shape` mode, returns the URL, and stops. It never starts planning or implementation.
+Issue is an optional intake tool outside the core development loop. It turns one development item into one strongly formatted GitHub Issue, labels it with the matching named `shape` mode, returns the URL, and stops. It never starts planning or implementation.
 
 Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
@@ -16,13 +16,13 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 - Outcome: one user-confirmed development item becomes one strongly formatted, correctly labeled GitHub Issue
 - Done when: the Issue exists in the confirmed repository with exactly one primary mode label and its canonical URL has been returned, or a blocking failure has been reported before unsafe mutation
 - Evidence: the user's words and confirmation, repository facts actually inspected, `gh auth` and repository/label results, and the final `gh issue create` output
-- Output: before mutation, one compact Chinese understanding card; after success, repository + label + Issue URL; after failure, the failed stage and actionable error
+- Output: before mutation, one compact understanding card; after success, repository + label + Issue URL; after failure, the failed stage and actionable error
 
 ## Fixed Boundary
 
 - Create exactly one new Issue per invocation.
 - Use exactly one primary label: `fix`, `feat`, `refactor`, or `perf`.
-- Write the title, section headings, and body in Chinese. Preserve code identifiers, commands, and proper nouns when translating them would reduce precision.
+- Use the user's current language for every user-visible field. An explicit language request overrides the surrounding conversation; mode labels, code identifiers, commands, and precision-sensitive proper nouns remain unchanged.
 - Do not use Issue Types, Projects, Drafts, milestones, assignees, dependencies, sub-issues, or status automation.
 - Do not edit existing Issues, split one request into tickets, or invoke another skill automatically.
 - Do not use `brainstorm` or an unclassified fallback label. If the work remains exploratory rather than one of the four named modes, stop without mutation.
@@ -60,35 +60,34 @@ If two modes remain plausible, ask one distinction-resolving question. If none a
 
 ### 4. Load the exact format and check omissions
 
-Read [references/formats.md](references/formats.md) after selecting the label. Use exactly that mode's headings and order.
+Read [references/formats.md](references/formats.md) after selecting the label. Use exactly that mode's semantic sections and order. Render each section key as a natural visible heading without exposing the key itself.
 
-Keep only facts supported by the user or inspected evidence. A currently unknown observation is allowed only when investigating or measuring it is explicitly part of the work; state that fact as a complete Chinese sentence. An ambiguity that could change the goal, scope, constraints, or completion criteria blocks creation and requires one focused question.
+Keep only facts supported by the user or inspected evidence. A currently unknown observation is allowed only when investigating or measuring it is explicitly part of the work; state that fact as a complete sentence. An ambiguity that could change the goal, scope, constraints, or completion criteria blocks creation and requires one focused question.
 
 ### 5. Confirm understanding, not prose
 
-Before any GitHub mutation, show only this compact card:
+Before any GitHub mutation, show only one compact card with these fields in order:
 
-```text
-仓库：OWNER/REPOSITORY
-分类：fix | feat | refactor | perf
-我理解的是：
-- 目标：……
-- 范围与限制：……
-- 完成标准：……
-遗漏或待确认：无 | ……
-```
+1. repository: `OWNER/REPOSITORY`
+2. classification: `fix` | `feat` | `refactor` | `perf`
+3. understood goal
+4. scope and constraints
+5. completion criteria
+6. omissions or remaining questions
+
+Preserve the repository and classification values.
 
 Do not show the title or full Issue body. Wait for explicit confirmation. If the user corrects or rejects anything, update the understanding or ask the one remaining question; do not create a label or Issue.
 
 ### 6. Render and self-check
 
-After confirmation, generate a concise Chinese title without a label prefix and render the selected body template. Before mutation, verify all of the following:
+After confirmation, generate a concise title without a label prefix and render the selected semantic schema. Before mutation, verify all of the following:
 
-- headings exactly match the selected template and stay in its order
+- every semantic section appears exactly once as a localized `##` heading and stays in the selected order
+- internal semantic keys are not shown to the user
 - every required section contains confirmed content or an explicit investigation/measurement task
 - no template comments, empty sections, `TODO`, `TBD`, vague placeholders, or invented facts remain
 - acceptance criteria are concrete and checkable
-- title and prose are Chinese except for precision-preserving identifiers, commands, and proper nouns
 - the body still matches the confirmed goal, scope, constraints, and completion criteria
 
 ### 7. Ensure the selected label
@@ -109,7 +108,7 @@ Write the generated body to a temporary file using the host's safe file-write me
 gh issue create \
   --repo OWNER/REPOSITORY \
   --label MODE \
-  --title "中文标题" \
+  --title "ISSUE_TITLE" \
   --body-file BODY_FILE
 ```
 

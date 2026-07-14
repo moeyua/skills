@@ -12,19 +12,19 @@ It isn't just a toolkit. It's a **restrained instruction system**: every rule is
 
 Squire separates optional Issue intake, project understanding, and the change loop. `issue` records one development item and stops; `explore` supplies context or a standalone report; `shape → implement → check → docs` is the core loop; `commit` / `pr` are delivery stages owned by each project's workflow; `converge` batch-aligns durable docs; `doctor` / `handoff` stay orthogonal.
 
-| Skill       | Position               | What it does                                                                                   |
-| :---------- | :--------------------- | :--------------------------------------------------------------------------------------------- |
-| `issue`     | optional intake        | Confirm one work item and create one strongly formatted, mode-labeled Chinese GitHub Issue     |
-| `explore`   | context / report       | Build project context on demand, with a report only when explicitly requested                  |
-| `shape`     | core loop              | Clarify intent, shape a design, and produce a plan (brainstorm / fix / feat / refactor / perf) |
-| `implement` | core loop              | Land minimal, controlled, style-fitting changes; includes writing tests (TDD)                  |
-| `check`     | core loop              | Confirm a change holds up via review / test / e2e — verdict only, no edits                     |
-| `docs`      | core loop              | Maintain durable project truth per the memory catalog; also user-named docs                    |
-| `commit`    | workflow-managed stage | Organize changes into clean commits with clear messages, splitting when needed                 |
-| `pr`        | workflow-managed stage | Push the branch and build a PR description and test plan from the branch history               |
-| `converge`  | on-demand maintenance  | Batch-align the durable memory catalog during onboarding or after a Squire upgrade             |
-| `doctor`    | orthogonal tool        | Project checkup: docs-vs-code drift (primary) + dependency/CI/file staleness; read-only        |
-| `handoff`   | orthogonal tool        | Session handoff: a read-only state summary you can paste into a new session                    |
+| Skill       | Position               | What it does                                                                                       |
+| :---------- | :--------------------- | :------------------------------------------------------------------------------------------------- |
+| `issue`     | optional intake        | Confirm one work item and create one strongly formatted, mode-labeled Issue in the user's language |
+| `explore`   | context / report       | Build project context on demand, with a report only when explicitly requested                      |
+| `shape`     | core loop              | Clarify intent, shape a design, and produce a plan (brainstorm / fix / feat / refactor / perf)     |
+| `implement` | core loop              | Land minimal, controlled, style-fitting changes; includes writing tests (TDD)                      |
+| `check`     | core loop              | Confirm a change holds up via review / test / e2e — verdict only, no edits                         |
+| `docs`      | core loop              | Maintain durable project truth per the memory catalog; also user-named docs                        |
+| `commit`    | workflow-managed stage | Organize changes into clean commits with clear messages, splitting when needed                     |
+| `pr`        | workflow-managed stage | Push the branch and build a PR description and test plan from the branch history                   |
+| `converge`  | on-demand maintenance  | Batch-align the durable memory catalog during onboarding or after a Squire upgrade                 |
+| `doctor`    | orthogonal tool        | Project checkup: docs-vs-code drift (primary) + dependency/CI/file staleness; read-only            |
+| `handoff`   | orthogonal tool        | Session handoff: a read-only state summary you can paste into a new session                        |
 
 Every name follows one standard — **each is the term developers already use**: GitHub habits (`issue`), git habits (`commit` / `pr`), CLI habits (`doctor` / `check` / `docs`), agent habits (`explore` / `converge` / `handoff`), and methodology and PR culture (`shape` from Shape Up's shaping, `implement`). The naming decisions are recorded in [ARCHITECTURE.md](./ARCHITECTURE.md).
 
@@ -51,7 +51,7 @@ The core loop is the minimal cycle a single change runs through:
 shape → implement → check → docs
 ```
 
-`issue` sits outside that loop as optional intake. It confirms one item through a compact understanding card, writes a strongly formatted Chinese body, ensures one of `fix` / `feat` / `refactor` / `perf` exists as the repository label, creates exactly one GitHub Issue, returns its URL, and stops. It does not use GitHub Projects, deploy repository templates, or invoke `shape` automatically.
+`issue` sits outside that loop as optional intake. It confirms one item through a compact understanding card, writes a strongly formatted body in the user's language, ensures one of `fix` / `feat` / `refactor` / `perf` exists as the repository label, creates exactly one GitHub Issue, returns its URL, and stops. It does not use GitHub Projects, deploy repository templates, or invoke `shape` automatically.
 
 `explore` is not a default workflow step. Run it explicitly when you want an Explore Report; otherwise `shape`, `implement`, `check`, `docs`, and `doctor` may use it internally as context preflight and carry the evidence into their own output.
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-issue skill 把一条自然语言开发工作整理为一个强格式中文 GitHub Issue，使用与 shape named modes 对齐的唯一主 label，并在创建后返回 URL。它是 core loop 外的可选入口，不管理 Project、状态或后续开发流程。
+issue skill 把一条自然语言开发工作按用户语言整理为一个强格式 GitHub Issue，使用与 shape named modes 对齐的唯一主 label，并在创建后返回 URL。它是 core loop 外的可选入口，不管理 Project、状态或后续开发流程。
 
 ## Requirements
 
@@ -16,10 +16,22 @@ Verify: manual(integration)
 issue 必须且只能从 `fix`、`feat`、`refactor`、`perf` 中选择一个主 label；不得设置 `brainstorm`、Issue Type 或未分类兜底。无法可靠分类时必须先澄清，仍不属于四类时停止。
 Verify: manual(integration)
 
-### Requirement: 中文强格式正文
+### Requirement: 跟随用户语言的强格式正文
 
-Issue 标题、section 标题和正文必须使用中文，并按所选 mode 使用集中 reference 定义的精确 section 与顺序。所有必需 section 必须包含确认事实或明确的待调查、待测量语义，不得为空、保留模板注释、使用占位符或编造信息。
+Issue 的理解卡、标题、section 标题、正文与结果反馈必须使用用户当前语言；用户显式指定语言时优先。每个 mode 必须按集中 reference 定义的 semantic section key 与顺序渲染完整结构，但不得向用户暴露内部 key。Mode label、代码标识符、命令与为保持精度所需的专有名词不做本地化。所有必需 section 仍必须包含确认事实或明确的待调查、待测量语义，不得为空、保留模板指令、使用占位符或编造信息。（Previously: 标题、section 标题和正文固定使用中文，reference 直接保存中文标题模板。）
 Verify: manual(integration)
+
+**Scenario: 英文用户创建 feat Issue**
+
+- GIVEN 用户以英文描述并确认一项 `feat` 工作
+- WHEN issue 渲染理解卡与 Issue
+- THEN 所有用户可见 prose 与 section 标题使用英文，且 section 的语义和顺序与 `feat` schema 一致
+
+**Scenario: 中文用户创建 fix Issue**
+
+- GIVEN 用户以中文描述并确认一项 `fix` 工作
+- WHEN issue 渲染理解卡与 Issue
+- THEN 所有用户可见 prose 与 section 标题使用中文，且 section 的语义和顺序与 `fix` schema 一致
 
 ### Requirement: 创建前只确认理解摘要
 

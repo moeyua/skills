@@ -1,14 +1,13 @@
 # Issue Formats
 
-Read this file only after `issue` has selected one mode label. Render exactly one matching template; keep its `##` headings and order unchanged.
+Read this file only after `issue` has selected one mode label. Render exactly one matching semantic schema; keep its section identity and order unchanged.
 
 ## Shared rules
 
-- The title, headings, and prose are Chinese. Code identifiers, commands, and proper nouns may retain their original spelling for precision.
-- Replace every HTML comment with confirmed content and remove the comment itself before creation.
+- Render each semantic section as one natural visible `##` heading without exposing its internal key.
 - Every section is required and non-empty. Do not output `TODO`, `TBD`, ellipses, generic placeholders, or invented facts.
-- If an unknown observation is itself part of the work, state it explicitly as a complete fact, such as “当前尚无稳定复现路径，本任务包含复现条件调查” or “当前基线尚未测量，本任务首先建立可重复基线”.
-- Keep detail inside the defined sections. Do not add, remove, rename, or reorder `##` headings.
+- If an unknown observation is itself part of the work, state the investigation or measurement task explicitly as a complete fact.
+- Keep detail inside the defined sections. Do not add, remove, merge, or reorder semantic sections.
 - Write acceptance criteria as Markdown checkboxes whose completion can be observed or measured.
 
 ## Label metadata
@@ -24,120 +23,46 @@ Create only the selected missing label. Never rewrite an existing label.
 
 ## `fix`
 
-```markdown
-## 背景
-
-<!-- 说明问题出现的业务或技术上下文，以及为什么需要处理。 -->
-
-## 问题描述
-
-<!-- 准确描述错误、异常行为或回归，不写未经证实的根因。 -->
-
-## 复现步骤
-
-<!-- 写出已确认的最小复现路径；若尚不稳定，明确把复现条件调查写入任务。 -->
-
-## 预期行为
-
-<!-- 说明正确情况下应观察到的行为。 -->
-
-## 实际行为
-
-<!-- 说明当前实际观察到的行为和已知影响。 -->
-
-## 范围
-
-<!-- 说明本次需要覆盖的范围、限制，以及明确不处理的相邻问题。 -->
-
-## 验收标准
-
-- [ ] <!-- 写入一个可验证的修复结果。 -->
-```
+| Section key    | Content requirement                                                                                |
+| -------------- | -------------------------------------------------------------------------------------------------- |
+| `background`   | The business or technical context in which the problem occurs and why it needs attention.          |
+| `problem`      | The incorrect behavior, error, or regression without claiming an unverified root cause.            |
+| `reproduction` | The confirmed minimal reproduction path, or an explicit task to establish reproducible conditions. |
+| `expected`     | The behavior that should be observable when the system is correct.                                 |
+| `actual`       | The behavior currently observed and its known impact.                                              |
+| `scope`        | The covered area, constraints, and adjacent problems explicitly excluded from this Issue.          |
+| `acceptance`   | Observable repair results written as Markdown checkboxes.                                          |
 
 ## `feat`
 
-```markdown
-## 背景
-
-<!-- 说明提出能力的上下文和现有缺口。 -->
-
-## 目标
-
-<!-- 用用户可观察的结果描述要新增的能力。 -->
-
-## 用户场景
-
-<!-- 说明谁在什么情况下使用它并获得什么结果。 -->
-
-## 范围
-
-<!-- 说明第一版包含的行为、输入、输出和限制。 -->
-
-## 非目标
-
-<!-- 明确本 Issue 不处理的相邻能力或扩展。 -->
-
-## 验收标准
-
-- [ ] <!-- 写入一个可验证的功能结果。 -->
-```
+| Section key     | Content requirement                                                      |
+| --------------- | ------------------------------------------------------------------------ |
+| `background`    | The context for the proposed capability and the current gap.             |
+| `goal`          | The new capability described as a user-observable result.                |
+| `user_scenario` | Who uses it, in what situation, and what result they obtain.             |
+| `scope`         | The first version's included behavior, inputs, outputs, and constraints. |
+| `non_goals`     | Adjacent capabilities or extensions explicitly excluded from this Issue. |
+| `acceptance`    | Verifiable feature results written as Markdown checkboxes.               |
 
 ## `refactor`
 
-```markdown
-## 背景
-
-<!-- 说明当前结构的问题和重构动机。 -->
-
-## 重构目标
-
-<!-- 说明期望得到的内部结构改善，不混入新功能或修复。 -->
-
-## 行为不变量
-
-<!-- 列出重构前后必须保持不变的外部行为、副作用和重要性能特征。 -->
-
-## 范围
-
-<!-- 说明允许调整的结构边界和明确不处理的行为变化。 -->
-
-## 验收标准
-
-- [ ] <!-- 写入一个可验证的结构结果或回归保障。 -->
-```
+| Section key           | Content requirement                                                                              |
+| --------------------- | ------------------------------------------------------------------------------------------------ |
+| `background`          | The current structural problem and motivation for restructuring.                                 |
+| `refactor_goal`       | The intended internal structural improvement without mixing in a feature or bug fix.             |
+| `behavior_invariants` | External behavior, side effects, and important performance characteristics that must not change. |
+| `scope`               | The structural boundary allowed to change and behavior changes explicitly excluded.              |
+| `acceptance`          | Verifiable structural results or regression safeguards written as Markdown checkboxes.           |
 
 ## `perf`
 
-```markdown
-## 背景
-
-<!-- 说明性能问题出现的场景及其影响。 -->
-
-## 性能问题
-
-<!-- 说明当前可观察的延迟、吞吐、资源或响应性问题。 -->
-
-## 衡量指标
-
-<!-- 指定用于判断改善的指标。 -->
-
-## 当前基线
-
-<!-- 写入已测基线；若未知，明确把建立可重复基线写入任务。 -->
-
-## 目标
-
-<!-- 写入可测目标；若目标需要先由基线推导，明确该决策条件。 -->
-
-## 测量方式
-
-<!-- 说明复现环境、命令、工具或采样方法。 -->
-
-## 范围
-
-<!-- 说明允许优化的边界、不可接受的代价和明确不处理的行为变化。 -->
-
-## 验收标准
-
-- [ ] <!-- 写入一个可重复验证的性能结果。 -->
-```
+| Section key           | Content requirement                                                                                 |
+| --------------------- | --------------------------------------------------------------------------------------------------- |
+| `background`          | The scenario in which the performance problem appears and its impact.                               |
+| `performance_problem` | The observable latency, throughput, resource, or responsiveness problem.                            |
+| `metric`              | The metric used to judge improvement.                                                               |
+| `baseline`            | The measured baseline, or an explicit task to establish a repeatable baseline.                      |
+| `target`              | The measurable target, or the decision condition used to derive it after establishing the baseline. |
+| `measurement`         | The reproduction environment, commands, tools, or sampling method.                                  |
+| `scope`               | The optimization boundary, unacceptable costs, and behavior changes explicitly excluded.            |
+| `acceptance`          | Repeatable, measurable performance results written as Markdown checkboxes.                          |

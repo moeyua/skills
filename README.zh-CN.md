@@ -14,7 +14,7 @@ Squire 把可选 Issue 入口、项目理解和变更闭环分开：`issue` 只�
 
 | Skill       | 位置                   | 作用                                                                      |
 | :---------- | :--------------------- | :------------------------------------------------------------------------ |
-| `issue`     | optional intake        | 确认一项工作，创建一个中文强格式、带 mode label 的 GitHub Issue           |
+| `issue`     | optional intake        | 确认一项工作，按用户语言创建一个强格式、带 mode label 的 GitHub Issue     |
 | `explore`   | context / report       | 按需建立项目上下文；只有用户主动要求时才产出报告                          |
 | `shape`     | core loop              | 澄清意图、塑形设计、产出方案（brainstorm / fix / feat / refactor / perf） |
 | `implement` | core loop              | 按方案做最小、可控、合项目风格的改动；含写测试（TDD + 补覆盖）            |
@@ -51,7 +51,7 @@ Core loop 是一次变更走过的最小闭环：
 shape → implement → check → docs
 ```
 
-`issue` 作为可选入口位于这条闭环之外。它用简短理解卡确认一项工作，生成中文强格式正文，确保仓库中存在 `fix` / `feat` / `refactor` / `perf` 之一作为主 label，创建且只创建一个 GitHub Issue，返回 URL 后停止。它不使用 GitHub Projects、不向各仓库部署模板，也不自动调用 `shape`。
+`issue` 作为可选入口位于这条闭环之外。它用简短理解卡确认一项工作，按用户语言生成强格式正文，确保仓库中存在 `fix` / `feat` / `refactor` / `perf` 之一作为主 label，创建且只创建一个 GitHub Issue，返回 URL 后停止。它不使用 GitHub Projects、不向各仓库部署模板，也不自动调用 `shape`。
 
 `explore` 不是默认 workflow 步骤。需要独立理解报告时由用户主动触发；否则 `shape`、`implement`、`check`、`docs`、`doctor` 可在内部把它作为 context preflight 使用，并把证据带入自己的输出。
 

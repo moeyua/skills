@@ -9,43 +9,69 @@ const SKILL_PATH = resolve(REPO_ROOT, "skills/issue/SKILL.md");
 
 const EXPECTED_LABELS = ["fix", "feat", "refactor", "perf"] as const;
 
-const REQUIRED_HEADINGS = {
-  fix: ["背景", "问题描述", "复现步骤", "预期行为", "实际行为", "范围", "验收标准"],
-  feat: ["背景", "目标", "用户场景", "范围", "非目标", "验收标准"],
-  refactor: ["背景", "重构目标", "行为不变量", "范围", "验收标准"],
-  perf: ["背景", "性能问题", "衡量指标", "当前基线", "目标", "测量方式", "范围", "验收标准"],
+const REQUIRED_SECTIONS = {
+  fix: ["background", "problem", "reproduction", "expected", "actual", "scope", "acceptance"],
+  feat: ["background", "goal", "user_scenario", "scope", "non_goals", "acceptance"],
+  refactor: ["background", "refactor_goal", "behavior_invariants", "scope", "acceptance"],
+  perf: [
+    "background",
+    "performance_problem",
+    "metric",
+    "baseline",
+    "target",
+    "measurement",
+    "scope",
+    "acceptance",
+  ],
 } as const;
 
-function extractTemplate(markdown: string, mode: keyof typeof REQUIRED_HEADINGS): string {
-  const pattern = "^## `" + mode + "`\\n\\n```markdown\\n([\\s\\S]*?)\\n```$";
+function extractSchema(markdown: string, mode: keyof typeof REQUIRED_SECTIONS): string {
+  const pattern = "^## `" + mode + "`\\n\\n([\\s\\S]*?)(?=\\n## `|(?![\\s\\S]))";
   const match = new RegExp(pattern, "m").exec(markdown);
-  expect(match, `missing centralized ${mode} template`).not.toBeNull();
+  expect(match, `missing centralized ${mode} schema`).not.toBeNull();
   return match![1]!;
 }
 
 describe("issue format contract", () => {
   const formats = readFileSync(FORMATS_PATH, "utf8");
 
-  it("keeps label metadata and templates aligned to exactly four named modes", () => {
-    const metadataLabels = [...formats.matchAll(/^\| `([a-z]+)`\s+\|/gm)].map((match) => match[1]!);
-    const templateModes = [...formats.matchAll(/^## `([a-z]+)`$/gm)].map((match) => match[1]!);
+  it("keeps label metadata and schemas aligned to exactly four named modes", () => {
+    const metadata = /^## Label metadata\n\n([\s\S]*?)(?=\n## `fix`)/m.exec(formats);
+    expect(metadata, "missing label metadata table").not.toBeNull();
+
+    const metadataLabels = [...metadata![1]!.matchAll(/^\| `([a-z]+)`\s+\|/gm)].map(
+      (match) => match[1]!,
+    );
+    const schemaModes = [...formats.matchAll(/^## `([a-z]+)`$/gm)].map((match) => match[1]!);
 
     expect(metadataLabels).toEqual(EXPECTED_LABELS);
-    expect(templateModes).toEqual(EXPECTED_LABELS);
-    expect(metadataLabels).toEqual(templateModes);
+    expect(schemaModes).toEqual(EXPECTED_LABELS);
+    expect(metadataLabels).toEqual(schemaModes);
     expect(formats).not.toMatch(/(?:^## |^\| )`brainstorm`/m);
   });
 
-  it.each(Object.entries(REQUIRED_HEADINGS))(
-    "locks the Chinese headings for %s",
+  it.each(Object.entries(REQUIRED_SECTIONS))(
+    "locks the semantic section order for %s",
     (mode, expected) => {
-      const template = extractTemplate(formats, mode as keyof typeof REQUIRED_HEADINGS);
-      const headings = [...template.matchAll(/^## (.+)$/gm)].map((match) => match[1]!);
+      const schema = extractSchema(formats, mode as keyof typeof REQUIRED_SECTIONS);
+      const sections = [...schema.matchAll(/^\| `([a-z_]+)`\s+\|/gm)].map((match) => match[1]!);
 
-      expect(headings).toEqual(expected);
-      expect(headings.every((heading) => /^[\p{Script=Han}]+$/u.test(heading))).toBe(true);
+      expect(sections).toEqual(expected);
     },
   );
+});
+
+describe("issue language contract", () => {
+  const skill = readFileSync(SKILL_PATH, "utf8");
+  const formats = readFileSync(FORMATS_PATH, "utf8");
+
+  it("keeps language resolution in the skill and format structure in the reference", () => {
+    expect(skill).toContain("Use the user's current language for every user-visible field.");
+    expect(skill).toContain("An explicit language request overrides the surrounding conversation");
+    expect(formats).not.toContain("user's current language");
+    expect(formats).not.toContain("explicit language request");
+    expect(formats).toContain("Render each semantic section as one natural visible `##` heading");
+  });
 });
 
 describe("issue GitHub preflight", () => {
