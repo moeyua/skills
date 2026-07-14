@@ -22,6 +22,9 @@ squire/
 ├── pnpm-lock.yaml
 ├── skills/                           # 内容层（npx skills add 扫描这里）
 │   ├── RESOLVER.md                   # 人类可读路由索引
+│   ├── issue/                        # 可选入口：单条自然语言工作 → 中文 GitHub Issue
+│   │   ├── SKILL.md                  # 仓库解析、理解确认、label 与 gh mutation 边界
+│   │   └── references/formats.md     # fix / feat / refactor / perf 中文正文格式真源
 │   ├── explore/SKILL.md
 │   ├── shape/
 │   │   ├── SKILL.md                  # 主体 + clarify phase + mode picker
@@ -33,6 +36,7 @@ squire/
 │   ├── implement/SKILL.md            # 改造：含写测试（TDD + 不挂 plan 的补覆盖/回归）
 │   ├── check/SKILL.md                # 校验：review / test / e2e 三模式
 │   ├── docs/SKILL.md                 # 文档化：照记忆目录维护持久真源；也处理用户指定文档
+│   ├── converge/SKILL.md             # 按需批量收敛 memory catalog，项目接入与升级复用同一流程
 │   ├── commit/SKILL.md
 │   ├── pr/SKILL.md
 │   ├── doctor/                       # 正交工具（loop 外，项目体检）
@@ -40,6 +44,8 @@ squire/
 │   │   └── scripts/checker.ts        # 随 skill 装的零依赖确定性检查器（node 24 直跑 .ts）
 │   └── handoff/SKILL.md              # 正交工具（loop 外，会话交接摘要）
 ├── specs/                            # 持久行为契约（document 的 spec 目标，按 domain 一份）
+│   ├── issue/spec.md                 # issue 对外行为与 GitHub mutation 安全边界
+│   ├── converge/spec.md              # converge 逐文档状态判断、动作边界与幂等契约
 │   └── <domain>/spec.md              # 行为契约：Purpose + Requirements（各带 Verify）
 ├── bench/                            # shape 行为评测（仓库开发工具，不随 skill 安装）
 │   ├── README.md                     # 用法 / 架构 / 行为契约 / 校准纪律
@@ -59,6 +65,7 @@ squire/
     ├── checks.test.ts                # check 函数单元测试
     ├── memory-catalog.test.ts        # 记忆目录↔format 锁步检查单测（自带独立 fixture）
     ├── checker.test.ts               # health checker 单元测试（fixture）
+    ├── issue.test.ts                 # issue label 词汇与中文格式真源锁步测试
     └── smoke/
         └── verify-skills.test.ts     # 整库 smoke：跑当前 repo 过所有 check
 ```
@@ -113,6 +120,7 @@ rules/memory-catalog.md         # 记忆目录：explore 读 / docs 写 / doctor
 - SKILL.md 全文加载——必须精简
 - 当 skill 超 ~200 行（比如 shape 有 5 个 mode），mode-specific 内容拆 references/
 - agent 读完 SKILL.md，根据 mode picker 决定**再加载哪个 reference**——按需加载省 token
+- `issue` 只在确认 `fix` / `feat` / `refactor` / `perf` 分类后读取一个集中格式 reference；格式与主流程不重复维护
 
 **rules/ vs skills/**：
 
@@ -176,6 +184,7 @@ tests/smoke/verify-skills.test.ts  # 整库验证 smoke（CI 入口）
 tests/frontmatter.test.ts          # parser 单元测试
 tests/checks.test.ts               # check 函数单元测试
 tests/memory-catalog.test.ts       # 记忆目录↔format 锁步检查单测
+tests/issue.test.ts                # issue label 词汇与四种中文 section 顺序
 tests/smoke/verify-skills.test.ts  # 整库 smoke（替代旧的 verify-skills CLI）
 ```
 
@@ -196,6 +205,20 @@ LICENSE
 v1 暂不写 `AGENTS.md` / `CLAUDE.md`——squire 当前是单人项目，等多人协作或需要约束 agent 自身行为时再加。
 
 ## 数据流
+
+`issue` 是 core loop 外的独立入口，没有指向 `shape` 的自动边：
+
+```
+自然语言 ──> issue/SKILL.md ──> 简短理解确认 ──> references/formats.md
+                                                        │
+                                                        ▼
+                                              gh label / issue create
+                                                        │
+                                                        ▼
+                                                  GitHub Issue URL
+```
+
+label 与 shape named modes 共享 `fix` / `feat` / `refactor` / `perf` 词汇，但不传递状态或自动启动下游 skill。正文格式由 reference 集中维护；运行时不引入 formatter/helper 层。
 
 ```
               [真源]
@@ -375,10 +398,10 @@ Claude Code skill 触发是双轨：
 
 实际影响：
 
-| 冲突                                                      | 行为                                                                                                                                 |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Claude Code 内置命令 vs squire skill 同名                 | 当前 9 个名字经核无内置同名（旧名时代 squire `/verify` 曾接管内置 verify，`verify→check` 后解除）；若未来出现同名，squire skill 接管 |
-| `/commit`（commit-commands plugin）vs squire commit skill | plugin 有 namespace（`/commit-commands:commit`），不冲突；用户输 `/commit` 走 squire                                                 |
+| 冲突                                                      | 行为                                                                                                                                  |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Claude Code 内置命令 vs squire skill 同名                 | 当前 11 个名字经核无内置同名（旧名时代 squire `/verify` 曾接管内置 verify，`verify→check` 后解除）；若未来出现同名，squire skill 接管 |
+| `/commit`（commit-commands plugin）vs squire commit skill | plugin 有 namespace（`/commit-commands:commit`），不冲突；用户输 `/commit` 走 squire                                                  |
 
 ### 默认 symlink
 
@@ -390,7 +413,7 @@ Claude Code skill 触发是双轨：
 
 ## 关键设计决策记录
 
-### 为什么先做 7 个 skill，不是 13 个？（后增至 9）
+### 为什么先做 7 个 skill，不是 13 个？（后增至 11）
 
 原始 demo.md 有 13 个 skill（explore / plan / implement / test / review / commit / diagnose / clarify / refactor / optimize / submit / document / release）。决策过程：
 
@@ -482,13 +505,13 @@ squire 自己的 check 库（`tests/checks.ts`）没有 CLI 入口——由 vite
 
 ### 2026-06-11 命名统一到开发习惯轴
 
-9 个 skill 名统一到一条标准：**每个名字 = 开发者已有习惯里的通行叫法**——git 习惯（`commit` / `pr`）、CLI 习惯（`doctor` / `check` / `docs`）、agent 习惯（`explore` / `shape 之于 plan mode 语境` / `handoff`）、方法论与 PR 文化（`shape` 取 Shape Up 的 shaping、`implement`）。6 改 3 留：`plan→shape`、`build→implement`、`verify→check`、`document→docs`、`pull-request→pr`、`health→doctor`；`explore` / `commit` / `handoff` 不动。不留旧 alias。
+当时已有的 9 个 skill 名统一到一条标准：**每个名字 = 开发者已有习惯里的通行叫法**——git 习惯（`commit` / `pr`）、CLI 习惯（`doctor` / `check` / `docs`）、agent 习惯（`explore` / `shape 之于 plan mode 语境` / `handoff`）、方法论与 PR 文化（`shape` 取 Shape Up 的 shaping、`implement`）。6 改 3 留：`plan→shape`、`build→implement`、`verify→check`、`document→docs`、`pull-request→pr`、`health→doctor`；`explore` / `commit` / `handoff` 不动。不留旧 alias。后续新增的 `converge` 与 `issue` 沿用同一标准，当前共 11 个 skill。
 
 本次显式修订 06-09 的三条 Key decisions：`shape→plan` 回退（06-09 自记的「plan 误导为只写计划文件」风险在维护者体感中兑现——plan 内不止是 plan）；`pull-request`、`document` 让位于开发者实际嘴里的叫法（`pr`、`docs`）。`build→implement` 修开发口语歧义（build = 编译打包）；`verify→check` 顺带解除对 Claude Code 内置 `/verify` 的遮蔽。曾考虑按词性（全动词）/音节（全短词）/隐喻（侍从主题）统一并拆分 brainstorm 独立 skill，均被否：统一定锚在「零陌生感」，拆分会恢复已否决的「意图即 skill」假设。详见 [plans/2026-06-11-feat-dev-convention-renames.md](plans/2026-06-11-feat-dev-convention-renames.md)。
 
 ### 2026-06-11 下一步推荐统一为「位置定模态」模型
 
-各 skill 完成后的「下一步」建议从逐份手写的尾部文案,统一为可推导的模型:一次变更是一张状态图,skill 是节点,推荐 = 节点的出边,**位置定模态**。三类边:成功边(core loop 内,产品层硬编码)、失败边(问题类路由表:bug→shape fix、弱测试→implement、漂移→docs 等,原本就跨 skill 一致)、出口边(交付段,项目 WORKFLOW 定义,产品层只给默认值)。四种模态的分配:固定(shape named→implement、implement→check)/ 判断(check 按裁决、shape brainstorm、doctor 的 findings 路由)/ 默认可覆盖(docs→commit、commit→pr,覆盖源是项目 WORKFLOW 而非用户——用户的覆盖权由 PRODUCT 哲学 #3 的总规则保证)/ 不需要(explore、pr、handoff)。
+各 skill 完成后的「下一步」建议从逐份手写的尾部文案,统一为可推导的模型:一次变更是一张状态图,skill 是节点,推荐 = 节点的出边,**位置定模态**。三类边:成功边(core loop 内,产品层硬编码)、失败边(问题类路由表:bug→shape fix、弱测试→implement、漂移→docs 等,原本就跨 skill 一致)、出口边(交付段,项目 WORKFLOW 定义,产品层只给默认值)。四种模态的分配:固定(shape named→implement、implement→check)/ 判断(check 按裁决、shape brainstorm、doctor 的 findings 路由)/ 默认可覆盖(docs→commit、commit→pr,覆盖源是项目 WORKFLOW 而非用户——用户的覆盖权由 PRODUCT 哲学 #3 的总规则保证)/ 不需要(issue、explore、pr、handoff)。
 
 两个连带决策:**explore 全静默**——连报告模板的 Where to Start 段与 deep-dive 的 follow-up entry points 一并移除,它们是伪装成报告段落的下一步推荐,与「不需要」模态矛盾;**WORKFLOW.md 的 dogfood 链挪位**——`/docs` 从 `/pr` 之后挪到 `/check` 与 `/commit` 之间,因为本仓门禁 checkSpecPairing 要求 spec 与 skill 同 PR 同步,原顺序与自家门禁矛盾,挪位后持久记忆与代码原子合入。完整模型见 [skills/RESOLVER.md](skills/RESOLVER.md) 的 Chaining 段,决策过程见 [plans/2026-06-11-feat-next-step-modality.md](plans/2026-06-11-feat-next-step-modality.md)。
 
@@ -513,6 +536,12 @@ ROADMAP 原积「`shape` 的 `arch` mode / 产出架构」以否决 mode 读法�
 ### 2026-07-02 shape-bench:skill 行为遵守度可测化
 
 「模型无法稳定遵守 shape 流程」此前只能靠人工判卷定性。新增顶层 `bench/`:对已有真实会话与驱动器自动跑出的会话,机械检查硬违规(HARD-GATE、brainstorm 写 plan、占位词、一轮多问)+ LLM judge 按 `specs/shape/spec.md` 逐条判定(阶段切分 → 逐 Requirement → 0-10 总分),经两个人工判卷 gold case 校准(分差 ≤0.5、判分抖动 ±0.5 已量化)。驱动器以 8 张场景卡 + 模拟用户跑完整会话:claude 侧 Agent SDK `canUseTool` 代答 AskUserQuestion,codex 侧 `exec`/`exec resume`。定位:仓库开发工具,与 `doctor`(消费项目体检)、`tests/`(仓库一致性)互不重叠;不进 specs/(`checkSpecPairing` 强制 specs↔skills 配对),对外契约固化在 [bench/README.md](bench/README.md)。首份真实基线:「逐枝 grill」6/6 fail、「design summary gate」与「决策交回用户」各 5/6 fail——反向优化 skill 文档的靶子。详见 [plans/2026-07-02-feat-shape-bench.md](plans/2026-07-02-feat-shape-bench.md)。
+
+### 2026-07-14 issue 作为 create-only 可选入口
+
+第 11 个 skill `issue` 位于 core loop 外：它把一条自然语言开发工作压实为简短理解卡，用户确认后用当前 `gh` 身份创建一个中文强格式 GitHub Issue，返回 URL 即停止。分类不再另造 taxonomy，而只复用 shape 的四个 named modes：`fix` / `feat` / `refactor` / `perf`；每个 Issue 恰好一个同名主 label，缺失时只按需创建当前 label，已有 label 不改元数据。
+
+边界刻意封顶在 create-only：不使用 GitHub Projects、Draft、Issue Type、状态流、同步、拆票、仓库模板或跨 skill 自动化。主流程留在 `skills/issue/SKILL.md`，四种中文 section 顺序集中在 `references/formats.md`，仓库私有测试机械锁定 label 词汇和 headings；v1 不引入 runtime helper。详见 [plans/2026-07-14-feat-issue-skill.md](plans/2026-07-14-feat-issue-skill.md)。
 
 ## 未来规划
 

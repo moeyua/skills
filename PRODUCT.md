@@ -20,7 +20,9 @@ squire 的范围限定在两件事：**开发**一个项目，**记住 / 文档�
 
 开发主线包含理解、设计、改造、校验、文档化。默认 core loop 是 `shape → implement → check → docs`：`shape` 定意图，`implement` 改造，`check` 把关，`docs` 记录持久记忆。`explore` 提供理解能力，但位置不同——用户主动了解项目时走 report mode；其他 skill 缺可靠事实时以内嵌 context preflight 使用，不成为默认 workflow 节点。
 
-`commit` / `pr` 是 workflow-managed stages，由项目流程决定是否接在后面；`doctor` / `handoff` 是正交工具。squire 不扩展到产品决策、发布管理、Agent 自审计、内容输入处理（详见下面"边界"段）。
+`issue` 是 core loop 外的可选开发入口：它只把一项已经决定记录的开发工作确认并创建为 GitHub Issue，返回 URL 后停止；不替用户做产品价值判断，也不自动进入 `shape`。`commit` / `pr` 是 workflow-managed stages，由项目流程决定是否接在后面；`doctor` / `handoff` 是正交工具。squire 不扩展到通用项目管理、产品决策、发布管理、Agent 自审计或通用内容输入处理（详见下面"边界"段）。
+
+> **2026-07-14 修订**：新增 `issue` 不把 scope 扩成任务管理系统。它的上限是「一项自然语言开发工作 → 简短理解确认 → 一个中文强格式 GitHub Issue」；仓库只从显式输入或当前目录解析，分类只复用 shape 的 `fix` / `feat` / `refactor` / `perf` named modes。它不使用 Project、Draft、状态流、批量同步、拆票、仓库模板或跨 skill 自动化。
 
 > **2026-06-10 修订**：正交工具增列 `handoff`（会话交接摘要，经 plan discussion 确认）。它服务于闭环的连续运转——把当前会话的工作状态只读交接给下个会话——不是新的产品能力域，「开发 + 记忆」的 scope 不因此扩大。
 
@@ -30,7 +32,7 @@ squire 的范围限定在两件事：**开发**一个项目，**记住 / 文档�
 
 ### 3. 用户决定串联 — skill 间不自动跑
 
-每个 skill 完成后默认停下，等用户决定下一步。implement 完不自动跳 check；check 发现 bug 不自动调 shape fix。skill 之间的转移是用户的明确动作。
+每个 skill 完成后默认停下，等用户决定下一步。issue 创建完不自动调 shape；implement 完不自动跳 check；check 发现 bug 不自动调 shape fix。skill 之间的转移是用户的明确动作。
 
 自动串联剥夺用户的判断机会——用户可能想 review 完先去吃饭，可能想跳过 review 直接 commit，可能想根据 review 结果改 plan。每个决策点都属于用户，不属于 agent。SKILL.md 末尾"下一步"段给**建议**而不是直接调下一个 skill。
 
@@ -80,11 +82,11 @@ squire 维护一份**有界的记忆目录**（`rules/memory-catalog.md`，含 R
 
 Agent 自审计是 meta 层面——跟代码开发闭环正交。而且漂移检测靠机械（如 squire 自己的 `checks.ts`）比靠 agent skill 更可靠。文档跟代码漂移、依赖陈旧、CI 状态这些缝已由 `doctor` 正交工具填上（2026-06-08 落地，时名 `health`）；agent 自身的 hooks / MCP / config 漂移审计仍不做。
 
-### 5. 内容输入处理（URL / PDF 抓取、深度研究）
+### 5. 通用内容输入处理（URL / PDF 抓取、深度研究）
 
 **根因**：哲学 #2。
 
-这些是输入层的工具，不是开发闭环里的环节。可以用别的 MCP / skill 解决，squire 不重复造轮子。
+这些是通用输入层工具，不是开发闭环里的环节。`issue` 只接收用户已经决定记录的一项开发工作，不抓取或加工任意内容；URL / PDF 抓取、深度研究仍交给其他 MCP / skill，squire 不重复造轮子。
 
 ## 怎么用本文档
 

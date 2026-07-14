@@ -10,6 +10,14 @@
 | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
 | new repo / unfamiliar module / "look at this project" / "整体了解一下" / "look at the X module" / `/explore` / building a base for later work | `skills/explore/SKILL.md` |
 
+## Optional Intake
+
+### Issue
+
+| trigger                                                                                                        | skill                   |
+| -------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| "create an issue" / "file this issue" / "record this work" / "创建 issue" / "提 issue" / "记录任务" / `/issue` | `skills/issue/SKILL.md` |
+
 ## Core Loop
 
 ### 1. Shape
@@ -61,6 +69,8 @@ These are squire skills, but not part of the core loop. A project's WORKFLOW.md 
 
 Skills don't chain automatically. Each one stops when done and waits for the user to decide the next step.
 
+`issue` is optional intake outside the core loop. It confirms one work item, creates one labeled GitHub Issue, returns the URL, and stops. It never invokes `shape` automatically; the user decides whether that Issue later enters the development loop.
+
 `explore` has two positions:
 
 - **User-facing report** — `/explore` or "look at this project" emits an Explore Report and has no outgoing edge.
@@ -71,7 +81,7 @@ Skills don't chain automatically. Each one stops when done and waits for the use
 - **Fixed** — the success edge inside the core loop is unique: shape (named mode) → implement; implement → check.
 - **Judged** — the edge depends on this run's outcome: check routes by verdict (findings → the owning skill; clean → docs, or delivery when there's nothing to record); shape's brainstorm mode converges into a named mode or ends; doctor routes its findings.
 - **Default-but-overridable** — past the core loop's exit the project's WORKFLOW owns the edge; the skill only supplies the common default: docs → commit, commit → pr, converge → commit.
-- **None** — no outgoing edge: explore (the report is the end), pr, handoff.
+- **None** — no outgoing edge: issue (the created Issue is the end), explore (the report is the end), pr, handoff.
 
 Whatever the modality, a suggestion is only a suggestion — the user walks the graph.
 

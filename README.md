@@ -4,16 +4,17 @@ English | [简体中文](./README.zh-CN.md)
 
 > Your AI agent has the horsepower. Squire gives it the road.
 
-An AI agent's raw output is already strong — but without structure, that capability drifts into generic, imprecise work. Squire gives it structure: it splits the development loop — understand, design, implement, check, document — into 9 focused skills, each doing one thing well.
+An AI agent's raw output is already strong — but without structure, that capability drifts into generic, imprecise work. Squire gives it structure: it splits development intake and the change loop — record, understand, design, implement, check, document — into 11 focused skills, each doing one thing well.
 
 It isn't just a toolkit. It's a **restrained instruction system**: every rule is a ceiling, not a floor. The agent only does what an instruction allows; the rest is left to the model's own judgment. For the full design philosophy and product boundaries, see [PRODUCT.md](./PRODUCT.md).
 
-## The 9 Skills
+## The 11 Skills
 
-Squire separates project understanding from the change loop. `explore` supplies context or a standalone report; `shape → implement → check → docs` is the core loop; `commit` / `pr` are delivery stages owned by each project's workflow; `doctor` / `handoff` stay orthogonal.
+Squire separates optional Issue intake, project understanding, and the change loop. `issue` records one development item and stops; `explore` supplies context or a standalone report; `shape → implement → check → docs` is the core loop; `commit` / `pr` are delivery stages owned by each project's workflow; `converge` batch-aligns durable docs; `doctor` / `handoff` stay orthogonal.
 
 | Skill       | Position               | What it does                                                                                   |
 | :---------- | :--------------------- | :--------------------------------------------------------------------------------------------- |
+| `issue`     | optional intake        | Confirm one work item and create one strongly formatted, mode-labeled Chinese GitHub Issue     |
 | `explore`   | context / report       | Build project context on demand, with a report only when explicitly requested                  |
 | `shape`     | core loop              | Clarify intent, shape a design, and produce a plan (brainstorm / fix / feat / refactor / perf) |
 | `implement` | core loop              | Land minimal, controlled, style-fitting changes; includes writing tests (TDD)                  |
@@ -21,10 +22,11 @@ Squire separates project understanding from the change loop. `explore` supplies 
 | `docs`      | core loop              | Maintain durable project truth per the memory catalog; also user-named docs                    |
 | `commit`    | workflow-managed stage | Organize changes into clean commits with clear messages, splitting when needed                 |
 | `pr`        | workflow-managed stage | Push the branch and build a PR description and test plan from the branch history               |
+| `converge`  | on-demand maintenance  | Batch-align the durable memory catalog during onboarding or after a Squire upgrade             |
 | `doctor`    | orthogonal tool        | Project checkup: docs-vs-code drift (primary) + dependency/CI/file staleness; read-only        |
 | `handoff`   | orthogonal tool        | Session handoff: a read-only state summary you can paste into a new session                    |
 
-Every name follows one standard — **each is the term developers already use**: git habits (`commit` / `pr`), CLI habits (`doctor` / `check` / `docs`), agent habits (`explore` / `handoff`), and methodology and PR culture (`shape` from Shape Up's shaping, `implement`). The naming decisions are recorded in [ARCHITECTURE.md](./ARCHITECTURE.md).
+Every name follows one standard — **each is the term developers already use**: GitHub habits (`issue`), git habits (`commit` / `pr`), CLI habits (`doctor` / `check` / `docs`), agent habits (`explore` / `converge` / `handoff`), and methodology and PR culture (`shape` from Shape Up's shaping, `implement`). The naming decisions are recorded in [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 ## Install
 
@@ -39,7 +41,7 @@ Common flags:
 - `-y` skips confirmation
 - `--copy` uses a plain-copy layout; the default symlinks into the shared `~/.agents` store, but the store holds a **snapshot taken at install time** — re-run `npx skills add .` after changing the repo for edits to take effect
 
-Once installed, trigger: `/explore`, `/shape`, `/implement`, `/check`, `/docs`, `/commit`, `/pr`, plus the orthogonal tools `/doctor` and `/handoff`.
+Once installed, trigger: `/issue`, `/explore`, `/shape`, `/implement`, `/check`, `/docs`, `/commit`, `/pr`, `/converge`, `/doctor`, and `/handoff`.
 
 ## Workflow
 
@@ -49,6 +51,8 @@ The core loop is the minimal cycle a single change runs through:
 shape → implement → check → docs
 ```
 
+`issue` sits outside that loop as optional intake. It confirms one item through a compact understanding card, writes a strongly formatted Chinese body, ensures one of `fix` / `feat` / `refactor` / `perf` exists as the repository label, creates exactly one GitHub Issue, returns its URL, and stops. It does not use GitHub Projects, deploy repository templates, or invoke `shape` automatically.
+
 `explore` is not a default workflow step. Run it explicitly when you want an Explore Report; otherwise `shape`, `implement`, `check`, `docs`, and `doctor` may use it internally as context preflight and carry the evidence into their own output.
 
 Delivery stages follow when a project's `WORKFLOW.md` says so:
@@ -57,7 +61,7 @@ Delivery stages follow when a project's `WORKFLOW.md` says so:
 commit → pr
 ```
 
-`doctor` and `handoff` sit outside the loop — the former is an on-demand whole-project checkup (complementary to `check`'s "look at one change before merge"), the latter produces a read-only summary when a session needs to end or hand over.
+`converge`, `doctor`, and `handoff` sit outside the loop — `converge` batch-aligns the durable memory catalog during onboarding or after a Squire upgrade, `doctor` is an on-demand whole-project checkup (complementary to `check`'s "look at one change before merge"), and `handoff` produces a read-only summary when a session needs to end or hand over.
 
 Each skill stops when done and waits for **you** to decide the next step. Skills never chain automatically; moving between them is your explicit action, and the "next step" in each report is only a suggestion. See the "position determines modality" model in [ARCHITECTURE.md](./ARCHITECTURE.md).
 

@@ -4,16 +4,17 @@
 
 > Your AI agent has the horsepower. Squire gives it the road.
 
-AI 的原始产出能力已经很强，但没有结构，这份能力会漂成泛泛、不精确的活儿。Squire 给它结构：把「理解 → 设计 → 实现 → 校验 → 文档化」这条开发主线拆成 9 个各司其职的 skill，每个只做好一件事。
+AI 的原始产出能力已经很强，但没有结构，这份能力会漂成泛泛、不精确的活儿。Squire 给它结构：把「记录 → 理解 → 设计 → 实现 → 校验 → 文档化」这条开发入口和主线拆成 11 个各司其职的 skill，每个只做好一件事。
 
 它不只是工具集，而是一套**克制的指令系统**——每条 rule 都是 ceiling 不是 floor，Agent 只做指令允许的事，其余交还模型自己的 judgment。完整的设计哲学与产品边界见 [PRODUCT.md](./PRODUCT.md)。
 
-## 9 个 Skill
+## 11 个 Skill
 
-Squire 把项目理解和变更闭环分开：`explore` 提供 context 或独立报告；`shape → implement → check → docs` 是 core loop；`commit` / `pr` 是由项目流程决定的交付阶段；`doctor` / `handoff` 保持正交。
+Squire 把可选 Issue 入口、项目理解和变更闭环分开：`issue` 只记录一项开发工作并停下；`explore` 提供 context 或独立报告；`shape → implement → check → docs` 是 core loop；`commit` / `pr` 是由项目流程决定的交付阶段；`converge` 批量对齐持久文档；`doctor` / `handoff` 保持正交。
 
 | Skill       | 位置                   | 作用                                                                      |
 | :---------- | :--------------------- | :------------------------------------------------------------------------ |
+| `issue`     | optional intake        | 确认一项工作，创建一个中文强格式、带 mode label 的 GitHub Issue           |
 | `explore`   | context / report       | 按需建立项目上下文；只有用户主动要求时才产出报告                          |
 | `shape`     | core loop              | 澄清意图、塑形设计、产出方案（brainstorm / fix / feat / refactor / perf） |
 | `implement` | core loop              | 按方案做最小、可控、合项目风格的改动；含写测试（TDD + 补覆盖）            |
@@ -21,10 +22,11 @@ Squire 把项目理解和变更闭环分开：`explore` 提供 context 或独立
 | `docs`      | core loop              | 默认照记忆目录维护项目持久真源；用户指定时也维护目录外文档                |
 | `commit`    | workflow-managed stage | 整理变更、生成清晰 commit message，必要时拆分提交                         |
 | `pr`        | workflow-managed stage | 推送分支、综合分支历史准备 PR 描述与 test plan                            |
+| `converge`  | on-demand maintenance  | 在项目接入或 Squire 升级后批量对齐 durable memory catalog                 |
 | `doctor`    | orthogonal tool        | 项目体检：文档↔代码漂移（主）+ 依赖/CI/文件陈旧；只读 advisory            |
 | `handoff`   | orthogonal tool        | 会话交接：只读收集当前状态，输出可粘贴到新会话的自包含摘要                |
 
-命名统一在一条标准上——**每个名字都取开发者已有习惯里的通行叫法**：git 习惯（`commit` / `pr`）、CLI 习惯（`doctor` / `check` / `docs`）、agent 习惯（`explore` / `handoff`）、方法论与 PR 文化（`shape` 取 Shape Up 的 shaping、`implement`）。命名决策记录见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+命名统一在一条标准上——**每个名字都取开发者已有习惯里的通行叫法**：GitHub 习惯（`issue`）、git 习惯（`commit` / `pr`）、CLI 习惯（`doctor` / `check` / `docs`）、agent 习惯（`explore` / `converge` / `handoff`）、方法论与 PR 文化（`shape` 取 Shape Up 的 shaping、`implement`）。命名决策记录见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
 
 ## 安装
 
@@ -39,7 +41,7 @@ npx skills add .
 - `-y` 跳过确认
 - `--copy` 改用纯复制布局；默认走 symlink 进 `~/.agents` 共享 store，但 store 内容是**安装时的快照**——改完仓库需重跑 `npx skills add .` 才生效
 
-装完即可触发：`/explore`、`/shape`、`/implement`、`/check`、`/docs`、`/commit`、`/pr`，以及正交工具 `/doctor`、`/handoff`。
+装完即可触发：`/issue`、`/explore`、`/shape`、`/implement`、`/check`、`/docs`、`/commit`、`/pr`、`/converge`、`/doctor` 和 `/handoff`。
 
 ## 工作流
 
@@ -49,6 +51,8 @@ Core loop 是一次变更走过的最小闭环：
 shape → implement → check → docs
 ```
 
+`issue` 作为可选入口位于这条闭环之外。它用简短理解卡确认一项工作，生成中文强格式正文，确保仓库中存在 `fix` / `feat` / `refactor` / `perf` 之一作为主 label，创建且只创建一个 GitHub Issue，返回 URL 后停止。它不使用 GitHub Projects、不向各仓库部署模板，也不自动调用 `shape`。
+
 `explore` 不是默认 workflow 步骤。需要独立理解报告时由用户主动触发；否则 `shape`、`implement`、`check`、`docs`、`doctor` 可在内部把它作为 context preflight 使用，并把证据带入自己的输出。
 
 交付阶段按项目的 `WORKFLOW.md` 决定是否接在后面：
@@ -57,7 +61,7 @@ shape → implement → check → docs
 commit → pr
 ```
 
-`doctor` 与 `handoff` 不在线性环里——前者是按需触发的整体体检（与 `check` 的「合并前看一次改动」互补），后者在会话需要结束或交接时生成只读摘要。
+`converge`、`doctor` 与 `handoff` 不在线性环里——`converge` 在项目接入或 Squire 升级后批量对齐 durable memory catalog，`doctor` 是按需触发的整体体检（与 `check` 的「合并前看一次改动」互补），`handoff` 在会话需要结束或交接时生成只读摘要。
 
 每个 skill 完成后**默认停下，等用户决定下一步**。技能之间不自动串联，转移是用户的明确动作；完成报告里的「下一步」只是建议，串联权始终在用户。详见 [ARCHITECTURE.md](./ARCHITECTURE.md) 的「位置定模态」模型。
 
