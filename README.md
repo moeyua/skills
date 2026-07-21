@@ -12,19 +12,19 @@ It isn't just a toolkit. It's a **restrained instruction system**: every rule is
 
 Squire separates optional Issue intake, project understanding, and the change loop. `issue` records one development item and stops; `explore` supplies context or a standalone report; `shape → implement → check → docs` is the core loop; `commit` / `pr` are delivery stages owned by each project's workflow; `converge` batch-aligns durable docs; `doctor` / `handoff` stay orthogonal.
 
-| Skill       | Position               | What it does                                                                                       |
-| :---------- | :--------------------- | :------------------------------------------------------------------------------------------------- |
-| `issue`     | optional intake        | Confirm one work item and create one strongly formatted, mode-labeled Issue in the user's language |
-| `explore`   | context / report       | Build project context on demand, with a report only when explicitly requested                      |
-| `shape`     | core loop              | Clarify intent, shape a design, and produce a plan (brainstorm / fix / feat / refactor / perf)     |
-| `implement` | core loop              | Land minimal, controlled, style-fitting changes; includes writing tests (TDD)                      |
-| `check`     | core loop              | Confirm a change holds up via review / test / e2e — verdict only, no edits                         |
-| `docs`      | core loop              | Maintain durable project truth per the memory catalog; also user-named docs                        |
-| `commit`    | workflow-managed stage | Organize changes into clean commits with clear messages, splitting when needed                     |
-| `pr`        | workflow-managed stage | Push the branch and build a PR description and test plan from the branch history                   |
-| `converge`  | on-demand maintenance  | Batch-align the durable memory catalog during onboarding or after a Squire upgrade                 |
-| `doctor`    | orthogonal tool        | Project checkup: docs-vs-code drift (primary) + dependency/CI/file staleness; read-only            |
-| `handoff`   | orthogonal tool        | Session handoff: a read-only state summary you can paste into a new session                        |
+| Skill       | Position               | What it does                                                                                         |
+| :---------- | :--------------------- | :--------------------------------------------------------------------------------------------------- |
+| `issue`     | optional intake        | Confirm one work item and create one strongly formatted, mode-labeled Issue in the user's language   |
+| `explore`   | context / report       | Build project context on demand, with a report only when explicitly requested                        |
+| `shape`     | core loop              | Ground facts, resolve material choices, and shape a plan (brainstorm / fix / feat / refactor / perf) |
+| `implement` | core loop              | Land minimal, controlled, style-fitting changes; includes writing tests (TDD)                        |
+| `check`     | core loop              | Confirm a change holds up via review / test / e2e — verdict only, no edits                           |
+| `docs`      | core loop              | Maintain durable project truth per the memory catalog; also user-named docs                          |
+| `commit`    | workflow-managed stage | Organize changes into clean commits with clear messages, splitting when needed                       |
+| `pr`        | workflow-managed stage | Push the branch and build a PR description and test plan from the branch history                     |
+| `converge`  | on-demand maintenance  | Batch-align the durable memory catalog during onboarding or after a Squire upgrade                   |
+| `doctor`    | orthogonal tool        | Project checkup: docs-vs-code drift (primary) + dependency/CI/file staleness; read-only              |
+| `handoff`   | orthogonal tool        | Session handoff: a read-only state summary you can paste into a new session                          |
 
 Every name follows one standard — **each is the term developers already use**: GitHub habits (`issue`), git habits (`commit` / `pr`), CLI habits (`doctor` / `check` / `docs`), agent habits (`explore` / `converge` / `handoff`), and methodology and PR culture (`shape` from Shape Up's shaping, `implement`). The naming decisions are recorded in [ARCHITECTURE.md](./ARCHITECTURE.md).
 
@@ -67,7 +67,7 @@ Each skill stops when done and waits for **you** to decide the next step. Skills
 
 ## shape's modes
 
-`shape` adapts to intent through modes — the mode isn't user-specified, it's recognized by the agent during clarification:
+`shape` adapts to intent through modes. A user may name one, but the category still follows the change itself:
 
 | Mode         | When                                         | Output                                   |
 | :----------- | :------------------------------------------- | :--------------------------------------- |
@@ -77,7 +77,7 @@ Each skill stops when done and waits for **you** to decide the next step. Skills
 | `refactor`   | Tidy code without changing external behavior | Refactor plan + behavior-preservation    |
 | `perf`       | Performance work                             | Baseline + optimization plan             |
 
-`brainstorm` is the conversational shaping mode. It writes no plan, design, or spec file; once the direction has converged, it can explicitly ask whether to continue into a named mode. Named modes write `plans/` only after context grounding, clarification, 2-3 approaches, grilling the recommended approach, and design approval. For the detailed mode design and data flow, see [ARCHITECTURE.md](./ARCHITECTURE.md).
+`brainstorm` stays conversational and writes no plan, design, or spec file. Named modes ground the relevant facts, reuse decisions already made, and ask only unresolved choices that could materially change scope, behavior, architecture, risk, or acceptance. Related independent choices may be handled together with recommendations; alternatives appear only for a real trade-off. Once intent is complete and the conversation has authorized a plan, `shape` writes `plans/` without a fixed interview sequence or duplicate approval gate. For the detailed mode design and data flow, see [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 ## Design philosophy
 
@@ -93,7 +93,7 @@ The full principles and 5 product boundaries are in [PRODUCT.md](./PRODUCT.md).
 
 ## Development
 
-Repo self-checks run with `pnpm test`. The repo also ships [bench/](bench/README.md) — repo-only tooling (never installed with the skills) that measures whether models actually follow the shape protocol.
+Repo self-checks run with `pnpm test`. The repo also ships [bench/](bench/README.md) — repo-only tooling (never installed with the skills) that measures whether shape is grounded, proportionate, decision-complete, and implementation-ready.
 
 ## Acknowledgements
 

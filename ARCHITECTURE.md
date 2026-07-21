@@ -286,17 +286,17 @@ dispatch_intent: "一句话意图，给路由表用"
 |---|---|
 ```
 
-`shape` 比其他 skill 多 **context grounding / Clarify / approach expansion / design gate / Mode Picker**；共享塑形协议放在 `skills/shape/references/shaping-protocol.md`，mode-specific 内容拆到 `references/mode-*.md`。
+`shape` 比其他 skill 多 **context grounding / convergence assessment / material frontier / Mode Picker**。自适应策略集中在 `skills/shape/SKILL.md`，`references/mode-*.md` 只保留各 mode 的证据与完成门槛。
 
 ## shape 的 mode 系统（详细）
 
-| Mode         | 触发条件                                   | Clarify 关注               | 输出结构                       |
-| ------------ | ------------------------------------------ | -------------------------- | ------------------------------ |
-| `brainstorm` | 想法模糊、探索性、"我想做..."、"该不该..." | 想清楚要解决什么问题       | 会话内设计结论，不写文件       |
-| `fix`        | 报错、行为异常、回归                       | 复现条件、影响面           | 根因报告 + 修复方案            |
-| `feat`       | 新功能、新能力                             | 用户场景、接口边界、验收   | 实施方案 + 影响范围 + 验证方式 |
-| `refactor`   | 整理结构、不改外部行为                     | 行为保留边界、回归测试覆盖 | 重构方案 + 行为保留验证        |
-| `perf`       | 性能差、慢、卡顿                           | baseline、目标数字、瓶颈   | baseline + 优化方案 + 测量     |
+| Mode         | 触发条件                                   | 关键证据                        | 输出结构                       |
+| ------------ | ------------------------------------------ | ------------------------------- | ------------------------------ |
+| `brainstorm` | 想法模糊、探索性、"我想做..."、"该不该..." | 当前方向、约束、未决实质选择    | 会话内设计结论，不写文件       |
+| `fix`        | 报错、行为异常、回归                       | 根因、复现与回归测试            | 根因报告 + 修复方案            |
+| `feat`       | 新功能、新能力                             | 接口边界、用户场景与验收        | 实施方案 + 影响范围 + 验证方式 |
+| `refactor`   | 整理结构、不改外部行为                     | 行为不变量与回归覆盖            | 重构方案 + 行为保留验证        |
+| `perf`       | 性能差、慢、卡顿                           | baseline、target 与 measurement | baseline + 优化方案 + 测量     |
 
 **mode 识别流程**：
 
@@ -305,31 +305,34 @@ dispatch_intent: "一句话意图，给路由表用"
   ↓
 shape SKILL.md 加载
   ↓
-Context grounding
+按当前决定所需风险做 Context grounding
   ├── 事实足够 → 带证据继续
-  └── 事实缺失 / 过期 / 过浅 → 调用 explore context mode（无报告）
+  └── 事实缺失 / 过期 / 过浅 → 读项目来源或调用 explore context mode（无报告）
   ↓
-Clarify Phase（共通）
-  ├── 提问澄清意图
-  ├── 收集背景
-  └── 识别 mode 信号
+判断收敛状态
+  ├── 已收敛 → 直接综合
+  ├── Evidence gap → 先调查
+  ├── Material frontier → 解决当前可回答的实质选择
+  └── 用户明确要求 grill → 全面压力测试
   ↓
 Mode Picker
-  ├── 模糊 / 探索性 → 留在 brainstorm
-  └── 明确 mode 信号 → 加载对应 references/mode-X.md
-  ↓
-brainstorm → 会话结论 + 下一决策
-named mode → 2-3 approaches → grill 推荐方案 → design summary 确认 → plan 文件
+  ├── 模糊 / 探索性 → brainstorm 会话结论
+  └── named mode → 加载对应 mode bar
+                         ↓
+              意图完备 + 已有授权 → conditional plan
 ```
 
 **核心约束**：
 
 - `brainstorm` 是 shape 的显式会话 mode，不是独立 skill，不写 plan/design/spec 文件
-- shape 只决定什么时候需要上下文探索；具体怎么探索由 explore context mode 定义
-- mode 不是用户指定，是 agent 在 clarify 过程中识别
-- 知道意图 ≠ 不需要澄清（用户说 `/shape 重构这块`，agent 仍可能问"重构成什么样？保留哪些 API？"）
-- named mode 写 plan 前必须提出 2-3 approaches、grill 推荐方案、展示 design summary 并取得确认
-- 出方案前不写任何代码 / scaffolding / pseudo-code
+- shape 按当前决策的风险判断是否需要上下文探索；具体怎么探索由 explore context mode 定义
+- mode 来自变更意图；用户可以点名，但 intentional behavior change 仍不能归到 `refactor`
+- 只询问会改变 scope、外部行为/接口、难逆架构、风险或验收的 material frontier；独立问题可同轮带推荐处理
+- 用户未表达偏好不等于委托；多个合理默认会产生不同可观察语义时，推荐只能降低决策成本，不能静默替用户授权
+- 用户既有表态和授权直接进入综合；用户委托判断时由 shape 推荐并说明重要假设
+- alternatives 只为真实且后果显著的 trade-off 展开，不设固定数量
+- named mode 在意图完备且对话已授权时写 plan，不依赖固定标题、固定阶段或第二次确认
+- shape 只写会话结论或 named-mode plan；plan 落盘也不允许继续写实现 / scaffolding / spec
 - 不同 mode 的 plan 关注点不同：
   - fix 关注根因和回归测试
   - feat 关注接口和影响范围
@@ -465,7 +468,7 @@ Claude Code skill 触发是双轨：
 
 ### 为什么把默认状态命名为 brainstorm？
 
-旧设计把没有明确 mode 的状态视为无名 default；实践里这会让 agent 把 default 当成空档，而不是一条要执行的会话协议。现在把它显式命名为 `brainstorm`：它仍不是独立 skill，也不写文件；它的职责是在对话中收敛方向、约束、推荐 approach 和下一决策。想法收敛后，必须把是否进入 `fix` / `feat` / `refactor` / `perf` 交回用户确认，确认后才写 `plans/`。
+旧设计把没有明确 mode 的状态视为无名 default；实践里这会让 agent 把 default 当成空档，而不是一条要执行的会话协议。现在把它显式命名为 `brainstorm`：它仍不是独立 skill，也不写文件；它的职责是在对话中收敛方向、约束、推荐与未决实质选择。想法收敛后，用户若已请求 plan、点名 named mode、同意方向或要求继续，授权已经成立；只有尚未授权时才询问是否进入 `fix` / `feat` / `refactor` / `perf`。
 
 ### 为什么不加 hallucination marker？
 
@@ -536,6 +539,14 @@ ROADMAP 原积「`shape` 的 `arch` mode / 产出架构」以否决 mode 读法�
 ### 2026-07-02 shape-bench:skill 行为遵守度可测化
 
 「模型无法稳定遵守 shape 流程」此前只能靠人工判卷定性。新增顶层 `bench/`:对已有真实会话与驱动器自动跑出的会话,机械检查硬违规(HARD-GATE、brainstorm 写 plan、占位词、一轮多问)+ LLM judge 按 `specs/shape/spec.md` 逐条判定(阶段切分 → 逐 Requirement → 0-10 总分),经两个人工判卷 gold case 校准(分差 ≤0.5、判分抖动 ±0.5 已量化)。驱动器以 8 张场景卡 + 模拟用户跑完整会话:claude 侧 Agent SDK `canUseTool` 代答 AskUserQuestion,codex 侧 `exec`/`exec resume`。定位:仓库开发工具,与 `doctor`(消费项目体检)、`tests/`(仓库一致性)互不重叠;不进 specs/(`checkSpecPairing` 强制 specs↔skills 配对),对外契约固化在 [bench/README.md](bench/README.md)。首份真实基线:「逐枝 grill」6/6 fail、「design summary gate」与「决策交回用户」各 5/6 fail——反向优化 skill 文档的靶子。详见 [plans/2026-07-02-feat-shape-bench.md](plans/2026-07-02-feat-shape-bench.md)。
+
+### 2026-07-21 shape 从流程遵守改为 outcome-first
+
+真实回归显示，固定的 Clarify → 2–3 approaches → 逐枝 grill → `Design Summary` gate 会在意图已经收敛、用户已经同意时继续制造问题和重复确认。shape 因此改用 **material frontier**：先取得当前决定需要的事实，把用户已定内容当输入，只解决仍会改变范围、可观察行为/接口、难逆架构、风险或验收的选择；独立选择可成组附推荐，依赖选择后置，用户委托的判断由 agent 负责。用户没有表达偏好并不自动构成委托：若合理默认会产生不同的排序、搜索、持久化等可观察语义，选择仍留在 frontier。单一方向证据充分时直接推荐，只有真实后果取舍才展开 alternatives。授权从请求 plan、点名 mode、同意方向或“继续”等对话证据累积，不再要求固定 summary 标题或额外确认。
+
+严格性移到结果边界：brainstorm 仍不写文件；named mode 仍产出 path-scoped、可验证且满足 fix / feat / refactor / perf 专属门槛的 plan；shape 在任何时点都不得写实现。原 `shaping-protocol.md` 删除，plan 核心段保持稳定，其余段按 Architecture、public surface、spec delta、rollback、风险等实际触发条件出现，未触发时直接省略。
+
+bench 同步从 stage compliance 改为 outcome quality。机械 checker 只守写入边界、brainstorm 与占位符；judge 不再切固定 phases，改评 grounding、交互比例、实质决策覆盖、推荐质量、已定内容复用与 implementation readiness。场景扩为 9 张，并加入“完整请求直接写 plan”与“重复确认”回归证据。历史 rubric 分数保留但不可跨契约比较。详见 [plans/2026-07-21-fix-shape-outcome-first.md](plans/2026-07-21-fix-shape-outcome-first.md) 与 [bench/README.md](bench/README.md)。
 
 ### 2026-07-14 issue 作为 create-only 可选入口
 

@@ -29,7 +29,6 @@ function okJudge(score: number, verdicts: [string, "pass" | "fail" | "n.a."][]):
     attempts: 1,
     rawResponse: "{}",
     verdict: {
-      phases: [{ phase: "clarify", turns: [1, 3], notes: "" }],
       requirements: verdicts.map(([requirement, verdict]) => ({
         requirement,
         verdict,
@@ -47,7 +46,14 @@ describe("buildSessionReport", () => {
     const report = buildSessionReport(
       transcript("s1"),
       {
-        violations: [{ check: "hard-gate", severity: "hard", turn: 3, evidence: "写了 src/x.ts" }],
+        violations: [
+          {
+            check: "shape-write-boundary",
+            severity: "hard",
+            turn: 3,
+            evidence: "写了 src/x.ts",
+          },
+        ],
       },
       okJudge(6, [["甲", "pass"]]),
     );
@@ -86,7 +92,16 @@ describe("renderSummaryMarkdown", () => {
     );
     const r2 = buildSessionReport(
       transcript("session-bbb"),
-      { violations: [{ check: "multi-question", severity: "warn", turn: 2, evidence: "3 问" }] },
+      {
+        violations: [
+          {
+            check: "shape-write-boundary",
+            severity: "hard",
+            turn: 2,
+            evidence: "写了 src/x.ts",
+          },
+        ],
+      },
       okJudge(6, [
         ["甲", "n.a."],
         ["乙", "pass"],
@@ -98,7 +113,7 @@ describe("renderSummaryMarkdown", () => {
     expect(md).toContain("✗");
     expect(md).toContain("n.a.");
     expect(md).toContain("8");
-    expect(md).toContain("multi-question");
+    expect(md).toContain("shape-write-boundary");
   });
 
   it("marks judge-error sessions in the matrix", () => {

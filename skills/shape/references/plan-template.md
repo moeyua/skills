@@ -1,12 +1,12 @@
 # Plan File Template
 
-The structure shape writes to `plans/YYYY-MM-DD-<slug>.md` when it enters a named mode.
+Write named-mode plans to `plans/YYYY-MM-DD-<slug>.md`. A plan is an implementation handoff, so include what implement cannot infer and omit sections whose trigger is absent.
 
-Every named mode follows this common skeleton; mode-specific fields are detailed in the matching mode reference.
+## Required core
 
-## File structure
+Every plan contains:
 
-````markdown
+```markdown
 ---
 mode: fix | feat | refactor | perf
 title: <one-line topic>
@@ -18,134 +18,63 @@ status: draft
 
 ## Building
 
-[one paragraph on what this plan delivers]
+<the outcome this plan delivers>
 
 ## Not building
 
-[explicit out-of-scope list; prevents scope creep during implement]
-
-## Approach
-
-[2-3 approaches considered, with trade-offs. Lead with the recommended approach and explain why. Keep small changes short, but still expose the meaningful design choice.]
-
-## Premise collapse
-
-[the most fragile assumption. "This plan assumes X. If X doesn't hold, Y happens."]
-
-## Key decisions
-
-1. <decision> — <reasoning>
-2. ...
-
-## Architecture
-
-Required when the change crosses module boundaries, introduces a new layer or service, or swaps a tech dependency. If no trigger applies → "None" — filling it for a single-module change is padding, not rigor.
-
-- **Current → target structure**: the shape of the system before and after. More than 3 components exchanging data → draw an ASCII diagram and look for cycles (fewer needs no diagram; drawing one is noise).
-- **Components & data flow**: each touched component's responsibility and what moves between them.
-- **Phased migration**: the stages from current to target, each independently shippable — they become the spine of the implementation steps (a phase that can't ship on its own is a plan red flag).
-
-The architecture decisions this change makes belong here, explicitly — not buried inside implementation steps, and not pushed off to another mode. An unrelated drive-by refactor is still split out; this section carries only this change's own structure.
-
-## Public surface changes
-
-Changes to API / schema / config / CLI / file interfaces. If none → "None".
-
-## Spec delta
-
-If this change alters externally observable behavior, state the change to the persistent `specs/<domain>/spec.md` as a delta, for the docs skill to record after implement. If it changes no observable behavior (pure refactor / perf holding behavior) → "None".
-
-```markdown
-## ADDED Requirements
-
-### Requirement: <name>
-
-The system SHALL <observable behavior>.
-
-#### Scenario: <name>
-
-- GIVEN ... / WHEN ... / THEN ...
-
-## MODIFIED Requirements
-
-### Requirement: <existing name>
-
-The system SHALL <new behavior>. (Previously: <old behavior>)
-
-## REMOVED Requirements
-
-### Requirement: <name>
-
-(Deprecated because ...)
-```
-````
+<explicit scope boundaries>
 
 ## Implementation steps
 
-A step states the **outcome**, not the edit. Intent decisions are settled in the plan; locating the exact line, phrasing the final change, and ordering the micro-edits belong to implement. Line numbers and pre-written wording are the fastest-rotting content in a plan — any commit in between invalidates them — and they duplicate the reading implement will do anyway.
-
-Each step must:
-
-- state an outcome that is true once the step lands
-- name its scope at path level (the files / modules it touches)
-- be independently verifiable — the verify line, not edit precision, carries this
-- not depend on a step not yet written
-- contain no intent-level placeholder ("TBD" / "TODO" / "implement later" are all red flags; "implement locates the exact line" is not)
-
 1. <step>
-   - outcome: <what is true after this step>
-   - scope: <paths / modules touched>
+   - outcome: <what is true after the step>
+   - scope: <paths or modules touched>
    - verify: <specific command or check>
-2. ...
 
 ## Verification
 
-Overall acceptance.
-
-- command: `<specific cmd>`
+- command: `<overall command>`
 - checklist (manual):
-  - [ ] ...
+  - [ ] <observable acceptance check>
+```
 
-## Rollback
-
-If the plan turns out to be the wrong direction once built, how do you roll back? Every step that changes external state must have a rollback path.
-
-## Risks & Unknowns
-
-- **<risk>**: impact / mitigation
-- **Unknown**: <question> — owner: <who clarifies>, blocker: yes/no
-
-If none → "None".
-
-## Mode-specific
-
-Add extra fields per mode; see the matching reference:
+Add the matching mode sections:
 
 - fix: `## Root cause` + `## Regression tests`
 - feat: `## Interface boundary` + `## Acceptance scenarios`
 - refactor: `## Behavior invariants` + `## Regression coverage`
 - perf: `## Baseline` + `## Target` + `## Measurement`
 
-```
+## Conditional sections
 
-## Naming the slug
+Include a section only when its trigger exists; omit it otherwise.
 
-Derived from the plan topic; short, readable, kebab-case:
+- `## Approach` — multiple viable paths create a consequential trade-off. Record the recommendation and why it wins.
+- `## Key decisions` — the design contains non-obvious choices or constraints that later maintainers need to understand.
+- `## Assumptions & risks` — a consequential assumption, risk, or non-blocking unknown affects implementation or verification.
+- `## Architecture` — the change crosses module boundaries, introduces a layer/service, or swaps a technical dependency. Describe current → target structure, component responsibilities and data flow, and a safe migration. Draw an ASCII diagram when more than three components exchange data.
+- `## Public surface changes` — API, schema, configuration, CLI, file format, or other caller-facing interfaces change.
+- `## Spec delta` — externally observable behavior changes. Express `ADDED`, `MODIFIED`, or `REMOVED` requirements by their persistent spec names so docs can merge them mechanically.
+- `## Rollback` — the plan changes external state, persistent data/schema, deployment configuration, or uses a migration whose reversal needs preparation.
 
-| plan topic             | slug                     |
-| ---------------------- | ------------------------ |
-| fix the login loop     | `fix-login-loop`         |
-| add RBAC permissions   | `feat-rbac`              |
-| refactor storage layer | `refactor-storage-layer` |
-| optimize first paint   | `perf-initial-load`      |
+Do not emit a conditional heading merely to write `None`.
 
-## Status field
+## Implementation-step bar
 
-Semantics of the frontmatter `status` field:
+Each step:
 
-- `draft`: shape just wrote it, waiting for the user to approve
-- `approved`: changed after the user says "implement this plan"
-- `done`: changed after implement + check + commit complete (updated by the implement skill)
+- states an outcome rather than a micro-edit
+- names path-level scope
+- has an independent verification signal
+- follows only steps already listed
+- contains no unresolved intent decision
 
-In v1, support `draft` / `approved` first; leave `done` to v2, handled by the implement skill.
-```
+Exact line locating, final wording, and micro-edit order belong to implement. Fix-mode root-cause locations remain diagnostic evidence, not edit instructions.
+
+## Naming and status
+
+Derive a short kebab-case slug from the topic, such as `fix-login-loop`, `feat-rbac`, `refactor-storage-layer`, or `perf-initial-load`.
+
+- `draft`: shape wrote the plan
+- `approved`: the user invoked implement for the plan
+- `done`: implement completed every step and verification

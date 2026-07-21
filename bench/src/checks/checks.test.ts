@@ -32,14 +32,14 @@ function writeCall(turn: number, path: string, content: string): BenchEvent[] {
   ];
 }
 
-describe("hard-gate: implementation writes before a plan exists", () => {
-  it("flags implementation file writes before the plan is written", () => {
+describe("shape-write-boundary", () => {
+  it("flags implementation file writes before a plan is written", () => {
     const t = transcript([
       ...writeCall(2, "/repo/src/export.ts", "export const x = 1"),
       ...writeCall(3, "/repo/plans/2026-06-01-feat-x.md", "---\nmode: feat\n---"),
     ]);
     const violations = runChecks(t).violations;
-    const hits = violations.filter((v) => v.check === "hard-gate");
+    const hits = violations.filter((v) => v.check === "shape-write-boundary");
     expect(hits).toHaveLength(1);
     expect(hits[0]?.turn).toBe(2);
     expect(hits[0]?.evidence).toContain("src/export.ts");
@@ -47,24 +47,46 @@ describe("hard-gate: implementation writes before a plan exists", () => {
 
   it("flags implementation writes when no plan is ever written", () => {
     const t = transcript(writeCall(2, "/repo/src/export.ts", "code"));
-    expect(runChecks(t).violations.filter((v) => v.check === "hard-gate")).toHaveLength(1);
+    expect(runChecks(t).violations.filter((v) => v.check === "shape-write-boundary")).toHaveLength(
+      1,
+    );
   });
 
-  it("does not flag plan or memory writes", () => {
+  it("allows plan writes but flags memory writes", () => {
     const t = transcript([
       ...writeCall(1, "/repo/plans/2026-06-01-feat-x.md", "---\nmode: feat\n---"),
       ...writeCall(2, "/home/u/.claude/projects/x/memory/note.md", "note"),
       ...writeCall(2, "/home/u/.claude/projects/x/memory/MEMORY.md", "index"),
     ]);
-    expect(runChecks(t).violations.filter((v) => v.check === "hard-gate")).toHaveLength(0);
+    const hits = runChecks(t).violations.filter((v) => v.check === "shape-write-boundary");
+    expect(hits).toHaveLength(2);
+    expect(hits.every((v) => v.evidence.includes("memory"))).toBe(true);
   });
 
-  it("does not flag implementation writes after the plan is written", () => {
+  it("still flags implementation writes after the plan is written", () => {
     const t = transcript([
       ...writeCall(2, "/repo/plans/2026-06-01-feat-x.md", "---\nmode: feat\n---"),
       ...writeCall(3, "/repo/src/export.ts", "code"),
     ]);
-    expect(runChecks(t).violations.filter((v) => v.check === "hard-gate")).toHaveLength(0);
+    expect(runChecks(t).violations.filter((v) => v.check === "shape-write-boundary")).toHaveLength(
+      1,
+    );
+  });
+
+  it("stops attributing writes to shape after an explicit skill handoff", () => {
+    const t = transcript([
+      ...writeCall(2, "/repo/plans/2026-06-01-feat-x.md", "---\nmode: feat\n---"),
+      {
+        kind: "user-message",
+        turn: 3,
+        timestamp: undefined,
+        text: "[$implement](/home/u/.agents/skills/implement/SKILL.md)",
+      },
+      ...writeCall(3, "/repo/src/export.ts", "code"),
+    ]);
+    expect(runChecks(t).violations.filter((v) => v.check === "shape-write-boundary")).toHaveLength(
+      0,
+    );
   });
 });
 
@@ -156,121 +178,16 @@ describe("plan-placeholder", () => {
   });
 });
 
-describe("design-gate-skipped", () => {
-  const planWrite = (turn: number): BenchEvent[] =>
-    writeCall(turn, "/repo/plans/2026-07-03-fix-x.md", "---\nmode: fix\n---");
-
-  it("flags a plan written without a prior Design Summary message", () => {
+describe("adaptive conversation has no ceremony checker", () => {
+  it("allows a plan without a literal Design Summary marker", () => {
     const t = transcript([
-      {
-        kind: "assistant-message",
-        turn: 2,
-        timestamp: undefined,
-        text: "推荐方案 A,直接写计划了。",
-      },
-      ...planWrite(3),
+      { kind: "user-message", turn: 1, timestamp: undefined, text: "直接写计划" },
+      ...writeCall(1, "/repo/plans/2026-07-21-feat-x.md", "---\nmode: feat\n---"),
     ]);
-    const hits = runChecks(t).violations.filter((v) => v.check === "design-gate-skipped");
-    expect(hits).toHaveLength(1);
-    expect(hits[0]?.severity).toBe("hard");
-    expect(hits[0]?.evidence).toContain("plans/2026-07-03-fix-x.md");
+    expect(runChecks(t).violations).toHaveLength(0);
   });
 
-  it("stays silent when a Design Summary message precedes the plan", () => {
-    const t = transcript([
-      {
-        kind: "assistant-message",
-        turn: 2,
-        timestamp: undefined,
-        text: "## Design Summary\n\n目标:…\n\n是否确认这份设计?",
-      },
-      { kind: "user-message", turn: 3, timestamp: undefined, text: "确认" },
-      ...planWrite(3),
-    ]);
-    expect(runChecks(t).violations.filter((v) => v.check === "design-gate-skipped")).toHaveLength(
-      0,
-    );
-  });
-
-  it("accepts a bare heading line without markdown hashes", () => {
-    const t = transcript([
-      {
-        kind: "assistant-message",
-        turn: 2,
-        timestamp: undefined,
-        text: "Design Summary\n\n目标:…\n\n是否确认这份设计?",
-      },
-      ...planWrite(3),
-    ]);
-    expect(runChecks(t).violations.filter((v) => v.check === "design-gate-skipped")).toHaveLength(
-      0,
-    );
-  });
-
-  it("does not accept a mere mention of Design Summary mid-paragraph", () => {
-    const t = transcript([
-      {
-        kind: "assistant-message",
-        turn: 2,
-        timestamp: undefined,
-        text: "接下来我会先给出 Design Summary,然后直接写计划。",
-      },
-      ...planWrite(3),
-    ]);
-    expect(runChecks(t).violations.filter((v) => v.check === "design-gate-skipped")).toHaveLength(
-      1,
-    );
-  });
-
-  it("flags only the first plan write when the marker arrives after it", () => {
-    const t = transcript([
-      ...planWrite(2),
-      {
-        kind: "assistant-message",
-        turn: 3,
-        timestamp: undefined,
-        text: "## Design Summary\n\n补一份设计。",
-      },
-      ...writeCall(3, "/repo/plans/2026-07-03-fix-y.md", "---\nmode: fix\n---"),
-    ]);
-    const hits = runChecks(t).violations.filter((v) => v.check === "design-gate-skipped");
-    expect(hits).toHaveLength(1);
-    expect(hits[0]?.evidence).toContain("plans/2026-07-03-fix-x.md");
-  });
-
-  it("ignores sidechain Design Summary messages", () => {
-    const t = transcript([
-      {
-        kind: "assistant-message",
-        turn: 2,
-        timestamp: undefined,
-        text: "Design Summary(仅在子代理里出现)",
-        sidechain: true,
-      },
-      ...planWrite(3),
-    ]);
-    expect(runChecks(t).violations.filter((v) => v.check === "design-gate-skipped")).toHaveLength(
-      1,
-    );
-  });
-
-  it("does not fire when no plan is written (brainstorm sessions)", () => {
-    const t = transcript([
-      {
-        kind: "assistant-message",
-        turn: 2,
-        timestamp: undefined,
-        text: "方向聊清楚了,先不进 named mode。",
-      },
-    ]);
-    expect(runChecks(t).violations.filter((v) => v.check === "design-gate-skipped")).toHaveLength(
-      0,
-    );
-  });
-});
-
-describe("multi-question", () => {
-  it("flags a single AskUserQuestion carrying multiple questions", () => {
+  it("allows one AskUserQuestion call carrying a material frontier", () => {
     const t = transcript([
       {
         kind: "tool-call",
@@ -281,124 +198,18 @@ describe("multi-question", () => {
         input: { questions: [{ question: "A?" }, { question: "B?" }] },
       },
     ]);
-    const hits = runChecks(t).violations.filter((v) => v.check === "multi-question");
-    expect(hits).toHaveLength(1);
-    expect(hits[0]?.severity).toBe("hard");
+    expect(runChecks(t).violations).toHaveLength(0);
   });
 
-  it("flags multiple AskUserQuestion calls within one turn", () => {
-    const t = transcript([
-      {
-        kind: "tool-call",
-        turn: 2,
-        timestamp: undefined,
-        name: "AskUserQuestion",
-        callId: "c1",
-        input: { questions: [{ question: "A?" }] },
-      },
-      {
-        kind: "tool-call",
-        turn: 2,
-        timestamp: undefined,
-        name: "AskUserQuestion",
-        callId: "c2",
-        input: { questions: [{ question: "B?" }] },
-      },
-    ]);
-    expect(runChecks(t).violations.filter((v) => v.check === "multi-question")).toHaveLength(1);
-  });
-
-  it("does not flag sequential one-at-a-time asks answered in between", () => {
-    // claude answers arrive as tool_result and never advance the turn, so a
-    // spec-compliant clarify loop keeps many asks inside one turn
-    const t = transcript([
-      {
-        kind: "tool-call",
-        turn: 1,
-        timestamp: undefined,
-        name: "AskUserQuestion",
-        callId: "c1",
-        input: { questions: [{ question: "A?" }] },
-      },
-      {
-        kind: "tool-result",
-        turn: 1,
-        timestamp: undefined,
-        callId: "c1",
-        output: "User selected: 甲",
-      },
-      {
-        kind: "tool-call",
-        turn: 1,
-        timestamp: undefined,
-        name: "AskUserQuestion",
-        callId: "c2",
-        input: { questions: [{ question: "B?" }] },
-      },
-      {
-        kind: "tool-result",
-        turn: 1,
-        timestamp: undefined,
-        callId: "c2",
-        output: "User selected: 乙",
-      },
-      {
-        kind: "tool-call",
-        turn: 1,
-        timestamp: undefined,
-        name: "AskUserQuestion",
-        callId: "c3",
-        input: { questions: [{ question: "C?" }] },
-      },
-    ]);
-    expect(runChecks(t).violations.filter((v) => v.check === "multi-question")).toHaveLength(0);
-  });
-
-  it("warns on an assistant message asking several questions at once", () => {
+  it("allows several user-facing questions in one assistant message", () => {
     const t = transcript([
       {
         kind: "assistant-message",
         turn: 2,
         timestamp: undefined,
-        text: "目标用户是谁?\n预算多少?\n上线时间呢?",
+        text: "公开链接还是登录后访问?\n链接是否过期?\n是否允许下载?",
       },
     ]);
-    const hits = runChecks(t).violations.filter((v) => v.check === "multi-question");
-    expect(hits).toHaveLength(1);
-    expect(hits[0]?.severity).toBe("warn");
-  });
-
-  it("counts fullwidth question marks (U+FF1F) too", () => {
-    const q = "？";
-    const t = transcript([
-      {
-        kind: "assistant-message",
-        turn: 2,
-        timestamp: undefined,
-        text: `目标用户是谁${q}\n预算多少${q}\n上线时间呢${q}`,
-      },
-    ]);
-    expect(runChecks(t).violations.filter((v) => v.check === "multi-question")).toHaveLength(1);
-  });
-
-  it("does not flag one question per turn", () => {
-    const t = transcript([
-      {
-        kind: "tool-call",
-        turn: 2,
-        timestamp: undefined,
-        name: "AskUserQuestion",
-        callId: "c1",
-        input: { questions: [{ question: "A?" }] },
-      },
-      { kind: "user-message", turn: 3, timestamp: undefined, text: "答 A" },
-      {
-        kind: "assistant-message",
-        turn: 3,
-        timestamp: undefined,
-        text: "明白了。那接下来只剩一个问题:成功标准是什么?",
-      },
-    ]);
-    expect(runChecks(t).violations.filter((v) => v.check === "multi-question")).toHaveLength(0);
+    expect(runChecks(t).violations).toHaveLength(0);
   });
 });

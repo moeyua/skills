@@ -1,51 +1,29 @@
 # shape — `feat` mode
 
-Triggers: new feature, new capability, "add an X", "support Y".
+Use `feat` for a new externally observable capability. Its quality bar is a bounded interface plus acceptance scenarios that make the capability reviewable.
 
-The core of `feat` is **the interface boundary** and **acceptance scenarios**. The feature itself may be large, but the shape stage converges it into a plan that can be built in steps.
+## Evidence to resolve
 
-Follow `references/shaping-protocol.md` before writing the plan: explore context, ask clarifying questions, propose 2-3 approaches, grill the recommended approach, and present the design. In `feat`, the grill should pressure-test the interface boundary, MVP scope, error behavior, and acceptance scenarios.
+- Identify the actor, situation, desired outcome, and first-version boundary.
+- Find the existing seam or prior art the feature should extend.
+- Resolve observable success, failure, and consequential edge behavior.
+- Put unspecified user-visible semantics on the material frontier when multiple reasonable behaviors fit the request; common examples are ordering, search/filter interaction, persistence, and destructive effects.
+- Keep unrelated restructuring outside the feature.
 
-## Clarify focus (feat-specific)
+Only ask about unresolved material product choices. Derive implementation conventions and existing interfaces from the repository.
 
-- User scenario: who, in what situation, wants to achieve what?
-- MVP boundary: which cases does the first version support, which not?
-- Any similar feature to reference? (in-project / similar projects / framework built-in)
-- Acceptance: how does a reviewer verify this feature is implemented?
-
-## Required plan fields (beyond the common skeleton)
+## Required plan sections
 
 ### `## Interface boundary`
 
-What the new feature exposes and what it doesn't. Include:
-
-- **Public API**: function signatures / endpoints / commands / component props — down to names and types.
-- **Inputs**: what's valid, what's not.
-- **Outputs**: what success returns, what failure returns.
-- **Side effects**: writes to a database / calls an external service / mutates global state / emits events — list them all.
-- **Not exposed**: internal details, room for future extension — state explicitly "not expressed through the external interface".
+Describe what callers or users can observe: public API, command, endpoint, schema, configuration, or UI interaction; valid inputs; success and failure outputs; side effects; and what remains internal. Name types or shapes when they are design decisions, without prewriting implementation code.
 
 ### `## Acceptance scenarios`
 
-A list of scenarios a reviewer can verify item by item, each in the form:
+Write verifiable Given/When/Then scenarios covering the normal path and every material failure or boundary condition. Each scenario must map to an implementation outcome and an acceptance check.
 
-> Given <state>, when <action>, then <expected outcome>.
+Include `## Spec delta` for externally observable behavior.
 
-Cover at least:
+## Ready when
 
-- happy path (at least 1)
-- error handling (invalid input / external dependency failure / boundary conditions)
-- edge cases (empty / full / boundary values / concurrency)
-
-Each scenario maps to at least 1 implementation step + at least 1 acceptance check.
-
-If the feature changes externally observable behavior, also fill the common skeleton's `## Spec delta` (usually `## ADDED Requirements`) — the acceptance scenarios above map directly onto the spec's scenarios, so the docs skill can record them into `specs/` after implement.
-
-## Anti-patterns
-
-- "Support type X" — without saying which types, how the user passes them, how error types are reported.
-- The feature's own architecture decisions buried inside implementation steps — they go in the plan's `## Architecture` section, explicitly.
-- "Refactor the storage layer while we're at it" — an unrelated drive-by refactor is its own work; split it out into refactor mode.
-- Acceptance scenarios written as "basically works" — they must be verifiable item by item.
-- Interface boundary lists only the happy path — error returns must be designed in the feat, not left to implement.
-- Writing "might add Y later" into the current feat's interface — design only the MVP; extensibility is a v2 concern.
+The first version is bounded, callers can understand the whole interface without knowing its implementation, and acceptance scenarios cover the behavior that would cause a reviewer to reject the feature.

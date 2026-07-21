@@ -112,13 +112,18 @@ describe("buildJudgePrompt", () => {
     expect(prompt).toContain("必须做甲");
     expect(prompt).toContain("[T1] USER: hi");
     expect(prompt).toContain("共 1 条");
+    expect(prompt).toContain("比例");
+    expect(prompt).toContain("重复确认");
+    expect(prompt).toContain("实现就绪");
+    expect(prompt).toContain("未表达的偏好不等于委托");
+    expect(prompt).toContain("显式调用其他 skill");
+    expect(prompt).not.toContain("阶段固定为");
   });
 });
 
 describe("parseJudgeOutput", () => {
   const names = ["甲", "乙"];
   const valid = JSON.stringify({
-    phases: [{ phase: "clarify", turns: [1, 2], notes: "" }],
     requirements: [
       { requirement: "甲", verdict: "pass", evidenceTurns: [1], reason: "ok" },
       { requirement: "乙", verdict: "n.a.", evidenceTurns: [], reason: "未触发" },
@@ -131,6 +136,7 @@ describe("parseJudgeOutput", () => {
     const v = parseJudgeOutput(valid, names);
     expect(v.score).toBe(8);
     expect(v.requirements[1]?.verdict).toBe("n.a.");
+    expect(v).not.toHaveProperty("phases");
   });
 
   it("tolerates markdown fences around the JSON", () => {
@@ -138,27 +144,8 @@ describe("parseJudgeOutput", () => {
     expect(v.score).toBe(8);
   });
 
-  it("normalizes single-turn phase ranges", () => {
-    const singleTurn = JSON.stringify({
-      phases: [
-        { phase: "clarify", turns: [1], notes: "" },
-        { phase: "plan", turns: 2, notes: "" },
-      ],
-      requirements: [
-        { requirement: "甲", verdict: "pass", evidenceTurns: [1], reason: "ok" },
-        { requirement: "乙", verdict: "n.a.", evidenceTurns: [], reason: "未触发" },
-      ],
-      score: 7,
-      summary: "",
-    });
-    const v = parseJudgeOutput(singleTurn, names);
-    expect(v.phases[0]?.turns).toEqual([1, 1]);
-    expect(v.phases[1]?.turns).toEqual([2, 2]);
-  });
-
   it("rejects output missing a requirement", () => {
     const missing = JSON.stringify({
-      phases: [],
       requirements: [{ requirement: "甲", verdict: "pass", evidenceTurns: [], reason: "" }],
       score: 5,
       summary: "",
@@ -168,7 +155,6 @@ describe("parseJudgeOutput", () => {
 
   it("rejects unknown verdicts and out-of-range scores", () => {
     const bad = JSON.stringify({
-      phases: [],
       requirements: [
         { requirement: "甲", verdict: "maybe", evidenceTurns: [], reason: "" },
         { requirement: "乙", verdict: "pass", evidenceTurns: [], reason: "" },
@@ -183,7 +169,6 @@ describe("parseJudgeOutput", () => {
 describe("judgeTranscript with injected model", () => {
   const specText = "### Requirement: 甲\n\n必须做甲。\nVerify: manual\n";
   const goodResponse = JSON.stringify({
-    phases: [{ phase: "clarify", turns: [1, 1], notes: "" }],
     requirements: [{ requirement: "甲", verdict: "pass", evidenceTurns: [1], reason: "ok" }],
     score: 9,
     summary: "遵守良好",

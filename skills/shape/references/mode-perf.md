@@ -1,57 +1,31 @@
 # shape — `perf` mode
 
-Triggers: slow, laggy, performance, "optimize loading", "first paint takes too long", "uses too much memory", "the endpoint is too slow".
+Use `perf` for a measurable improvement in latency, throughput, memory, bundle size, startup, or another explicit metric. Its quality bar is measure → change → measure under comparable conditions.
 
-The core of `perf` is **measure before optimize**. No baseline, no start; no way to measure, no finish.
+## Evidence to resolve
 
-Follow `references/shaping-protocol.md` before writing the plan: explore context, ask clarifying questions, propose 2-3 approaches, grill the recommended approach, and present the design. In `perf`, the grill should pressure-test the metric, baseline, target, measurement method, and acceptable costs.
+- Select the user-relevant metric and measurement environment.
+- Capture or schedule the baseline before optimization work.
+- Set a numeric target and explain the requirement it serves.
+- Locate the bottleneck with profiling evidence when the cause is not already established.
+- State acceptable trade-offs only when they are consequential.
 
-## Clarify focus (perf-specific)
+Repository and measurement facts come from tools. Ask the user when the target or acceptable trade-off is a genuine product decision.
 
-- Performance metric: what are we optimizing? (latency / throughput / memory / bundle size / startup time / something else)
-- Baseline: what's the current number? how was it measured?
-- Target: what number do we need? why that number (user experience / SLA / business need)?
-- Bottleneck: do you know where it's stuck? or do you need to profile first?
-- Acceptable cost: worse readability / added complexity / more memory to trade for CPU — which are acceptable?
-
-## Required plan fields (beyond the common skeleton)
+## Required plan sections
 
 ### `## Baseline`
 
-A measurement actually taken, including:
-
-- **Measurement command / tool**: `hyperfine ./run.sh` / Chrome DevTools Performance / `pprof -http` / etc.
-- **Numbers**: with units (e.g. `first paint 2.3s` / `memory 1.2GB` / `bundle 8.4MB`), ideally a distribution (p50 / p95 / p99), not just the mean.
-- **Environment**: hardware / network / dataset size.
-
-If you haven't measured yet → the plan's first step must be "measure first", otherwise there's no baseline to commit the plan against.
+Record the command or tool, values with units and useful distribution, environment, and representative data/load. When no measurement has been taken yet, make baseline measurement the first implementation outcome.
 
 ### `## Target`
 
-A specific target number + why it's that number:
-
-- `first paint < 1s` (perceptual threshold)
-- `p99 latency < 200ms` (SLA requirement)
-- `bundle < 5MB` (acceptable on mobile networks)
-
-Avoid "just make it faster" / "optimize as much as possible" — it must be verifiable.
+State a verifiable numeric target and its user, SLA, or operational rationale.
 
 ### `## Measurement`
 
-What command / number proves the target was met after the build:
+Use the same method and conditions as the baseline, state the passing result, and add a durable regression guard when practical.
 
-- the same tool / command as the baseline, run under the same load
-- expected number: `the new baseline should meet <target>`
-- regression guard: add the measurement to CI / a benchmark suite to prevent future regressions.
+## Ready when
 
-## Anti-patterns
-
-- Optimizing without a baseline — "gut feel" optimizations are often negative optimizations.
-- Readability dropped but no provable performance gain to show for it — revert.
-- Guessing "it should be faster" without measuring — you must measure.
-- Optimizing a non-bottleneck — don't touch what the profile didn't point to.
-- Substituting a synthetic micro-benchmark number for a real-scenario measurement.
-- Optimizing N points at once with no way to tell which one worked — one change at a time, re-measure each time.
-- Target written as "a bit faster / smoother" — not verifiable.
-- The optimization introduces a new feature — that's feat, not perf.
-- The performance work also changes external behavior — that's perf + refactor mixed; split them.
+The metric, comparable measurement method, target, bottleneck evidence, and acceptable costs are explicit. Improvements to an unmeasured or non-bottleneck path do not meet the bar.

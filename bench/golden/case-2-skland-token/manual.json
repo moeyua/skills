@@ -7,16 +7,17 @@
     "path": "transcript.json"
   },
   "requirements": {
-    "先建立上下文再澄清": "partial",
-    "一次只问一个澄清问题": "partial",
-    "出方案前不写代码": "pass",
+    "事实先于提问": "partial",
+    "按收敛状态自适应塑形": "partial",
+    "只处理实质决策前沿": "fail",
+    "已定内容直接作为输入": "pass",
+    "真实取舍才展开 approaches": "fail",
+    "shape 只塑形不实施": "pass",
     "brainstorm mode 不写方案文件": "n.a.",
-    "named mode 先展开 approaches 再写 plan": "fail",
-    "逐枝 grill 推荐方案": "partial",
-    "plan 前 design summary gate": "partial",
     "named mode 产出可执行方案文件": "n.a.",
-    "点名最脆弱假设": "fail",
-    "决策点把串联交回用户": "fail"
+    "named mode 保持专属质量门槛": "n.a.",
+    "价值判断超出范围": "n.a.",
+    "跨结构变更产出 Architecture 段": "n.a."
   },
-  "notes": "只有单轮转写:用户给两条约束,assistant 直接输出完整设计并请求确认。人工共识:约束被尊重、非目标清楚、没直接写 plan(所以 gate 前半合规);但 2-3 approaches 缺失、决策打包过多(多角色默认绑定这类高影响决策没单独问)、无检索证据、未点名脆弱假设。A 更严(4),B 更宽(7),用户综合 6。"
+  "notes": "只有单轮转写：用户给两条约束，assistant 尊重了 token-only 与不填 UID，并停在设计而未写实现或 plan；但没有可观察的检索证据，还把多角色选择、JSON 自动提取和错误策略等高影响决定直接并入推荐。其中多角色默认绑定与角色选择/显式报错存在真实取舍，应属于实质决策前沿。旧 rubric 主要因缺固定 2-3 approaches / grill 扣分；新 rubric 保留 6 分，但理由改为证据不足与遗漏真实决策。"
 }
