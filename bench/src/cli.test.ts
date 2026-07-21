@@ -23,7 +23,6 @@ Verify: manual(integration)
 `;
 
 const GOOD_RESPONSE = JSON.stringify({
-  phases: [{ phase: "clarify", turns: [1, 2], notes: "" }],
   requirements: [{ requirement: "甲", verdict: "pass", evidenceTurns: [1], reason: "ok" }],
   score: 8,
   summary: "ok",

@@ -11,7 +11,7 @@ import { parseJudgeOutput, type JudgeVerdict } from "./schema.ts";
 import { runClaudeText } from "./claude-cli.ts";
 import type { NormalizedTranscript } from "../normalize/events.ts";
 
-export type { JudgeVerdict, RequirementVerdict, PhaseSegment } from "./schema.ts";
+export type { JudgeVerdict, RequirementVerdict } from "./schema.ts";
 
 export interface JudgeOptions {
   /** spec 原文;缺省时从 repoRoot 读 specs/shape/spec.md */

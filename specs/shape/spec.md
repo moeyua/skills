@@ -2,71 +2,61 @@
 
 ## Purpose
 
-shape skill 把模糊想法塑形成清晰设计。`brainstorm` mode 在对话中收敛方向,named mode 在用户确认 design summary 后把方案写入 `plans/`。
+shape skill 把仍有不确定性的改动塑形成有事实支撑的方向或可执行方案。`brainstorm` mode 在对话中收敛方向，named mode 在意图决策完备且已获授权时把方案写入 `plans/`；塑形过程按实际不确定性与风险伸缩，不要求固定阶段或重复确认。
 
 ## Requirements
 
-### Requirement: 先建立上下文再澄清
+### Requirement: 事实先于提问
 
-shape 必须先判断项目/模块事实是否足以支撑当前设计;若上下文缺失、过期或过浅,必须调用 explore 的 context mode 建立事实基础,根据任务风险选择 core 或 deep,不产出独立 Explore Report。Clarify 期间若问题能从代码、文档、测试、历史或权威外部文档回答,必须先查证而不是问用户。(Previously: 只要求在 Clarify 前和期间读相关代码、文档与历史,不强调 shape 不重写 explore 规则。)
-Verify: bench judge 逐条判定
+shape 必须先判断已有项目事实是否足以支撑当前决策。缺失、过期或过浅时，必须按风险比例调用 explore 的 context mode，或直接读取相关代码、文档、测试、历史与权威外部资料；能从这些来源查到的事实不得转问用户。调查只覆盖当前设计所需范围，不因使用 shape 就固定执行完整探索流程。
+Verify: manual(integration)
 
-### Requirement: 一次只问一个澄清问题
+### Requirement: 按收敛状态自适应塑形
 
-shape 必须一次只问一个问题,优先问 multiple choice,问题必须服务于压实目的、约束、成功标准或阻塞歧义。达到"澄清够了"的门槛后才进入 approaches:目标一句话说清、mode 已定、关键约束已知、无阻塞性歧义。即便 mode 已清晰,仍要追问保留边界、风险和验证方式。(Previously: shape 必须先进入 Clarify;不要求问题必须服务于目的/约束/成功标准/阻塞歧义。)
-Verify: bench 机械 checker multi-question + judge 逐条判定
+shape 必须根据当前状态选择最短的充分路径：已收敛的请求直接综合；存在实质决策前沿时解决前沿；依赖可查事实时先调查；用户明确要求 challenge / grill 时才全面压力测试。不得把 clarify、approaches、grill、design summary 等固定阶段本身当成完成条件，也不得因 mode 已知就机械追问。
+Verify: manual(integration)
 
-### Requirement: 出方案前不写代码
+### Requirement: 只处理实质决策前沿
 
-shape 必须不写任何代码、脚手架或实现文件;用户确认 design summary 和 named mode plan 之前不得进入实现动作。(Previously: plan 执行该职责。)
-Verify: bench 机械 checker hard-gate + judge 逐条判定
+shape 只向用户提出会实质改变范围、可观察行为或接口、难以逆转的架构、风险或验收方式的未决问题。用户未表达偏好不等于把选择委托给模型；当两个合理答案会产生不同的排序、搜索/过滤、持久化、破坏性行为或其他可观察语义时，即使存在常见默认值，该选择仍属于实质决策前沿。前置条件都已成立且彼此独立的问题可以在一轮内清晰分组，并逐项给出推荐答案与理由；依赖前一答案的问题留到前置决策解决后再问。问题数量本身不是质量指标，避免交互轮次且不漏掉实质决策才是目标。
+Verify: manual(integration)
+
+### Requirement: 已定内容直接作为输入
+
+shape 必须把用户在当前请求及此前对话中的明确陈述、同意和授权视为已定输入，综合进方向或 plan，不得换一种措辞重复确认。用户把选择交给模型时，shape 必须基于证据给出推荐、说明会影响结果的重要假设并继续；只有新证据使原决定失效时才能重开。
+Verify: manual(integration)
+
+### Requirement: 真实取舍才展开 approaches
+
+当证据明显支持一个方向时，shape 必须直接推荐该方向。只有多个可行路径之间存在会影响结果的真实取舍时，才比较 alternatives；比较必须说明关键差异、给出立场，不得为了满足数量或仪式而凑 2–3 个方案，也不得把推荐伪装成无立场投票。
+Verify: manual(integration)
+
+### Requirement: shape 只塑形不实施
+
+shape 的输出只能是对话中的塑形结果或 named-mode 的 `plans/` 文件。它不得写实现、脚手架、spec 或其他项目文件，也不得调用实现工作；写出或批准 plan 都不会解除这条边界。
+Verify: manual(integration)
 
 ### Requirement: brainstorm mode 不写方案文件
 
-`brainstorm` mode 用于在对话中探索和收敛方向,必须不写 plan/design/spec 文件;完成产物是方向、约束、推荐 approach、未决问题和是否进入 named mode 的下一决策。只有用户显式确认从 `brainstorm` 进入 `fix` / `feat` / `refactor` / `perf` 后,shape 才能写 `plans/` 文件。(Previously: default mode 不写方案文件,只给方向/选项对比。)
-Verify: bench 机械 checker brainstorm-wrote-plan(场景 brainstorm-notes-ai / brainstorm-sounds-like-feat)+ judge 逐条判定
-
-### Requirement: named mode 先展开 approaches 再写 plan
-
-named mode 必须先提出 2-3 个 approaches,说明 trade-off,给出推荐项和理由;不能只给一个默认方案。approach 可以按复杂度缩放,但必须暴露有意义的设计选择。(Previously: shape 默认给一个推荐 approach,只有 tradeoff 接近时才给第二个。)
-Verify: bench judge 逐条判定
-
-### Requirement: 逐枝 grill 推荐方案
-
-shape 在选出推荐 approach 后,必须先枚举本方案的 load-bearing 决策清单(scope 边界、公开接口、数据流、错误处理、rollback、测试、迁移顺序、架构触发、脆弱假设中实际在场的)并展示给用户;清单 ≤3 条时可合并为一轮确认且每条附推荐答案,≥4 条时必须逐个提问、每问附推荐答案与理由。未经清单确认的决策不得写入 plan 的 Key decisions。问题若能通过读取代码、文档、测试或历史回答,shape 必须先读取证据,不要把仓库已经能回答的问题转嫁给用户。(Previously: 只要求 interview 式逐枝下行、一次一问,无枚举动作与档位判据。)
-Verify: bench 场景 feat-midsize-sharing / fix-multi-constraint-import + judge 逐条判定
-
-### Requirement: plan 前 design summary gate
-
-shape 在写 named mode plan 前,必须以固定标题 `Design Summary` 开头、独立成一条消息展示按复杂度缩放的设计摘要,覆盖目标、非目标、接口/边界、关键设计决策、错误/边缘处理、测试或验收方式,消息末尾只提出一个问题:是否确认这份设计。只有用户对该消息的确认可解锁写 plan;对其他问题的肯定答复不构成设计确认。用户要求修改时,回到对应问题或 design section,不直接把未确认判断写入 plan。(Previously: 只要求展示 design summary 并询问,无固定标记、独立消息与单一问句约束。)
-Verify: bench 机械 checker design-gate-skipped + judge 判定确认针对性
+`brainstorm` mode 必须保持对话式，不写 plan、design 或 spec 文件。其完成产物是当前方向、约束、推荐与尚未解决的实质决策；若已收敛，可以推荐对应 named mode，只有用户尚未授权继续时才需要询问是否进入该 mode。
+Verify: manual(integration)
 
 ### Requirement: named mode 产出可执行方案文件
 
-named mode 必须把方案写入 `plans/YYYY-MM-DD-<slug>.md`,每一步以「结果描述 + 触及范围(路径级)+ verify」表述,意图层完整、不留占位(TBD / TODO / 待定都是红旗),但不预写行级定位与最终措辞——那是 implement 的机械决策。(Previously: named mode 产出 plan,但不要求 approaches / grill / design summary gate。)
-Verify: bench 机械 checker plan-placeholder + judge 逐条判定
+named mode 在事实可靠、实质意图决策已解决且用户已通过请求 plan、点名 mode、同意方向或要求继续而形成授权时，必须把方案写入 `plans/YYYY-MM-DD-<slug>.md`。plan 必须清楚定义 building / not building；每个实施步骤包含结果、路径级 scope 与独立 verify；总体 verification 含命令和可观察检查；不得保留 TBD / TODO / 待定等意图占位，也不得用固定标题或额外确认作为写 plan 的前置门槛。
+Verify: manual(integration)
 
-### Requirement: 点名最脆弱假设
+### Requirement: named mode 保持专属质量门槛
 
-shape 的方案必须显式点名最脆弱的假设("本方案假设 X,若 X 不成立则 Y")。若该假设是 load-bearing,shape 必须在 design summary 或 plan 中说明缓解方式,不能把赌注留给 implement。(Previously: plan 执行该职责。)
-Verify: bench judge 逐条判定
+named mode 的 plan 必须包含其专属证据：fix 说明 root cause 与 regression tests；feat 说明 interface boundary 与 acceptance scenarios；refactor 说明 behavior invariants 与 regression coverage；perf 说明 baseline、target 与 measurement。证据不足时必须调查或明确停在具体缺口，不得用通用流程段落代替。
+Verify: manual(integration)
 
 ### Requirement: 价值判断超出范围
 
-用户问"值不值得做"时,shape 必须明说这不是 squire 处理的层次,只给一句观察、不下"该不该做"的结论。(Previously: plan 执行该职责。)
+用户问“值不值得做”时，shape 必须说明这不是 squire 处理的层次，只给至多一句与实现取舍相关的观察，不替用户下“该不该做”的结论。
 Verify: manual(integration)
-
-### Requirement: 整体与细节之间往返
-
-shape 必须按"整体→细节→整体"往返推进:下钻某个细节前点明它服务于哪个整体,解决后回到整体复核整体是否仍成立,再进入下一个细节。当下钻由用户发起时,shape 必须跟进回答,但在答完后主动重新提出仍未合上的整体方向问题,且不把"用户在追问细节"当作整体已经清楚的信号。(Previously: plan 执行该职责。)
-Verify: bench judge 逐条判定
-
-### Requirement: 决策点把串联交回用户
-
-shape 必须在每个真决策处(mode 选择 / approach 推荐 / grill 解决的脆弱假设 / scope 边界 / design summary 确认)命名该决策、说明它如何移动整体,然后停下把下一步交回用户,绝不把判断无声地并入方案;用户不反对即视为同意。grill 决策清单的确认与 `Design Summary` 消息的确认是本条的两个强制实例;实质性判定(决策是否真被交回而非形式化列举)按对话证据判。这不要求每步都征得批准。(Previously: 无强制实例点名。)
-Verify: manual(integration) + bench judge 逐条判定
 
 ### Requirement: 跨结构变更产出 Architecture 段
 
-named mode 的 plan 在变更跨模块边界、引入新层或新服务、或更换技术依赖时,必须含 `## Architecture` 段:现状结构 → 目标结构(超过 3 个组件交换数据时附 ASCII 图)、组件职责与数据流、分阶段迁移(每阶段可独立 ship);未触发时该段写 None,不硬凑。本变更自身的架构决策必须显式出现在该段,不得埋进实施步骤、也不得以「拆去别的 mode」为由外推;无关的顺手重构仍按原反模式拆分。
-Verify: bench judge 逐条判定
+named mode 的 plan 在变更跨模块边界、引入新层或新服务、或更换技术依赖时，必须含 `## Architecture` 段，说明现状到目标结构、组件职责与数据流、安全迁移；超过 3 个组件交换数据时附 ASCII 图。未触发时必须省略该段，不得写 `None` 凑格式。无关的顺手重构仍不进入本 plan。
+Verify: manual(integration)

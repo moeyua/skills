@@ -3,21 +3,14 @@
  * so they never depend on LLM-judge discretion.
  *
  * Checks:
- * - hard-gate:            implementation files written before any plan exists
+ * - shape-write-boundary: files written outside shape's plan output
  * - brainstorm-wrote-plan: plan/design files written in a brainstorm session
  * - plan-placeholder:     plan content carrying intent-level placeholders
- * - multi-question:       more than one question fired in a single turn
- * - design-gate-skipped:  plan written with no prior Design Summary message
  */
 
 import type { NormalizedTranscript, ToolCallEvent } from "../normalize/events.ts";
 
-export type CheckName =
-  | "hard-gate"
-  | "brainstorm-wrote-plan"
-  | "plan-placeholder"
-  | "multi-question"
-  | "design-gate-skipped";
+export type CheckName = "shape-write-boundary" | "brainstorm-wrote-plan" | "plan-placeholder";
 
 export interface Violation {
   check: CheckName;
@@ -51,8 +44,11 @@ function isDesignDocPath(path: string): boolean {
   return /design[^/]*\.md$/i.test(path);
 }
 
-function isMemoryPath(path: string): boolean {
-  return path.includes("/memory/") || path.endsWith("MEMORY.md");
+function invokesAnotherSkill(text: string): boolean {
+  const linked = [...text.matchAll(/\[\$([a-z][\w-]*)\]\([^)]+\)/gi)];
+  if (linked.some((match) => match[1]?.toLowerCase() !== "shape")) return true;
+  const slash = text.trim().match(/^\/([a-z][\w-]*)\b/i);
+  return slash !== null && slash[1]?.toLowerCase() !== "shape";
 }
 
 /** plan/design content carried inside the write call, per host tool shape */
@@ -72,53 +68,16 @@ function writtenContent(call: ToolCallEvent): string {
   return "";
 }
 
-function questionCount(call: ToolCallEvent): number {
-  const input = call.input as { questions?: unknown[] } | undefined;
-  return Array.isArray(input?.questions) ? input.questions.length : 0;
-}
-
-/** sentences ending in ? / ？, the cheap proxy for "asked several things at once" */
-function questionSentences(text: string): number {
-  const matches = text.match(/[^?？\n]{2,}[?？]/g);
-  return matches === null ? 0 : matches.length;
-}
-
 export function runChecks(transcript: NormalizedTranscript, opts: CheckOptions = {}): CheckResult {
   const violations: Violation[] = [];
   const { events } = transcript;
-
-  const firstPlanWriteIndex = events.findIndex(
-    (e) => e.kind === "file-write" && isPlanPath(e.path),
+  const handoffIndex = events.findIndex(
+    (event) => event.kind === "user-message" && invokesAnotherSkill(event.text),
   );
+  const shapeEvents = handoffIndex === -1 ? events : events.slice(0, handoffIndex);
 
-  // spec: writing a plan is unlocked only by user confirmation of a standalone
-  // `Design Summary` message; mechanically we check a heading-shaped marker
-  // existed at all — whether the confirmation targeted it stays with the judge
-  const DESIGN_SUMMARY_HEADING = /^#{0,6}\s*Design Summary/m;
-  if (firstPlanWriteIndex !== -1) {
-    const gate = events.findIndex(
-      (e, i) =>
-        i < firstPlanWriteIndex &&
-        e.kind === "assistant-message" &&
-        e.sidechain !== true &&
-        DESIGN_SUMMARY_HEADING.test(e.text),
-    );
-    if (gate === -1) {
-      const planEvent = events[firstPlanWriteIndex];
-      if (planEvent?.kind === "file-write") {
-        violations.push({
-          check: "design-gate-skipped",
-          severity: "hard",
-          turn: planEvent.turn,
-          evidence: `写入 ${planEvent.path} 前未出现过 Design Summary 消息`,
-        });
-      }
-    }
-  }
-
-  events.forEach((e, i) => {
+  shapeEvents.forEach((e) => {
     if (e.kind !== "file-write") return;
-    if (isMemoryPath(e.path)) return;
     const isPlan = isPlanPath(e.path);
     const isDesign = isDesignDocPath(e.path);
 
@@ -129,18 +88,19 @@ export function runChecks(transcript: NormalizedTranscript, opts: CheckOptions =
         turn: e.turn,
         evidence: `brainstorm 会话写入了方案文件 ${e.path}(${e.tool})`,
       });
+      return;
     }
-    if (!isPlan && !isDesign && (firstPlanWriteIndex === -1 || i < firstPlanWriteIndex)) {
+    if (!isPlan) {
       violations.push({
-        check: "hard-gate",
+        check: "shape-write-boundary",
         severity: "hard",
         turn: e.turn,
-        evidence: `design 确认前写入了实现文件 ${e.path}(${e.tool})`,
+        evidence: `shape 写入了 plan 之外的文件 ${e.path}(${e.tool})`,
       });
     }
   });
 
-  for (const e of events) {
+  for (const e of shapeEvents) {
     if (e.kind !== "tool-call") continue;
     const input = e.input;
     let isPlanWrite = false;
@@ -163,53 +123,6 @@ export function runChecks(transcript: NormalizedTranscript, opts: CheckOptions =
         });
         break;
       }
-    }
-  }
-
-  // claude answers arrive as tool_result without advancing the turn, so a
-  // compliant one-at-a-time clarify loop stacks many asks in one turn; the
-  // violation is a NEW ask fired before the previous one got its answer
-  let prevAsk: { turn: number; callId: string | undefined; answered: boolean } | null = null;
-  for (const e of events) {
-    if (
-      e.kind === "tool-result" &&
-      prevAsk !== null &&
-      e.callId !== undefined &&
-      e.callId === prevAsk.callId
-    ) {
-      prevAsk.answered = true;
-      continue;
-    }
-    if (e.kind !== "tool-call" || e.name !== "AskUserQuestion" || e.sidechain === true) continue;
-    const n = questionCount(e);
-    if (n > 1) {
-      violations.push({
-        check: "multi-question",
-        severity: "hard",
-        turn: e.turn,
-        evidence: `一次 AskUserQuestion 携带了 ${n} 个问题`,
-      });
-    }
-    if (prevAsk !== null && prevAsk.turn === e.turn && !prevAsk.answered) {
-      violations.push({
-        check: "multi-question",
-        severity: "hard",
-        turn: e.turn,
-        evidence: "同一轮内上一问未获回答就发起了新的 AskUserQuestion",
-      });
-    }
-    prevAsk = { turn: e.turn, callId: e.callId, answered: false };
-  }
-  for (const e of events) {
-    if (e.kind !== "assistant-message" || e.sidechain === true) continue;
-    const n = questionSentences(e.text);
-    if (n >= 3) {
-      violations.push({
-        check: "multi-question",
-        severity: "warn",
-        turn: e.turn,
-        evidence: `一条消息含 ${n} 个问句:「${e.text.slice(0, 60)}…」`,
-      });
     }
   }
 
