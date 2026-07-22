@@ -22,7 +22,8 @@ Verify: manual(integration)
 
 ### Requirement: 主检查——文档声称 vs 代码实际
 
-doctor 必须把「文档声称的行为」与「代码实际的行为」是否一致作为首要检查,逐条核实(对 squire 格式文档以每条 `### Requirement:` 为离散 claim 逐条核;对散文文档 best-effort,核不动的不硬判),标出不符处(含散文式架构 / 技术选型声称与代码不符),给 observed-vs-claimed 裁决,报告置于最前;不就地改。(Previously: health 执行该职责。)
+doctor 必须把「文档声称的行为」与「代码实际的行为」是否一致作为首要检查,逐条核实(对 Skills 格式文档以每条 `### Requirement:` 为离散 claim 逐条核;对散文文档 best-effort,核不动的不硬判),标出不符处(含散文式架构 / 技术选型声称与代码不符),给 observed-vs-claimed 裁决,报告置于最前;不就地改。(Previously: health 执行该职责。)
+(Previously:格式身份沿用项目旧名;逐条审计语义不变。)
 Verify: manual(integration)
 
 ### Requirement: 机械先于模型、确定性层用随装脚本
@@ -32,7 +33,8 @@ Verify: manual(integration)
 
 ### Requirement: 两类对象、自适应且探不到即跳过
 
-doctor 查两类对象:squire 写的文档(假定 squire 格式,查格式合规 + 漂移)与项目本身(任意项目,查依赖 / CI / 文件大小 / 链接)。项目本身那类必须按现状自适应(检出包管理器 / CI / 文档位置),依赖缺失(无 manifest / 无 GitHub remote / 无文档 / 无 node 24)时优雅跳过并在报告说明,不报错、不为某项目类型写专属逻辑。(Previously: health 执行该职责。)
+doctor 查两类对象:Skills 维护的文档(假定 Skills 格式,查格式合规 + 漂移)与项目本身(任意项目,查依赖 / CI / 文件大小 / 链接)。项目本身那类必须按现状自适应(检出包管理器 / CI / 文档位置),依赖缺失(无 manifest / 无 GitHub remote / 无文档 / 无 node 24)时优雅跳过并在报告说明,不报错、不为某项目类型写专属逻辑。(Previously: health 执行该职责。)
+(Previously:文档/格式身份沿用项目旧名;两类对象的边界不变。)
 Verify: manual(integration)
 
 ### Requirement: 模型 finding 过滤分级、跳过项需标明

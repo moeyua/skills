@@ -1,15 +1,15 @@
-# Squire Architecture
+# Skills Architecture
 
-本文记录 Squire 当前的技术结构、数据流与仍然有效的设计决策。面向开发者和协作 agent；使用方式见 [README.md](./README.md)，产品边界见 [PRODUCT.md](./PRODUCT.md)。
+本文记录 Skills 当前的技术结构、数据流与仍然有效的设计决策。面向开发者和协作 agent；使用方式见 [README.md](./README.md)，产品边界见 [PRODUCT.md](./PRODUCT.md)。
 
 ## 一句话
 
-Squire 是一组以 Markdown 编写、可独立安装和按需调用的开发 skills。能力之间通过会话、文件和 git/GitHub 状态软连接；没有全局编排器，唯一自动闭环位于一次 `implement` outcome 内部。
+Skills 是一组以 Markdown 编写、可独立安装和按需调用的开发 skills。能力之间通过会话、文件和 git/GitHub 状态软连接；没有全局编排器，唯一自动闭环位于一次 `implement` outcome 内部。
 
 ## 目录结构
 
 ```text
-squire/
+skills/
 ├── README.md / README.zh-CN.md      # 使用者入口
 ├── PRODUCT.md                       # 产品定位、原则与边界
 ├── ARCHITECTURE.md                  # 当前技术架构与决策记录
@@ -52,7 +52,7 @@ squire/
 | 工具链            | Vite+                             | 统一 test、lint、format 与 typecheck；测试使用 Vitest 接口             |
 | git/GitHub 副作用 | git 与 GitHub CLI                 | publish、release 以及 plan 的可选 Issue 投影复用项目已有身份和仓库状态 |
 
-仓库不发布 npm 运行时包，也没有 codegen 或全局 workflow engine。`package.json` 为私有开发工具清单；skill 的真实产品表面是 Markdown、references 和 doctor 随装的确定性脚本。
+仓库不发布 npm 运行时包，也没有 codegen 或全局 workflow engine。`package.json` 使用 `@moeyua/skills` 作为私有 workspace identity 和开发工具清单；其中的 `skills` devDependency 是外部安装 CLI，不是本项目的发布包。skill 的真实产品表面是 Markdown、references 和 doctor 随装的确定性脚本。
 
 ## 能力图与数据流
 
@@ -192,6 +192,10 @@ node skills/doctor/scripts/checker.ts . --json
 ### 2026-07-21：软连接能力图（当前）
 
 上下文：固定流程不能表达“能力可直接进入”“GitHub 失败不阻塞本地工作”和“已授权实现应自行闭环校验”。决定：公共表面改为 11 个独立 skill；shape 与 plan 分离，Issue 合入 plan，commit/push/PR 合入 publish，release 只负责通用 tag + generated notes，且只有 implement 自动组合 check。后果：用户保留宏观串联权，skill 可以在自身 outcome 内完成必要组合；缺失上游产物成为正常状态，外部副作用按阶段保留。完整设计见 [soft-linked architecture plan](plans/2026-07-21-feat-soft-linked-skill-architecture.md)。
+
+### 2026-07-22：项目身份统一为 Skills
+
+上下文：维护者决定用 `Skills` 取代原有的隐喻式项目名；但仓库已经依赖同名的外部 `skills` 安装 CLI，源码中也存在 `skills/` 公共能力目录。决定：展示名、GitHub slug 与本地目录统一使用 `Skills` / `skills`，私有 workspace package 使用 `@moeyua/skills`；外部 CLI、11 个 skill 名和既有历史 plan 保持原义。后果：活动文档和契约使用新身份，包名仍能与安装器依赖明确区分，历史计划继续作为当时决策的快照。详见 [project rename plan](plans/2026-07-22-feat-rename-project-to-skills.md)。
 
 ## 未来项
 

@@ -1,5 +1,5 @@
 {
-  "name": "squire",
+  "name": "@moeyua/skills",
   "version": "0.1.0",
   "private": true,
   "description": "A set of skills for AI agent-assisted development.",

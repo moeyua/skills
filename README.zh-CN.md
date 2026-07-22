@@ -1,10 +1,10 @@
-# Squire
+# Skills
 
 [English](./README.md) | 简体中文
 
-> Your AI agent has the horsepower. Squire gives it the road.
+> Focused skills for software development and durable project memory.
 
-Squire 是一套服务于软件开发与项目持久记忆的克制指令系统。它提供 11 个由用户按需调用的聚焦 skill；上下文可以在能力之间传递，但不会因此变成强制流水线。
+Skills 是一套服务于软件开发与项目持久记忆的克制指令系统。它提供 11 个由用户按需调用的聚焦 skill；上下文可以在能力之间传递，但不会因此变成强制流水线。
 
 产品原则与边界见 [PRODUCT.md](./PRODUCT.md)，内部结构与数据流见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
 
@@ -31,6 +31,8 @@ Squire 是一套服务于软件开发与项目持久记忆的克制指令系统�
 ```bash
 npx skills add .
 ```
+
+这里的 `skills` 是外部安装 CLI；本仓库提供 skill 内容，并不发布这个 CLI。
 
 常用参数：
 

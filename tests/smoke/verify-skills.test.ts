@@ -1,5 +1,5 @@
 /**
- * Smoke test: runs every check from tests/checks.ts against the live squire
+ * Smoke test: runs every check from tests/checks.ts against the live Skills
  * repo — the live-repo counterpart to the tmpdir unit tests in checks.test.ts.
  *
  * As tests/checks.ts grows new check functions, add a new it() block here.

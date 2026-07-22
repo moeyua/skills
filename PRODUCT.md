@@ -1,8 +1,8 @@
-# Squire
+# Skills
 
-> Your AI agent has the horsepower. Squire gives it the road.
+> Focused skills for software development and durable project memory.
 
-Squire 不只是工具集，而是一套**克制的指令系统**。Agent 的基础能力已经足够强；Squire 的价值是给开发工作划清 outcome、真源与副作用边界，同时把不必要的流程约束留给模型判断。
+Skills 不只是工具集，而是一套**克制的指令系统**。Agent 的基础能力已经足够强；Skills 的价值是给开发工作划清 outcome、真源与副作用边界，同时把不必要的流程约束留给模型判断。
 
 ## 设计哲学
 
@@ -14,7 +14,7 @@ Squire 不只是工具集，而是一套**克制的指令系统**。Agent 的基
 
 ### 2. 聚焦开发 + 记忆 — 改变项目，也记住项目
 
-Squire 的范围是两件事：**开发一个项目**，以及**记录这个项目持久地是什么**。
+Skills 的范围是两件事：**开发一个项目**，以及**记录这个项目持久地是什么**。
 
 公开能力形成一张软连接图：
 
@@ -28,7 +28,7 @@ shape · · ·▶ plan · · ·▶ implement ⇄ check · · ·▶ docs · · ·
 
 ### 3. 用户决定进入哪个能力 — skill 只组合自身 outcome
 
-用户决定调用哪个 public skill，也决定何时进入下一个能力。Squire 没有从想法一路自动推进到发布的 orchestrator。
+用户决定调用哪个 public skill，也决定何时进入下一个能力。Skills 没有从想法一路自动推进到发布的 orchestrator。
 
 这不禁止 skill 在**自己的公开 outcome 内**组合必要能力：shape 缺事实时可以取得 explore context；plan 在本地方案之后尽力创建一个 Issue 投影；implement 调用只读 check，并修复当前授权范围内的 blocker 直到通过或触及真实边界。这些组合都不自动越过到下一个公共 outcome。
 
@@ -50,17 +50,17 @@ Shape 是这条原则的直接体现：它只在会话中解决实质决策前�
 
 ### 1. 产品价值判断（“值不值得做”、Kill/Keep/Pivot）
 
-Squire 处理“决定做之后如何把它想清、落地并记录”，不替人判断该不该做。Shape 可以指出直接相关的取舍，但不能代替产品所有者作价值裁决。
+Skills 处理“决定做之后如何把它想清、落地并记录”，不替人判断该不该做。Shape 可以指出直接相关的取舍，但不能代替产品所有者作价值裁决。
 
 ### 2. 未经指定的 catalog 外文档
 
 六类 memory catalog 是默认 durable truth。用户可以明确要求 docs 维护 catalog 外的某份项目文档；agent 不能自行决定项目“应该再有”一个指南、索引、changelog 或 release-note 文件。无论目录内外，内容都必须来自权威源。
 
-README 是 PRODUCT/ARCHITECTURE 与验证后用法的入口投影；它进入 catalog 不代表 Squire 接管营销文案或完整对外内容运营。
+README 是 PRODUCT/ARCHITECTURE 与验证后用法的入口投影；它进入 catalog 不代表 Skills 接管营销文案或完整对外内容运营。
 
 ### 3. 项目专属发布管理
 
-Squire 只提供一个有界的通用 release：从显式 tag 或项目唯一权威版本源解析标识，创建/推送 tag，并用 GitHub generated notes 创建对应 Release。
+Skills 只提供一个有界的通用 release：从显式 tag 或项目唯一权威版本源解析标识，创建/推送 tag，并用 GitHub generated notes 创建对应 Release。
 
 它不修改版本文件、不部署、不做上线检查、环境迁移、artifact upload、回滚，也不生成仓库 changelog/release-note 文档。CI/CD、staging、feature flag 与项目特有版本策略继续属于项目自身工具。
 
@@ -70,9 +70,9 @@ Doctor 审计项目文档↔代码漂移、依赖/CI/文件等项目健康；它
 
 ### 5. 通用项目管理与内容输入处理
 
-Plan 的 GitHub Issue 只是同一 change 的可选投影。Squire 不管理 GitHub Projects、状态流、milestone、assignee、拆票、sub-issue、跨仓同步或通用任务系统。
+Plan 的 GitHub Issue 只是同一 change 的可选投影。Skills 不管理 GitHub Projects、状态流、milestone、assignee、拆票、sub-issue、跨仓同步或通用任务系统。
 
-URL/PDF 抓取、任意内容整理和深度研究属于通用输入层。需要事实时可以使用已有工具，但 Squire 不重复造一个内容摄取产品。
+URL/PDF 抓取、任意内容整理和深度研究属于通用输入层。需要事实时可以使用已有工具，但 Skills 不重复造一个内容摄取产品。
 
 ## 怎么用本文档
 

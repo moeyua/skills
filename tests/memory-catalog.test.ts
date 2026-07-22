@@ -23,7 +23,7 @@ afterEach(() => {
 });
 
 function catalogRepo(catalogBody: string, formatFiles: string[]): string {
-  const root = mkdtempSync(join(tmpdir(), "squire-cat-"));
+  const root = mkdtempSync(join(tmpdir(), "skills-cat-"));
   mkdirSync(join(root, "rules"), { recursive: true });
   writeFileSync(join(root, "rules", "memory-catalog.md"), catalogBody);
   const fdir = join(root, "skills", "docs", "references", "formats");
@@ -62,7 +62,7 @@ describe("checkMemoryCatalog", () => {
   });
 
   it("is a no-op when the catalog does not exist", () => {
-    const root = mkdtempSync(join(tmpdir(), "squire-nocat-"));
+    const root = mkdtempSync(join(tmpdir(), "skills-nocat-"));
     activeRoots.push(root);
     expect(() => checkMemoryCatalog(root)).not.toThrow();
   });

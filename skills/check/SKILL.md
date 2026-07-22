@@ -13,7 +13,7 @@ Before routing the gate, decide whether the project facts are reliable enough fo
 
 **Check confirms, it doesn't change.** Specifically: it changes no source / tests / plan; it gives no full patch (only a direction); it doesn't call other skills to do the work for the author; it doesn't commit or push. The `test` and `e2e` modes _execute_ code (run the suite, launch the app) to observe behavior — but observing is not editing.
 
-Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+Two cross-skill rules apply to all work in this skill suite — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
 ## Outcome Contract
 

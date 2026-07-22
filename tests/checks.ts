@@ -1,5 +1,5 @@
 /**
- * Validation checks for squire skills.
+ * Validation checks for Skills.
  *
  * All checks are library functions: take repo root (or pre-collected data),
  * throw on failure. Driver is `tests/smoke/verify-skills.test.ts`, which wraps

@@ -1,10 +1,10 @@
-# Squire
+# Skills
 
 English | [简体中文](./README.zh-CN.md)
 
-> Your AI agent has the horsepower. Squire gives it the road.
+> Focused skills for software development and durable project memory.
 
-Squire is a restrained instruction system for software development and durable project memory. It exposes 11 focused skills that users invoke on demand; useful context can flow between them without turning the set into a mandatory pipeline.
+Skills is a restrained instruction system for software development and durable project memory. It exposes 11 focused skills that users invoke on demand; useful context can flow between them without turning the set into a mandatory pipeline.
 
 For the product principles and boundaries, read [PRODUCT.md](./PRODUCT.md). For internals and data flow, read [ARCHITECTURE.md](./ARCHITECTURE.md).
 
@@ -31,6 +31,8 @@ The public names use vocabulary developers already use. Removed capabilities hav
 ```bash
 npx skills add .
 ```
+
+Here, `skills` is the external installer CLI; this repository provides the skill content and does not publish that CLI.
 
 Useful flags:
 

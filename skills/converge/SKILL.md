@@ -1,16 +1,16 @@
 ---
 name: converge
-description: "Converge a project's six durable memories (spec / PRODUCT / ARCHITECTURE / DESIGN / ROADMAP / README) to squire's current formats: judge each document's state, apply the matching action per document, idempotently. Use when onboarding a project to squire, completing a half-covered doc set, or realigning docs after a squire upgrade. Not for single-target doc fixes (use docs), read-only checkups (use doctor), or making product decisions (use shape)."
-when_to_use: "converge, initialize squire docs, onboard a project, batch align docs, complete catalog docs, realign after upgrade, 收敛, 初始化文档, 上车, 批量对齐, 补齐文档, 升级后对齐"
-dispatch_intent: "Batch-converge the memory catalog to squire's current formats — per-document state judgment and action, idempotent"
+description: "Converge a project's six durable memories (spec / PRODUCT / ARCHITECTURE / DESIGN / ROADMAP / README) to the current Skills formats: judge each document's state, apply the matching action per document, idempotently. Use when onboarding a project to Skills, completing a half-covered doc set, or realigning docs after a Skills upgrade. Not for single-target doc fixes (use docs), read-only checkups (use doctor), or making product decisions (use shape)."
+when_to_use: "converge, initialize Skills docs, onboard a project, batch align docs, complete catalog docs, realign after upgrade, 收敛, 初始化文档, 上车, 批量对齐, 补齐文档, 升级后对齐"
+dispatch_intent: "Batch-converge the memory catalog to the current Skills formats — per-document state judgment and action, idempotent"
 allowed-tools: "Bash(node *), Bash(git status*)"
 ---
 
 # Converge
 
-Converge brings a project's durable memory catalog up to squire's current formats — one document at a time. It judges each catalog artifact's state and applies the matching action; there is no project-level "new vs already-on-squire" switch. An empty project converged once is initialized; a project converged after a squire upgrade is realigned; a half-documented project is completed — same loop, same rules. Every rule here exists so convergence stays **idempotent and non-destructive**: run it twice and the second run changes nothing; run it over years of hand-written docs and none of their content is lost.
+Converge brings a project's durable memory catalog up to the current Skills formats — one document at a time. It judges each catalog artifact's state and applies the matching action; there is no project-level "new vs already using Skills" switch. An empty project converged once is initialized; a project converged after a Skills upgrade is realigned; a half-documented project is completed — same loop, same rules. Every rule here exists so convergence stays **idempotent and non-destructive**: run it twice and the second run changes nothing; run it over years of hand-written docs and none of their content is lost.
 
-Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+Two cross-skill rules apply to all work in this skill suite — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
 ## Outcome Contract
 
@@ -21,7 +21,7 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 
 ## Sibling assets — missing means stop
 
-Converge owns no format truth of its own. The desired state comes from co-installed squire skills, read at runtime:
+Converge owns no format truth of its own. The desired state comes from co-installed skills in this suite, read at runtime:
 
 - **Format authority**: `${CLAUDE_SKILL_DIR}/../docs/references/memory-catalog.md` — which artifacts exist, each one's Source and Boundary — and `${CLAUDE_SKILL_DIR}/../docs/references/formats/` for per-artifact structure.
 - **Mechanical scan**: `node ${CLAUDE_SKILL_DIR}/../doctor/scripts/checker.ts <project-root> --json` — spec conformance, dead links, placeholders.
@@ -36,7 +36,7 @@ Judge state mechanically first — the catalog's When needed field, file existen
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | not applicable  | the catalog's When needed rules the artifact out for this project (e.g. DESIGN in a UI-less library)                                                                               | skip; report it as not applicable, not as a gap                                                                                     |
 | missing         | file absent, and the catalog says the project needs it                                                                                                                             | create from the artifact's authoritative Source; PRODUCT and specs from nothing go through the maintainer interview (see exemption) |
-| format mismatch | exists, section structure doesn't match the current format spec — whether hand-rolled or left over from an older squire format (checker conformance findings + heading comparison) | re-shell: keep all existing content, rearrange it into the current spec'd sections                                                  |
+| format mismatch | exists, section structure doesn't match the current format spec — whether hand-rolled or left over from an older Skills format (checker conformance findings + heading comparison) | re-shell: keep all existing content, rearrange it into the current spec'd sections                                                  |
 | half-done       | conformant skeleton, empty or placeholder sections                                                                                                                                 | fill the gaps from the Source; leave filled sections untouched                                                                      |
 | content drift   | structure fine, claims contradict the code (model judgment)                                                                                                                        | fix the drifted claims — always with per-file confirmation                                                                          |
 | conformant      | checker clean + sections match + no drift found                                                                                                                                    | skip, and say so in the report                                                                                                      |

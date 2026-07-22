@@ -12,7 +12,7 @@ Doctor is a project checkup — it audits whether a project's memory still holds
 
 Before auditing, decide whether the project and memory layout are reliable enough for drift judgment. If not, use `explore` in context mode first: Overview before deep-dive, depth matched to audit scope, no Explore Report. Auditing a project you haven't mapped produces noise, not signal, so the evidence must feed the Health Report.
 
-Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+Two cross-skill rules apply to all work in this skill suite — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
 ## Outcome Contract
 
@@ -25,21 +25,21 @@ Two cross-skill rules apply to all squire work — `references/anti-patterns.md`
 
 ## Look here first: what the docs say vs what the code does
 
-This is doctor's main check and the reason it exists. The rest of squire's loop keeps memory current as changes land (docs records each one); nothing checks whether the _accumulated_ memory still describes the code after many changes. Docs' own contract says it "acts on awareness from doctor" — doctor is the source of that awareness: the signal "which doc has drifted from the code".
+This is doctor's main check and the reason it exists. The rest of this skill suite keeps memory current as changes land (docs records each one); nothing checks whether the _accumulated_ memory still describes the code after many changes. Docs' own contract says it "acts on awareness from doctor" — doctor is the source of that awareness: the signal "which doc has drifted from the code".
 
 This check is model judgment — mechanical checks can't tell whether prose still matches behavior. Method, to keep it bounded:
 
-- **squire-format docs** (a `specs/<domain>/spec.md` with `### Requirement:` entries): take each requirement as one discrete claim and check the code still does it. Bounded, claim by claim.
+- **Skills-format docs** (a `specs/<domain>/spec.md` with `### Requirement:` entries): take each requirement as one discrete claim and check the code still does it. Bounded, claim by claim.
 - **prose docs** (README / ARCHITECTURE / design notes): pull out the behavior/architecture claims you _can_ check ("uses Redux", "auth issues a JWT") and verify them against the code. What you can't pin down, don't force a verdict on — say so.
 
 Report a docs-vs-code finding only at confidence ≥ 80, graded Critical / Important / Suggestion, each routed (usually `/docs` to fix the doc, `/implement` for an already-authorized code repair, or `/shape` when correct behavior or scope is unresolved).
 
 ## Two kinds of target
 
-1. **The project's memory** — docs squire's docs skill maintains (specs/, ARCHITECTURE, README, …) in a known format. Here doctor checks both format conformance and drift-vs-code.
-2. **The project itself** — any project, no squire assumption: stale dependencies, red CI, oversized files, references that no longer resolve. This is the **secondary** half.
+1. **The project's memory** — docs maintained by this suite's docs skill (specs/, ARCHITECTURE, README, …) in a known format. Here doctor checks both format conformance and drift-vs-code.
+2. **The project itself** — any project, with no suite-specific assumption: stale dependencies, red CI, oversized files, references that no longer resolve. This is the **secondary** half.
 
-"Any project" describes the second kind only; the first assumes squire's format. Doctor carries **no per-project-type logic** — it adapts a universal check to the local toolchain (detect the package manager, then run _its_ outdated command), it never grows a branch of checks special to one ecosystem. That branching is the trap that keeps a general auditor from ever being general.
+"Any project" describes the second kind only; the first assumes the Skills format. Doctor carries **no per-project-type logic** — it adapts a universal check to the local toolchain (detect the package manager, then run _its_ outdated command), it never grows a branch of checks special to one ecosystem. That branching is the trap that keeps a general auditor from ever being general.
 
 ## Running the mechanical checks
 
@@ -51,7 +51,7 @@ Mechanical first (cheap, deterministic), model only for what mechanical can't re
    node ${CLAUDE_SKILL_DIR}/scripts/checker.ts <project-root> --json
    ```
 
-   It covers: squire-format spec conformance (only when such specs exist), markdown links that don't resolve, dead internal anchors, leftover placeholders (TBD/TODO/FIXME), and oversized source files. If Node 24+ isn't on the machine, the checker won't run — say so in the report and fall back to the model pass plus the Bash probes below; don't error out.
+   It covers: Skills-format spec conformance (only when such specs exist), markdown links that don't resolve, dead internal anchors, leftover placeholders (TBD/TODO/FIXME), and oversized source files. If Node 24+ isn't on the machine, the checker won't run — say so in the report and fall back to the model pass plus the Bash probes below; don't error out.
 
 2. **Environment probes (Bash)** — these query the toolchain, so they stay out of the checker (keeping it dependency-free):
    - dependency staleness: detect the manifest, run the ecosystem's outdated command (`pnpm outdated` / `npm outdated` / `cargo outdated` …)
