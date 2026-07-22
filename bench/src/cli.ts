@@ -29,7 +29,6 @@ import { collectTranscript, type DriveResult } from "./driver/common.ts";
 export interface JudgeCommandOptions {
   repoRoot?: string;
   outRoot?: string;
-  expectBrainstorm?: boolean;
   runModel?: (prompt: string) => string;
   model?: string;
   log?: (line: string) => void;
@@ -68,7 +67,7 @@ export function runJudgeCommand(
       continue;
     }
     log(`判卷中:${path}(${transcript.session.host},${transcript.turnCount} 轮)…`);
-    const checks = runChecks(transcript, { expectBrainstorm: opts.expectBrainstorm });
+    const checks = runChecks(transcript);
     const judgeOpts: JudgeOptions = { repoRoot, runModel: opts.runModel, model: opts.model };
     const judge = judgeTranscript(transcript, judgeOpts);
     const report = buildSessionReport(transcript, checks, judge);
@@ -96,7 +95,6 @@ function main(): void {
     args: process.argv.slice(2),
     allowPositionals: true,
     options: {
-      brainstorm: { type: "boolean", default: false },
       model: { type: "string" },
       scenario: { type: "string" },
       host: { type: "string" },
@@ -108,7 +106,6 @@ function main(): void {
   const [command, ...rest] = positionals;
   if (command === "judge") {
     const result = runJudgeCommand(rest, {
-      expectBrainstorm: values.brainstorm,
       model: values.model,
     });
     process.exitCode = result.exitCode;
@@ -180,7 +177,7 @@ async function runRunCommand(opts: RunCommandOptions): Promise<number> {
   for (const card of cards) {
     for (const host of hosts) {
       for (let run = 1; run <= opts.repeat; run++) {
-        console.log(`▶ ${card.id} @ ${host} #${run}(mode 期望:${card.mode})`);
+        console.log(`▶ ${card.id} @ ${host} #${run}(场景类型:${card.kind})`);
         let drive: DriveResult;
         try {
           drive =
@@ -216,10 +213,10 @@ async function runRunCommand(opts: RunCommandOptions): Promise<number> {
           );
           continue;
         }
-        const checks = runChecks(transcript, { expectBrainstorm: card.mode === "brainstorm" });
+        const checks = runChecks(transcript);
         const judge = judgeTranscript(transcript, {
           repoRoot,
-          scenarioNote: `这是驱动器场景「${card.title}」(期望 mode:${card.mode})。用户由模拟器扮演,初始意图:${card.initialIntent}`,
+          scenarioNote: `这是驱动器场景「${card.title}」(类型:${card.kind})。用户由模拟器扮演,初始意图:${card.initialIntent}`,
         });
         reports.push(
           buildSessionReport(transcript, checks, judge, {

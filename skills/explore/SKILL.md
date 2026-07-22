@@ -1,6 +1,6 @@
 ---
 name: explore
-description: 'Build a working, fact-level understanding of a project or unfamiliar module so users get an explicit report, or downstream work (shape / implement / check / docs / doctor) starts from reliable context — read key docs and map the structure. Use when entering a new repo, facing an unfamiliar module, or the user says "look at this project" / "先看看" / "整体了解一下". Not for debugging (use shape fix mode), proposing a plan (use shape), or a plain API-usage question (just grep the code).'
+description: 'Build fact-level understanding of a project or unfamiliar module for an explicit report or reliable downstream context. Use when entering a repo, facing an unfamiliar module, or the user says "look at this project" / "先看看" / "整体了解一下". Not for debugging or design decisions (use shape), writing an implementation plan (use plan), or a plain API-usage question (grep the code).'
 when_to_use: "explore, understand, codebase, project structure, entry point, how to run, 看项目, 项目结构, 入口, 怎么跑, 整体了解, 不熟悉的模块"
 dispatch_intent: "Build project context for downstream work; read key docs and map the structure"
 ---
@@ -68,7 +68,7 @@ Scan the root and the usual locations, and **read in full every doc that exists*
 
 **First read `references/memory-catalog.md` in full** — this is a required read, not optional, and not the same as reading the artifacts it lists. The catalog is the _rules_: for each kind of durable memory it defines what it holds, who it's for, where its authority comes from, and its boundary. You need those definitions to judge what counts as durable memory in _this_ project — and the more the project's layout differs from the catalog's defaults, the more it matters, because that's exactly when guessing does the most damage.
 
-Then **read in full every memory artifact that exists**: `README` / `ARCHITECTURE` / `PRODUCT` / `DESIGN` / `WORKFLOW` / `ROADMAP` / every `.md` under `specs/`. Beyond the catalog's artifacts, also read any other docs present:
+Then **read in full every memory artifact that exists**: `README` / `PRODUCT` / `ARCHITECTURE` / `DESIGN` / `ROADMAP` / every `.md` under `specs/`. Beyond the catalog's artifacts, also read any other docs present:
 
 - `CLAUDE.md` / `AGENTS.md`
 - every `.md` under `docs/`

@@ -34,8 +34,6 @@ function catalogRepo(catalogBody: string, formatFiles: string[]): string {
 }
 
 describe("checkMemoryCatalog", () => {
-  // PRODUCT intentionally has no format file (content via /shape), so it must
-  // not count as a missing reference.
   const CATALOG = `# Memory Catalog
 
 ## spec
@@ -45,21 +43,21 @@ describe("checkMemoryCatalog", () => {
 - **Format**: \`references/formats/architecture.md\`
 
 ## PRODUCT
-- **Format**: 无（内容经 /shape）
+- **Format**: \`references/formats/product.md\`
 `;
 
   it("passes when referenced format files exist and none are orphaned", () => {
-    const root = catalogRepo(CATALOG, ["spec.md", "architecture.md"]);
+    const root = catalogRepo(CATALOG, ["spec.md", "architecture.md", "product.md"]);
     expect(() => checkMemoryCatalog(root)).not.toThrow();
   });
 
   it("throws when a catalog-referenced format file is missing", () => {
-    const root = catalogRepo(CATALOG, ["spec.md"]);
+    const root = catalogRepo(CATALOG, ["spec.md", "product.md"]);
     expect(() => checkMemoryCatalog(root)).toThrow(/MEMORY FORMAT MISSING.*architecture/);
   });
 
   it("throws on an orphan format file not referenced by the catalog", () => {
-    const root = catalogRepo(CATALOG, ["spec.md", "architecture.md", "extra.md"]);
+    const root = catalogRepo(CATALOG, ["spec.md", "architecture.md", "product.md", "extra.md"]);
     expect(() => checkMemoryCatalog(root)).toThrow(/MEMORY FORMAT ORPHAN.*extra/);
   });
 

@@ -2,7 +2,7 @@
  * Shared driver types and helpers for both host adapters.
  */
 
-import { copyFileSync, globSync } from "node:fs";
+import { copyFileSync } from "node:fs";
 import { join } from "node:path";
 
 export interface DriveResult {
@@ -27,15 +27,6 @@ export function endsWithQuestion(text: string): boolean {
   // literal one is visually identical to ASCII "?" and silently degraded once
   if (/[?？]/.test(tail)) return true;
   return /(请确认|请回复|回复[「"']|告诉我|请选择|需要你确认|等你确认)/.test(tail);
-}
-
-/**
- * The reliable completion signal: shape's terminal action is writing the
- * plan file. Mentioning "implement this plan" in text is NOT reliable —
- * models preview that phrase before the plan exists.
- */
-export function planWritten(workDir: string): boolean {
-  return globSync(join(workDir, "plans/*.md")).length > 0;
 }
 
 export function collectTranscript(result: DriveResult, destDir: string): string {

@@ -20,7 +20,7 @@ Verify: manual(integration)
 
 ### Requirement: 初次创作豁免
 
-PRODUCT 与 specs 从无到有时,converge 以维护者访谈为权威来源实填,代码仅用于印证陈述、不得反推;访谈答不上的节留骨架并注明来源缺失。文档一旦存在,内容修改权回归 shape(PRODUCT)与 docs(specs)。
+PRODUCT 与 specs 从无到有时,converge 以维护者访谈为权威来源实填,代码仅用于印证陈述、不得反推;访谈答不上的节留骨架并注明来源缺失。文档一旦存在,已决定 truth 的单目标维护回归 docs，新的 PRODUCT 意图仍由 shape 解决。
 Verify: manual(integration)
 
 ### Requirement: 分级确认

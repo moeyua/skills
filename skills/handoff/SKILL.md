@@ -7,7 +7,7 @@ dispatch_intent: "Generate a host-neutral, read-only handoff summary for continu
 
 # Handoff
 
-Handoff packages what matters from the current session into a self-contained summary that a fresh session — or another agent — can pick up and continue from. It is an orthogonal tool, like doctor: it serves the continuity of the loop, not any single change inside it, so it sits outside the core loop and the delivery stages. Every rule here exists to keep the summary **honest and portable**: built only from what this session can actually see, readable by any host, and never a write into the project.
+Handoff packages what matters from the current session into a self-contained summary that a fresh session — or another agent — can pick up and continue from. It is an orthogonal, on-demand tool like doctor: it serves continuity across any capability without becoming a stage in the change graph. Every rule here exists to keep the summary **honest and portable**: built only from what this session can actually see, readable by any host, and never a write into the project.
 
 Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 

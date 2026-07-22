@@ -15,7 +15,7 @@ import { join } from "node:path";
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { prepareFixture } from "./fixture.ts";
 import { simulateUser, matchOptionLabel, type QuestionOption } from "./user-sim.ts";
-import { endsWithQuestion, planWritten, type DriveResult } from "./common.ts";
+import { endsWithQuestion, type DriveResult } from "./common.ts";
 import type { ScenarioCard } from "../scenario.ts";
 
 export interface ClaudeDriverOptions {
@@ -126,7 +126,7 @@ export async function runClaudeScenario(
       history += `\n[助手] ${finalText}`;
       log(`  T${turns} 助手:${finalText.slice(0, 80).replaceAll("\n", " ")}`);
 
-      if (planWritten(workDir) || !endsWithQuestion(finalText)) {
+      if (!endsWithQuestion(finalText)) {
         return finish("completed");
       }
       prompt = simulateUser({ card, history, question: finalText }, { runModel: opts.runSimModel });

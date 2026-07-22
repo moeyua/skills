@@ -1,6 +1,6 @@
 ---
 name: converge
-description: "Converge a project's durable memory docs (spec / PRODUCT / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README) to squire's current formats: judge each document's state, apply the matching action per document, idempotently. Use when onboarding a project to squire, completing a half-covered doc set, or realigning docs after a squire upgrade. Not for single-target doc fixes (use docs), read-only checkups (use doctor), or product philosophy changes (use shape)."
+description: "Converge a project's six durable memories (spec / PRODUCT / ARCHITECTURE / DESIGN / ROADMAP / README) to squire's current formats: judge each document's state, apply the matching action per document, idempotently. Use when onboarding a project to squire, completing a half-covered doc set, or realigning docs after a squire upgrade. Not for single-target doc fixes (use docs), read-only checkups (use doctor), or making product decisions (use shape)."
 when_to_use: "converge, initialize squire docs, onboard a project, batch align docs, complete catalog docs, realign after upgrade, 收敛, 初始化文档, 上车, 批量对齐, 补齐文档, 升级后对齐"
 dispatch_intent: "Batch-converge the memory catalog to squire's current formats — per-document state judgment and action, idempotent"
 allowed-tools: "Bash(node *), Bash(git status*)"
@@ -41,7 +41,7 @@ Judge state mechanically first — the catalog's When needed field, file existen
 | content drift   | structure fine, claims contradict the code (model judgment)                                                                                                                        | fix the drifted claims — always with per-file confirmation                                                                          |
 | conformant      | checker clean + sections match + no drift found                                                                                                                                    | skip, and say so in the report                                                                                                      |
 
-PRODUCT is the one artifact the table doesn't fully cover: it has no format file, so the format-mismatch tier can't apply — only not-applicable and missing (via the interview exemption below) are judged. Drift in an existing PRODUCT routes to `/shape`, never through this table.
+PRODUCT now follows the sibling docs skill's product format like every other artifact. Existing product decisions remain authoritative; a suspected product-intent conflict is surfaced for maintainer resolution rather than silently rewritten.
 
 **Idempotence is the acceptance bar**: immediately rerunning converge on a just-converged project must judge every document conformant or not applicable and write nothing — `git status --porcelain` identical before and after.
 
@@ -51,7 +51,7 @@ What the user already wrote is the source of record. Converge only rearranges st
 
 ## Initial-creation exemption (PRODUCT and specs, from nothing only)
 
-When PRODUCT or `specs/` don't exist at all, the maintainer interview is the authoritative source: ask, write what the maintainer states, and use code only to corroborate their statements — never to reverse-engineer intent. Sections the maintainer can't answer stay as a skeleton with a note that the source is missing; inventing content to fill them is the failure mode this exemption does not cover. The exemption ends at creation: once a document exists, content authority returns to shape (PRODUCT) and docs (specs delta).
+When PRODUCT or `specs/` don't exist at all, the maintainer interview is the authoritative source: ask, write what the maintainer states, and use code only to corroborate their statements — never to reverse-engineer intent. Sections the maintainer can't answer stay as a skeleton with a note that the source is missing; inventing content to fill them is the failure mode this exemption does not cover. Once a document exists, focused maintenance returns to docs; shape remains the place to resolve new product intent.
 
 ## Tiered confirmation
 
@@ -80,13 +80,13 @@ Declined / stopped: <per-file declines with what was left untouched, or none>
 
 ## When done
 
-Converge stops after the report. Suggest reviewing the diff and `/commit` as the common default next step — but the project's WORKFLOW owns that edge; converge never commits, pushes, or chains onward itself.
+Converge stops after the report. It never commits, publishes, or chains onward; the user decides what to invoke next.
 
 ## Boundaries
 
 - **vs docs** — docs is single-target and awareness-driven; converge is batch convergence across the whole catalog. Once converge creates a document, maintenance authority is back with docs.
 - **vs doctor** — doctor detects and reports project-wide, read-only; converge acts, but only on catalog convergence. Dependency, CI, and file-size health stay doctor's.
-- **vs shape** — PRODUCT content changes and any intent reshaping are shape's; converge only creates PRODUCT from nothing, via interview.
+- **vs shape** — unresolved PRODUCT intent belongs to shape; converge only records interview answers when creating missing memory, while docs owns focused maintenance of decided truth.
 
 ## When to stop
 

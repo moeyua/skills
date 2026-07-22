@@ -1,4 +1,4 @@
-# shape — `perf` mode
+# plan — `perf` type
 
 Use `perf` for a measurable improvement in latency, throughput, memory, bundle size, startup, or another explicit metric. Its quality bar is measure → change → measure under comparable conditions.
 
@@ -7,8 +7,8 @@ Use `perf` for a measurable improvement in latency, throughput, memory, bundle s
 - Select the user-relevant metric and measurement environment.
 - Capture or schedule the baseline before optimization work.
 - Set a numeric target and explain the requirement it serves.
-- Locate the bottleneck with profiling evidence when the cause is not already established.
-- State acceptable trade-offs only when they are consequential.
+- Locate the bottleneck with profiling evidence when the cause is not established.
+- State acceptable trade-offs when consequential.
 
 Repository and measurement facts come from tools. Ask the user when the target or acceptable trade-off is a genuine product decision.
 
@@ -16,7 +16,7 @@ Repository and measurement facts come from tools. Ask the user when the target o
 
 ### `## Baseline`
 
-Record the command or tool, values with units and useful distribution, environment, and representative data/load. When no measurement has been taken yet, make baseline measurement the first implementation outcome.
+Record the command or tool, values with units and useful distribution, environment, and representative data/load. When no measurement exists yet, make baseline measurement the first implementation outcome.
 
 ### `## Target`
 

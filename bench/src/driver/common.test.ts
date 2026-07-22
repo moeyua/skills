@@ -2,6 +2,8 @@
  * Unit tests for shared driver helpers.
  */
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, it, expect } from "vite-plus/test";
 import { endsWithQuestion } from "./common.ts";
 
@@ -24,8 +26,17 @@ describe("endsWithQuestion", () => {
   });
 
   it("stays false for a closing statement", () => {
-    expect(
-      endsWithQuestion("Plan written to plans/2026-07-02-fix-csv.md\n\n按计划实施即可。"),
-    ).toBe(false);
+    expect(endsWithQuestion("建议采用本地优先的归档状态；范围和恢复语义已经明确。 ")).toBe(false);
+  });
+});
+
+describe("shape driver completion", () => {
+  it("does not depend on a plan file signal", () => {
+    const driverDir = import.meta.dirname;
+    const sources = ["common.ts", "claude.ts", "codex.ts"].map((file) =>
+      readFileSync(join(driverDir, file), "utf8"),
+    );
+
+    expect(sources.join("\n")).not.toContain("planWritten");
   });
 });

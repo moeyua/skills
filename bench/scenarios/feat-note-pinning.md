@@ -1,6 +1,6 @@
 ---
 id: feat-note-pinning
-mode: feat
+kind: feat
 title: 新增笔记置顶能力
 fixture: notes-app
 ---

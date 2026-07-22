@@ -1,136 +1,118 @@
 ---
 name: implement
-description: 'Execute an approved plan into code that fits the project''s style; run TDD when the project has tests. Use when the user says "implement" / "build it" / "apply the plan" / "实现" / "落实" / "按方案做", or right after shape produces a plan. Not for coding before a plan exists (run shape first), writing prose docs, or changing code outside the plan.'
-when_to_use: "implement, build, write code, apply the plan, execute plan, 实现, 落实, 写代码, 按方案做, 开始动手"
-dispatch_intent: "Execute an approved plan file into code, strictly"
+description: 'Implement an authorized change, verify it, and close in-scope defects through an automatic check loop. Use when the user says "implement" / "build it" / "实现" / "落实", whether or not a plan exists. Not for shaping unresolved intent, writing durable prose docs, publishing git history, or expanding the requested scope.'
+when_to_use: "implement, build, write code, apply plan, execute, 实现, 落实, 写代码, 开始动手, 按方案做"
+dispatch_intent: "Implement the authorized change and loop through check until it holds up or reaches a real boundary"
 ---
 
 # Implement
 
-Implement turns an approved plan into code that fits the project. The intent work is already done in shape; here you only execute — no redesigning, no drive-by fixes, no drifting from the plan. Every rule below exists to stop you from reopening intent decisions mid-execution.
+Implement turns an authorized change into working code and tests. A plan is optional context, not an entry gate. Reuse one when it exists; otherwise execute a sufficiently clear request directly.
 
-The plan hands you decision-level steps — an outcome, a path-level scope, a verify. The mechanical decisions inside a step — locating the exact line, phrasing the final change, ordering the micro-edits — are yours to make, not gaps in the plan; making them is execution, not deviation. Two disciplines come with that. Locate before you edit: the first move of every step is reading the files in its scope to find where the change lands — the preflight's global scan doesn't substitute for it. And scope is intent: if a step's outcome turns out to require touching files outside its declared scope, that's plan drift (see When to stop), not a mechanical call you get to make.
+<HARD-GATE>
+Implement writes only within the authorized change, adds no unapproved dependency, and never silently decides new product intent. After implementation verification passes, it invokes check automatically and owns any in-scope repair/recheck loop. It does not continue into docs, publish, or release.
+</HARD-GATE>
 
-No plan yet? Run `/shape` first.
-
-Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+Read `references/anti-patterns.md`, `references/durable-context.md`, and `references/change-types.md` once per session when they are not already in context.
 
 ## Outcome Contract
 
-- Outcome: every implementation step in the plan is done, verification passes, and the changes match the project's style
-- Done when: every step's verify passes and the plan's frontmatter `status` is set to `done`
-- Evidence: each file you changed + context preflight files / commands when used + the actual output of the plan's verification commands
-- Output: a change list + context preflight evidence when used + verify results + any deviation, surfaced
+- Outcome: the authorized change works, its implementation verification passes, and check gives a final verdict
+- Done when: check holds up, or the loop reaches an intent/scope/dependency/no-progress boundary that requires the user
+- Evidence: changed paths, red→green or invariant/measurement results, verification command output, and each check verdict acted on
+- Output: scope + changes + test/verification evidence + check-loop rounds + final verdict or exact boundary
 
-## Preflight: get the plan, confirm it runs
+## Establish the implementation context
 
-Do these in parallel:
+Resolve intent with this precedence: explicit request → associated plan → current conversation. A later explicit instruction can narrow or correct an older plan; do not treat the mere existence or absence of a plan as authorization.
 
-1. **Locate the plan**: if the user's message has a path, use it; otherwise take the newest `status: approved` plan under `plans/` (sorted by YYYY-MM-DD). If there is none, or multiple candidates tie for newest, report the candidates and ask the user to point to one or run `/shape` first — don't guess the goal, choose among ties, or apply any working-tree exception until one exact path is selected.
-2. **Read the whole plan**: the plan is the only ground truth for this run; starting without reading it is guessing.
-3. **Scan the project skeleton**: `git status --short` for a dirty tree, `git branch --show-current` for the current branch, `git log --oneline -5` to learn the commit style, `ls package.json pnpm-lock.yaml Cargo.toml ...` to identify the project type and test framework.
+When a plan path is explicit or uniquely identified by the current conversation, read the whole plan. If its status is `draft`, an explicit implement invocation approves it; set `status: approved` before implementation. A plan already marked `done` is not silently replayed. If no plan is identified, continue from the clear request instead of searching for one and blocking on candidates.
 
-After those reads, decide whether the project/module facts are reliable enough for the plan's scope. If not, use `explore` in context mode before execution: Overview before deep-dive, depth matched to plan risk, no Explore Report, and evidence carried into the implementation report. This does not replace reading the whole plan or locating files inside each step's declared scope.
+Before editing, inspect in parallel where available:
 
-If any of these conditions fails, report the state and stop — let the user decide, don't push through:
+- `git status --short`, current branch, recent history, and project instructions;
+- the files/interfaces named by the request or plan;
+- project test and verification commands;
+- relevant project facts not already reliable in the session.
 
-- **Plan status is `approved`** — if it is `draft` and implement was triggered by an approval signal (`/implement`, "apply the plan", "按方案做"), set the status to `approved` and continue; the command itself is the user's approval. `done` means it already ran — stop and ask the user.
-- **No placeholders** (`TBD` / `TODO` / `implement later` / `similar to step N`) — these signal an unfinished plan; go back to shape to complete it.
-- **No unrelated working-tree changes** — after selecting the plan, classify every `git status --short` entry against its exact path. That plan may be newly added or modified, staged or unstaged; its own status edits during implement are expected. A deleted, renamed, or conflicted selected plan is not a stable source, so stop. Any other dirty path — including another file under `plans/` — is unrelated work: stop and let the user decide. Never commit, stage, stash, or discard changes just to make preflight pass.
-- **The files and interfaces the plan assumes still exist** — grep the paths and function names the plan names. Drift means the plan is out of sync with the code; go back to shape to fix the plan.
+Use explore in context mode when project or module understanding is genuinely insufficient. This is fact gathering, not a prerequisite ceremony.
 
-## Branch setup: don't build on a protected branch
+If unrelated working-tree changes are safely separable, preserve them and keep them outside this task. If they overlap the same files or make authorship/scope ambiguous, stop with the exact collision; never stash, stage, commit, discard, or overwrite them merely to proceed.
 
-Before the first edit, check `git branch --show-current`. If it's a protected branch (`main` / `master` / `develop`) or empty (detached HEAD), create a working branch: `git checkout -b <plan-slug>`, where the slug is the plan filename minus the `YYYY-MM-DD-` date prefix (`plans/2026-06-01-feat-rbac.md` → `feat-rbac`). If that branch name already exists, `git checkout` it instead of failing — a name collision is almost always the same plan resumed. If you're already on a non-protected branch, keep it.
+## Bound the change
 
-This keeps the work off the mainline so the later commit and PR have a branch to live on — pr refuses to push a protected branch, so landing the work there just forces a detour later. Preflight has already excluded unrelated changes; an uncommitted selected plan is expected and travels onto the working branch with the checkout. Don't commit, stage, or stash it as part of branch setup. Report which branch you're on before editing.
+State the outcome, path-level scope, acceptance, and change type before the first edit. Derive the type from `references/change-types.md` using the same precedence: explicit request → associated plan → current conversation. Ask only when different classifications would materially change the implementation or proof.
 
-## Standard flow
+Mechanical choices inside the authorized outcome are yours: exact line locating, naming consistent with the repository, final wording, and micro-edit ordering. A required intent change, scope expansion, or new dependency is not mechanical; it stops the run.
 
-Run the plan's implementation steps in order; each one verifies independently. First check whether the project has a test framework (`package.json`'s `scripts.test*`, or the presence of `tests/` / `__tests__/` / `*.test.*` / `*.spec.*` / `*_test.go`), then pick a path.
+When the current branch is `main`, `master`, `develop`, or detached, create a working branch before the first implementation edit. Use the plan filename slug when available; otherwise derive a short `<type>-<topic>` slug from the request. Reuse an existing same-task branch rather than creating variants.
 
-**Framework present and plan mode is fix / feat → run TDD**:
+## Implement and verify
 
-1. Write or update tests from the plan's regression tests / acceptance scenarios.
-2. Run them; they must be red. Green from the start means the test doesn't actually cover that scenario — stop and fix the test.
-3. Write the implementation code.
-4. Run them; they must be green. If you can't get to green, report the failure and let the user decide; don't retry many times, delete tests, or add `--no-verify`.
-5. Move to the next step.
+Locate the relevant code before each edit and follow repository style. Do not make drive-by fixes.
 
-**No framework, or plan mode is refactor / perf → no TDD**:
+Choose proof from the shared change type:
 
-1. Change the code.
-2. Run the commands in the plan's verification section to prove the step is done.
-3. Move to the next step.
+| type       | implementation discipline                                                      |
+| ---------- | ------------------------------------------------------------------------------ |
+| `fix`      | reproduce or establish the failure, add a regression that is red, fix to green |
+| `feat`     | add acceptance coverage that is red, implement the bounded behavior to green   |
+| `refactor` | keep characterization/regression coverage green while preserving invariants    |
+| `perf`     | measure a baseline, change the evidenced bottleneck, remeasure against target  |
 
-Surface each step's red→green / verify output as you go — don't run every step silently and report only at the end. Problems that surface mid-run get decided mid-run.
+Use TDD for `fix` and `feat` when the project has a test framework. A new test that is already green does not prove the requested behavior is absent; correct the test before implementing. Without a framework, use the narrowest reproducible command or manual observation already appropriate to the project—do not create test infrastructure just for ceremony.
 
-When every step is done → run the full plan verification → set the plan's `status: done` → write the report.
+Run each focused verification as the change develops, then run the plan's overall verification when a plan provides it or the repository's relevant suite when it does not. Retry only once when a failure plausibly looks flaky. Never skip, weaken, delete, or bypass a failing check.
 
-### TDD applicability matrix
+## Automatic check loop
 
-| plan mode  | TDD        | how                                                 |
-| ---------- | ---------- | --------------------------------------------------- |
-| `fix`      | strong fit | regression test red first → fix to green            |
-| `feat`     | strong fit | acceptance scenarios red first → implement to green |
-| `refactor` | no fit     | existing tests guard the invariant; keep them green |
-| `perf`     | no fit     | baseline → optimize → measure again to target       |
+Invoke check after the implementation verification passes. Invoke the existing standalone check capability with the change scope, diff, available plan, test evidence, and relevant user constraints. Check remains read-only and returns its normal verdict/findings; implement—not check—owns repairs.
 
-Refactor and perf skip TDD because their invariant is "behavior unchanged" or "a performance number" — neither is expressible as "write a red test, then go green." Existing tests are the better guard net.
+For each verdict:
 
-## Test work (writing tests is implement's, with or without a plan)
+1. **Holds up:** finish the loop. Non-blocking observations stay in the report unless they are already required by the authorized acceptance.
+2. **Needs work with in-scope blockers:** fix only blockers that are inside the authorized implementation scope, repeat the relevant implementation verification, then run check again.
+3. **Intent change or scope expansion:** stop and return the decision or additional authorization needed.
+4. **New dependency:** stop unless that dependency was already authorized.
+5. **No progress:** when the same finding returns without new evidence, the repair reverts earlier progress, or check cannot produce an actionable distinction, stop instead of cycling.
 
-Writing tests is implement's job — both a plan's TDD and standalone test work that has no plan: add coverage for a module, add a regression for a found bug, fix a flaky test. Small test-only work doesn't need a full plan file; the acceptance is the test itself going red → green.
+There is no arbitrary round count: evidence determines convergence. Track findings across rounds so rewording does not disguise no progress. Never fix unrelated observations simply to make the report empty.
 
-- **Add coverage / regression**: read the code under test for its real behavior first, then write the test. A test that's green the moment you write it doesn't cover the target — stop and fix the test, don't tweak the code to fit.
-- **Flaky**: retry once only; still failing means it's failing, not flaky. Never `.skip`, delete, or `--no-verify` to make it pass.
-- **A failure that reflects a real bug is not implement's to patch here** — route to `/shape fix`.
+If a referenced plan was used, set its `status: done` only after check holds up and every plan outcome is complete. A boundary exit leaves the plan approved. Without a plan, no placeholder artifact is created.
 
-Running the suite as a merge gate, code review, and end-to-end checking belong to `/check`, not implement — implement runs tests to confirm its own work; check runs them to gate the change.
+## Engineering boundaries
 
-## Engineering constraints
+- Preserve project conventions, public compatibility required by the change, and user-owned working-tree changes.
+- Add or update dependencies only when explicitly authorized by the request or plan; never touch a lockfile incidentally.
+- Do not use `--no-verify`, `--force`, `@ts-ignore`, `eslint-disable`, test skips, or repeated retries to manufacture success.
+- Keep secrets in the project's normal configuration path; never put credentials in code, tests, logs, plans, or reports.
+- Comments explain non-obvious constraints, not the edit itself or the plan/Issue history.
+- Treat docs, publish, and release as separate user-invoked outcomes. Do not call them automatically.
 
-These all share one root: don't re-judge intent while implementing. Intent was judged in shape; reopening it here is where scope creep starts.
+## Stop conditions
 
-- **Match the project's code style** (indentation, naming, import order, error handling). The existing style reflects the team's real choices, including many implicit conventions that no lint rule captures; a new style forces the reviewer to absorb it all over again.
-- **Don't touch dependencies**: unless the plan says so, add no new dependency, bump nothing up or down, leave the lockfile alone. Adding a dependency is a product decision and belongs to shape.
-- **Hold scope to the plan**: change no file outside it, fix no unrelated bug along the way, refactor nothing on the side. Note anything you spot in the final report, but don't act on it — acting takes it out of the reviewer's view.
-- **No comments by default**: good names beat comments; write one only when the why isn't obvious (a hidden constraint, a counterintuitive tradeoff, the reason for a workaround). Don't write "this function does X", and don't write the plan path or issue number — those belong in the commit message.
-- **Handle only real error cases**: don't add try/catch or null checks for cases that can't happen. Redundant defense hurts readability and masks the root cause when something really fails.
-- **Don't bypass quality gates**: no `--no-verify`, `--force`, `// @ts-ignore`, or `// eslint-disable`. Forcing past a tool that stopped you throws away the signal it gave.
-- **A failing test is a signal, not a nuisance**: don't delete, weaken, or skip an existing test to make the code "pass" — the cost is the test's whole point.
-- **Secrets go through config**: don't hardcode tokens, API keys, or passwords; use environment variables or the project's usual config.
-- **Test code is code too**: every constraint above applies to it as well; cover the plan's acceptance scenarios, no more and no less.
+Stop with concrete evidence when the requested behavior is not clear enough to implement, repository facts contradict an associated plan, unrelated changes overlap the scope, a test is incapable of distinguishing the behavior, verification cannot get green after one reasoned correction, or the check loop reaches any boundary above. Do not route the user backward merely because an upstream artifact is absent.
 
-## When to stop
+## Report
 
-Implement's most common failure is pushing through where it should stop. In these cases, report the state and let the user decide — don't find a way around them:
+Return:
 
-- **The plan doesn't match the code** (wrong path, missing function, assumption broken, or a step's outcome needs files outside its declared scope) — that's plan drift; go back to plan to fix the plan, don't quietly adjust a path — or widen a scope — to make it line up.
-- **You'd need a dependency the plan didn't name** — go back to plan to fix the plan, or use what the project already has. Never run a silent `pnpm add`.
-- **A TDD test is green the moment you write it** — it doesn't really cover that scenario; fix the test and try again.
-- **Verify fails and one retry still fails** — don't silently skip it or delete the test; report the failure output and let the user decide.
-- **You want to edit the plan to make implementation easier** — build never changes plan content, only `status: done`. To change the plan, go back to plan.
-- **The project has no test framework but you want to force TDD** — follow the plan's verification instead; don't conjure test infrastructure from nothing.
-- **You're about to write an API, call syntax, or framework feature from memory** — grep the project's existing usage or check the docs first; see `references/anti-patterns.md`.
-
-## When done, report
-
-```
-Built plans/<path>.md (now status: done)
-
-Branch: <name> (created from <protected-branch> / existing)
+```text
+Implemented: <outcome>
+Branch: <branch>
+Plan: <path and final status, or none>
 
 Changes:
-- <file>: <one-line description>
+- <path>: <result>
+
+Verification:
+- <command/check>: <red → green or final result>
+
+Check loop:
+- round 1: <verdict/findings/action>
 - ...
 
-Tests:
-- <test-file>: N tests added/changed (TDD: red → green)
-
-Verify: <command> → pass
-
-Next: run check to gate it
-
-(Only when other approved plans are queued: list them here — they continue after this one passes the gate.)
+Final: holds up | stopped — <specific boundary>
 ```
+
+Mention skipped external or manual checks accurately. Do not label them passed and do not suggest the next skill as if it already ran.

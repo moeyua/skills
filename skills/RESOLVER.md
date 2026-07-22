@@ -1,110 +1,75 @@
 # Squire Skill Resolver
 
-> A trigger-to-skill routing table. Claude Code matches automatically via each SKILL.md's `description`; this doc is the human-facing central index, and also the basis `tests/smoke/verify-skills.test.ts` checks against. When you change a skill's scope, update this in sync.
+> Human-facing trigger index. Runtime routing comes from each `SKILL.md` description; repository tests require this index to reference exactly the installed skill set.
 
-## Context / Report
+## Public capabilities
 
-### Explore
+| capability | use when                                                                                               | entry                       |
+| ---------- | ------------------------------------------------------------------------------------------------------ | --------------------------- |
+| Explore    | understand a repo/module, map structure, or provide reliable read-only context                         | `skills/explore/SKILL.md`   |
+| Shape      | think through an uncertain idea, resolve material design choices, or diagnose what correct should mean | `skills/shape/SKILL.md`     |
+| Plan       | persist a settled/clear change as an executable plan, with a best-effort GitHub Issue companion        | `skills/plan/SKILL.md`      |
+| Implement  | build an authorized change, with or without a plan, and close its internal check loop                  | `skills/implement/SKILL.md` |
+| Check      | independently review, test, or drive a change; verdict only, no edits                                  | `skills/check/SKILL.md`     |
+| Docs       | record established truth in the six-type memory catalog or a user-named project document               | `skills/docs/SKILL.md`      |
+| Publish    | complete missing commit, push, and GitHub pull-request actions from current state                      | `skills/publish/SKILL.md`   |
+| Release    | create/reuse a verified tag and GitHub Release with generated notes                                    | `skills/release/SKILL.md`   |
+| Converge   | batch-align a project's memory catalog to current formats, idempotently                                | `skills/converge/SKILL.md`  |
+| Doctor     | audit whole-project docs/code drift and mechanical health, read-only                                   | `skills/doctor/SKILL.md`    |
+| Handoff    | produce a self-contained, read-only session continuation summary                                       | `skills/handoff/SKILL.md`   |
 
-| trigger                                                                                                                                       | skill                     |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| new repo / unfamiliar module / "look at this project" / "整体了解一下" / "look at the X module" / `/explore` / building a base for later work | `skills/explore/SKILL.md` |
+## Trigger map
 
-## Optional Intake
-
-### Issue
-
-| trigger                                                                                                        | skill                   |
-| -------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| "create an issue" / "file this issue" / "record this work" / "创建 issue" / "提 issue" / "记录任务" / `/issue` | `skills/issue/SKILL.md` |
-
-## Core Loop
-
-### 1. Shape
-
-| trigger                                                                                                                                                                           | skill                   |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| "think it through" / "how should we do this" / "出方案" / "should we" / brainstorm / error diagnosis / new feature / refactor / perf optimization / `/shape` / plan before acting | `skills/shape/SKILL.md` |
-
-### 2. Implement
-
-| trigger                                                                                                              | skill                       |
-| -------------------------------------------------------------------------------------------------------------------- | --------------------------- |
-| "implement" / "build it" / "apply the plan" / "实现" / "落实" / `/implement` / land code after shape produces a plan | `skills/implement/SKILL.md` |
-
-### 3. Check
-
-| trigger                                                                                                                                            | skill                   |
-| -------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| "review" / "run the tests" / "check it works" / "把关" / "验证" / `/check` / review + test + e2e gate before merge, verdict only — no code changes | `skills/check/SKILL.md` |
-
-### 4. Docs
-
-| trigger                                                                                                                                                                                        | skill                  |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
-| "document this" / "record this" / "update ARCHITECTURE / specs/X" / "write docs/setup.md" / `/docs` / document a built change into catalog memory, or update a user-specified project document | `skills/docs/SKILL.md` |
-
-## Workflow-Managed Stages
-
-These are squire skills, but not part of the core loop. A project's WORKFLOW.md or maintainer process decides whether and when they run.
-
-| trigger                                                                                                         | skill                    |
-| --------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| "commit" / "stage and commit" / "入库" / `/commit` / land code after editing                                    | `skills/commit/SKILL.md` |
-| "open a PR" / "pull request" / "push it" / "提评审" / `/pr` / push to the remote and open a PR after committing | `skills/pr/SKILL.md`     |
-
-## Orthogonal Tools
-
-| trigger                                                                                                                                                                                                      | skill                      |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------- |
-| "health check" / "what has drifted" / "体检" / "审计" / `/doctor` / whole-project audit: docs-vs-code drift + dependency/CI/file staleness, read-only                                                        | `skills/doctor/SKILL.md`   |
-| "hand over" / "continue in a new session" / "context summary" / "交接" / "新会话继续" / `/handoff` / read-only handoff summary to continue elsewhere                                                         | `skills/handoff/SKILL.md`  |
-| "initialize squire docs" / "bring the docs up to spec" / "初始化文档" / "上车" / "补齐文档" / "升级后对齐" / `/converge` / batch-converge the memory catalog to current formats, per-document and idempotent | `skills/converge/SKILL.md` |
+| cues                                                                     | route     |
+| ------------------------------------------------------------------------ | --------- |
+| “look at this project”, “整体了解”, unfamiliar module, `/explore`        | Explore   |
+| “think it through”, “how should we do this”, “想想”, “出方案”, `/shape`  | Shape     |
+| “write the plan”, “implementation plan”, “记录这项工作”, `/plan`         | Plan      |
+| “implement”, “build it”, “实现”, “落实”, `/implement`                    | Implement |
+| “review”, “run tests”, “check it works”, “把关”, “验证”, `/check`        | Check     |
+| “document this”, “update PRODUCT/ARCHITECTURE/spec”, “记录真源”, `/docs` | Docs      |
+| “publish”, “commit push PR”, “提交并开 PR”, `/publish`                   | Publish   |
+| “tag and release”, “GitHub Release”, “发布版本”, `/release`              | Release   |
+| “initialize/align all memory docs”, “文档上车/收敛”, `/converge`         | Converge  |
+| “project health”, “what drifted”, “体检/审计”, `/doctor`                 | Doctor    |
+| “continue in a new session”, “交接”, `/handoff`                          | Handoff   |
 
 ## Disambiguation
 
-> Rules for resolving when multiple skills could match. Fill in after a conflict appears in real use.
+- **shape vs plan:** shape keeps design work in conversation; plan is the explicit file-producing handoff and optional Issue projection.
+- **plan vs docs:** plan describes how one change will be implemented; docs records what the project durably is.
+- **implement vs check:** implement edits and owns the automatic repair/recheck loop; a directly invoked check stays read-only and stops at its verdict.
+- **publish vs release:** publish delivers a branch for review; release publishes an already-existing commit as a tag plus GitHub Release.
+- **docs vs converge vs doctor:** docs writes focused truth, converge batch-aligns catalog structure/content, doctor only audits.
 
-## Chaining
+## Soft connections
 
-Skills don't chain automatically. Each one stops when done and waits for the user to decide the next step.
+```text
+                              explore
+                                 ·
+                                 ▼
+shape · · ·▶ plan · · ·▶ implement ⇄ check · · ·▶ docs · · ·▶ publish · · ·▶ release
 
-`issue` is optional intake outside the core loop. It confirms one work item, creates one labeled GitHub Issue, returns the URL, and stops. It never invokes `shape` automatically; the user decides whether that Issue later enters the development loop.
-
-`explore` has two positions:
-
-- **User-facing report** — `/explore` or "look at this project" emits an Explore Report and has no outgoing edge.
-- **Embedded context** — `shape`, `implement`, `check`, `docs`, and `doctor` may use explore in context mode when they lack reliable project facts. That preflight follows explore's reading rules, emits no Explore Report, and carries evidence into the current skill's output. It is not a workflow node and not workflow chaining.
-
-**Next-step suggestions follow one rule: position determines modality.** A change walks a state graph — each skill is a node, its closing "next step" is that node's outgoing edge, and where the node sits decides how the suggestion is made:
-
-- **Fixed** — the success edge inside the core loop is unique: shape (named mode) → implement; implement → check.
-- **Judged** — the edge depends on this run's outcome: check routes by verdict (findings → the owning skill; clean → docs, or delivery when there's nothing to record); shape's brainstorm mode converges into a named mode or ends; doctor routes its findings.
-- **Default-but-overridable** — past the core loop's exit the project's WORKFLOW owns the edge; the skill only supplies the common default: docs → commit, commit → pr, converge → commit.
-- **None** — no outgoing edge: issue (the created Issue is the end), explore (the report is the end), pr, handoff.
-
-Whatever the modality, a suggestion is only a suggestion — the user walks the graph.
-
-Core loop:
-
-```
-shape → implement → check → docs
+converge / doctor / handoff remain orthogonal and on demand.
 ```
 
-`explore` is omitted from this graph because it is either an explicit report before the loop or embedded grounding inside a node.
+The dotted edges show useful context, not prerequisites or automatic flow. Every capability can be invoked directly when its own input is sufficient. Missing upstream artifacts are normal: no shape session does not invalidate plan, no plan does not block implement, no check transcript does not block docs/publish, and no Issue does not block publish.
 
-Workflow-managed stages commonly follow, but are project-specific:
+There are three intentional compositions:
 
-```
-commit → pr
-```
+1. shape may use explore read-only context when facts are missing;
+2. plan writes the local plan first, then best-effort projects the same change to at most one GitHub Issue; GitHub failure is a degraded result, not a failed plan;
+3. implement automatically invokes the unchanged, read-only check capability and repairs only authorized in-scope blockers until check holds up or a real intent/scope/dependency/no-progress boundary appears.
 
-Shape branches internally by intent: brainstorm / fix / feat / refactor / perf. Check gates one of three ways: review / test / e2e.
+Everything else stops at its own outcome. The user chooses the next capability; no global orchestrator advances the graph.
 
-Docs runs at the loop's tail — after check passes, before delivery — when a change produces durable memory worth recording — it writes into the right catalog artifact (spec / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README) per `rules/memory-catalog.md`, or updates a concrete catalog-external project doc only when the user names that target.
+## Shared change types
 
-`doctor` is the orthogonal audit — a read-only, whole-project checkup (docs-vs-code drift + dependency/CI/file staleness) that runs outside the core loop, on demand. It only detects and reports; docs writes any correction it surfaces.
+`fix`, `feat`, `refactor`, and `perf` describe the change across shape, plan, and implement. Their canonical definitions live in `rules/change-types.md`. `brainstorm` is only a conversational use of shape, not a plan mode, label, or persistent status.
 
-`handoff` is another orthogonal tool — a read-only, host-neutral session-handoff summary, generated on demand when a session ends or moves to another agent. It never chains onward and writes nothing; the user carries its output to the next session.
+## Shared artifacts
 
-`converge` is the batch-alignment tool — it converges the whole memory catalog to squire's current formats, judging each document's state and acting per document, idempotently. It runs on demand (onboarding a project, completing a half-covered doc set, realigning after a squire upgrade), stops after its convergence report, and suggests `/commit` as the default next step — the project's WORKFLOW owns that edge.
+- Local plans: `plans/YYYY-MM-DD-<slug>.md`; optional `issue:` frontmatter only after a canonical association exists.
+- Durable memory: spec, PRODUCT, ARCHITECTURE, DESIGN, ROADMAP, README as defined by `rules/memory-catalog.md`.
+- Publish context: current git/GitHub state plus any available plan, Issue URL, and verification evidence.
+- Release context: explicit/canonical tag, target commit, remote tag state, and GitHub Release state.

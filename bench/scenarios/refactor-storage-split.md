@@ -1,6 +1,6 @@
 ---
 id: refactor-storage-split
-mode: refactor
+kind: refactor
 title: 拆分耦合的存储层,外部行为不变
 fixture: notes-app
 ---

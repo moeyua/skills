@@ -1,22 +1,14 @@
-/**
- * Scenario card loading and validation.
- *
- * Card format (from the plan's interface boundary): YAML frontmatter with
- * id / mode / title / fixture, then three required sections — 初始意图
- * (verbatim /shape argument), 意图卡 (hidden motivation, constraints, success
- * criteria for the user-sim), 答题策略 (how to answer open questions;
- * anything outside the intent card gets "你决定").
- */
+/** Scenario-card loading and validation for conversational shape cases. */
 
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { basename, join } from "node:path";
 
-export const SCENARIO_MODES = ["brainstorm", "fix", "feat", "refactor", "perf"] as const;
-export type ScenarioMode = (typeof SCENARIO_MODES)[number];
+export const SCENARIO_KINDS = ["explore", "fix", "feat", "refactor", "perf"] as const;
+export type ScenarioKind = (typeof SCENARIO_KINDS)[number];
 
 export interface ScenarioCard {
   id: string;
-  mode: ScenarioMode;
+  kind: ScenarioKind;
   title: string;
   fixture: string;
   initialIntent: string;
@@ -32,13 +24,10 @@ const REQUIRED_SECTIONS: [keyof ScenarioCard, string][] = [
 ];
 
 function parseFrontmatter(text: string, path: string): Record<string, string> {
-  if (!text.startsWith("---\n")) {
-    throw new Error(`场景卡 ${path} 缺少 YAML frontmatter`);
-  }
+  if (!text.startsWith("---\n")) throw new Error(`场景卡 ${path} 缺少 YAML frontmatter`);
   const end = text.indexOf("\n---", 4);
-  if (end === -1) {
-    throw new Error(`场景卡 ${path} frontmatter 未闭合`);
-  }
+  if (end === -1) throw new Error(`场景卡 ${path} frontmatter 未闭合`);
+
   const fields: Record<string, string> = {};
   for (const line of text.slice(4, end).split("\n")) {
     const colon = line.indexOf(":");
@@ -52,13 +41,11 @@ function parseFrontmatter(text: string, path: string): Record<string, string> {
 }
 
 function extractSection(body: string, heading: string): string {
-  const pattern = new RegExp(`^## ${heading}\\s*$`, "m");
-  const match = pattern.exec(body);
+  const match = new RegExp(`^## ${heading}\\s*$`, "m").exec(body);
   if (match === null) return "";
   const start = match.index + match[0].length;
   const next = body.slice(start).search(/^## /m);
-  const section = next === -1 ? body.slice(start) : body.slice(start, start + next);
-  return section.trim();
+  return (next === -1 ? body.slice(start) : body.slice(start, start + next)).trim();
 }
 
 export function parseScenarioCard(path: string, fixturesRoot: string): ScenarioCard {
@@ -66,11 +53,11 @@ export function parseScenarioCard(path: string, fixturesRoot: string): ScenarioC
   const fm = parseFrontmatter(text, path);
   const errors: string[] = [];
 
-  for (const key of ["id", "mode", "title", "fixture"]) {
+  for (const key of ["id", "kind", "title", "fixture"]) {
     if (fm[key] === undefined || fm[key] === "") errors.push(`frontmatter 缺 ${key}`);
   }
-  if (fm["mode"] !== undefined && !SCENARIO_MODES.includes(fm["mode"] as ScenarioMode)) {
-    errors.push(`mode 非法:${fm["mode"]}(可用:${SCENARIO_MODES.join("/")})`);
+  if (fm["kind"] !== undefined && !SCENARIO_KINDS.includes(fm["kind"] as ScenarioKind)) {
+    errors.push(`kind 非法:${fm["kind"]}(可用:${SCENARIO_KINDS.join("/")})`);
   }
   if (fm["id"] !== undefined && fm["id"] !== basename(path, ".md")) {
     errors.push(`id「${fm["id"]}」与文件名「${basename(path, ".md")}」不一致`);
@@ -94,12 +81,10 @@ export function parseScenarioCard(path: string, fixturesRoot: string): ScenarioC
     }
   }
 
-  if (errors.length > 0) {
-    throw new Error(`场景卡 ${path} 校验失败:${errors.join(";")}`);
-  }
+  if (errors.length > 0) throw new Error(`场景卡 ${path} 校验失败:${errors.join(";")}`);
   return {
     id: fm["id"] as string,
-    mode: fm["mode"] as ScenarioMode,
+    kind: fm["kind"] as ScenarioKind,
     title: fm["title"] as string,
     fixture,
     initialIntent: sections.initialIntent as string,
@@ -110,8 +95,8 @@ export function parseScenarioCard(path: string, fixturesRoot: string): ScenarioC
 }
 
 export function loadScenarios(scenariosDir: string, fixturesRoot: string): ScenarioCard[] {
-  const files = readdirSync(scenariosDir)
-    .filter((f) => f.endsWith(".md"))
-    .sort();
-  return files.map((f) => parseScenarioCard(join(scenariosDir, f), fixturesRoot));
+  return readdirSync(scenariosDir)
+    .filter((file) => file.endsWith(".md"))
+    .sort()
+    .map((file) => parseScenarioCard(join(scenariosDir, file), fixturesRoot));
 }

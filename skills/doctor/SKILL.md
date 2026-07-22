@@ -1,6 +1,6 @@
 ---
 name: doctor
-description: "Audit a whole project's health — first whether its docs still match the code, then dependency/CI/file-size staleness and broken references. A bundled deterministic script does the mechanical checks; model judgment does the docs-vs-code part. Use when you want a project-wide checkup or to find what has drifted; read-only and advisory. Not for change-scoped pre-merge review (use check), writing the fixes it finds (use docs), or fixing flagged code (use shape fix)."
+description: "Audit a whole project's health — first whether its docs still match the code, then dependency/CI/file-size staleness and broken references. A bundled deterministic script does the mechanical checks; model judgment does the docs-vs-code part. Use when you want a project-wide checkup or to find what has drifted; read-only and advisory. Not for change-scoped pre-merge review (use check), writing the fixes it finds (use docs), or fixing flagged code (use shape or implement)."
 when_to_use: "doctor, health, audit, checkup, drift, doc drift, stale docs, dependency staleness, broken references, 体检, 健康, 漂移, 文档漂移, 陈旧, 审计"
 dispatch_intent: "Project-wide read-only health audit — docs-vs-code consistency first, plus a bundled mechanical checker; advisory only"
 allowed-tools: "Bash(node *), Bash(pnpm outdated*), Bash(npm outdated*), Bash(gh run list*), Bash(git log*)"
@@ -32,7 +32,7 @@ This check is model judgment — mechanical checks can't tell whether prose stil
 - **squire-format docs** (a `specs/<domain>/spec.md` with `### Requirement:` entries): take each requirement as one discrete claim and check the code still does it. Bounded, claim by claim.
 - **prose docs** (README / ARCHITECTURE / design notes): pull out the behavior/architecture claims you _can_ check ("uses Redux", "auth issues a JWT") and verify them against the code. What you can't pin down, don't force a verdict on — say so.
 
-Report a docs-vs-code finding only at confidence ≥ 80, graded Critical / Important / Suggestion, each routed (usually `/docs` to fix the doc, or `/shape fix` if the code is the wrong one).
+Report a docs-vs-code finding only at confidence ≥ 80, graded Critical / Important / Suggestion, each routed (usually `/docs` to fix the doc, `/implement` for an already-authorized code repair, or `/shape` when correct behavior or scope is unresolved).
 
 ## Two kinds of target
 
@@ -71,14 +71,14 @@ No argument → full checkup. A recognized category (`docs` / `deps` / `ci`) or 
 Scope: <full / docs|deps|ci / path>   Ran: docs-vs-code, checker, deps   Skipped: CI (no gh remote)
 
 ## Docs vs code (main)
-- [Important] README says "uses Redux" but the code uses Context (conf 85) → confirm, then /docs or /shape fix
+- [Important] README says "uses Redux" but the code uses Context (conf 85) → confirm, then /docs, /implement, or /shape according to which side is authoritative
 
 ## Mechanical (deterministic)
 - [fact] docs/foo.md:12 link [x](./gone.md) points at a missing file
 - [fact] 3 dependencies are ≥1 major behind
 
 ## Next
-- doc drift → /docs; code bug → /shape fix; nothing here is auto-fixed
+- doc drift → /docs; authorized code repair → /implement; unresolved correctness → /shape; nothing here is auto-fixed
 ```
 
 Mechanical findings are stated as facts; model findings carry a confidence and a grade; skipped checks are listed.
@@ -88,9 +88,9 @@ Mechanical findings are stated as facts; model findings carry a confidence and a
 - **vs check** — check gates one change before merge (a diff); doctor checks the whole project, outside the loop. Different scope.
 - **vs docs** — doctor _detects_ drift and reports it; docs _writes_ the correction. Doctor never owns the fix.
 - **vs explore** — explore builds a map of an unfamiliar project; doctor audits a (mapped) project for drift. Doctor may reuse explore's reading, but its output is a drift report, not a map.
-- **vs shape fix** — doctor reports a suspected code bug; shape fix diagnoses the root cause and plans the fix.
+- **vs shape / implement** — doctor reports a suspected code bug; shape resolves unclear correctness or scope, while implement performs an authorized repair.
 
-When you find a class of problem, point the author to the matching skill instead of taking over: doc drift → `/docs`; batch catalog format drift → `/converge`; code bug → `/shape fix`; simplification → `/shape refactor`; scope creep → flag it, let the user decide.
+When you find a class of problem, point the author to the matching skill instead of taking over: doc drift → `/docs`; batch catalog format drift → `/converge`; authorized code repair → `/implement`; unresolved correctness or simplification design → `/shape`; scope creep → flag it, let the user decide.
 
 ## When to stop
 

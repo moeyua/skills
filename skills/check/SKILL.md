@@ -1,6 +1,6 @@
 ---
 name: check
-description: 'Check a change holds up before merge — by code review, by running the test suite, or by driving the app end-to-end; with no mode named it runs the full gate (review + test, e2e when applicable). Use when the user says "review" / "run the tests" / "check this works" / "把关" / "验证", or before committing. Not for fixing the bugs it finds (use shape fix), writing the implementation or its tests (use implement), or recording what landed (use docs).'
+description: 'Check a change holds up before merge — by code review, by running the test suite, or by driving the app end-to-end; with no mode named it runs the full gate (review + test, e2e when applicable). Use when the user says "review" / "run the tests" / "check this works" / "把关" / "验证", or before publishing. Not for fixing the bugs it finds (use implement for authorized repairs or shape for unresolved intent), writing the implementation or its tests, or recording what landed (use docs).'
 when_to_use: "check, verify, review, code review, run tests, e2e, end to end, check it works, 验证, 评审, 把关, 跑测试, 端到端, 合并前检查"
 dispatch_intent: "Confirm a change holds up before merge — review / test / e2e; verdicts and directions, no code changes"
 ---
@@ -68,7 +68,7 @@ Detect the framework + command (`package.json` scripts / `Cargo.toml` / `pyproje
 
 **Flaky suspicion**: when a test looks timing- or resource-sensitive, **retry once only**; still failing means it's failing, not flaky. Passing after many retries and calling it green is waiting for luck, not verifying.
 
-A failure that reflects a real bug routes to `/shape fix` — check reports it, it doesn't fix it. Never `.skip` / delete a test / add `--no-verify` to make it pass; the failure is the signal.
+A failure that reflects a real bug is reported, not fixed here. Route it to `implement` when repairing the current change is already authorized, or to `shape` when correct behavior, root cause, or scope still needs resolution. Never `.skip` / delete a test / add `--no-verify` to make it pass; the failure is the signal.
 
 ## e2e mode
 
@@ -79,10 +79,10 @@ Confirm the change actually works by running the real app and observing behavior
 ## Boundaries
 
 - **vs implement** — implement writes code and its tests; check runs and reads them, never edits.
-- **vs shape fix** — check finds and reports a bug; shape fix diagnoses root cause and plans the fix.
+- **vs shape / implement** — check finds and reports a bug; shape resolves unclear correctness or scope, while implement performs an authorized repair and may invoke check again.
 - **vs docs** — check judges whether a change holds up; docs records what it established.
 
-When you find a class of problem, point the author to the matching skill instead of taking over: bug → `/shape fix`; missing/weak tests → `/implement` (add coverage); simplification → `/shape refactor`; scope creep → flag it, let the user decide.
+When you find a class of problem, point the author to the matching skill instead of taking over: unresolved correctness/root cause → `/shape`; authorized bug repair or missing/weak tests → `/implement`; a simplification that still needs design judgment → `/shape`; scope creep → flag it, let the user decide.
 
 ## When done, report
 
@@ -105,12 +105,12 @@ Verdict: holds up / needs work
 - <1-2 positives>
 
 ## Recommended Next
-- <findings → route by class, Critical first: e.g. /shape fix>
+- <findings → route by class, Critical first: e.g. /implement or /shape>
 - <clean + durable memory worth recording → /docs>
-- <clean + nothing to record → core loop complete; delivery per the project's workflow (commonly /commit)>
+- <clean + nothing to record → ready for /publish if the user wants delivery>
 ```
 
-The three branches are exclusive — the verdict picks the edge. With no high-confidence findings and a clean run, say so plainly and mark the core loop complete — delivery proceeds per the project's workflow. A mode that belonged to this run's set — requested, or part of the default gate — but didn't run is listed as skipped with its reason; silence reads as "checked" when it wasn't. A mode the author explicitly narrowed away isn't "skipped", it was never in the set.
+The three branches are exclusive — the verdict picks the recommendation. With no high-confidence findings and a clean run, say so plainly; the user decides whether to record durable truth or publish next. A mode that belonged to this run's set — requested, or part of the default gate — but didn't run is listed as skipped with its reason; silence reads as "checked" when it wasn't. A mode the author explicitly narrowed away isn't "skipped", it was never in the set.
 
 ## When to stop
 
@@ -119,6 +119,6 @@ Check's failure mode isn't "forcing through", it's "touching" — and "faking a 
 - **The urge to "just fix it real quick"** — write the finding instead; the moment check touches, it loses its standing.
 - **The working tree matches HEAD (nothing to review)** / **detached HEAD or rebase in progress** — report the state; don't review history the user didn't ask for.
 - **A test still fails after one retry** — treat it as failing; don't `.skip`, delete, or retry to luck.
-- **A failure reflects a real bug** — report it and route to `/shape fix`; don't patch the test to pass.
+- **A failure reflects a real bug** — report it and route to `implement` for an authorized repair or `shape` for unresolved intent; don't patch the test to pass.
 - **No test framework (and not an empty project)** — report it; don't conjure test infrastructure.
 - **The app won't launch in e2e** — report that as the finding; don't edit source to force it up.

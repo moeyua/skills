@@ -14,7 +14,7 @@ import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import { prepareFixture } from "./fixture.ts";
 import { simulateUser } from "./user-sim.ts";
-import { endsWithQuestion, planWritten, type DriveResult } from "./common.ts";
+import { endsWithQuestion, type DriveResult } from "./common.ts";
 import type { ScenarioCard } from "../scenario.ts";
 
 export interface CodexDriverOptions {
@@ -135,7 +135,7 @@ export function runCodexScenario(
     history += `\n[助手] ${finalText}`;
     log(`  T${turns} 助手:${finalText.slice(0, 80).replaceAll("\n", " ")}`);
 
-    if (planWritten(workDir) || !endsWithQuestion(finalText)) {
+    if (!endsWithQuestion(finalText)) {
       return finish("completed");
     }
     prompt = simulateUser({ card, history, question: finalText }, { runModel: opts.runSimModel });
