@@ -17,7 +17,7 @@ Explore reads, never writes:
 
 When you cite a doc, **mark the source**: `per README` / `per ARCHITECTURE` / `the docs claim`. This tells downstream skills that something is "what the docs say", not "what the code does". The two are often out of sync, and downstream needs the attribution to resolve the conflict.
 
-Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+Two cross-skill rules apply to all work in this skill suite — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
 ## Modes and depth
 

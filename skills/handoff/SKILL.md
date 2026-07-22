@@ -9,7 +9,7 @@ dispatch_intent: "Generate a host-neutral, read-only handoff summary for continu
 
 Handoff packages what matters from the current session into a self-contained summary that a fresh session — or another agent — can pick up and continue from. It is an orthogonal, on-demand tool like doctor: it serves continuity across any capability without becoming a stage in the change graph. Every rule here exists to keep the summary **honest and portable**: built only from what this session can actually see, readable by any host, and never a write into the project.
 
-Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+Two cross-skill rules apply to all work in this skill suite — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
 
 ## Outcome Contract
 
@@ -81,7 +81,7 @@ If the conversation, a diff, or a file surfaces an API key, token, credential, o
 
 ## Host-neutral continuation
 
-End with one short instruction the user can act on anywhere: paste the HANDOFF CONTEXT block into a new session and continue from PENDING TASKS. Don't require any host-specific capability — no session APIs, no TUI keystrokes, nothing squire doesn't own. The summary must work whether the next session is Claude Code, another agent, or a plain chat window.
+End with one short instruction the user can act on anywhere: paste the HANDOFF CONTEXT block into a new session and continue from PENDING TASKS. Don't require any host-specific capability — no session APIs, no TUI keystrokes, nothing this skill suite doesn't own. The summary must work whether the next session is Claude Code, another agent, or a plain chat window.
 
 ## When to stop
 

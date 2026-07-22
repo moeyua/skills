@@ -1,4 +1,4 @@
-# Squire Skill Resolver
+# Skills Resolver
 
 > Human-facing trigger index. Runtime routing comes from each `SKILL.md` description; repository tests require this index to reference exactly the installed skill set.
 

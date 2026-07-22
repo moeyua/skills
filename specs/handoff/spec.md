@@ -20,7 +20,8 @@ Verify: manual(integration)
 
 ### Requirement: 不绑定 host 的继续说明
 
-handoff 必须给出不绑定具体 host 的继续说明,让用户把摘要粘贴到新会话继续;不得要求 OpenCode 专属 API、TUI 按键或其他 squire 不拥有的能力。
+handoff 必须给出不绑定具体 host 的继续说明,让用户把摘要粘贴到新会话继续;不得要求 OpenCode 专属 API、TUI 按键或其他 Skills 不拥有的能力。
+(Previously:能力归属使用项目旧名;host-neutral 边界不变。)
 Verify: manual(integration)
 
 ### Requirement: 敏感信息不外泄

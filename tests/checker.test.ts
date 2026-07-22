@@ -1,7 +1,7 @@
 /**
  * Unit tests for skills/doctor/scripts/checker.ts — the doctor skill's bundled
  * deterministic checker. checker.ts is tool code; exercising it on tmpdir
- * fixtures is checking the tool, not running it on squire's real products.
+ * fixtures is checking the tool, not running it on Skills' real products.
  *
  * The checks RETURN findings (never throw), so tests assert on the array.
  */
@@ -54,7 +54,7 @@ Verify: manual(integration)
 `;
 
 describe("checkSpecFormat", () => {
-  it("returns no findings for a valid squire-format spec", () => {
+  it("returns no findings for a valid Skills-format spec", () => {
     const root = makeRoot();
     write(root, "specs/x/spec.md", VALID_SPEC);
     expect(checkSpecFormat(root)).toEqual([]);
@@ -102,7 +102,7 @@ describe("checkSpecFormat", () => {
     expect(checkSpecFormat(root).some((f) => /Verify invalid/.test(f.message))).toBe(true);
   });
 
-  it("is a no-op when no specs/ dir (non-squire project)", () => {
+  it("is a no-op when no specs/ dir (project without Skills)", () => {
     expect(checkSpecFormat(makeRoot())).toEqual([]);
   });
 });

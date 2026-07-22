@@ -1,9 +1,9 @@
 /**
- * Frontmatter parser for squire skill files.
+ * Frontmatter parser for Skills skill files.
  *
  * Zero runtime dependencies — stdlib only. So first-run doesn't require `pnpm install`.
  *
- * squire frontmatter has 4 string fields: name, description, when_to_use, dispatch_intent.
+ * Skills frontmatter has 4 string fields: name, description, when_to_use, dispatch_intent.
  */
 
 import { readFileSync } from "node:fs";

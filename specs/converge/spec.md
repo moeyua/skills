@@ -2,15 +2,16 @@
 
 ## Purpose
 
-converge skill 把项目的 memory catalog 文档批量收敛到 squire 当前规范:逐份判定状态、按状态选动作,幂等。不做项目级 init/update 二分——空项目跑一遍即初始化,squire 升级后跑一遍即对齐,写了一半的项目跑一遍即补全。格式权威来源是同装 docs skill 的 formats,机械扫描复用同装 doctor 的 checker。
+converge skill 把项目的 memory catalog 文档批量收敛到 Skills 当前规范:逐份判定状态、按状态选动作,幂等。不做项目级 init/update 二分——空项目跑一遍即初始化,Skills 升级后跑一遍即对齐,写了一半的项目跑一遍即补全。格式权威来源是同装 docs skill 的 formats,机械扫描复用同装 doctor 的 checker。
 
-> 说明:converge 的行为是 agent 遵循 SKILL.md 的 prose;机械信号来自同装 doctor 的 `scripts/checker.ts`。下面每条都标 `manual(integration)`——靠实跑 `/converge` 双端验收(brownfield fixture 的 init 端 + squire 自身的 align 端)加幂等复跑(工作树零 diff)验;「同级资产引用、缺失即停」靠卸载 docs 后运行应停验。
+> 说明:converge 的行为是 agent 遵循 SKILL.md 的 prose;机械信号来自同装 doctor 的 `scripts/checker.ts`。下面每条都标 `manual(integration)`——靠实跑 `/converge` 双端验收(brownfield fixture 的 init 端 + Skills 自身的 align 端)加幂等复跑(工作树零 diff)验;「同级资产引用、缺失即停」靠卸载 docs 后运行应停验。
 
 ## Requirements
 
 ### Requirement: 逐份状态判定与幂等收敛
 
 converge 必须对 memory catalog 的每份文档逐一判定状态(不适用 / 缺失 / 格式不符 / 半成品 / 内容漂移 / 已达标)并按状态选动作;适用性按 catalog 的 When needed 判定,不适用项跳过并在报告注明;状态判定优先机械信号(checker 输出、文件存在性、节标题匹配),模型判定只用于内容漂移档。对已收敛项目紧接复跑,必须全部跳过(含不适用项)且不产生任何文件改动。
+(Previously: Purpose 以项目旧名指代目标格式;逐份状态判定语义不变。)
 Verify: manual(integration)
 
 ### Requirement: 已有内容为权威来源

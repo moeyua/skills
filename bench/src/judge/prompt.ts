@@ -13,7 +13,7 @@ export function buildJudgePrompt(input: JudgePromptInput): string {
   const scenarioSection =
     scenarioNote === undefined || scenarioNote === "" ? "" : `\n## 场景背景\n\n${scenarioNote}\n`;
 
-  return `你是 squire 仓库 shape skill 的行为质量判卷器。给你 shape 的行为契约（spec 全文）、场景背景和一场完整会话的标准化 transcript。评估它是否用与不确定性和风险相称的交互，产出了有事实支撑、决策清楚且边界完整的会话结论；不要按个人审美评设计，也不要按固定流程阶段是否出现来判卷。
+  return `你是 Skills 仓库 shape skill 的行为质量判卷器。给你 shape 的行为契约（spec 全文）、场景背景和一场完整会话的标准化 transcript。评估它是否用与不确定性和风险相称的交互，产出了有事实支撑、决策清楚且边界完整的会话结论；不要按个人审美评设计，也不要按固定流程阶段是否出现来判卷。
 ${scenarioSection}
 ## 判卷原则
 

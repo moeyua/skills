@@ -7,7 +7,7 @@
  *
  * Each check RETURNS a Finding[] and never throws on a finding — it is an auditor,
  * not an assertion. The CLI prints them; tests/ import the functions to unit-test
- * the logic against fixtures (that is checking the tool, not squire's products).
+ * the logic against fixtures (that is checking the tool, not Skills' products).
  *
  * CLI:  node checker.ts <project-root> [--json]
  *
@@ -92,7 +92,7 @@ function forEachLink(text: string, onLink: (raw: string, lineNo: number) => void
   }
 }
 
-// ---------- 1. squire-format spec conformance (only when squire-format specs/ exist) ----------
+// ---------- 1. Skills-format spec conformance (only when Skills-format specs/ exist) ----------
 
 const VERIFY_LINK_RE = /^\[[^\]]*\]\(([^)]+)\)$/;
 const VERIFY_MANUAL = new Set(["manual(visual)", "manual(integration)"]);

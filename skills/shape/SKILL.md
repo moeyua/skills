@@ -13,7 +13,7 @@ Shape turns uncertainty into a grounded direction. It is conversational: use jud
 Shape writes no files and performs no implementation or external mutation. It never creates a plan or Issue and never invokes plan or implement automatically. It may use explore for read-only project context when facts are missing.
 </HARD-GATE>
 
-Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they are not already in context this session, read them once. Read `references/change-types.md` when classifying a concrete change would focus the design.
+Two cross-skill rules apply to all work in this skill suite — `references/anti-patterns.md` and `references/durable-context.md`. If they are not already in context this session, read them once. Read `references/change-types.md` when classifying a concrete change would focus the design.
 
 ## Outcome Contract
 

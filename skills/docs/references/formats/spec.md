@@ -24,7 +24,7 @@ The system SHALL <observable behavior>.
 Verify: manual(visual)
 ```
 
-- **Requirements are the "what"** — observable behavior, inputs, outputs, error conditions, external constraints (security / privacy / reliability / compatibility). RFC 2119 keywords carry intent: **SHALL/MUST** absolute, **SHOULD** recommended, **MAY** optional. (This is the target system's contract — not the squire prose style; SKILL.md prose still avoids MUST walls.)
+- **Requirements are the "what"** — observable behavior, inputs, outputs, error conditions, external constraints (security / privacy / reliability / compatibility). RFC 2119 keywords carry intent: **SHALL/MUST** absolute, **SHOULD** recommended, **MAY** optional. (This is the target system's contract — not this suite's prose style; SKILL.md prose still avoids MUST walls.)
 - **`Verify:` says how each requirement is checked** — exactly one line per requirement, one of three forms:
   - `Verify: [name](path)` — a markdown link to the test that verifies it; the given/when/then detail lives in that test, not duplicated here.
   - `Verify: manual(visual)` — a perceptual judgment only a human can make (looks/feels right). Irreducible.
