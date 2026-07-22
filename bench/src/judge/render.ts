@@ -13,24 +13,11 @@ export interface RenderOptions {
   maxUserMessageChars?: number;
   maxAssistantMessageChars?: number;
   maxToolInputChars?: number;
-  /** plan 文件写入的内容是多条 Requirement 的判定证据,截断上限单独放宽 */
-  maxPlanWriteChars?: number;
 }
 
 function truncate(text: string, max: number): string {
   if (text.length <= max) return text;
   return `${text.slice(0, max)}…(截断,原 ${text.length} 字符)`;
-}
-
-function isPlanWriteCall(name: string, input: unknown): boolean {
-  if (typeof input === "object" && input !== null) {
-    const filePath = (input as Record<string, unknown>)["file_path"];
-    return typeof filePath === "string" && /(^|\/)plans\/[^/]+\.md$/.test(filePath);
-  }
-  if (typeof input === "string" && name === "apply_patch") {
-    return /\*\*\* (Add|Update) File: .*plans\/[^/\n]+\.md/.test(input);
-  }
-  return false;
 }
 
 export function renderTranscript(
@@ -41,7 +28,6 @@ export function renderTranscript(
   const maxUser = opts.maxUserMessageChars ?? 4000;
   const maxAssistant = opts.maxAssistantMessageChars ?? 8000;
   const maxInput = opts.maxToolInputChars ?? 400;
-  const maxPlanWrite = opts.maxPlanWriteChars ?? 20000;
 
   const lines: string[] = [];
   for (const e of transcript.events) {
@@ -56,8 +42,7 @@ export function renderTranscript(
         break;
       case "tool-call": {
         const input = typeof e.input === "string" ? e.input : JSON.stringify(e.input ?? {});
-        const cap = isPlanWriteCall(e.name, e.input) ? maxPlanWrite : maxInput;
-        lines.push(`${t} TOOL_CALL ${e.name}${tag}: ${truncate(input, cap)}`);
+        lines.push(`${t} TOOL_CALL ${e.name}${tag}: ${truncate(input, maxInput)}`);
         break;
       }
       case "tool-result":
@@ -89,7 +74,6 @@ export function renderTranscriptCapped(
       maxAssistantMessageChars: 2000,
       maxUserMessageChars: 1500,
       maxToolInputChars: 120,
-      maxPlanWriteChars: 10000,
     },
   ];
   let rendered = "";

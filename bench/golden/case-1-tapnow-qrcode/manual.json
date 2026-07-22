@@ -1,23 +1,18 @@
 {
   "case": "case-1-tapnow-qrcode",
-  "manualScore": 9,
+  "manualScore": 4,
   "source": "用户 2026-07-02 人工判卷;评估员会话 A/B/C:~/.codex/sessions/2026/07/02/rollout-2026-07-02T12-00-44-*.jsonl、12-00-57-*.jsonl、12-01-08-*.jsonl",
   "transcript": {
     "kind": "rollout",
     "path": "~/.codex/archived_sessions/rollout-2026-07-02T11-10-08-019f20ce-226c-7241-9396-c36ac077b255.jsonl"
   },
   "requirements": {
-    "事实先于提问": "pass",
+    "shape 只输出会话结论": "fail",
+    "缺少项目事实时按需使用 explore": "pass",
     "按收敛状态自适应塑形": "pass",
-    "只处理实质决策前沿": "pass",
-    "已定内容直接作为输入": "pass",
-    "真实取舍才展开 approaches": "pass",
-    "shape 只塑形不实施": "pass",
-    "brainstorm mode 不写方案文件": "n.a.",
-    "named mode 产出可执行方案文件": "pass",
-    "named mode 保持专属质量门槛": "pass",
-    "价值判断超出范围": "n.a.",
-    "跨结构变更产出 Architecture 段": "pass"
+    "复用已经达成的共识": "pass",
+    "共享变更类型只作为思考透镜": "pass",
+    "结束时给出完整方向": "partial"
   },
-  "notes": "shape 阶段为 03:13:05Z-03:31:52Z，其后同一会话进入 implement。按 2026-07-21 outcome-first 契约重标：agent 先读协议、项目文档、spec、代码、历史与旧 plan；只把代码无法决定的二维码来源和字段契约交给用户，第二问依赖第一问；三个方案对应真实契约取舍；用户确认方向后才写出含 Interface boundary、Acceptance scenarios 与跨模块 Architecture 的 feat plan。旧契约把压缩 grill 和缺少固定 Design Summary 标记记为 partial；这些不再是缺陷。plan 的 status 语义仍是轻微交付瑕疵，因此人工分从旧 rubric 的 8 调整为 9，而非 10。"
+  "notes": "这是旧 shape 契约的高质量会话：事实充分、只处理实质前沿、推荐清楚；但它在用户显式 handoff 前写入 plan，因此在 2026-07-21 conversational-only 契约下成为输出边界负例。旧 9 分保留在 golden/README.md 历史记录中，不与新 rubric 横向比较。"
 }

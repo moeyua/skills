@@ -2,101 +2,85 @@
 
 > Your AI agent has the horsepower. Squire gives it the road.
 
-squire 不只是工具集——是一套**克制的指令系统**。Agent 只能做指令允许的事，所以每条指令都是一个 ceiling。这份文档说清 squire 的 ceiling 长什么样、为什么这样长，让未来任何改动都能对照判断。
+Squire 不只是工具集，而是一套**克制的指令系统**。Agent 的基础能力已经足够强；Squire 的价值是给开发工作划清 outcome、真源与副作用边界，同时把不必要的流程约束留给模型判断。
 
 ## 设计哲学
 
-squire 的所有设计决策都从下面 5 条派生。它们不是教条，是判断标尺——做新功能、改 SKILL.md、扩文档时回头对照，看是不是仍然站在这 5 条之上。
-
 ### 1. 克制 — rule 是 ceiling，不是 floor
 
-每条 rule 限制 agent 能做什么，**不**规定它必须怎么做。SKILL.md 写清楚目标和最关键的约束，剩下让模型用自己的 judgment 完成。
+每条 rule 限制 agent 不能越过什么，不规定它必须机械地走哪些步骤。只有会保护用户意图、数据、外部状态或结果可信度的约束才值得写进 SKILL.md。
 
-硬约束多了模型只会照念，失去 theory of mind——今天的 LLM 有能力 understand why 一条规则存在，给它 why 比给它命令更有效。所以 SKILL.md 解释"为什么这条约束存在"，而不是堆 ALWAYS / NEVER。
+现代模型能理解 why。解释约束保护的东西，比堆叠 ALWAYS / NEVER、固定阶段和重复确认更能覆盖边角场景。没有真实风险或取舍时，agent 应直接完成 outcome。
 
-### 2. 聚焦开发 + 记忆 — 不只改代码，也记住代码
+### 2. 聚焦开发 + 记忆 — 改变项目，也记住项目
 
-squire 的范围限定在两件事：**开发**一个项目，**记住 / 文档化**这个项目持久地是什么。
+Squire 的范围是两件事：**开发一个项目**，以及**记录这个项目持久地是什么**。
 
-开发主线包含理解、设计、改造、校验、文档化。默认 core loop 是 `shape → implement → check → docs`：`shape` 定意图，`implement` 改造，`check` 把关，`docs` 记录持久记忆。`explore` 提供理解能力，但位置不同——用户主动了解项目时走 report mode；其他 skill 缺可靠事实时以内嵌 context preflight 使用，不成为默认 workflow 节点。
+公开能力形成一张软连接图：
 
-`issue` 是 core loop 外的可选开发入口：它只把一项已经决定记录的开发工作确认并创建为 GitHub Issue，返回 URL 后停止；不替用户做产品价值判断，也不自动进入 `shape`。`commit` / `pr` 是 workflow-managed stages，由项目流程决定是否接在后面；`doctor` / `handoff` 是正交工具。squire 不扩展到通用项目管理、产品决策、发布管理、Agent 自审计或通用内容输入处理（详见下面"边界"段）。
+```text
+shape · · ·▶ plan · · ·▶ implement ⇄ check · · ·▶ docs · · ·▶ publish · · ·▶ release
+```
 
-> **2026-07-14 修订**：新增 `issue` 不把 scope 扩成任务管理系统。它的上限是「一项自然语言开发工作 → 简短理解确认 → 一个按用户语言生成的强格式 GitHub Issue」；仓库只从显式输入或当前目录解析，分类只复用 shape 的 `fix` / `feat` / `refactor` / `perf` named modes。它不使用 Project、Draft、状态流、批量同步、拆票、仓库模板或跨 skill 自动化。
+`explore` 提供独立报告或内嵌事实；`converge`、`doctor`、`handoff` 保持正交。图上的虚线只表示常见上下文，不是必须顺序。11 个 skill 都能由用户直接进入；缺少上游 artifact 本身不是错误。
 
-> **2026-06-10 修订**：正交工具增列 `handoff`（会话交接摘要，经 plan discussion 确认）。它服务于闭环的连续运转——把当前会话的工作状态只读交接给下个会话——不是新的产品能力域，「开发 + 记忆」的 scope 不因此扩大。
+记忆是一等支柱。默认 catalog 只有 spec、PRODUCT、ARCHITECTURE、DESIGN、ROADMAP、README 六类，由 docs 从权威来源维护。目录外项目文档只有在用户明确指定目标时才进入范围。
 
-**文档化是一等支柱，不是外挂**：行为契约、架构、设计、流程、搁置项、入口文档——这些"项目持久地是什么"由 docs 照 `rules/memory-catalog.md` 这份记忆目录维护。它的受众是闭环本身（维护者 / 协作 agent），是闭环绕之运转的设计记忆，不是替别的项目做对外文案。
+### 3. 用户决定进入哪个能力 — skill 只组合自身 outcome
 
-扩大 scope 就成了什么都做不精。克制要求每个 skill 做好一件事，整个套件加起来覆盖"开发 + 记忆 / 文档化"，但不越出。记忆目录仍是默认真源；目录外文档只有在用户明确指定目标路径、文档类型或具体产物时才进入 `/docs` 的范围，内容仍靠权威源而非凭空创作，价值判断仍归人（见边界 #2 的 2026-06-09 修订）。
+用户决定调用哪个 public skill，也决定何时进入下一个能力。Squire 没有从想法一路自动推进到发布的 orchestrator。
 
-### 3. 用户决定串联 — skill 间不自动跑
+这不禁止 skill 在**自己的公开 outcome 内**组合必要能力：shape 缺事实时可以取得 explore context；plan 在本地方案之后尽力创建一个 Issue 投影；implement 调用只读 check，并修复当前授权范围内的 blocker 直到通过或触及真实边界。这些组合都不自动越过到下一个公共 outcome。
 
-每个 skill 完成后默认停下，等用户决定下一步。issue 创建完不自动调 shape；implement 完不自动跳 check；check 发现 bug 不自动调 shape fix。skill 之间的转移是用户的明确动作。
-
-自动串联剥夺用户的判断机会——用户可能想 review 完先去吃饭，可能想跳过 review 直接 commit，可能想根据 review 结果改 plan。每个决策点都属于用户，不属于 agent。SKILL.md 末尾"下一步"段给**建议**而不是直接调下一个 skill。
+因此，“用户拥有串联”保护的是宏观授权，而不是强迫用户手动推动每一个内部校验动作。没有 plan、Issue、check 记录或 docs 记录时，其他 skill 仍按自己真正需要的输入判断，而不是按流程历史拒绝工作。
 
 ### 4. 机械保证一致 — 能让工具守的不靠纪律
 
-squire 自己的元数据（SKILL.md frontmatter、Outcome Contract、触发词、RESOLVER 一致性）全部由 `vp test` 通过 `tests/checks.ts` 跑 smoke 守住。10 个 check 函数覆盖 frontmatter / Outcome Contract / 触发词 Jaccard / markdown links / skill↔spec 配对等结构 invariant。
+SKILL.md frontmatter、Outcome Contract、描述质量、引用、resolver、skill↔spec、memory catalog 与公共 inventory 等结构 invariant 由仓库测试守住。模型判断留给语义；确定性事实交给代码。
 
-靠"记得这样做"的纪律不可持续，特别是多人协作或 agent 协作时。一致性是可测的，那就测它——手维护多份必漂移。每次 SKILL.md 改动都跑 `pnpm test` 验证。
+同一个语义只保留一个真源：四种 change type 在 `rules/change-types.md`，六类记忆在 `rules/memory-catalog.md`，skill 路由在各自 frontmatter 并由 `skills/RESOLVER.md` 汇总。共享引用使用 symlink，避免复制漂移。
 
-### 5. 对话式 + 解释 why — SKILL.md 的写作哲学
+### 5. 对话式 + 解释 why — 指令服务判断
 
-SKILL.md 的 prose 风格不堆 MUST / NEVER / Hard Stop 长尾。主体讲清楚"这个 skill 在做什么、根目的是什么"，所有约束都从根目的派生且补 why。Gotchas 不堆独立表，融进相关流程段。
+SKILL.md 先说 outcome 和边界，再解释关键约束保护什么。流程按条件出现，不为完整感制造 ceremony。用户已经说明或已经同意的决定是输入，除非新证据推翻，不重复交回用户确认。
 
-模型读到"为什么"才能在边角场景自己做判断；读到"必须 X"只能死按字面。这是哲学 #1 的具体落地——见 git commits `4616554..0216952` 的 SKILL.md refactor 实证，7 个 SKILL.md 开头第一段都是"X 是 Y——做什么。所有约束的根目的是 Z"。
+Shape 是这条原则的直接体现：它只在会话中解决实质决策前沿，不再承担文件产出。Plan 才把已经足够明确的 change 持久化。把思考和 artifact 分开，让每个入口都更清楚。
 
 ## 边界：明确不做的
 
-下面这些事情 squire 不做。每条都从前面某条哲学派生——边界不是任意拒绝，是逻辑结论。
+### 1. 产品价值判断（“值不值得做”、Kill/Keep/Pivot）
 
-### 1. 价值判断（"值不值得做"、Kill/Keep/Pivot）
+Squire 处理“决定做之后如何把它想清、落地并记录”，不替人判断该不该做。Shape 可以指出直接相关的取舍，但不能代替产品所有者作价值裁决。
 
-**根因**：哲学 #2（聚焦闭环）。
+### 2. 未经指定的 catalog 外文档
 
-squire 处理"决定做之后怎么做"，不处理"该不该做"。后者是产品决策——属于人或专门的产品工具，不属于代码开发闭环。shape skill 的 Default Mode 段写明："用户问值不值得做时，明确说这不是 squire 处理的"。
+六类 memory catalog 是默认 durable truth。用户可以明确要求 docs 维护 catalog 外的某份项目文档；agent 不能自行决定项目“应该再有”一个指南、索引、changelog 或 release-note 文件。无论目录内外，内容都必须来自权威源。
 
-### 2. 未经指定的目录外文档
+README 是 PRODUCT/ARCHITECTURE 与验证后用法的入口投影；它进入 catalog 不代表 Squire 接管营销文案或完整对外内容运营。
 
-**根因**：哲学 #2 + #1。
+### 3. 项目专属发布管理
 
-squire 维护一份**有界的记忆目录**（`rules/memory-catalog.md`，含 README）——目录内的每份记忆照目录规则写、依据权威源、不发明定位、不做产品价值判断。目录外项目文档只有在用户明确指定目标路径、文档类型或具体产物时才进入 `/docs` 范围；agent 不主动创建"应该有"的目录外文档。目录外文档仍要基于权威来源（用户陈述、已有代码、已有 plan、运行结果或已有文档），不能凭空创作。
+Squire 只提供一个有界的通用 release：从显式 tag 或项目唯一权威版本源解析标识，创建/推送 tag，并用 GitHub generated notes 创建对应 Release。
 
-> **2026-06-09 边界修订**：本条原本继续排除所有目录外内容。经 plan discussion 后改成更精确的切割：**记忆目录仍是默认 durable memory 真源；但用户显式指定时，`/document` 可以维护 catalog 外项目文档**。打破原边界的理由：原风险是 agent 主动扩 scope 和替项目发明文档；现在用"用户必须明确指定目标 + 仍需权威来源"恢复封顶。仍不允许 agent 自己决定新增 catalog 外文档；release notes / changelog 这类发布管理内容若要进入自动化，仍需另行修改边界 #3。
+它不修改版本文件、不部署、不做上线检查、环境迁移、artifact upload、回滚，也不生成仓库 changelog/release-note 文档。CI/CD、staging、feature flag 与项目特有版本策略继续属于项目自身工具。
 
-> **2026-06-04 边界修订**：本条原为"对外文档管理（README / 接口文档 / changelog）"，把 README 也一刀排除。经 plan discussion 后再做外科切割：**记忆支柱（当前 `docs`）照记忆目录维护项目持久记忆，README 作为 PRODUCT/ARCHITECTURE 的入口投影划入 scope**。打破原边界的理由：原条根因是"替别项目管对外文档会 scope 失控"，而记忆目录用"固定清单 + 依据权威源不发明 + 不做价值判断"恢复了封顶，克制不破。**仍排除 agent 自行发明的 catalog 外文档**，根因不变（哲学 #2 + #1）。
->
-> **2026-06-01 边界修订**（保留存档）：本条原一刀排除所有文档；当时做外科切割把 spec 真源（行为契约）划入 scope。2026-06-04 修订把 spec 泛化为 document、记忆目录扩到含 README，是这条的延续。
+### 4. Agent 自身配置审计
 
-### 3. 发布管理（上线检查 / release notes / 回滚）
+Doctor 审计项目文档↔代码漂移、依赖/CI/文件等项目健康；它不审计 agent host 的 hooks、MCP、插件或本机配置漂移。这类 meta 能力不属于“开发 + 记忆”。
 
-**根因**：哲学 #2。
+### 5. 通用项目管理与内容输入处理
 
-各项目发布流程差异巨大——CI/CD、staging、blue-green、feature flag、回滚策略——提炼通用机制成本高，专门为 v1 做不值得。v2 可能加。
+Plan 的 GitHub Issue 只是同一 change 的可选投影。Squire 不管理 GitHub Projects、状态流、milestone、assignee、拆票、sub-issue、跨仓同步或通用任务系统。
 
-### 4. Agent 自审计（hooks / MCP / config 漂移）
-
-**根因**：哲学 #2 + #4。
-
-Agent 自审计是 meta 层面——跟代码开发闭环正交。而且漂移检测靠机械（如 squire 自己的 `checks.ts`）比靠 agent skill 更可靠。文档跟代码漂移、依赖陈旧、CI 状态这些缝已由 `doctor` 正交工具填上（2026-06-08 落地，时名 `health`）；agent 自身的 hooks / MCP / config 漂移审计仍不做。
-
-### 5. 通用内容输入处理（URL / PDF 抓取、深度研究）
-
-**根因**：哲学 #2。
-
-这些是通用输入层工具，不是开发闭环里的环节。`issue` 只接收用户已经决定记录的一项开发工作，不抓取或加工任意内容；URL / PDF 抓取、深度研究仍交给其他 MCP / skill，squire 不重复造轮子。
+URL/PDF 抓取、任意内容整理和深度研究属于通用输入层。需要事实时可以使用已有工具，但 Squire 不重复造一个内容摄取产品。
 
 ## 怎么用本文档
 
-PRODUCT.md 是 squire 的判断锚点。未来任何改动（新加 skill / 改 SKILL.md / 改架构 / 加文档）都对照这 10 条（5 哲学 + 5 边界）：
+未来新增或修改能力时，对照这 10 条（5 条哲学 + 5 条边界）：
 
-- **符合** → 继续
-- **违反** → 重新考虑；真要打破就在 commit message 或 PR 描述里显式 acknowledge 例外 + 解释为什么允许
-- **接近边界** → 在 PR 描述里写"为什么仍然 fits PRODUCT.md"
-- **不确定** → 先 plan discussion，跟 agent / contributor 对齐
+- 符合：继续，并让测试守住可机械验证的部分。
+- 违反：重新 shape；真要改变边界，先把新的产品决定记录在这里。
+- 接近边界：在 plan/PR 中说明为什么仍然 fits。
+- 不确定：留在 shape 对话中，不把未决选择偷偷写进 artifact。
 
-哲学不是教条——是判断标尺。能力升级时（比如 v2 加 codegen / 加 health skill），先回头看哲学是否需要更新；更新方式：plan discussion 后改 PRODUCT.md，git 历史就是 versioning。
-
-这份文档自己是哲学 #5 的实证——对话式、解释 why、不堆 MUST。要看 squire 的 prose 风格长什么样，PRODUCT.md 跟 refactor 后的 SKILL.md 都是范本。
+PRODUCT 是判断锚点，不是变更日志。历史决策保留在 git 与 [ARCHITECTURE.md](./ARCHITECTURE.md) 的决策记录中。

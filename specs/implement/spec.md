@@ -2,48 +2,56 @@
 
 ## Purpose
 
-implement skill 把已批准的方案落实成符合项目风格的代码：按步执行、逐步验证，只执行不重开意图决策。
+implement skill 把已授权 change 落实为代码与测试，并在自身 outcome 内通过 check 的只读结果完成修复闭环。
 
 ## Requirements
 
-### Requirement: 基于已批准的方案
+### Requirement: plan 是可选上下文而非入口门禁
 
-implement 必须基于一份方案执行；找不到方案、或方案与代码漂移（路径错、函数缺、假设不成立）时必须停下并回 shape，不悄悄改路径凑合。(Previously: build 执行该职责。)
+implement 有 plan 时必须读取并遵循其仍有效的意图与范围；没有 plan 时可从足够明确的当前请求执行，不得因 shape、plan 或 Issue 没有运行或不存在而拒绝工作。显式请求、关联 plan、当前会话依次决定冲突语义。
 Verify: manual(integration)
 
-### Requirement: 执行前缺少项目上下文时先做 explore context preflight
+### Requirement: 实施前建立可靠事实与安全工作区
 
-implement 在执行方案前，若当前项目/模块上下文缺失、过期或不足以支撑方案 scope，必须调用 explore 的 context mode 建立事实基础。调用时根据方案风险选择 core 或 deep，不产出独立 Explore Report，并把读取证据纳入实现报告。
-
-该 preflight 不替代读取整份 plan，也不替代每步动手前在该步 scope 内定位文件。
-Verify: manual(integration)
-
-### Requirement: 仅豁免本次方案的未提交状态
-
-implement 在工作树预检前必须先唯一确定本次执行的 plan。只有该 plan 可以处于新增或修改状态（无论 staged 或 unstaged）；除该精确路径外的任何未提交改动——包括其他 plan——都必须阻止执行。选中的 plan 被删除、重命名或处于冲突状态时也必须停止。implement 不得为满足预检而自动提交、暂存、stash 或丢弃改动；从受保护分支创建工作分支时必须原样携带该 plan。
+implement 必须检查当前分支、工作树、项目指令、目标文件和验证方式；上下文不足时按需取得 explore context。与任务可安全分离的用户改动必须原样保留，重叠或归属不明时必须停止，不得自动 stash、提交、丢弃或覆盖。
 Verify: manual(integration)
 
 ### Requirement: 不在受保护分支上动工
 
-首次编辑前，若当前在受保护分支（main / master / develop）或 detached HEAD，implement 必须先 `git checkout -b <plan-slug>` 开工作分支。(Previously: build 执行该职责。)
+首次实现编辑前，若当前在 main、master、develop 或 detached HEAD，implement 必须建立工作分支；有 plan 时使用其 slug，无 plan 时从共享 change type 与主题派生 slug。
 Verify: manual(integration)
 
-### Requirement: 有测试框架且 fix/feat 走 TDD
+### Requirement: 共享 change type 决定实现证明
 
-项目有测试框架且方案 mode 为 fix 或 feat 时，implement 必须先写红测试再实现到绿；一写就绿说明没覆盖该场景，必须停下修测试。implement 也承接不挂 plan 的写测试工作（补覆盖 / 回归）——同样基于真实行为、红→绿；疑似 flaky 最多重试一次，再失败按失败处理；失败若反映真实 bug 则回 shape fix，不就地改测试凑过。无框架或 refactor/perf 则按方案的 verification 验证，不硬造测试基建。(Previously: build 执行该职责。)
+implement 必须从共享真源确定 `fix`、`feat`、`refactor` 或 `perf`：有测试框架的 fix/feat 走红→绿，refactor 保护行为不变量，perf 以可比 baseline/target/measurement 验证。change type 不依赖 plan frontmatter 才能成立。
 Verify: manual(integration)
 
-### Requirement: 守方案范围
+### Requirement: 守授权范围且承接机械决策
 
-implement 必须不改方案外的文件、不顺手修无关 bug、不擅自加依赖；发现的额外问题写进报告交还，不就地动手。(Previously: build 执行该职责。)
+implement 必须自行处理行级定位、项目一致的命名/措辞和微观编辑顺序，不把这些当成意图缺口；不得顺手修无关问题、静默扩大 scope、决定新产品语义或添加未授权依赖。
 Verify: manual(integration)
 
 ### Requirement: 不绕过质量门
 
-implement 必须不使用 `--no-verify` / `--force` / `@ts-ignore` / `eslint-disable` 绕过工具；既有测试失败是信号，必须不删、不弱化、不 skip。(Previously: build 执行该职责。)
+implement 不得使用 `--no-verify`、`--force`、`@ts-ignore`、`eslint-disable`、test skip 或重复重试制造成功；失败测试必须作为证据处理，疑似 flaky 最多重试一次。
 Verify: manual(integration)
 
-### Requirement: 承接不改意图的机械决策
+### Requirement: 实现完成后自动运行 check
 
-implement 必须自行完成方案步骤内不改意图的机械决策——行级定位、具体措辞、改动的微观顺序——不把它们的缺席当作方案不完整而弹回；每步动手前必须先读该步 scope 内文件完成定位，定位是该步的第一个动作。步骤的 scope 路径是意图层声明：结果要求触及 scope 外文件时视为方案漂移，与意图层歧义、路径错、函数缺、假设不成立同等处置——停下回 shape，不自行裁决意图。
+实现自身验证通过后，implement 必须以本次 scope、diff、可用 plan 和验证证据调用既有独立 check；check 仍保持只读与可单独调用，implement 不得改写其行为契约。
+Verify: manual(integration)
+
+### Requirement: 实现范围内 findings 自动修复并重新 check
+
+check 判定 needs work 且 blocker 位于已授权实现范围内时，implement 必须修复、重跑相关实现验证并再次 check，直到 holds up 或触及退出边界；非阻塞 observation 不得为了清空报告而诱发 scope creep。
+Verify: manual(integration)
+
+### Requirement: 意图或范围问题退出自动闭环
+
+finding 需要 intent change、scope expansion、new dependency，或同一问题在无新证据下重复出现构成 no progress 时，implement 必须退出循环并准确报告所需决定；不得固定次数盲重试或自行扩大授权。
+Verify: manual(integration)
+
+### Requirement: plan 状态跟随真实完成
+
+使用 draft plan 的明确 implement 调用可把它标为 approved；只有实现、验证和 check 闭环全部完成后才能标为 done。无 plan 时不得为了流程完整创建占位 plan。
 Verify: manual(integration)

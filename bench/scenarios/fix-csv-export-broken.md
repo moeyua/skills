@@ -1,6 +1,6 @@
 ---
 id: fix-csv-export-broken
-mode: fix
+kind: fix
 title: CSV 导出串列的缺陷修复
 fixture: notes-app
 ---

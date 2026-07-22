@@ -1,7 +1,7 @@
 ---
 id: brainstorm-notes-ai
-mode: brainstorm
-title: 模糊的 AI 能力想法,期望停留在 brainstorm
+kind: explore
+title: 模糊的 AI 能力想法，期望保持探索式对话
 fixture: notes-app
 ---
 
@@ -20,5 +20,5 @@ fixture: notes-app
 
 - 被问到「最想解决什么」:答「找不到以前记的东西」。
 - 被问到预算/部署:答「不想为这个花钱,本地跑最好」。
-- 被问到是否进入 named mode / 写 plan:答「先不用,先聊清楚方向」。
+- 被问到是否另行写 plan:答「先不用,先聊清楚方向」。
 - 意图卡未覆盖的信息一律答「你决定」。

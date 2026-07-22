@@ -114,9 +114,11 @@ describe("buildJudgePrompt", () => {
     expect(prompt).toContain("共 1 条");
     expect(prompt).toContain("比例");
     expect(prompt).toContain("重复确认");
-    expect(prompt).toContain("实现就绪");
+    expect(prompt).toContain("会话结论");
     expect(prompt).toContain("未表达的偏好不等于委托");
     expect(prompt).toContain("显式调用其他 skill");
+    expect(prompt).toContain("任何文件写入");
+    expect(prompt).not.toContain("named mode");
     expect(prompt).not.toContain("阶段固定为");
   });
 });

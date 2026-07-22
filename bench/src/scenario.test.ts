@@ -7,7 +7,7 @@ import { describe, it, expect } from "vite-plus/test";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { loadScenarios, parseScenarioCard, SCENARIO_MODES } from "./scenario.ts";
+import { loadScenarios, parseScenarioCard, SCENARIO_KINDS } from "./scenario.ts";
 
 const BENCH_ROOT = join(import.meta.dirname, "..");
 const SCENARIOS = join(BENCH_ROOT, "scenarios");
@@ -15,7 +15,7 @@ const FIXTURES = join(BENCH_ROOT, "fixtures");
 
 const VALID_CARD = `---
 id: sample-card
-mode: feat
+kind: feat
 title: 样例
 fixture: app
 ---
@@ -46,17 +46,30 @@ describe("live scenario cards", () => {
     const cards = loadScenarios(SCENARIOS, FIXTURES);
     expect(cards.length).toBeGreaterThanOrEqual(7);
     for (const card of cards) {
-      expect(SCENARIO_MODES).toContain(card.mode);
+      expect(SCENARIO_KINDS).toContain(card.kind);
       expect(card.initialIntent.length).toBeGreaterThan(0);
       expect(card.intentCard.length).toBeGreaterThan(0);
       expect(card.answerPolicy.length).toBeGreaterThan(0);
     }
   });
 
-  it("covers all five modes plus failure-targeted cards", () => {
+  it("covers exploratory shaping plus all four change types", () => {
     const cards = loadScenarios(SCENARIOS, FIXTURES);
-    const modes = new Set(cards.map((c) => c.mode));
-    for (const mode of SCENARIO_MODES) expect(modes).toContain(mode);
+    const kinds = new Set(cards.map((c) => c.kind));
+    for (const kind of SCENARIO_KINDS) expect(kinds).toContain(kind);
+  });
+
+  it("keeps scenario success criteria on the conversational shape contract", () => {
+    const cards = loadScenarios(SCENARIOS, FIXTURES);
+    const specified = cards.find((card) => card.id === "feat-already-specified-direction");
+    const constrained = cards.find((card) => card.id === "fix-multi-constraint-import");
+
+    expect(specified).toBeDefined();
+    expect(constrained).toBeDefined();
+    expect(specified!.intentCard).toContain("完整会话方向");
+    expect(specified!.intentCard).not.toMatch(/综合成 plan|文件产出/);
+    expect(constrained!.intentCard).toContain("明确保留");
+    expect(constrained!.intentCard).not.toContain("复述确认");
   });
 });
 
@@ -77,9 +90,9 @@ describe("parseScenarioCard validation", () => {
   it("rejects a card with an unknown mode", () => {
     const { dir, fixtures } = tempCardDir();
     const path = join(dir, "sample-card.md");
-    writeFileSync(path, VALID_CARD.replace("mode: feat", "mode: build"));
+    writeFileSync(path, VALID_CARD.replace("kind: feat", "kind: build"));
     try {
-      expect(() => parseScenarioCard(path, fixtures)).toThrowError(/mode 非法/);
+      expect(() => parseScenarioCard(path, fixtures)).toThrowError(/kind 非法/);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

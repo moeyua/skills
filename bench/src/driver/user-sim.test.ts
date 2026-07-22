@@ -8,7 +8,7 @@ import type { ScenarioCard } from "../scenario.ts";
 
 const CARD: ScenarioCard = {
   id: "feat-note-pinning",
-  mode: "feat",
+  kind: "feat",
   title: "置顶",
   fixture: "notes-app",
   initialIntent: "我想加一个置顶笔记的功能。",

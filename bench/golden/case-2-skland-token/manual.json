@@ -7,17 +7,12 @@
     "path": "transcript.json"
   },
   "requirements": {
-    "事实先于提问": "partial",
+    "shape 只输出会话结论": "pass",
+    "缺少项目事实时按需使用 explore": "partial",
     "按收敛状态自适应塑形": "partial",
-    "只处理实质决策前沿": "fail",
-    "已定内容直接作为输入": "pass",
-    "真实取舍才展开 approaches": "fail",
-    "shape 只塑形不实施": "pass",
-    "brainstorm mode 不写方案文件": "n.a.",
-    "named mode 产出可执行方案文件": "n.a.",
-    "named mode 保持专属质量门槛": "n.a.",
-    "价值判断超出范围": "n.a.",
-    "跨结构变更产出 Architecture 段": "n.a."
+    "复用已经达成的共识": "pass",
+    "共享变更类型只作为思考透镜": "pass",
+    "结束时给出完整方向": "fail"
   },
-  "notes": "只有单轮转写：用户给两条约束，assistant 尊重了 token-only 与不填 UID，并停在设计而未写实现或 plan；但没有可观察的检索证据，还把多角色选择、JSON 自动提取和错误策略等高影响决定直接并入推荐。其中多角色默认绑定与角色选择/显式报错存在真实取舍，应属于实质决策前沿。旧 rubric 主要因缺固定 2-3 approaches / grill 扣分；新 rubric 保留 6 分，但理由改为证据不足与遗漏真实决策。"
+  "notes": "只有单轮转写：用户给两条约束，assistant 尊重了 token-only 与不填 UID，并保持纯对话；但没有可观察的检索证据，还把多角色选择、JSON 自动提取和错误策略等高影响决定直接并入推荐。结尾继续索要整包认可，没有把仍属实质前沿的选择清楚交还。"
 }

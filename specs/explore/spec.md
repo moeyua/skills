@@ -47,5 +47,5 @@ Verify: manual(integration)
 
 ### Requirement: context mode 不产出独立报告
 
-context mode 必须遵循同一套 Overview-first、引用文档标注来源、不猜、Scoped Deep-dive 规则，但不产出独立 Explore Report。读取到的事实、路径、命令输出作为调用 skill 的上下文与 evidence 继续使用。context mode 不改变 explore 的只读边界，也不自动调用后续 workflow skill。
+context mode 必须遵循同一套 Overview-first、引用文档标注来源、不猜、Scoped Deep-dive 规则，但不产出独立 Explore Report。读取到的事实、路径、命令输出作为调用 skill 的上下文与 evidence 继续使用。context mode 不改变 explore 的只读边界，也不自动调用其他 skill。
 Verify: manual(integration)

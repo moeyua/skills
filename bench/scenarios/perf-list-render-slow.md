@@ -1,6 +1,6 @@
 ---
 id: perf-list-render-slow
-mode: perf
+kind: perf
 title: 列表渲染随笔记数量变慢
 fixture: notes-app
 ---

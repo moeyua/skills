@@ -1,100 +1,86 @@
 ---
 name: docs
-description: "Document the project's durable truth or a user-specified project doc. Defaults to catalog-bound memory (spec / ARCHITECTURE / DESIGN / WORKFLOW / ROADMAP / README); can write catalog-external docs only when the user names the target. Use when a landed change should be documented, an existing doc is wrong, or the user asks for a specific project document. Not for planning (use shape), implementation (use implement), project checkups (use doctor), or agent-invented docs."
-when_to_use: "document, docs, record, source of truth, behavior contract, architecture memory, roadmap, 记忆, 文档, 真源, 记录, 沉淀, 行为契约, 更新文档"
-dispatch_intent: "Document durable project truth by default, or maintain a user-specified project document from authoritative sources"
+description: "Document a project's durable truth or a user-specified project document from authoritative sources. Defaults to six catalog memories: spec, PRODUCT, ARCHITECTURE, DESIGN, ROADMAP, and README. Use when landed behavior or a settled decision should be recorded, an existing doc is wrong, or the user names a document to maintain. Not for making product/design decisions, implementation, project-wide audits (use doctor), or agent-invented documents."
+when_to_use: "document, docs, record, source of truth, behavior contract, product memory, architecture memory, roadmap, 记忆, 文档, 真源, 记录, 沉淀, 行为契约, 更新文档"
+dispatch_intent: "Record already-established project truth in the right durable memory or named document"
 ---
 
 # Docs
 
-Docs maintains written project truth. By default it writes the durable memory catalog: spec (behavior contracts in `specs/`), ARCHITECTURE, DESIGN, WORKFLOW, ROADMAP, and README. When the user explicitly names a target path, document type, or concrete document artifact, it may also maintain catalog-external project docs. Every rule here exists so documentation stays trustworthy: it records an authoritative source, never a truth invented from vibes or guessed from implementation.
+Docs records truth that has already been established. Its default surface is the six-type memory catalog; an explicitly named project document is a separate, user-authorized lane.
 
-Before choosing or writing a documentation target, decide whether the project and memory context are reliable enough for that target. If not, use `explore` in context mode first: Overview before deep-dive, depth matched to the target, no Explore Report. This supplies evidence for source selection only; docs still writes from the target's authoritative source, not from inference.
+<HARD-GATE>
+Docs may write PRODUCT only from already-decided product truth. It never makes a product decision, infers intent from implementation, invents a catalog-external target, edits code, or performs git/GitHub delivery.
+</HARD-GATE>
 
-Two cross-skill rules apply to all squire work — `references/anti-patterns.md` and `references/durable-context.md`. If they aren't already in your context this session, read them once before proceeding; don't re-read if you already have.
+Before choosing a target, read `references/memory-catalog.md`. Read `references/anti-patterns.md` and `references/durable-context.md` once per session if they are not already in context. When project facts are insufficient, use explore in context mode at proportional depth; this improves evidence but never substitutes for the target's authoritative Source.
 
 ## Outcome Contract
 
-- Outcome: the target document reflects the project's current truth, after a change, correction, backfill, or explicit user request
-- Done when: catalog target → the change is merged into the right artifact per the catalog; explicit doc target → the named document is written or updated from authoritative sources; correct → the named item reads as intended; backfill → an existing capability gets documentation from its authoritative source
-- Evidence: context preflight files / commands when used + the plan's `## Spec delta` / `## Key decisions` / the user's explicit document request / the authoritative source read / documented code behavior / the before-and-after of the document
-- Output: the files written + what was ADDED / MODIFIED / REMOVED (or which section) + anything that couldn't be written and why
+- Outcome: one or more authorized document targets reflect current, durable project truth
+- Done when: each target follows its catalog format or the user's named purpose, and every substantive claim has an authoritative source
+- Evidence: already-decided user/shape conclusions, a plan delta or key decision, landed behavior and verification, authoritative API/skill contracts, existing docs, and the before/after target
+- Output: files changed + target type + truth recorded + source used + anything omitted for lack of authority
 
-## Two lanes
+## Choose the lane and target
 
-| cue in the user's message                                                                 | lane                     |
-| ----------------------------------------------------------------------------------------- | ------------------------ |
-| "document this change" / "record this" / right after a feat/fix is built                  | catalog-bound memory     |
-| "the memory for X is wrong / out of date" / "update ARCHITECTURE …"                       | catalog correction       |
-| "backfill the spec for X" / onboarding a capability that exists                           | catalog backfill         |
-| "write docs/setup.md" / "update this migration guide" / "add a troubleshooting doc for X" | explicit document target |
+The default lane is catalog memory:
 
-The catalog-bound lane is the default. The catalog (`references/memory-catalog.md`) tells you **which** artifacts exist, **when** each is needed, and **where** its content comes from. Once you know the target, load the matching format spec under `references/formats/` (spec / architecture / design / workflow / roadmap / readme) and follow its Sections / Source / Boundary.
+| type         | default location             | load                                 |
+| ------------ | ---------------------------- | ------------------------------------ |
+| spec         | `specs/<domain>/spec.md`     | `references/formats/spec.md`         |
+| PRODUCT      | `PRODUCT.md`                 | `references/formats/product.md`      |
+| ARCHITECTURE | `ARCHITECTURE.md`            | `references/formats/architecture.md` |
+| DESIGN       | `DESIGN.md`                  | `references/formats/design.md`       |
+| ROADMAP      | `ROADMAP.md`                 | `references/formats/roadmap.md`      |
+| README       | `README.md` / localized pair | `references/formats/readme.md`       |
 
-The explicit-document lane exists only when the user names the target path, document type, or concrete artifact. You may not decide on your own that the project "should have" a catalog-external doc. If the target is outside the catalog but unnamed, ask the user to name it before writing.
+Use the catalog's Purpose, When needed, Source, and Boundary to select only targets that earned a durable place. Do not create a heading or file merely because the catalog permits it.
 
-## Sources and anti-invention
+The explicit-document lane applies only when the user names a path, document type, or concrete artifact outside this catalog. Keep the change inside that target and purpose; do not add sibling docs, indexes, changelogs, or release-note files on your own.
 
-**Anti-invention is per target and absolute**: write from an authoritative source. For catalog targets, use the Source named by the catalog/format. For explicit docs, use the user's stated intent, existing code, an approved plan, run output, or existing documentation. If that source is absent, stop and ask — don't reverse-engineer from code, don't fill from imagination.
+## Source discipline
 
-For the **spec** target (`specs/`), the requirement sentences are written in the target project's language; literal code, paths, and identifiers stay as-is. Only structural labels stay English as scannable anchors: `## Requirements`, `### Requirement:`, `Verify:`, and the delta section names `ADDED` / `MODIFIED` / `REMOVED`.
+An authoritative source can be the user's explicit decision, a grounded shape conclusion, an associated plan, a verified landed change, an existing contract, or an explicit correction. Code may confirm a claim; it does not reveal why the product should work a certain way.
 
-**WORKFLOW is special** — its only authoritative source is the maintainer's own process. Use the squire pipeline as an interview scaffold: `shape → implement → check → docs → commit → pr`, with explicit explore offered as a possible pre-loop report step and context-mode explore treated as embedded grounding. Subtract-and-add per the workflow format spec; writing a full `WORKFLOW.md` without that interview is invention.
+When authority is absent, stop on that claim. Do not pad empty sections, reverse-engineer intent, or turn a plausible inference into durable truth.
 
-**PRODUCT is special** — docs does not author its content (it has no format file); a change to philosophy/boundaries is shape's job. Docs may at most create an empty skeleton and route back to `/shape`.
+### PRODUCT
 
-## Record: merge a spec delta
+PRODUCT records positioning, philosophy, and boundaries after those decisions exist. Docs may synthesize the user's settled statements or a shape conclusion into the product format, and may apply a correction whose intended wording/meaning is clear. If the request asks docs to choose the product direction, value, or boundary, return that specific unresolved decision to conversation/shape instead of writing it.
 
-Shape writes a `## Spec delta` into the plan when a change alters behavior worth documenting. Merging is mechanical, by requirement name:
+### spec
 
-| delta section              | merge action on `specs/<domain>/spec.md`                                      |
-| -------------------------- | ----------------------------------------------------------------------------- |
-| `## ADDED Requirements`    | append the requirement to the domain spec                                     |
-| `## MODIFIED Requirements` | replace the existing same-named requirement (keep a `(Previously: ...)` note) |
-| `## REMOVED Requirements`  | delete the named requirement from the domain spec                             |
+For a plan with `## Spec delta`, merge by persistent requirement name:
 
-If the domain spec doesn't exist, create it with a `## Purpose` and the ADDED requirements. Read the landed code alongside the delta to confirm the contract matches what was built. Each requirement carries its own `Verify:` line.
+| delta section              | action                                                                  |
+| -------------------------- | ----------------------------------------------------------------------- |
+| `## ADDED Requirements`    | append to the named domain, creating its Purpose when the domain is new |
+| `## MODIFIED Requirements` | replace the same-named requirement and retain a short previous note     |
+| `## REMOVED Requirements`  | remove the same-named requirement                                       |
 
-When the plan has **no** spec delta, or a MODIFIED/REMOVED names a requirement that isn't there, stop and ask — don't reverse-engineer a contract from the code.
+Read the landed behavior and verification evidence to ensure the delta is true. If no delta exists, docs can still correct or backfill a spec from an explicit behavior contract, established skill/API documentation, or the maintainer's stated truth. It must not infer a product contract from code alone. Each requirement uses the project's language and carries one `Verify:`.
 
-## Correct / backfill / explicit docs
+### Other catalog memories
 
-When an artifact is wrong or stale and someone has named what it should say, edit it directly. No delta, no drift detection — a deliberate, human-aware correction. Keep the target's format; if the change is large enough to reshape the contract, that reshaping is shape's job first. PRODUCT content corrections route to `/shape`.
+- ARCHITECTURE records current structure and already-decided technical choices, not future plans.
+- DESIGN records established visual identity, not interaction behavior or architecture.
+- ROADMAP records already-decided future items without docs inventing priority or dates.
+- README projects PRODUCT/ARCHITECTURE and verified usage into a concise external entry; it does not invent positioning.
 
-When a capability already exists with no plan or delta — onboarding a brownfield codebase, or documenting squire's own skills — author its memory from an authoritative behavior source: an established SKILL.md, API docs, or the maintainer's stated intent. Not reverse-engineering: record what the behavior is _defined_ to be, not what you guess the implementation does. If the only source is implementation you'd have to infer from, stop and ask.
+## Editing discipline
 
-When the user explicitly names a catalog-external document, keep the edit scoped to that document and the named purpose. Do not create sibling docs, indexes, changelogs, or release notes unless the user names them too.
+Preserve correct existing content. Reshape the touched range so the result reads as one coherent document rather than appending a patch note. Use the lightest format that holds the truth: most specs are a few behavior-first requirements; higher-risk contracts need more detail only where ambiguity costs something.
 
-## Restraint — earn the place before adding
-
-Before adding anything to any catalog artifact, judge whether it earns a place. Content that isn't memory-worthy gets no new section, no new artifact, no new entry. For explicit docs, the user's named target earns the file's existence, but each section still needs an authoritative source and should not pad beyond the request. For how to edit once you do, reshape the touched range instead of bolting on a patch (see `references/anti-patterns.md`).
-
-**Spec rigor (the spec target's instance)** — use the lightest level that still makes the truth verifiable:
-
-- **Lite (default)** — a few short, behavior-first requirements, each with a `Verify:`, plus scope and non-goals. Most stay here.
-- **Full (higher risk only)** — API/contract changes, migrations, security/privacy, or cross-module changes where ambiguity causes expensive rework.
-- **When not to record at all** — a change with no externally observable effect has nothing to add to spec memory; skip it rather than pad `specs/`.
-
-## When done: the core loop ends here
-
-Once the write lands, the core loop is complete. Suggest `/commit` as the default next step — but the project's WORKFLOW owns that edge: when it defines a different delivery flow, defer to it. Docs supplies the common default, never the project's rule.
+For corrections, edit the named wrong claim directly from the supplied authority. For backfill, use a defined behavior source such as an established SKILL.md, API contract, or maintainer statement. If only implementation exists and meaning would require inference, stop and ask.
 
 ## Boundaries
 
-- **vs shape** — the plan is _this change's how_ (ephemeral, archived); documentation is _the project's what_ (persistent, maintained). Don't restate implementation steps into durable memory.
-- **vs implement** — implement writes code and tests; docs writes docs. Docs never touches code or runs git.
-- **vs check** — check judges whether a change holds up; docs records what the change established. Docs doesn't judge correctness.
-- **vs doctor** — doctor detects drift/gaps across the whole project (read-only); docs writes the correction. Docs acts on awareness — from doctor or a person — it never owns detection.
-- **vs converge** — converge batch-converges the whole memory catalog to squire's current formats and may create PRODUCT / specs from nothing via maintainer interview; docs stays single-target and awareness-driven. Once a document exists, content authority returns to its owner — shape for PRODUCT, docs for everything else.
-- **catalog vs explicit docs** — catalog docs are the default memory lane; catalog-external docs require the user to name the target.
+- shape resolves product/design intent; docs records the resulting durable truth.
+- plan describes one change's implementation handoff; docs describes the project as it now is.
+- implement writes code/tests; check judges a change; doctor detects project-wide drift; converge batch-aligns the whole catalog. Docs remains the focused writer.
+- Every skill is independently invoked. Docs neither requires those skills to have run nor invokes publish/release afterward.
 
-## When to stop
+## Report
 
-Docs' failure mode is writing truth that wasn't earned — guessed, over-scoped, or copied from implementation. Stop and report in these cases:
-
-- **In record mode the plan has no spec delta** (spec target) / **no Key decisions or stated source** (other catalog targets) — ask what to document; don't reverse-engineer from code.
-- **A MODIFIED/REMOVED requirement isn't in the spec** — report it; don't silently create it.
-- **The content doesn't earn a place in its catalog target** — there's nothing to add; say so.
-- **The user did not name a catalog-external target** — don't invent one; ask for the target path/type/artifact.
-- **The target is PRODUCT's content** — that's philosophy work; route to `/shape`.
-- **You'd need to reshape intent, not just document it** — that's shape work; route back to `/shape`.
+Report each changed path, its catalog/explicit target, what was added/modified/removed, and the authority used. State when no update was warranted or a claim was omitted. Then stop; the user decides what capability to invoke next.

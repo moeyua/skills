@@ -4,29 +4,27 @@ English | [简体中文](./README.zh-CN.md)
 
 > Your AI agent has the horsepower. Squire gives it the road.
 
-An AI agent's raw output is already strong — but without structure, that capability drifts into generic, imprecise work. Squire gives it structure: it splits development intake and the change loop — record, understand, design, implement, check, document — into 11 focused skills, each doing one thing well.
+Squire is a restrained instruction system for software development and durable project memory. It exposes 11 focused skills that users invoke on demand; useful context can flow between them without turning the set into a mandatory pipeline.
 
-It isn't just a toolkit. It's a **restrained instruction system**: every rule is a ceiling, not a floor. The agent only does what an instruction allows; the rest is left to the model's own judgment. For the full design philosophy and product boundaries, see [PRODUCT.md](./PRODUCT.md).
+For the product principles and boundaries, read [PRODUCT.md](./PRODUCT.md). For internals and data flow, read [ARCHITECTURE.md](./ARCHITECTURE.md).
 
-## The 11 Skills
+## The 11 skills
 
-Squire separates optional Issue intake, project understanding, and the change loop. `issue` records one development item and stops; `explore` supplies context or a standalone report; `shape → implement → check → docs` is the core loop; `commit` / `pr` are delivery stages owned by each project's workflow; `converge` batch-aligns durable docs; `doctor` / `handoff` stay orthogonal.
+| Skill       | Outcome                                                                                |
+| :---------- | :------------------------------------------------------------------------------------- |
+| `explore`   | Read-only project/module understanding, either as a report or embedded context         |
+| `shape`     | A grounded, bounded design direction in conversation; no files or mutation             |
+| `plan`      | One executable local plan, plus a best-effort matching GitHub Issue                    |
+| `implement` | Working code/tests and an automatic implement ↔ check repair loop                      |
+| `check`     | Independent review/test/e2e verdict; read-only and usable on its own                   |
+| `docs`      | Established truth recorded in spec, PRODUCT, ARCHITECTURE, DESIGN, ROADMAP, or README  |
+| `publish`   | The missing commit, push, and GitHub pull-request actions completed from current state |
+| `release`   | A verified git tag and GitHub Release with generated notes                             |
+| `converge`  | Idempotent, project-wide alignment to the current memory formats                       |
+| `doctor`    | Read-only whole-project drift and health audit                                         |
+| `handoff`   | A self-contained, read-only summary for continuing in another session                  |
 
-| Skill       | Position               | What it does                                                                                         |
-| :---------- | :--------------------- | :--------------------------------------------------------------------------------------------------- |
-| `issue`     | optional intake        | Confirm one work item and create one strongly formatted, mode-labeled Issue in the user's language   |
-| `explore`   | context / report       | Build project context on demand, with a report only when explicitly requested                        |
-| `shape`     | core loop              | Ground facts, resolve material choices, and shape a plan (brainstorm / fix / feat / refactor / perf) |
-| `implement` | core loop              | Land minimal, controlled, style-fitting changes; includes writing tests (TDD)                        |
-| `check`     | core loop              | Confirm a change holds up via review / test / e2e — verdict only, no edits                           |
-| `docs`      | core loop              | Maintain durable project truth per the memory catalog; also user-named docs                          |
-| `commit`    | workflow-managed stage | Organize changes into clean commits with clear messages, splitting when needed                       |
-| `pr`        | workflow-managed stage | Push the branch and build a PR description and test plan from the branch history                     |
-| `converge`  | on-demand maintenance  | Batch-align the durable memory catalog during onboarding or after a Squire upgrade                   |
-| `doctor`    | orthogonal tool        | Project checkup: docs-vs-code drift (primary) + dependency/CI/file staleness; read-only              |
-| `handoff`   | orthogonal tool        | Session handoff: a read-only state summary you can paste into a new session                          |
-
-Every name follows one standard — **each is the term developers already use**: GitHub habits (`issue`), git habits (`commit` / `pr`), CLI habits (`doctor` / `check` / `docs`), agent habits (`explore` / `converge` / `handoff`), and methodology and PR culture (`shape` from Shape Up's shaping, `implement`). The naming decisions are recorded in [ARCHITECTURE.md](./ARCHITECTURE.md).
+The public names use vocabulary developers already use. Removed capabilities have no compatibility aliases; the current installed surface is the table above.
 
 ## Install
 
@@ -34,70 +32,66 @@ Every name follows one standard — **each is the term developers already use**:
 npx skills add .
 ```
 
-Common flags:
+Useful flags:
 
-- `-g` installs globally (`~/.claude/skills/`); without it, install is project-level (`.claude/skills/`)
-- `-a claude-code` targets an agent; without it you'll be prompted
-- `-y` skips confirmation
-- `--copy` uses a plain-copy layout; the default symlinks into the shared `~/.agents` store, but the store holds a **snapshot taken at install time** — re-run `npx skills add .` after changing the repo for edits to take effect
+- `-g` installs globally; otherwise installation is project-level.
+- `-a claude-code` selects an agent; without it the CLI prompts.
+- `-y` skips confirmation.
+- `--copy` uses copies instead of the default shared-store symlink layout.
 
-Once installed, trigger: `/issue`, `/explore`, `/shape`, `/implement`, `/check`, `/docs`, `/commit`, `/pr`, `/converge`, `/doctor`, and `/handoff`.
+The shared store is an install-time snapshot. Re-run the install command after changing this repository.
 
-## Workflow
+Once installed, invoke `/explore`, `/shape`, `/plan`, `/implement`, `/check`, `/docs`, `/publish`, `/release`, `/converge`, `/doctor`, or `/handoff`.
 
-The core loop is the minimal cycle a single change runs through:
+## How capabilities connect
 
-```
-shape → implement → check → docs
-```
+```text
+                              explore
+                                 ·
+                                 ▼
+shape · · ·▶ plan · · ·▶ implement ⇄ check · · ·▶ docs · · ·▶ publish · · ·▶ release
 
-`issue` sits outside that loop as optional intake. It confirms one item through a compact understanding card, writes a strongly formatted body in the user's language, ensures one of `fix` / `feat` / `refactor` / `perf` exists as the repository label, creates exactly one GitHub Issue, returns its URL, and stops. It does not use GitHub Projects, deploy repository templates, or invoke `shape` automatically.
-
-`explore` is not a default workflow step. Run it explicitly when you want an Explore Report; otherwise `shape`, `implement`, `check`, `docs`, and `doctor` may use it internally as context preflight and carry the evidence into their own output.
-
-Delivery stages follow when a project's `WORKFLOW.md` says so:
-
-```
-commit → pr
+converge / doctor / handoff are orthogonal, on-demand capabilities.
 ```
 
-`converge`, `doctor`, and `handoff` sit outside the loop — `converge` batch-aligns the durable memory catalog during onboarding or after a Squire upgrade, `doctor` is an on-demand whole-project checkup (complementary to `check`'s "look at one change before merge"), and `handoff` produces a read-only summary when a session needs to end or hand over.
+Dotted edges are common context handoffs, not prerequisites. You can call any skill directly when its own request is clear. The only automatic loop is inside `implement`: it invokes the standalone, read-only `check`, fixes authorized in-scope blockers, and checks again until the change holds up or reaches an intent/scope/dependency/no-progress boundary.
 
-Each skill stops when done and waits for **you** to decide the next step. Skills never chain automatically; moving between them is your explicit action, and the "next step" in each report is only a suggestion. See the "position determines modality" model in [ARCHITECTURE.md](./ARCHITECTURE.md).
+Three useful compositions remain deliberately local:
 
-## shape's modes
+- `shape` may obtain read-only `explore` context when facts are missing.
+- `plan` always writes the local plan first, then attempts at most one matching GitHub Issue. GitHub failure never invalidates the plan or blocks later work.
+- `publish` reuses a plan's canonical Issue association when available and adds a closing reference to the PR; no Issue is a normal publish state.
 
-`shape` adapts to intent through modes. A user may name one, but the category still follows the change itself:
+There is no global orchestrator. After each public outcome, the user decides what to invoke next.
 
-| Mode         | When                                         | Output                                   |
-| :----------- | :------------------------------------------- | :--------------------------------------- |
-| `brainstorm` | Idea is fuzzy, needs collaborative exploring | Conversational design direction, no file |
-| `fix`        | Error, misbehavior, regression (+ diagnosis) | Root-cause report + fix plan             |
-| `feat`       | New capability                               | Implementation plan + blast radius       |
-| `refactor`   | Tidy code without changing external behavior | Refactor plan + behavior-preservation    |
-| `perf`       | Performance work                             | Baseline + optimization plan             |
+## Change types
 
-`brainstorm` stays conversational and writes no plan, design, or spec file. Named modes ground the relevant facts, reuse decisions already made, and ask only unresolved choices that could materially change scope, behavior, architecture, risk, or acceptance. Related independent choices may be handled together with recommendations; alternatives appear only for a real trade-off. Once intent is complete and the conversation has authorized a plan, `shape` writes `plans/` without a fixed interview sequence or duplicate approval gate. For the detailed mode design and data flow, see [ARCHITECTURE.md](./ARCHITECTURE.md).
+`fix`, `feat`, `refactor`, and `perf` are shared properties of a change:
 
-## Design philosophy
+| Type       | Evidence focus                                      |
+| :--------- | :-------------------------------------------------- |
+| `fix`      | Correct behavior, root cause, regression protection |
+| `feat`     | Observable interface and acceptance scenarios       |
+| `refactor` | Behavior invariants and regression coverage         |
+| `perf`     | Baseline, numeric target, comparable measurement    |
 
-Every design decision derives from 5 principles — not dogma, but yardsticks:
+Shape uses these types as a thinking lens, plan uses them for plan structure and the optional Issue label, and implement uses them to choose TDD/invariant/measurement discipline. Brainstorming is simply a conversational use of shape—not a persistent mode.
 
-- **Restraint** — a rule is a ceiling, not a floor; giving the _why_ beats giving an order
-- **Focus on development + memory** — not just changing the code, but remembering what the project durably is
-- **The user decides chaining** — skills don't run automatically; every decision point belongs to the user
-- **Mechanical consistency** — what a tool can guarantee shouldn't rely on discipline
-- **Conversational + explain why** — SKILL.md states the root purpose and backs every constraint with a why, never piling up MUSTs / NEVERs
+## Durable memory
 
-The full principles and 5 product boundaries are in [PRODUCT.md](./PRODUCT.md).
+The default memory catalog contains exactly six types: domain specs, PRODUCT, ARCHITECTURE, DESIGN, ROADMAP, and README. `docs` may record PRODUCT only after the user or a shaping conversation has decided the product truth; it never makes that decision. See [rules/memory-catalog.md](./rules/memory-catalog.md).
 
 ## Development
 
-Repo self-checks run with `pnpm test`. The repo also ships [bench/](bench/README.md) — repo-only tooling (never installed with the skills) that measures whether shape is grounded, proportionate, decision-complete, and implementation-ready.
+```bash
+pnpm check
+pnpm test
+pnpm lint
+```
+
+The repository also contains [bench/](./bench/README.md), development-only tooling that evaluates whether shape stays grounded, proportional, decision-aware, conversational, and side-effect free. Bench tooling is not installed as a skill.
 
 ## Acknowledgements
-
-The following projects inspired Squire, with thanks (in no particular order, additions welcome):
 
 - [Waza](https://github.com/tw93/Waza)
 - [superpowers](https://www.skills.sh/obra/superpowers/brainstorming)
