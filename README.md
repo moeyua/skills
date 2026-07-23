@@ -19,7 +19,7 @@ For the product principles and boundaries, read [PRODUCT.md](./PRODUCT.md). For 
 | `check`     | Independent review/test/e2e verdict; read-only and usable on its own                   |
 | `docs`      | Established truth recorded in spec, PRODUCT, ARCHITECTURE, DESIGN, ROADMAP, or README  |
 | `publish`   | The missing commit, push, and GitHub pull-request actions completed from current state |
-| `release`   | A confirmed package version, default-branch commit, exact tag, and GitHub Release      |
+| `release`   | A confirmed release set, one default-branch version commit, exact tags, and Releases   |
 | `converge`  | Idempotent, project-wide alignment to the current memory formats                       |
 | `doctor`    | Read-only whole-project drift and health audit                                         |
 | `handoff`   | A self-contained, read-only summary for continuing in another session                  |
@@ -69,7 +69,7 @@ Four useful compositions remain deliberately local:
 - `implement` preserves the standalone boundaries of check and docs while composing them only inside its own authorized outcome.
 - `publish` reuses a plan's canonical Issue association when available and adds a closing reference to the PR; no Issue is a normal publish state.
 
-`release` executes directly when the user supplies an exact tag. Without one, it reads the remote default branch and applies its authoritative project version policy before falling back to generic SemVer. It returns the candidate, policy source, reason, and canonical basis in its final response, then waits for the user's next message to confirm it. Confirmation proceeds only while that basis remains unchanged; otherwise `release` returns a refreshed proposal. It then fast-forwards the remote default branch, creates and pushes a non-tagging package-version commit, and publishes the exact tag and GitHub Release; deployment, registry publishing, artifacts, and automatic PRs remain outside it.
+`release` handles a single package or monorepo by separating authoritative version sources (release units), project-defined fixed/linked coordination (version groups), and tag/GitHub Release mappings (tag identities). A user-supplied tag set executes directly only when its declared mappings fully and visibly determine the release set, the new identity is valid, and every changed target is a policy-valid forward successor; policy-declared unchanged members of an aggregate may retain their versions. Any unit target or identity added by group/dependency rules requires whole-set confirmation in the next turn, including propagated units without their own tag. Every path re-resolves topology, policy, units, and baselines from the fetched default commit before mutation. Otherwise `release` applies the repository's authoritative policy and uses generic SemVer only for ungrouped units with an unambiguous mapping. It returns every unit target, tag identity, reason, and canonical basis, then waits for next-turn confirmation. With unchanged basis, one verified non-tagging/non-committing/non-publishing version transaction updates changed units, preserves declared unchanged units, and leaves Git state untouched; `release` then creates one default-branch commit and publishes each exact tag/GitHub Release independently. Deployment, registry publishing, artifacts, changelog files, and automatic PRs remain outside it.
 
 There is no global orchestrator. Conditional docs never authorizes publish or release; after each public outcome, the user decides what to invoke next.
 
