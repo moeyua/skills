@@ -15,11 +15,11 @@ For the product principles and boundaries, read [PRODUCT.md](./PRODUCT.md). For 
 | `explore`   | Read-only project/module understanding, either as a report or embedded context         |
 | `shape`     | A grounded, bounded design direction in conversation; no files or mutation             |
 | `plan`      | One executable local plan, plus a best-effort matching GitHub Issue                    |
-| `implement` | Working code/tests and an automatic implement ↔ check repair loop                      |
+| `implement` | Working code/tests, check verdicts, an earned-docs decision, and a complete summary    |
 | `check`     | Independent review/test/e2e verdict; read-only and usable on its own                   |
 | `docs`      | Established truth recorded in spec, PRODUCT, ARCHITECTURE, DESIGN, ROADMAP, or README  |
 | `publish`   | The missing commit, push, and GitHub pull-request actions completed from current state |
-| `release`   | A verified git tag and GitHub Release with generated notes                             |
+| `release`   | A default-branch package-version commit, exact tag, and generated-notes GitHub Release |
 | `converge`  | Idempotent, project-wide alignment to the current memory formats                       |
 | `doctor`    | Read-only whole-project drift and health audit                                         |
 | `handoff`   | A self-contained, read-only summary for continuing in another session                  |
@@ -51,20 +51,27 @@ Once installed, invoke `/explore`, `/shape`, `/plan`, `/implement`, `/check`, `/
                               explore
                                  ·
                                  ▼
-shape · · ·▶ plan · · ·▶ implement ⇄ check · · ·▶ docs · · ·▶ publish · · ·▶ release
+shape · · ·▶ plan · · ·▶ implement ⇄ check · · ·▶ publish · · ·▶ release
+                                  │
+                                  │ earned durable truth
+                                  ▼
+                                 docs ──▶ final check
 
 converge / doctor / handoff are orthogonal, on-demand capabilities.
 ```
 
-Dotted edges are common context handoffs, not prerequisites. You can call any skill directly when its own request is clear. The only automatic loop is inside `implement`: it invokes the standalone, read-only `check`, fixes authorized in-scope blockers, and checks again until the change holds up or reaches an intent/scope/dependency/no-progress boundary.
+Dotted edges are common context handoffs, not prerequisites. You can call any skill directly when its own request is clear. The only automatic completion loop is inside `implement`: after the standalone, read-only initial `check` holds up, it invokes `docs` only when a plan Spec delta, explicit document target, or verified durable-claim drift proves an obligation. If docs writes, a final `check` covers the complete diff; otherwise implement reports `Docs: not needed` without repeating the same gate.
 
-Three useful compositions remain deliberately local:
+Four useful compositions remain deliberately local:
 
 - `shape` may obtain read-only `explore` context when facts are missing.
 - `plan` always writes the local plan first, then attempts at most one matching GitHub Issue. GitHub failure never invalidates the plan or blocks later work.
+- `implement` preserves the standalone boundaries of check and docs while composing them only inside its own authorized outcome.
 - `publish` reuses a plan's canonical Issue association when available and adds a closing reference to the PR; no Issue is a normal publish state.
 
-There is no global orchestrator. After each public outcome, the user decides what to invoke next.
+`release` expects an exact target tag and one authoritative root package. It fast-forwards the remote default branch, creates and pushes a non-tagging package-version commit, then publishes the exact tag and GitHub Release; deployment, registry publishing, artifacts, and automatic PRs remain outside it.
+
+There is no global orchestrator. Conditional docs never authorizes publish or release; after each public outcome, the user decides what to invoke next.
 
 ## Change types
 
