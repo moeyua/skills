@@ -8,10 +8,76 @@ const RELEASE = readFileSync(resolve(REPO_ROOT, "skills/release/SKILL.md"), "utf
 const SPEC = readFileSync(resolve(REPO_ROOT, "specs/release/spec.md"), "utf8");
 
 describe("release boundary", () => {
-  it("requires one explicit target tag without inventing the next version", () => {
-    expect(RELEASE).toContain("Require an explicit target tag");
-    expect(RELEASE).toContain("Never derive the next version");
-    expect(SPEC).toContain("从显式输入或权威版本源确定 tag");
+  it("executes directly when the user supplies an exact tag", () => {
+    expect(RELEASE).toContain("user supplied an exact tag in the current request");
+    expect(RELEASE).toContain("treat it as the confirmed release identity");
+    expect(SPEC).toContain("用户显式 tag 可直接执行");
+  });
+
+  it("recommends one SemVer candidate when the user omits the tag", () => {
+    expect(RELEASE).toContain("When the user did not provide a tag");
+    expect(RELEASE).toContain("derive one candidate tag with SemVer");
+    expect(RELEASE).toContain("changes since the latest release");
+    expect(RELEASE).toContain("put the candidate in the final response");
+    expect(RELEASE).not.toContain("Never derive the next version");
+  });
+
+  it("prefers the project's authoritative version policy over generic SemVer", () => {
+    expect(RELEASE).toContain("resolve the authoritative project version policy");
+    expect(RELEASE).toContain(
+      "repository instructions, versioning or release documentation, and committed release-tool configuration",
+    );
+    expect(RELEASE).toContain("takes precedence over the generic SemVer mapping");
+    expect(RELEASE).toContain("Only when no applicable authoritative project policy exists");
+    expect(RELEASE).toContain(
+      "Do not infer a project policy only from historical tag increments or commit-message patterns",
+    );
+    expect(RELEASE).toContain(
+      "If applicable authoritative sources conflict or cannot produce one exact candidate",
+    );
+    expect(RELEASE).toContain("report the sources and conflict and stop without mutation");
+    expect(RELEASE).toContain(
+      "Version policy: <project source | generic SemVer fallback, proposed only>",
+    );
+    expect(SPEC).toContain("项目权威版本策略优先于通用 SemVer");
+  });
+
+  it("ends the recommendation turn before any release mutation", () => {
+    expect(RELEASE).toContain("End the current turn after that final response");
+    expect(RELEASE).toContain("Do not switch branches, change a version, commit, push, tag");
+    expect(RELEASE).toContain("in the recommendation turn");
+  });
+
+  it("continues only after the next user message confirms the candidate", () => {
+    expect(RELEASE).toContain("next user message unambiguously confirms that candidate");
+    expect(RELEASE).toContain("does not need to repeat the tag");
+    expect(RELEASE).toContain("Only that later user confirmation unlocks release mutation");
+    expect(SPEC).toContain("候选版本跨轮确认后才允许 mutation");
+  });
+
+  it("revalidates the candidate basis after cross-turn confirmation", () => {
+    expect(RELEASE).toContain(
+      "record the remote default-branch tip, latest Release identity, and applied policy identity",
+    );
+    expect(RELEASE).toContain("Before any release mutation after cross-turn confirmation");
+    expect(RELEASE).toContain("re-query those canonical identities");
+    expect(RELEASE).toContain("If any identity changed, invalidate the earlier confirmation");
+    expect(RELEASE).toContain(
+      "return the refreshed candidate in the final response, and end the turn",
+    );
+    expect(SPEC).toContain("任一变化都必须使旧确认失效");
+  });
+
+  it("matches the fetched default tip to the confirmed basis before mutation", () => {
+    expect(RELEASE).toContain(
+      "Immediately after `git fetch origin <default-branch>` on a cross-turn candidate path",
+    );
+    expect(RELEASE).toContain("before `git switch` or any package-version mutation");
+    expect(RELEASE).toContain(
+      "require the fetched remote tip to equal the recorded candidate-basis tip exactly",
+    );
+    expect(RELEASE).toContain("A post-fetch basis mismatch invalidates the confirmation");
+    expect(SPEC).toContain("fetch 后且切分支或修改 package version 前");
   });
 
   it("switches to and fast-forwards the remote default branch", () => {

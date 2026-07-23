@@ -64,9 +64,9 @@ README 是 PRODUCT/ARCHITECTURE 与验证后用法的入口投影；它进入 ca
 
 ### 3. 有界版本发布之外的项目发布管理
 
-Skills 只提供一个有界的单 package release：从显式精确 tag 得到目标版本，切回并 fast-forward 远程默认分支，使用项目已验证的 non-tagging version command 生成并直接推送 release commit，再让精确 tag 与 GitHub generated notes 指向该 commit。每一步按 canonical state 恢复；不猜版本策略，也不为 push 失败绕过分支保护。
+Skills 只提供一个有界的单 package release：用户显式给出精确 tag 时可直接执行；缺少 tag 时，release 从远程默认分支读取最新 Release 之后的变化，优先遵循适用于权威根 package 的项目版本策略，只有没有适用策略时才回退通用 SemVer。候选、策略来源、理由与候选依据在最终回复中展示并结束该轮；用户下一条消息确认后，只有候选依据经只读复核未变才可 mutation，依据变化则重新提议。确认有效后，它切回并 fast-forward 远程默认分支，使用项目已验证的 non-tagging version command 生成并直接推送 release commit，再让精确 tag 与 GitHub generated notes 指向该 commit。每一步按 canonical state 恢复，也不为 push 失败绕过分支保护。
 
-多版本 workspace、registry publish、部署、上线检查、环境迁移、artifact upload、回滚、自动 PR，以及仓库 changelog/release-note 文档仍属于项目自身工具。CI/CD、staging、feature flag 与项目特有的复杂版本策略不进入这个通用 outcome。
+单一根 package 的权威版本策略是候选判断的输入；需要协调多个独立版本、外部 release train 或超出该 package-version commit 的版本执行机制仍不进入这个通用 outcome。多版本 workspace、registry publish、部署、上线检查、环境迁移、artifact upload、回滚、自动 PR，以及仓库 changelog/release-note 文档仍属于项目自身工具；CI/CD、staging 与 feature flag 也保持在范围外。
 
 ### 4. Agent 自身配置审计
 

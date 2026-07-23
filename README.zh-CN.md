@@ -19,7 +19,7 @@ Skills 是一套服务于软件开发与项目持久记忆的克制指令系统�
 | `check`     | 可独立调用的 review/test/e2e 裁决；只读                                  |
 | `docs`      | 把既定 truth 写入 spec、PRODUCT、ARCHITECTURE、DESIGN、ROADMAP 或 README |
 | `publish`   | 从当前状态完成缺失的 commit、push 与 GitHub pull request                 |
-| `release`   | 默认分支 package-version commit、精确 tag 与 generated-notes Release     |
+| `release`   | 已确认版本、默认分支 package-version commit、精确 tag 与 GitHub Release  |
 | `converge`  | 幂等地把整套项目记忆对齐到当前格式                                       |
 | `doctor`    | 只读的全项目漂移与健康审计                                               |
 | `handoff`   | 供新会话继续工作的自包含只读摘要                                         |
@@ -69,7 +69,7 @@ converge / doctor / handoff 保持正交，按需调用。
 - `implement` 只在自身已授权 outcome 内组合 check 与 docs，不改变二者的独立入口和原有边界。
 - `publish` 有 canonical Issue 关联时把 closing reference 带入 PR；没有 Issue 是正常发布状态。
 
-`release` 要求显式精确 tag 与一个权威根 package。它 fast-forward 远程默认分支，创建并推送禁用自动 tag 的 package-version commit，再发布精确 tag 与 GitHub Release；部署、registry publish、artifact 与自动 PR 仍在范围外。
+用户显式给出精确 tag 时，`release` 可直接执行；没有 tag 时，它读取远程默认分支，优先应用项目权威版本策略，没有适用策略才回退通用 SemVer。候选、策略来源、理由与 canonical 依据会在最终回复中展示，并等待用户下一条消息确认；依据保持不变时确认才有效，否则 `release` 会返回刷新后的候选。确认有效后，它才 fast-forward 远程默认分支，创建并推送禁用自动 tag 的 package-version commit，再发布精确 tag 与 GitHub Release；部署、registry publish、artifact 与自动 PR 仍在范围外。
 
 系统没有全局 orchestrator。条件性 docs 不会授权 publish 或 release；每个公开 outcome 完成后，由用户决定下一次调用什么。
 

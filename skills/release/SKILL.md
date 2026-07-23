@@ -1,26 +1,26 @@
 ---
 name: release
-description: 'Create a package-version release commit on the remote default branch, then an exact tag and GitHub Release with generated notes. Use when the user says "release" / "tag and release" / "发布版本" and supplies an exact target tag. Not for multi-version workspaces, deployment, rollback, changelogs, artifacts, registry publishing, automatic PRs, or non-GitHub release systems.'
+description: 'Create a package-version release commit on the remote default branch, then an exact tag and GitHub Release with generated notes. Use when the user says "release" / "tag and release" / "发布版本"; an explicit tag executes directly, while a missing tag produces a project-policy-first SemVer recommendation that requires confirmation in the next user turn. Not for multi-version workspaces, deployment, rollback, changelogs, artifacts, registry publishing, automatic PRs, or non-GitHub release systems.'
 when_to_use: "release, create release, tag release, github release, publish version, 发版, 发布版本, 打 tag, release notes"
-dispatch_intent: "Prepare and push one default-branch version commit, then publish its exact tag and GitHub Release"
+dispatch_intent: "Resolve or recommend and confirm an exact tag, then prepare its default-branch version commit and GitHub Release"
 ---
 
 # Release
 
-Release turns an explicit version tag into one ordered, recoverable GitHub release: synchronize the remote default branch, put that version in one authoritative root package, push the release commit, then create the exact tag and GitHub-generated Release notes.
+Release either recommends one SemVer tag and pauses for confirmation, or turns a user-supplied/confirmed exact tag into one ordered, recoverable GitHub release: synchronize the remote default branch, put that version in one authoritative root package, push the release commit, then create the exact tag and GitHub-generated Release notes.
 
 <HARD-GATE>
-Release requires one authoritative root package and a verified package-manager command that changes its version without creating a git tag. It never guesses a version or package policy, force-pushes, rewrites history, moves/deletes a tag or Release, creates a PR, deploys, rolls back, uploads artifacts, writes changelog/release-note files, or publishes a registry package.
+Release requires one authoritative root package and a verified package-manager command that changes its version without creating a git tag. An agent-derived tag is only a recommendation: it must be returned visibly and confirmed by the next user message before any release mutation. That confirmation authorizes only the recorded candidate basis; a changed default tip, baseline Release, or policy identity requires a refreshed recommendation. Release never force-pushes, rewrites history, moves/deletes a tag or Release, creates a PR, deploys, rolls back, uploads artifacts, writes changelog/release-note files, or publishes a registry package.
 </HARD-GATE>
 
 Read `references/anti-patterns.md` and `references/durable-context.md` once per session when they are not already in context.
 
 ## Outcome Contract
 
-- Outcome: the remote default branch contains one package-version release commit, one verified tag points at that commit, and one GitHub Release for the tag exists with generated notes
-- Done when: an existing matching Release is returned, or every missing release-commit/branch/tag/Release stage is completed and its canonical state reported
-- Evidence: clean git state, explicit tag-to-version mapping, package-manager/version diff, default-branch ancestry, commit/tag target comparisons, push output, and `gh release` output
-- Output: default branch + package version + release commit + branch push + tag state + Release URL + generated-notes state, including precise partial failure
+- Outcome: one exact tag is either recommended for next-turn confirmation without mutation, or published through a package-version release commit, verified tag, and GitHub Release
+- Done when: a visible recommendation is returned awaiting confirmation, an existing matching Release is returned, or every missing release-commit/branch/tag/Release stage is completed and its canonical state reported
+- Evidence: latest release, subsequent changes, applied project version policy or generic SemVer fallback, recorded candidate-basis identities, and unchanged-basis revalidation for a recommendation; or clean git state, confirmed tag-to-version mapping, package-manager/version diff, default-branch ancestry, commit/tag target comparisons, push output, and `gh release` output
+- Output: proposed tag + applied version policy + candidate basis + SemVer reason + awaiting-confirmation state; or default branch + package version + release commit + branch push + tag state + Release URL + generated-notes state, including precise partial failure
 
 ## Resolve the release identity before mutation
 
@@ -34,12 +34,32 @@ git tag --list --sort=-version:refname
 git ls-remote --heads --tags origin
 gh auth status --active --hostname github.com
 gh repo view --json defaultBranchRef -q .defaultBranchRef.name
-gh release view <tag> --json url,tagName,isDraft,isPrerelease
+gh release list --limit 20 --json tagName,isDraft,isPrerelease,publishedAt
 ```
 
-Require an explicit target tag. Map it to one exact package version by following the repository's established tag prefix; if the prefix or mapping is ambiguous, ask before mutation. Never derive the next version from the current package, commits, change type, or earlier tags.
+Resolve the remote default branch before release identity. For a recommendation, inspect its committed state through read-only Git/GitHub queries without switching branches or changing local refs. The latest Release comparison, authoritative package, observed changes, and project-policy sources must all describe that release target rather than an unmerged current branch or dirty working tree.
 
-Identify exactly one authoritative root package and its established package manager. The first-version boundary is a single root package: multiple independently versioned packages, workspace-wide ambiguity, a missing version field, or an unverified non-tagging version command stops the release instead of choosing a policy. Verify command semantics from the installed CLI or authoritative documentation rather than assuming similar package managers behave alike.
+Identify exactly one authoritative root package and its established package manager before resolving a candidate or mapping a confirmed tag. The first-version boundary is a single root package: multiple independently versioned packages, workspace-wide ambiguity, a missing version field, or an unverified non-tagging version command stops the release instead of choosing a policy. Verify command semantics from the installed CLI or authoritative documentation rather than assuming similar package managers behave alike.
+
+Resolve the release tag through exactly one of these paths:
+
+- When the user supplied an exact tag in the current request, treat it as the confirmed release identity and continue in this turn.
+- When a previous release turn proposed one candidate and the next user message unambiguously confirms that candidate, treat it as confirmed subject to the candidate-basis revalidation below; the user does not need to repeat the tag. Only that later user confirmation unlocks release mutation, and only after the unchanged-basis check passes.
+- When the user did not provide a tag, inspect the latest release and the changes since the latest release, then derive one candidate tag with SemVer. Before deriving it, resolve the authoritative project version policy applicable to the root package from repository instructions, versioning or release documentation, and committed release-tool configuration. An applicable, unambiguous project policy takes precedence over the generic SemVer mapping. Apply it to the observed changes and current released version to derive one exact candidate tag. Only when no applicable authoritative project policy exists, use the generic highest-observable-impact fallback: breaking behavior or side effects → major, backward-compatible capability → minor, backward-compatible fix → patch. Follow the repository's established tag prefix.
+
+Do not infer a project policy only from historical tag increments or commit-message patterns. If applicable authoritative sources conflict or cannot produce one exact candidate, report the sources and conflict and stop without mutation.
+
+For a derived candidate, record the remote default-branch tip, latest Release identity, and applied policy identity. The Release identity includes the baseline tag and peeled target; the policy identity includes committed source paths and their content identity, or an explicit generic-fallback marker. Then put the candidate in the final response together with that basis, the applied project-policy source or generic fallback, SemVer reason, and change evidence. End the current turn after that final response and wait for the next user message. Do not switch branches, change a version, commit, push, tag, or create a GitHub Release in the recommendation turn.
+
+Before any release mutation after cross-turn confirmation, re-query those canonical identities through the same read-only sources. If any identity changed, invalidate the earlier confirmation, recompute from the refreshed remote default branch and policy, return the refreshed candidate in the final response, and end the turn for a new confirmation even when the tag is unchanged. If the identities are unchanged, the confirmed candidate may continue to preflight.
+
+After the tag is confirmed, map it to one exact package version by following the repository's established tag prefix. If the prefix or mapping is ambiguous, ask before mutation.
+
+Query the confirmed identity before mutation:
+
+```bash
+gh release view <tag> --json url,tagName,isDraft,isPrerelease
+```
 
 Examples of supported non-tagging version commands when the repository declares the matching manager are:
 
@@ -82,6 +102,13 @@ For a clean tree with an existing local default branch:
 
 ```bash
 git fetch origin <default-branch>
+```
+
+Immediately after `git fetch origin <default-branch>` on a cross-turn candidate path, re-read the latest Release and policy identities and, before `git switch` or any package-version mutation, require the fetched remote tip to equal the recorded candidate-basis tip exactly and the other basis identities to remain unchanged. A post-fetch basis mismatch invalidates the confirmation: recompute from the fetched target, return the refreshed candidate, and end the turn without switching branches or changing package metadata. This equality gate does not apply to a tag supplied explicitly in the current request.
+
+After that gate passes, switch the clean tree:
+
+```bash
 git switch <default-branch>
 ```
 
@@ -167,7 +194,11 @@ On a retry, one validated version diff resumes at commit preparation, while the 
 Return:
 
 ```text
-Release: created | existing | partial | no-op
+Release: proposed | created | existing | partial | no-op
+Candidate: <tag + SemVer reason, proposed only>
+Version policy: <project source | generic SemVer fallback, proposed only>
+Candidate basis: <default branch@tip + latest Release tag@target + policy identity, proposed only>
+Confirmation: awaiting confirmation of <candidate> | confirmed
 Default branch: <branch> (local/remote state)
 Version: <old → target | existing target>
 Release commit: <commit/state>
@@ -178,4 +209,4 @@ Notes: generated | existing | not created
 Excluded: no deployment, rollback, changelog, artifact upload, registry publish, or automatic PR
 ```
 
-Stop after the Release outcome. Do not merge a PR, deploy, publish a package, or start another skill.
+For `proposed`, report `Mutation: none` and stop the turn. After a completed Release outcome, do not merge a PR, deploy, publish a package, or start another skill.
