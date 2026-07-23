@@ -13,7 +13,7 @@
 | Check      | independently review, test, or drive a change; verdict only, no edits                                  | `skills/check/SKILL.md`     |
 | Docs       | record established truth in the six-type memory catalog or a user-named project document               | `skills/docs/SKILL.md`      |
 | Publish    | complete missing commit, push, and GitHub pull-request actions from current state                      | `skills/publish/SKILL.md`   |
-| Release    | use an explicit tag or recommend one for confirmation, then version and release one root package       | `skills/release/SKILL.md`   |
+| Release    | confirm a project-policy release set, then version its units and publish exact tags/GitHub Releases    | `skills/release/SKILL.md`   |
 | Converge   | batch-align a project's memory catalog to current formats, idempotently                                | `skills/converge/SKILL.md`  |
 | Doctor     | audit whole-project docs/code drift and mechanical health, read-only                                   | `skills/doctor/SKILL.md`    |
 | Handoff    | produce a self-contained, read-only session continuation summary                                       | `skills/handoff/SKILL.md`   |
@@ -40,7 +40,7 @@
 - **plan vs docs:** plan describes how one change will be implemented; docs records what the project durably is.
 - **implement vs check:** implement edits and owns initial and complete-diff repair/recheck loops; a directly invoked check stays read-only and stops at its verdict.
 - **implement vs docs:** implement invokes docs only for an evidenced durable obligation; directly invoked docs remains an independent, authority-bound way to maintain a named target.
-- **publish vs release:** publish delivers feature-branch work for review; release uses a user-supplied tag directly or pauses on a SemVer recommendation until the next user confirmation, then prepares and directly pushes one default-branch package-version commit and publishes its tag/Release.
+- **publish vs release:** publish delivers feature-branch work for review; release uses a fully determining user-supplied tag set directly or pauses on a project-policy-first release-set recommendation until the next user confirmation, then prepares and directly pushes one default-branch version commit and publishes every exact tag/Release identity.
 - **docs vs converge vs doctor:** docs writes focused truth, converge batch-aligns catalog structure/content, doctor only audits.
 
 ## Soft connections
@@ -78,4 +78,4 @@ Everything else stops at its own outcome. Conditional docs does not authorize pu
 - Implement completion evidence: initial check verdict, auditable docs decision, complete-diff verdict when docs writes, and the final outcome summary.
 - Durable memory: spec, PRODUCT, ARCHITECTURE, DESIGN, ROADMAP, README as defined by `rules/memory-catalog.md`.
 - Publish context: current git/GitHub state plus any available plan, Issue URL, and verification evidence.
-- Release context: user-supplied tag or proposed/confirmed SemVer candidate, authoritative root package/version command, default-branch/release-commit state, remote tag, and GitHub Release state.
+- Release context: user-supplied tag set or proposed/confirmed release set, authoritative topology/policy/version transaction, per-unit target versions, default-branch/release-commit state, and per-identity tag/GitHub Release state.

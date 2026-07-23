@@ -62,11 +62,11 @@ Skills 处理“决定做之后如何把它想清、落地并记录”，不替�
 
 README 是 PRODUCT/ARCHITECTURE 与验证后用法的入口投影；它进入 catalog 不代表 Skills 接管营销文案或完整对外内容运营。
 
-### 3. 有界版本发布之外的项目发布管理
+### 3. 有界 release set 之外的项目发布管理
 
-Skills 只提供一个有界的单 package release：用户显式给出精确 tag 时可直接执行；缺少 tag 时，release 从远程默认分支读取最新 Release 之后的变化，优先遵循适用于权威根 package 的项目版本策略，只有没有适用策略时才回退通用 SemVer。候选、策略来源、理由与候选依据在最终回复中展示并结束该轮；用户下一条消息确认后，只有候选依据经只读复核未变才可 mutation，依据变化则重新提议。确认有效后，它切回并 fast-forward 远程默认分支，使用项目已验证的 non-tagging version command 生成并直接推送 release commit，再让精确 tag 与 GitHub generated notes 指向该 commit。每一步按 canonical state 恢复，也不为 push 失败绕过分支保护。
+Skills 提供一个覆盖单 package 与 monorepo 的有界 release：release 先从远程默认分支解析项目自己的版本拓扑，把权威版本源、fixed/linked 等协调约束和 tag/GitHub Release 身份分别建模为 release unit、version group 与 tag identity。能完整决定 release set、新 identity version 合法且每个 changed target 都是项目策略允许的后继版本时，用户显式 tag 才可直接执行；aggregate identity 中被项目策略明确标记 unchanged 的 member 可以保持当前版本。缺少 tag 或显式 tag 会扩展出额外 unit/identity 时，release 优先按项目权威版本策略生成整组候选，只有不受 group 约束且映射唯一时才回退通用 SemVer。候选 unit targets、tag identities、策略来源、理由与 canonical 依据在最终回复中展示并结束该轮；用户下一条消息确认后，只有全部依据经只读复核未变才可 mutation。
 
-单一根 package 的权威版本策略是候选判断的输入；需要协调多个独立版本、外部 release train 或超出该 package-version commit 的版本执行机制仍不进入这个通用 outcome。多版本 workspace、registry publish、部署、上线检查、环境迁移、artifact upload、回滚、自动 PR，以及仓库 changelog/release-note 文档仍属于项目自身工具；CI/CD、staging 与 feature flag 也保持在范围外。
+所有路径都在 fetch 后从确切远端 commit 重解 topology、policy、unit versions 与 baselines；显式 tag 只有仍映射相同 set 且没有新增传播目标时才保持同轮授权。确认有效后，release 通过项目已验证的 non-tagging、non-committing、non-publishing 版本事务生成并直接推送一个默认分支 release commit，再让 release set 的每个精确 tag 与 GitHub-generated notes Release 指向同一 commit。它不从 `fixed` / `linked` 名称猜测成员选择或版本同步规则，也不接受无法预先界定语义 diff 或无法禁用自行 stage/commit 的工具。registry publish、部署、上线检查、环境迁移、artifact upload、回滚、自动 PR、外部 release train，以及仓库 changelog/release-note 文档仍属于项目自身工具；CI/CD、staging 与 feature flag 也保持在范围外。
 
 ### 4. Agent 自身配置审计
 

@@ -79,19 +79,19 @@ docs 仍可独立调用；converge / doctor / handoff 位于主图之外，按�
 
 ### 组件职责
 
-| capability | 写入或结果                                                            | 关键边界                                  |
-| ---------- | --------------------------------------------------------------------- | ----------------------------------------- |
-| explore    | 项目报告，或供调用方使用的事实 context                                | 只读，不判断 docs 是否漂移                |
-| shape      | 会话内 grounded direction 与已决/未决事项                             | 不写 plan、Issue、spec 或实现             |
-| plan       | `plans/YYYY-MM-DD-<slug>.md`，可选 canonical Issue URL                | 本地计划优先；Issue 失败非阻塞            |
-| implement  | 代码/测试、check verdict、docs decision 与完整总结                    | docs 需证据；不自动 publish/release       |
-| check      | review findings、测试结果、e2e observation 与 verdict                 | 可独立调用；永不修改文件                  |
-| docs       | 六类 catalog memory 或用户明确指定的项目文档                          | 只记录已有权威来源的 truth                |
-| publish    | 有意图的 commit、已推送分支、已创建或复用的 PR                        | 状态感知；不 merge、不 force、不 release  |
-| release    | 项目策略优先的 SemVer 候选/确认、默认分支 version commit、tag/Release | 推荐轮零 mutation；不部署、不回滚、不分发 |
-| converge   | catalog 每份文档的状态判定与幂等收敛                                  | 只处理 catalog；内容改动保留确认边界      |
-| doctor     | docs↔code 漂移与机械健康报告                                          | 只读、只指路                              |
-| handoff    | 可在新会话独立使用的上下文摘要                                        | 只读，不写项目记忆                        |
+| capability | 写入或结果                                                         | 关键边界                                  |
+| ---------- | ------------------------------------------------------------------ | ----------------------------------------- |
+| explore    | 项目报告，或供调用方使用的事实 context                             | 只读，不判断 docs 是否漂移                |
+| shape      | 会话内 grounded direction 与已决/未决事项                          | 不写 plan、Issue、spec 或实现             |
+| plan       | `plans/YYYY-MM-DD-<slug>.md`，可选 canonical Issue URL             | 本地计划优先；Issue 失败非阻塞            |
+| implement  | 代码/测试、check verdict、docs decision 与完整总结                 | docs 需证据；不自动 publish/release       |
+| check      | review findings、测试结果、e2e observation 与 verdict              | 可独立调用；永不修改文件                  |
+| docs       | 六类 catalog memory 或用户明确指定的项目文档                       | 只记录已有权威来源的 truth                |
+| publish    | 有意图的 commit、已推送分支、已创建或复用的 PR                     | 状态感知；不 merge、不 force、不 release  |
+| release    | 项目策略优先的 release set、默认分支 version commit、tags/Releases | 推荐轮零 mutation；不部署、不回滚、不分发 |
+| converge   | catalog 每份文档的状态判定与幂等收敛                               | 只处理 catalog；内容改动保留确认边界      |
+| doctor     | docs↔code 漂移与机械健康报告                                       | 只读、只指路                              |
+| handoff    | 可在新会话独立使用的上下文摘要                                     | 只读，不写项目记忆                        |
 
 ### Artifact 流
 
@@ -104,26 +104,29 @@ docs 仍可独立调用；converge / doctor / handoff 位于主图之外，按�
 | durable-docs trigger / decision                                 | implement         | docs、final check、最终报告              | 无触发时记录 not needed；authority 不足时停止 |
 | 六类持久记忆                                                    | docs / converge   | explore、shape、implement、check、doctor | 按 catalog 的适用性读取，不制造空文档         |
 | branch / upstream / PR state                                    | publish           | 人类评审、可选 release 前置工作          | 每个已完成副作用保留，失败点准确报告          |
-| package version / release commit / branch / tag / Release state | release           | 使用者与 GitHub                          | 按有序 canonical state 恢复，不做伪原子回滚   |
+| unit versions / release commit / branch / tags / Releases state | release           | 使用者与 GitHub                          | 按有序 canonical state 恢复，不做伪原子回滚   |
 
-`publish` 和 `release` 都先读取当前状态，再只补缺失动作。外部副作用不是事务：push 失败不会删除本地 commit，PR 创建失败不会撤回已推送分支；release 的 version diff、local/remote release commit、tag 与 Release 都是恢复点，后一步失败不回滚前一步。模糊结果通过 canonical identity 查询一次，不靠盲重试制造重复对象。
+`publish` 和 `release` 都先读取当前状态，再只补缺失动作。外部副作用不是事务：push 失败不会删除本地 commit，PR 创建失败不会撤回已推送分支；release 的 version-transaction diff、local/remote release commit，以及每个 tag/Release identity 都是恢复点，后一步失败不回滚前一步。模糊结果通过 canonical identity 查询一次，不靠盲重试制造重复对象。
 
 release 先解析用户授权，再把不可交换的副作用固定为一条有序状态链：
 
 ```text
-explicit tag ─────────────────────────────────────────────────────────┐
-                                                                      ├─▶ confirmed tag
-no tag → project policy or SemVer fallback → candidate → final response
-       → next-turn confirmation → basis + post-fetch tip gate ──────┘
+fully determining tag set ──────────────────────────────────────────────┐
+                                                                        ├─▶ confirmed release set
+missing/expanded units or identities → project policy or bounded SemVer fallback
+       → candidate set → final response → next-turn confirmation
+       → basis + post-fetch tip gate ──────────────────────────────────┘
                                                                            │
                                                                            ▼
                                                           clean + fast-forward default branch
-                                                          → non-tagging package version diff
+                                                          → non-tagging version-transaction diff
                                                           → local release commit → remote default branch
-                                                          → annotated tag → remote tag → GitHub Release
+                                                          → each annotated tag → remote tag → GitHub Release
 ```
 
-显式 tag 可在同一轮进入 preflight；没有 tag 时，release 通过只读查询从远程默认分支解析权威根 package、变化和项目版本策略，项目策略优先，不存在时才回退通用 SemVer。agent 生成的候选、策略来源、理由以及 default tip / baseline Release / policy identity 必须出现在最终回复中并结束该轮；下一条用户消息确认后，先只读复核全部 identity，再 fetch，并在切分支或修改版本前要求 fetched tip 与记录的 basis tip 精确相等。任一变化都使旧确认失效并返回刷新后的候选；策略来源冲突时同样停止而不猜测。此后只有当前状态经过核验才能进入下一节点：commit 失败留下的 version diff 只有在 default HEAD 等于 remote tip 且 paths/fields/target version 全匹配时可复用；fresh、local-ahead recovery 与 remote reuse 的 release commit 共用 single-parent、exact subject、target version、resolved paths 和 semantic version-only diff 谓词，fresh commit 还必须在 hook 执行后、push 前从 committed tree 重新核验且保持 clean。其他 dirty 或 ahead/diverged history 一律停止。
+release 通过只读查询从远程默认分支解析 release topology：release unit 持有权威版本源，version group 持有 fixed/linked 或工具专属的成员选择与目标约束，tag identity 把一个 tag/GitHub Release 映射到一个 unit 或 aggregate units。显式 tag set 只有能完整决定全部 unit targets 与 identities、新 identity version 合法且每个 changed target 都是项目策略允许的 forward successor 时才可在同一轮进入 preflight；aggregate identity 中被策略明确标记 unchanged 的 member 可保持当前版本。缺少或扩展出的 unit target / identity 先按项目策略生成整组候选，通用 SemVer 只回退到不受 group 约束且映射唯一的 unit。agent 生成的候选、策略来源、理由以及 default tip / per-identity baseline Release / topology-policy identity 必须出现在最终回复中并结束该轮；下一条用户消息确认后，先只读复核全部 identity，再 fetch，并在切分支或修改版本前要求 fetched tip 与记录 basis 精确相等。
+
+所有路径都记录初次解析所用 tip，并在 fetch 后从 fetched commit 重解 topology/policy/unit/baseline：跨轮候选要求 basis 精确不变；当前请求的显式 tag set 只有重解后仍映射到相同 set、target 仍合法且无新增传播目标时才继续，否则同样展示整组并停轮。确认有效后，一个经验证的 non-tagging/non-committing/non-publishing 版本事务更新全部 changed units、保持 policy-declared unchanged units 不变，且只修改 working-tree metadata；运行后 HEAD、index、refs 必须未变，才由 release 自己创建承载完整 unit set 的唯一 commit。fresh、local-ahead recovery 与 remote reuse 共用 single-parent、exact subject、all-unit targets、group/propagation constraints、resolved paths 和 semantic version-only diff 谓词。远程默认分支包含该 commit 后，才逐 identity 创建/复用 tag 与 GitHub Release；完整或部分既有 set 都必须先证明所有 identity 指向同一 release commit。其他 dirty、ahead/diverged 或跨 identity 不一致状态一律停止。
 
 ## 真源与共享机制
 
@@ -175,7 +178,7 @@ node skills/doctor/scripts/checker.ts . --json
 4. `implement` 是唯一自动完成闭环：先用只读 check 修复行为，再按证据调用 docs，并在文档写入后让完整 diff 通过 final check；直接调用 check 始终只读，直接调用 docs 仍保持独立。
 5. shape 只负责对话塑形，plan 才负责持久计划和可选 Issue 投影。
 6. 默认 durable memory 恰好六类，不含项目工作流或 agent 自行发明的第七类文档。
-7. plan 的 Issue、publish 的 feature-branch commit/push/PR，以及 release 的 package metadata、默认分支 release commit/push、tag/Release 是各自 outcome 内授权的外部副作用；部分成功必须保留并如实报告。release 的 agent-derived tag 必须跨轮确认，且只有在远程 branch commit 核验后才能打 tag。
+7. plan 的 Issue、publish 的 feature-branch commit/push/PR，以及 release 的 unit metadata、默认分支 release commit/push、tags/Releases 是各自 outcome 内授权的外部副作用；部分成功必须保留并如实报告。release 的 agent-derived release set 必须跨轮确认，且只有在远程 branch commit 核验后才能逐 identity 打 tag。
 8. 共享 change type、memory catalog 和跨 skill 规则各有单一真源；复制而非引用会造成漂移，不是可接受的扩展方式。
 9. 不在仓库根目录放 `SKILL.md`。
 
@@ -221,11 +224,15 @@ node skills/doctor/scripts/checker.ts . --json
 
 ### 2026-07-22：release 先生成远程默认分支版本提交
 
-上下文：既有 `v1.0.0`、`v2.0.0` tag 中的根 package version 都仍为 `0.1.0`，证明“只给已有 commit 打 tag”无法维持 package metadata、tag 与 GitHub Release 身份一致。决定：当时 release 要求显式精确 tag 和单一根 package，切回并 fast-forward 远程默认分支，以已验证的 non-tagging package-manager command 生成版本提交，直接 push 并核验该 commit 后才创建 tag/Release；一个严格核验的 local release commit ahead 可从 push 失败恢复。后果：release 新增默认分支 package mutation/commit/push 副作用，但继续排除 monorepo version policy、自动 PR、registry publish、部署、制品与历史 tag 改写；tag 输入协议由 2026-07-23 的后续决定修正。详见 [versioned release plan](plans/2026-07-22-feat-versioned-default-branch-release.md)。
+上下文：既有 `v1.0.0`、`v2.0.0` tag 中的根 package version 都仍为 `0.1.0`，证明“只给已有 commit 打 tag”无法维持 package metadata、tag 与 GitHub Release 身份一致。决定：当时 release 要求显式精确 tag 和单一根 package，切回并 fast-forward 远程默认分支，以已验证的 non-tagging package-manager command 生成版本提交，直接 push 并核验该 commit 后才创建 tag/Release；一个严格核验的 local release commit ahead 可从 push 失败恢复。后果：release 新增默认分支 package mutation/commit/push 副作用，并继续排除自动 PR、registry publish、部署、制品与历史 tag 改写；当时的单根 package 边界和 tag 输入协议均由 2026-07-23 的后续决定取代。详见 [versioned release plan](plans/2026-07-22-feat-versioned-default-branch-release.md)。
 
 ### 2026-07-23：agent 推荐的版本必须跨轮确认
 
-上下文：只接受显式 tag 会把所有版本判断推回用户，而允许 agent 选择后在同一轮继续又会让建议越过授权边界；直接写死通用 SemVer 映射还会绕过项目已经建立的版本策略，跨轮间默认分支或策略变化则会让旧候选与实际发布内容脱节。决定：用户显式 tag 可直接执行；缺少 tag 时，release 从远程默认分支读取最新 Release、后续变化和适用于权威根 package 的版本策略，优先按项目策略生成候选，仅在没有适用策略时回退通用 SemVer。候选、策略来源、理由与 canonical 依据放在最终回复中并结束该轮；下一条用户消息确认后先只读复核依据，再用 post-fetch exact-tip gate 关闭切换前的 TOCTOU 窗口，未变才进入 branch/version/commit/push/tag/Release mutation，变化则重新提议；权威策略冲突时停止而不猜测。后果：agent 可以承担版本判断，但必须尊重项目真源，且确认只授权用户看到的候选依据；显式 tag 的单轮路径和既有恢复链保持不变。
+上下文：只接受显式 tag 会把所有版本判断推回用户，而允许 agent 选择后在同一轮继续又会让建议越过授权边界；直接写死通用 SemVer 映射还会绕过项目已经建立的版本策略，跨轮间默认分支或策略变化则会让旧候选与实际发布内容脱节。决定：能完整确定 release identity 的用户显式 tag 可直接执行；缺少 tag 时优先按项目策略生成候选，仅在没有适用策略时回退通用 SemVer。候选、策略来源、理由与 canonical 依据放在最终回复中并结束该轮；下一条用户消息确认后先只读复核依据，再用 post-fetch exact-tip gate 关闭切换前的 TOCTOU 窗口，未变才进入 mutation，变化则重新提议；权威策略冲突时停止而不猜测。后果：agent 可以承担版本判断，但必须尊重项目真源，且确认只授权用户看到的候选依据；该确认协议在同日扩展到完整 release set。
+
+### 2026-07-23：release topology 与 release set 支持 monorepo
+
+上下文：单一根 package 无法表达独立版本 package、fixed/linked 协调约束、aggregate tag，以及一个版本事务产生多个 GitHub Release identity；同时，不同工具对 `fixed` / `linked` 的成员选择和目标同步语义并不相同，部分工具还可配置为自行 commit。决定：release 将权威版本源、项目定义的版本协调约束和 tag/GitHub Release 映射拆成 release unit、version group、tag identity，再把所有 unit targets 与 identities 组合成一次确认的 release set。项目策略决定 affected subset、目标版本、tag aggregation 与依赖传播；generic SemVer 不猜测 group 语义。确认后只运行一个可核验且不改动 HEAD/index/refs 的 non-tagging/non-committing/non-publishing 版本事务，再由 release 创建唯一 commit 并逐 identity 发布和恢复。后果：单 package 保持为一 unit/一 identity 的特例，monorepo 可安全处理固定、联动、独立与 aggregate identity；registry publish、部署、artifact、changelog/release-note 文件和自动 PR 仍在范围外。
 
 ### 2026-07-22：implement 按证据同步 durable docs
 

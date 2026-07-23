@@ -19,7 +19,7 @@ Skills 是一套服务于软件开发与项目持久记忆的克制指令系统�
 | `check`     | 可独立调用的 review/test/e2e 裁决；只读                                  |
 | `docs`      | 把既定 truth 写入 spec、PRODUCT、ARCHITECTURE、DESIGN、ROADMAP 或 README |
 | `publish`   | 从当前状态完成缺失的 commit、push 与 GitHub pull request                 |
-| `release`   | 已确认版本、默认分支 package-version commit、精确 tag 与 GitHub Release  |
+| `release`   | 已确认 release set、一个默认分支版本提交、精确 tags 与 GitHub Releases   |
 | `converge`  | 幂等地把整套项目记忆对齐到当前格式                                       |
 | `doctor`    | 只读的全项目漂移与健康审计                                               |
 | `handoff`   | 供新会话继续工作的自包含只读摘要                                         |
@@ -69,7 +69,7 @@ converge / doctor / handoff 保持正交，按需调用。
 - `implement` 只在自身已授权 outcome 内组合 check 与 docs，不改变二者的独立入口和原有边界。
 - `publish` 有 canonical Issue 关联时把 closing reference 带入 PR；没有 Issue 是正常发布状态。
 
-用户显式给出精确 tag 时，`release` 可直接执行；没有 tag 时，它读取远程默认分支，优先应用项目权威版本策略，没有适用策略才回退通用 SemVer。候选、策略来源、理由与 canonical 依据会在最终回复中展示，并等待用户下一条消息确认；依据保持不变时确认才有效，否则 `release` 会返回刷新后的候选。确认有效后，它才 fast-forward 远程默认分支，创建并推送禁用自动 tag 的 package-version commit，再发布精确 tag 与 GitHub Release；部署、registry publish、artifact 与自动 PR 仍在范围外。
+`release` 通过拆分权威版本源（release unit）、项目定义的 fixed/linked 协调约束（version group）与 tag/GitHub Release 映射（tag identity），同时处理单 package 与 monorepo。用户显式 tag set 只有在自身声明的映射可见且完整决定 release set、新 identity 合法、每个 changed target 又是项目策略允许的 forward successor 时才直接执行；aggregate 中被策略明确标记 unchanged 的 member 可保留当前版本。group/dependency 规则派生的任何额外 unit target 或 identity（包括没有自有 tag 的传播 unit）都必须展示整组并等待下一轮确认。所有路径都在 fetch 后从确切远端 commit 重解 topology、policy、units 与 baselines。否则它只对不受 group 约束且映射唯一的 unit 回退通用 SemVer。全部 unit targets、tag identities、理由与 canonical 依据会在最终回复中展示，并等待下一条消息确认。依据未变时，一个已验证的 non-tagging/non-committing/non-publishing 版本事务更新 changed units、保持 declared unchanged units 不变且不改变 Git 状态，再由 `release` 创建一个默认分支 commit，并逐 identity 发布和恢复精确 tag/GitHub Release；部署、registry publish、artifact、changelog 文件与自动 PR 仍在范围外。
 
 系统没有全局 orchestrator。条件性 docs 不会授权 publish 或 release；每个公开 outcome 完成后，由用户决定下一次调用什么。
 
