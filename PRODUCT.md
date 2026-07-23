@@ -19,7 +19,11 @@ Skills 的范围是两件事：**开发一个项目**，以及**记录这个项�
 公开能力形成一张软连接图：
 
 ```text
-shape · · ·▶ plan · · ·▶ implement ⇄ check · · ·▶ docs · · ·▶ publish · · ·▶ release
+shape · · ·▶ plan · · ·▶ implement ⇄ check · · ·▶ publish · · ·▶ release
+                                  │
+                                  │ earned durable truth
+                                  ▼
+                                 docs ──▶ final check
 ```
 
 `explore` 提供独立报告或内嵌事实；`converge`、`doctor`、`handoff` 保持正交。图上的虚线只表示常见上下文，不是必须顺序。11 个 skill 都能由用户直接进入；缺少上游 artifact 本身不是错误。
@@ -30,9 +34,9 @@ shape · · ·▶ plan · · ·▶ implement ⇄ check · · ·▶ docs · · ·
 
 用户决定调用哪个 public skill，也决定何时进入下一个能力。Skills 没有从想法一路自动推进到发布的 orchestrator。
 
-这不禁止 skill 在**自己的公开 outcome 内**组合必要能力：shape 缺事实时可以取得 explore context；plan 在本地方案之后尽力创建一个 Issue 投影；implement 调用只读 check，并修复当前授权范围内的 blocker 直到通过或触及真实边界。这些组合都不自动越过到下一个公共 outcome。
+这不禁止 skill 在**自己的公开 outcome 内**组合必要能力：shape 缺事实时可以取得 explore context；plan 在本地方案之后尽力创建一个 Issue 投影；implement 先调用只读 check 完成实现修复闭环，再只在 plan Spec delta、显式文档 target 或 verified durable-claim drift 提供证据时调用 docs，并让完整 diff 通过 final check。docs 的 catalog 与 authority 边界不会因自动组合而放宽。
 
-因此，“用户拥有串联”保护的是宏观授权，而不是强迫用户手动推动每一个内部校验动作。没有 plan、Issue、check 记录或 docs 记录时，其他 skill 仍按自己真正需要的输入判断，而不是按流程历史拒绝工作。
+因此，“用户拥有串联”保护的是宏观授权，而不是强迫用户手动推动每一个内部校验或已经 earned 的持久化动作。implement 无 docs 触发时明确结束于 `not needed`，不会为流程完整感写文档；无论是否写 docs，它都不自动进入 publish/release。没有 plan、Issue、check 记录或 docs 记录时，其他 skill 仍按自己真正需要的输入判断，而不是按流程历史拒绝工作。
 
 ### 4. 机械保证一致 — 能让工具守的不靠纪律
 
@@ -58,11 +62,11 @@ Skills 处理“决定做之后如何把它想清、落地并记录”，不替�
 
 README 是 PRODUCT/ARCHITECTURE 与验证后用法的入口投影；它进入 catalog 不代表 Skills 接管营销文案或完整对外内容运营。
 
-### 3. 项目专属发布管理
+### 3. 有界版本发布之外的项目发布管理
 
-Skills 只提供一个有界的通用 release：从显式 tag 或项目唯一权威版本源解析标识，创建/推送 tag，并用 GitHub generated notes 创建对应 Release。
+Skills 只提供一个有界的单 package release：从显式精确 tag 得到目标版本，切回并 fast-forward 远程默认分支，使用项目已验证的 non-tagging version command 生成并直接推送 release commit，再让精确 tag 与 GitHub generated notes 指向该 commit。每一步按 canonical state 恢复；不猜版本策略，也不为 push 失败绕过分支保护。
 
-它不修改版本文件、不部署、不做上线检查、环境迁移、artifact upload、回滚，也不生成仓库 changelog/release-note 文档。CI/CD、staging、feature flag 与项目特有版本策略继续属于项目自身工具。
+多版本 workspace、registry publish、部署、上线检查、环境迁移、artifact upload、回滚、自动 PR，以及仓库 changelog/release-note 文档仍属于项目自身工具。CI/CD、staging、feature flag 与项目特有的复杂版本策略不进入这个通用 outcome。
 
 ### 4. Agent 自身配置审计
 

@@ -4,7 +4,7 @@
 
 ## 一句话
 
-Skills 是一组以 Markdown 编写、可独立安装和按需调用的开发 skills。能力之间通过会话、文件和 git/GitHub 状态软连接；没有全局编排器，唯一自动闭环位于一次 `implement` outcome 内部。
+Skills 是一组以 Markdown 编写、可独立安装和按需调用的开发 skills。能力之间通过会话、文件和 git/GitHub 状态软连接；没有全局编排器，唯一自动完成闭环位于一次 `implement` outcome 内部，由只读 check 与条件性 docs 共同支撑。
 
 ## 目录结构
 
@@ -20,11 +20,11 @@ skills/
 │   ├── explore/                     # 只读项目理解
 │   ├── shape/                       # 会话内设计收敛
 │   ├── plan/                        # 本地计划 + 尽力创建 Issue
-│   ├── implement/                   # 实现 + 自动 check 修复闭环
+│   ├── implement/                   # 实现 + check + 条件性 docs 完成闭环
 │   ├── check/                       # 只读 review / test / e2e
 │   ├── docs/                        # 聚焦维护持久记忆
 │   ├── publish/                     # commit + push + pull request
-│   ├── release/                     # tag + GitHub Release notes
+│   ├── release/                     # version commit + tag + GitHub Release
 │   ├── converge/                    # 批量收敛记忆目录
 │   ├── doctor/                      # 只读全项目体检与 checker
 │   └── handoff/                     # 会话交接摘要
@@ -60,18 +60,22 @@ skills/
                               explore
                                  ·
                                  ▼
-shape · · ·▶ plan · · ·▶ implement ⇄ check · · ·▶ docs · · ·▶ publish · · ·▶ release
+shape · · ·▶ plan · · ·▶ implement ⇄ check · · ·▶ publish · · ·▶ release
+                                  │
+                                  │ earned durable truth
+                                  ▼
+                                 docs ──▶ final check
 
-converge / doctor / handoff 位于主图之外，按需正交使用。
+docs 仍可独立调用；converge / doctor / handoff 位于主图之外，按需正交使用。
 ```
 
-虚线表示常见的上下文传递，不表示前置条件或自动流转。任何能力在自身输入足够时都可直接调用。图中只有三种刻意保留的内部组合：
+虚线表示常见的上下文传递，不表示前置条件或自动流转；implement 下方的实线是其 outcome 内部的条件分支。任何能力在自身输入足够时都可直接调用。图中只有三种刻意保留的内部组合：
 
 1. `shape` 缺少项目事实时可取得只读 `explore` context；这不会额外产出 Explore Report。
 2. `plan` 先写本地计划，再尽力创建至多一个同范围 GitHub Issue；远端失败不使计划失效。
-3. `implement` 在实现验证后调用独立、只读的 `check`，修复已授权范围内的 blocker 并重新检查，直到通过或触及真实边界。
+3. `implement` 在实现验证后调用独立、只读的 `check` 完成初始修复闭环；只有 plan Spec delta、显式文档 target 或 verified durable-claim drift 触发时才调用 `docs`，并让完整 diff 再通过 final check。无触发时报告 not needed。
 
-其余节点完成自身 outcome 后停止。用户决定是否进入下一个公共能力。
+这三种组合之外的节点完成自身 outcome 后停止。用户决定进入哪个公共能力；implement 的条件性 docs 不授权继续 publish/release。
 
 ### 组件职责
 
@@ -80,28 +84,40 @@ converge / doctor / handoff 位于主图之外，按需正交使用。
 | explore    | 项目报告，或供调用方使用的事实 context                 | 只读，不判断 docs 是否漂移               |
 | shape      | 会话内 grounded direction 与已决/未决事项              | 不写 plan、Issue、spec 或实现            |
 | plan       | `plans/YYYY-MM-DD-<slug>.md`，可选 canonical Issue URL | 本地计划优先；Issue 失败非阻塞           |
-| implement  | 代码、测试、验证证据、最终 check verdict               | 不自动进入 docs、publish、release        |
+| implement  | 代码/测试、check verdict、docs decision 与完整总结     | docs 需证据；不自动 publish/release      |
 | check      | review findings、测试结果、e2e observation 与 verdict  | 可独立调用；永不修改文件                 |
 | docs       | 六类 catalog memory 或用户明确指定的项目文档           | 只记录已有权威来源的 truth               |
 | publish    | 有意图的 commit、已推送分支、已创建或复用的 PR         | 状态感知；不 merge、不 force、不 release |
-| release    | 经过核验的 tag 与 GitHub-generated Release notes       | 不 bump version、不部署、不回滚          |
+| release    | 默认分支 package-version commit、tag 与 GitHub Release | 单根 package；不部署、不回滚、不制品分发 |
 | converge   | catalog 每份文档的状态判定与幂等收敛                   | 只处理 catalog；内容改动保留确认边界     |
 | doctor     | docs↔code 漂移与机械健康报告                           | 只读、只指路                             |
 | handoff    | 可在新会话独立使用的上下文摘要                         | 只读，不写项目记忆                       |
 
 ### Artifact 流
 
-| artifact / state                       | producer          | consumers                                | 缺失或失败时                                  |
-| -------------------------------------- | ----------------- | ---------------------------------------- | --------------------------------------------- |
-| 会话内 shape 结论                      | shape             | plan、implement、docs                    | 不是其他能力的有效性门槛                      |
-| 本地 plan                              | plan              | implement、publish、docs                 | 明确请求仍可直接实现或发布                    |
-| canonical Issue URL                    | plan              | publish                                  | 无 URL 时省略 closing reference；不按标题猜测 |
-| 工作树、测试与 check 证据              | implement / check | docs、publish                            | 各消费者只要求自身 outcome 真正需要的证据     |
-| 六类持久记忆                           | docs / converge   | explore、shape、implement、check、doctor | 按 catalog 的适用性读取，不制造空文档         |
-| branch / upstream / PR state           | publish           | 人类评审、可选 release 前置工作          | 每个已完成副作用保留，失败点准确报告          |
-| local tag / remote tag / Release state | release           | 使用者与 GitHub                          | 不做伪原子回滚；从已完成状态恢复              |
+| artifact / state                                                | producer          | consumers                                | 缺失或失败时                                  |
+| --------------------------------------------------------------- | ----------------- | ---------------------------------------- | --------------------------------------------- |
+| 会话内 shape 结论                                               | shape             | plan、implement、docs                    | 不是其他能力的有效性门槛                      |
+| 本地 plan                                                       | plan              | implement、publish、docs                 | 明确请求仍可直接实现或发布                    |
+| canonical Issue URL                                             | plan              | publish                                  | 无 URL 时省略 closing reference；不按标题猜测 |
+| 工作树、测试与 check 证据                                       | implement / check | docs、publish                            | 各消费者只要求自身 outcome 真正需要的证据     |
+| durable-docs trigger / decision                                 | implement         | docs、final check、最终报告              | 无触发时记录 not needed；authority 不足时停止 |
+| 六类持久记忆                                                    | docs / converge   | explore、shape、implement、check、doctor | 按 catalog 的适用性读取，不制造空文档         |
+| branch / upstream / PR state                                    | publish           | 人类评审、可选 release 前置工作          | 每个已完成副作用保留，失败点准确报告          |
+| package version / release commit / branch / tag / Release state | release           | 使用者与 GitHub                          | 按有序 canonical state 恢复，不做伪原子回滚   |
 
-`publish` 和 `release` 都先读取当前状态，再只补缺失动作。外部副作用不是事务：push 失败不会删除本地 commit，PR 创建失败不会撤回已推送分支，Release 创建失败不会删除已经推送的 tag。模糊结果通过 canonical identity 查询一次，不靠盲重试制造重复对象。
+`publish` 和 `release` 都先读取当前状态，再只补缺失动作。外部副作用不是事务：push 失败不会删除本地 commit，PR 创建失败不会撤回已推送分支；release 的 version diff、local/remote release commit、tag 与 Release 都是恢复点，后一步失败不回滚前一步。模糊结果通过 canonical identity 查询一次，不靠盲重试制造重复对象。
+
+release 内部把不可交换的副作用固定为一条有序状态链：
+
+```text
+explicit tag → clean + fast-forward default branch
+             → non-tagging package version diff
+             → local release commit → remote default branch
+             → annotated tag → remote tag → GitHub Release
+```
+
+只有当前状态经过核验后才能进入下一节点：commit 失败留下的 version diff 只有在 default HEAD 等于 remote tip 且 paths/fields/target version 全匹配时可复用；fresh、local-ahead recovery 与 remote reuse 的 release commit 共用 single-parent、exact subject、target version、resolved paths 和 semantic version-only diff 谓词，fresh commit 还必须在 hook 执行后、push 前从 committed tree 重新核验且保持 clean。其他 dirty 或 ahead/diverged history 一律停止。
 
 ## 真源与共享机制
 
@@ -150,10 +166,10 @@ node skills/doctor/scripts/checker.ts . --json
 1. 公共表面恰好是 resolver 列出的 11 个 skill，并与 11 份 domain spec 一一对应。
 2. 每个 skill 可独立由用户进入；缺少某个上游 artifact 本身永远不是拒绝工作的理由。
 3. 虚线边只传递可用 context；不存在从 shape 一路自动推进到 release 的 orchestrator。
-4. `implement ⇄ check` 是唯一自动修复闭环；直接调用 check 始终只读并在 verdict 后停止。
+4. `implement` 是唯一自动完成闭环：先用只读 check 修复行为，再按证据调用 docs，并在文档写入后让完整 diff 通过 final check；直接调用 check 始终只读，直接调用 docs 仍保持独立。
 5. shape 只负责对话塑形，plan 才负责持久计划和可选 Issue 投影。
 6. 默认 durable memory 恰好六类，不含项目工作流或 agent 自行发明的第七类文档。
-7. plan 的 Issue、publish 的 git/GitHub 写入、release 的 tag/Release 是各自 outcome 内唯一授权的外部副作用；部分成功必须保留并如实报告。
+7. plan 的 Issue、publish 的 feature-branch commit/push/PR，以及 release 的 package metadata、默认分支 release commit/push、tag/Release 是各自 outcome 内授权的外部副作用；部分成功必须保留并如实报告，release 只有在远程 branch commit 核验后才能打 tag。
 8. 共享 change type、memory catalog 和跨 skill 规则各有单一真源；复制而非引用会造成漂移，不是可接受的扩展方式。
 9. 不在仓库根目录放 `SKILL.md`。
 
@@ -189,13 +205,21 @@ node skills/doctor/scripts/checker.ts . --json
 
 上下文：模型能力提升后，固定阶段、重复确认和固定格式会让对话服务流程而不是服务决策。决定：shape 只守 grounded、material frontier、推荐、边界和零写入结果约束，过程由模型按问题复杂度决定。后果：shape 更短、更自然；文件产出职责必须由独立 plan 承担。详见 [shape outcome-first plan](plans/2026-07-21-fix-shape-outcome-first.md)。
 
-### 2026-07-21：软连接能力图（当前）
+### 2026-07-21：软连接能力图（当前拓扑；implement 与 release 边界已扩展）
 
-上下文：固定流程不能表达“能力可直接进入”“GitHub 失败不阻塞本地工作”和“已授权实现应自行闭环校验”。决定：公共表面改为 11 个独立 skill；shape 与 plan 分离，Issue 合入 plan，commit/push/PR 合入 publish，release 只负责通用 tag + generated notes，且只有 implement 自动组合 check。后果：用户保留宏观串联权，skill 可以在自身 outcome 内完成必要组合；缺失上游产物成为正常状态，外部副作用按阶段保留。完整设计见 [soft-linked architecture plan](plans/2026-07-21-feat-soft-linked-skill-architecture.md)。
+上下文：固定流程不能表达“能力可直接进入”“GitHub 失败不阻塞本地工作”和“已授权实现应自行闭环校验”。决定：公共表面改为 11 个独立 skill；shape 与 plan 分离，Issue 合入 plan，commit/push/PR 合入 publish，并让 release 独立负责版本发布；当时 implement 只自动组合 check，release 只包含通用 tag + generated notes。后果：用户保留宏观串联权，缺失上游产物成为正常状态，外部副作用按阶段保留；implement 的 docs 完成语义和 release 的版本边界分别由 2026-07-22 的后续决定扩展。完整拓扑设计见 [soft-linked architecture plan](plans/2026-07-21-feat-soft-linked-skill-architecture.md)。
 
 ### 2026-07-22：项目身份统一为 Skills
 
 上下文：维护者决定用 `Skills` 取代原有的隐喻式项目名；但仓库已经依赖同名的外部 `skills` 安装 CLI，源码中也存在 `skills/` 公共能力目录。决定：展示名、GitHub slug 与本地目录统一使用 `Skills` / `skills`，私有 workspace package 使用 `@moeyua/skills`；外部 CLI、11 个 skill 名和既有历史 plan 保持原义。后果：活动文档和契约使用新身份，包名仍能与安装器依赖明确区分，历史计划继续作为当时决策的快照。详见 [project rename plan](plans/2026-07-22-feat-rename-project-to-skills.md)。
+
+### 2026-07-22：release 先生成远程默认分支版本提交
+
+上下文：既有 `v1.0.0`、`v2.0.0` tag 中的根 package version 都仍为 `0.1.0`，证明“只给已有 commit 打 tag”无法维持 package metadata、tag 与 GitHub Release 身份一致。决定：release 要求显式精确 tag 和单一根 package，切回并 fast-forward 远程默认分支，以已验证的 non-tagging package-manager command 生成版本提交，直接 push 并核验该 commit 后才创建 tag/Release；一个严格核验的 local release commit ahead 可从 push 失败恢复。后果：release 新增默认分支 package mutation/commit/push 副作用，但继续排除 monorepo version policy、自动 PR、registry publish、部署、制品与历史 tag 改写。详见 [versioned release plan](plans/2026-07-22-feat-versioned-default-branch-release.md)。
+
+### 2026-07-22：implement 按证据同步 durable docs
+
+上下文：implement 只闭环代码与 check 时，已经由 plan、显式目标或 verified behavior 证明的持久文档义务仍需用户手动补做，最终 check 也看不到完整交付 diff。决定：implement 在实现验证后先完成只读 check 修复闭环，再只因 plan Spec delta、显式文档 target 或 verified durable-claim drift 调用独立 docs；docs 有写入时对代码、测试和文档完整 diff 再运行 final check，repair 改变 truth 时先重新同步。后果：earned durable truth 能在同一 outcome 内完成，无触发时明确报告 not needed；docs 的 catalog、authority 和独立入口不变，implement 仍不自动 publish/release。详见 [implement durable docs plan](plans/2026-07-22-feat-implement-durable-docs-finish.md)。
 
 ## 未来项
 
