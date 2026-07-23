@@ -19,7 +19,7 @@ For the product principles and boundaries, read [PRODUCT.md](./PRODUCT.md). For 
 | `check`     | Independent review/test/e2e verdict; read-only and usable on its own                   |
 | `docs`      | Established truth recorded in spec, PRODUCT, ARCHITECTURE, DESIGN, ROADMAP, or README  |
 | `publish`   | The missing commit, push, and GitHub pull-request actions completed from current state |
-| `release`   | A default-branch package-version commit, exact tag, and generated-notes GitHub Release |
+| `release`   | A confirmed package version, default-branch commit, exact tag, and GitHub Release      |
 | `converge`  | Idempotent, project-wide alignment to the current memory formats                       |
 | `doctor`    | Read-only whole-project drift and health audit                                         |
 | `handoff`   | A self-contained, read-only summary for continuing in another session                  |
@@ -69,7 +69,7 @@ Four useful compositions remain deliberately local:
 - `implement` preserves the standalone boundaries of check and docs while composing them only inside its own authorized outcome.
 - `publish` reuses a plan's canonical Issue association when available and adds a closing reference to the PR; no Issue is a normal publish state.
 
-`release` expects an exact target tag and one authoritative root package. It fast-forwards the remote default branch, creates and pushes a non-tagging package-version commit, then publishes the exact tag and GitHub Release; deployment, registry publishing, artifacts, and automatic PRs remain outside it.
+`release` executes directly when the user supplies an exact tag. Without one, it reads the remote default branch and applies its authoritative project version policy before falling back to generic SemVer. It returns the candidate, policy source, reason, and canonical basis in its final response, then waits for the user's next message to confirm it. Confirmation proceeds only while that basis remains unchanged; otherwise `release` returns a refreshed proposal. It then fast-forwards the remote default branch, creates and pushes a non-tagging package-version commit, and publishes the exact tag and GitHub Release; deployment, registry publishing, artifacts, and automatic PRs remain outside it.
 
 There is no global orchestrator. Conditional docs never authorizes publish or release; after each public outcome, the user decides what to invoke next.
 

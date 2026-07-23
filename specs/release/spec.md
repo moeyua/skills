@@ -2,15 +2,27 @@
 
 ## Purpose
 
-release skill 从显式版本 tag 在远程默认分支生成一个 package-version release commit，再以精确 git tag 与 GitHub-generated notes 发布同一 commit；它只承担单一根 package 的有界版本准备，不承担部署与制品分发。
+release skill 从用户显式或跨轮确认的版本 tag 在远程默认分支生成一个 package-version release commit，再以精确 git tag 与 GitHub-generated notes 发布同一 commit；缺少 tag 时先按项目权威版本策略或通用 SemVer 回退给出候选并等待确认，不承担部署与制品分发。
 
 ## Requirements
 
-### Requirement: 从显式输入或权威版本源确定 tag
+### Requirement: 用户显式 tag 可直接执行
 
-release 必须要求显式、精确且能按仓库既有 prefix 映射为唯一 package version 的 tag；缺少 tag、prefix/版本映射不唯一时必须在 mutation 前询问，不得从当前 version、commit、change type 或历史 tag 猜 next version。
+当前 release 请求已经包含可按仓库既有 prefix 映射为唯一 package version 的精确 tag 时，release 必须把它视为已确认 identity，并可在同一轮进入既有 preflight 与执行流程。
 
-(Previously: tag 可按显式输入、项目权威版本源的顺序解析，且 release 不修改版本文件。)
+(Previously: 所有 release 都要求用户预先给出精确 tag，缺少时只询问。)
+Verify: [release contract](../../tests/release.test.ts)
+
+### Requirement: 项目权威版本策略优先于通用 SemVer
+
+当前请求没有 tag 时，release 必须用只读查询从远程默认分支读取最新 Release、此后的变化、权威根 package，以及适用于它的仓库指令、版本/发布文档和已提交 release-tool 配置。存在可唯一应用的项目权威版本策略时必须优先遵循；只有不存在适用策略时，才按最高可观察影响回退通用 SemVer：breaking behavior/side effect 为 major，向后兼容 capability 为 minor，向后兼容 fix 为 patch。不得仅从历史 tag 增量或 commit message 模式推断项目策略；权威来源冲突或无法产生唯一候选时必须报告冲突并零 mutation。候选 tag、采用的策略来源或通用回退、SemVer 理由与变更证据必须出现在可见的最终回复中。
+
+(Previously: 缺少 tag 时直接按最高可观察影响应用通用 SemVer。)
+Verify: [release contract](../../tests/release.test.ts)
+
+### Requirement: 候选版本跨轮确认后才允许 mutation
+
+release 给出候选 tag 时必须同时记录远程默认分支 tip、作为基线的最新 Release tag/target，以及项目策略来源及内容 identity 或通用回退标记，然后结束当前轮次；该 recommendation turn 不得切换分支、修改版本、commit、push、创建 tag 或 GitHub Release。下一条用户消息无歧义地确认候选后，release 必须在任何 mutation 前用相同只读真源复核这些 identity，并在 fetch 后且切分支或修改 package version 前要求 fetched remote tip 与记录的 basis tip 精确相等、其余 identity 仍未变化。全部相等才允许继续；任一变化都必须使旧确认失效、基于最新状态重新提议并再次结束该轮，即使新候选 tag 相同也要重新确认。上下文已明确唯一候选时，用户无需重复输入 tag；assistant 自己选出的候选不能在同一轮自我确认。
 Verify: [release contract](../../tests/release.test.ts)
 
 ### Requirement: 发布目标必须可核验
