@@ -14,7 +14,7 @@ For the product principles and boundaries, read [PRODUCT.md](./PRODUCT.md). For 
 | :---------- | :------------------------------------------------------------------------------------- |
 | `explore`   | Read-only project/module understanding, either as a report or embedded context         |
 | `shape`     | A grounded, bounded design direction in conversation; no files or mutation             |
-| `plan`      | One executable local plan, plus a best-effort matching GitHub Issue                    |
+| `plan`      | Settled work persisted as a local plan, GitHub Issue work items, or both               |
 | `implement` | Working code/tests, check verdicts, an earned-docs decision, and a complete summary    |
 | `check`     | Independent review/test/e2e verdict; read-only and usable on its own                   |
 | `docs`      | Established truth recorded in spec, PRODUCT, ARCHITECTURE, DESIGN, ROADMAP, or README  |
@@ -45,6 +45,8 @@ The shared store is an install-time snapshot. Re-run the install command after c
 
 Once installed, invoke `/explore`, `/shape`, `/plan`, `/implement`, `/check`, `/docs`, `/publish`, `/release`, `/converge`, `/doctor`, or `/handoff`.
 
+`/plan` defaults to `both`. Use `/plan local` for one local implementation plan with zero GitHub mutation, `/plan issue` for 1–20 explicitly separated same-repository Issues with zero project writes, or `/plan both` for one local plan followed by its one Issue companion. The selected target is never inferred or changed by the agent.
+
 ## How capabilities connect
 
 ```text
@@ -65,7 +67,7 @@ Dotted edges are common context handoffs, not prerequisites. You can call any sk
 Four useful compositions remain deliberately local:
 
 - `shape` may obtain read-only `explore` context when facts are missing.
-- `plan` always writes the local plan first, then attempts at most one matching GitHub Issue. GitHub failure never invalidates the plan or blocks later work.
+- `plan` follows the user's artifact target. `local` writes one plan, `issue` creates or reuses a bounded same-repository Issue batch without project writes, and default `both` writes one plan before its one Issue companion; remote failure leaves that plan valid and reports `partial`.
 - `implement` preserves the standalone boundaries of check and docs while composing them only inside its own authorized outcome.
 - `publish` reuses a plan's canonical Issue association when available and adds a closing reference to the PR; no Issue is a normal publish state.
 
@@ -84,7 +86,7 @@ There is no global orchestrator. Conditional docs never authorizes publish or re
 | `refactor` | Behavior invariants and regression coverage         |
 | `perf`     | Baseline, numeric target, comparable measurement    |
 
-Shape uses these types as a thinking lens, plan uses them for plan structure and the optional Issue label, and implement uses them to choose TDD/invariant/measurement discipline. Brainstorming is simply a conversational use of shape—not a persistent mode.
+Shape uses these types as a thinking lens, plan uses them for local-plan evidence and each Issue's schema/label, and implement uses them to choose TDD/invariant/measurement discipline. Brainstorming is simply a conversational use of shape—not a persistent mode.
 
 ## Durable memory
 
