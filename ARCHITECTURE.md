@@ -19,7 +19,7 @@ skills/
 │   ├── RESOLVER.md                  # 人类可读的公共路由索引
 │   ├── explore/                     # 只读项目理解
 │   ├── shape/                       # 会话内设计收敛
-│   ├── plan/                        # 本地计划 + 尽力创建 Issue
+│   ├── plan/                        # local / issue / both artifact targets
 │   ├── implement/                   # 实现 + check + 条件性 docs 完成闭环
 │   ├── check/                       # 只读 review / test / e2e
 │   ├── docs/                        # 聚焦维护持久记忆
@@ -43,14 +43,14 @@ skills/
 
 ## 技术栈
 
-| 层                | 选择                              | 原因                                                                   |
-| ----------------- | --------------------------------- | ---------------------------------------------------------------------- |
-| 能力定义          | Markdown `SKILL.md` + frontmatter | 由支持 skills 的 agent host 直接发现和加载，无运行时框架               |
-| 安装              | `skills` CLI                      | 从 `skills/` 扫描独立能力，并安装到所选 agent                          |
-| 开发运行时        | Node.js 24+、TypeScript           | checker 与测试工具可直接运行 `.ts`，保持零生产运行时包                 |
-| 包管理            | pnpm                              | 严格、可复现的开发依赖与脚本入口                                       |
-| 工具链            | Vite+                             | 统一 test、lint、format 与 typecheck；测试使用 Vitest 接口             |
-| git/GitHub 副作用 | git 与 GitHub CLI                 | publish、release 以及 plan 的可选 Issue 投影复用项目已有身份和仓库状态 |
+| 层                | 选择                              | 原因                                                                             |
+| ----------------- | --------------------------------- | -------------------------------------------------------------------------------- |
+| 能力定义          | Markdown `SKILL.md` + frontmatter | 由支持 skills 的 agent host 直接发现和加载，无运行时框架                         |
+| 安装              | `skills` CLI                      | 从 `skills/` 扫描独立能力，并安装到所选 agent                                    |
+| 开发运行时        | Node.js 24+、TypeScript           | checker 与测试工具可直接运行 `.ts`，保持零生产运行时包                           |
+| 包管理            | pnpm                              | 严格、可复现的开发依赖与脚本入口                                                 |
+| 工具链            | Vite+                             | 统一 test、lint、format 与 typecheck；测试使用 Vitest 接口                       |
+| git/GitHub 副作用 | git 与 GitHub CLI                 | publish、release 以及 plan 的 `issue` / `both` target 复用项目已有身份和仓库状态 |
 
 仓库不发布 npm 运行时包，也没有 codegen 或全局 workflow engine。`package.json` 使用 `@moeyua/skills` 作为私有 workspace identity 和开发工具清单；其中的 `skills` devDependency 是外部安装 CLI，不是本项目的发布包。skill 的真实产品表面是 Markdown、references 和 doctor 随装的确定性脚本。
 
@@ -72,10 +72,23 @@ docs 仍可独立调用；converge / doctor / handoff 位于主图之外，按�
 虚线表示常见的上下文传递，不表示前置条件或自动流转；implement 下方的实线是其 outcome 内部的条件分支。任何能力在自身输入足够时都可直接调用。图中只有三种刻意保留的内部组合：
 
 1. `shape` 缺少项目事实时可取得只读 `explore` context；这不会额外产出 Explore Report。
-2. `plan` 先写本地计划，再尽力创建至多一个同范围 GitHub Issue；远端失败不使计划失效。
+2. `plan` 在 side effect 前解析用户拥有的 artifact target：`local` 只写一个本地计划，`issue` 以零项目写入串行处理 1–20 个同仓 Issue work items，`both`（默认）先写一个本地计划再处理它的一个 Issue companion。
 3. `implement` 在实现验证后调用独立、只读的 `check` 完成初始修复闭环；只有 plan Spec delta、显式文档 target 或 verified durable-claim drift 触发时才调用 `docs`，并让完整 diff 再通过 final check。无触发时报告 not needed。
 
 这三种组合之外的节点完成自身 outcome 后停止。用户决定进入哪个公共能力；implement 的条件性 docs 不授权继续 publish/release。
+
+`plan` 内部用 target resolver 隔离三条互斥副作用路径：
+
+```text
+request ──▶ resolve target before side effects
+              ├─ local ──▶ one plans/*.md
+              ├─ issue ──▶ preflight ──▶ 1..20 sequential Issues
+              └─ both  ──▶ one plans/*.md ──▶ one Issue
+                   ▲
+                   └─ omitted target
+```
+
+`issue` 的整批 preflight、稳定顺序、hidden marker、首错停止和逐项 ledger 构成一个可恢复但非原子的远程事务；模糊 create 只按 marker 查询一次并永久停批。`both` 的本地方案先成为恢复点，远程失败时保留该方案并把整体结果标为 `partial`。三个分支不会互相 fallback。
 
 ### 组件职责
 
@@ -83,7 +96,7 @@ docs 仍可独立调用；converge / doctor / handoff 位于主图之外，按�
 | ---------- | ------------------------------------------------------------------ | ----------------------------------------- |
 | explore    | 项目报告，或供调用方使用的事实 context                             | 只读，不判断 docs 是否漂移                |
 | shape      | 会话内 grounded direction 与已决/未决事项                          | 不写 plan、Issue、spec 或实现             |
-| plan       | `plans/YYYY-MM-DD-<slug>.md`，可选 canonical Issue URL             | 本地计划优先；Issue 失败非阻塞            |
+| plan       | 用户选择的 local plan、Issue work items，或二者及 canonical URLs   | 默认 `both`；不推断 target；三分支互斥    |
 | implement  | 代码/测试、check verdict、docs decision 与完整总结                 | docs 需证据；不自动 publish/release       |
 | check      | review findings、测试结果、e2e observation 与 verdict              | 可独立调用；永不修改文件                  |
 | docs       | 六类 catalog memory 或用户明确指定的项目文档                       | 只记录已有权威来源的 truth                |
@@ -95,16 +108,16 @@ docs 仍可独立调用；converge / doctor / handoff 位于主图之外，按�
 
 ### Artifact 流
 
-| artifact / state                                                | producer          | consumers                                | 缺失或失败时                                  |
-| --------------------------------------------------------------- | ----------------- | ---------------------------------------- | --------------------------------------------- |
-| 会话内 shape 结论                                               | shape             | plan、implement、docs                    | 不是其他能力的有效性门槛                      |
-| 本地 plan                                                       | plan              | implement、publish、docs                 | 明确请求仍可直接实现或发布                    |
-| canonical Issue URL                                             | plan              | publish                                  | 无 URL 时省略 closing reference；不按标题猜测 |
-| 工作树、测试与 check 证据                                       | implement / check | docs、publish                            | 各消费者只要求自身 outcome 真正需要的证据     |
-| durable-docs trigger / decision                                 | implement         | docs、final check、最终报告              | 无触发时记录 not needed；authority 不足时停止 |
-| 六类持久记忆                                                    | docs / converge   | explore、shape、implement、check、doctor | 按 catalog 的适用性读取，不制造空文档         |
-| branch / upstream / PR state                                    | publish           | 人类评审、可选 release 前置工作          | 每个已完成副作用保留，失败点准确报告          |
-| unit versions / release commit / branch / tags / Releases state | release           | 使用者与 GitHub                          | 按有序 canonical state 恢复，不做伪原子回滚   |
+| artifact / state                                                | producer              | consumers                                | 缺失或失败时                                  |
+| --------------------------------------------------------------- | --------------------- | ---------------------------------------- | --------------------------------------------- |
+| 会话内 shape 结论                                               | shape                 | plan、implement、docs                    | 不是其他能力的有效性门槛                      |
+| 本地 plan                                                       | plan `local` / `both` | implement、publish、docs                 | `issue` 不产生；明确请求仍可直接实现或发布    |
+| canonical Issue URL(s)                                          | plan `issue` / `both` | publish、用户的 GitHub 工作流            | 无 URL 时不伪造 fallback；不按标题猜测        |
+| 工作树、测试与 check 证据                                       | implement / check     | docs、publish                            | 各消费者只要求自身 outcome 真正需要的证据     |
+| durable-docs trigger / decision                                 | implement             | docs、final check、最终报告              | 无触发时记录 not needed；authority 不足时停止 |
+| 六类持久记忆                                                    | docs / converge       | explore、shape、implement、check、doctor | 按 catalog 的适用性读取，不制造空文档         |
+| branch / upstream / PR state                                    | publish               | 人类评审、可选 release 前置工作          | 每个已完成副作用保留，失败点准确报告          |
+| unit versions / release commit / branch / tags / Releases state | release               | 使用者与 GitHub                          | 按有序 canonical state 恢复，不做伪原子回滚   |
 
 `publish` 和 `release` 都先读取当前状态，再只补缺失动作。外部副作用不是事务：push 失败不会删除本地 commit，PR 创建失败不会撤回已推送分支；release 的 version-transaction diff、local/remote release commit，以及每个 tag/Release identity 都是恢复点，后一步失败不回滚前一步。模糊结果通过 canonical identity 查询一次，不靠盲重试制造重复对象。
 
@@ -176,9 +189,9 @@ node skills/doctor/scripts/checker.ts . --json
 2. 每个 skill 可独立由用户进入；缺少某个上游 artifact 本身永远不是拒绝工作的理由。
 3. 虚线边只传递可用 context；不存在从 shape 一路自动推进到 release 的 orchestrator。
 4. `implement` 是唯一自动完成闭环：先用只读 check 修复行为，再按证据调用 docs，并在文档写入后让完整 diff 通过 final check；直接调用 check 始终只读，直接调用 docs 仍保持独立。
-5. shape 只负责对话塑形，plan 才负责持久计划和可选 Issue 投影。
+5. shape 只负责对话塑形；plan 才负责持久 artifact，并在任何副作用前使用用户显式 target 或默认 `both`，不得依据上下文自动分流。
 6. 默认 durable memory 恰好六类，不含项目工作流或 agent 自行发明的第七类文档。
-7. plan 的 Issue、publish 的 feature-branch commit/push/PR，以及 release 的 unit metadata、默认分支 release commit/push、tags/Releases 是各自 outcome 内授权的外部副作用；部分成功必须保留并如实报告。release 的 agent-derived release set 必须跨轮确认，且只有在远程 branch commit 核验后才能逐 identity 打 tag。
+7. plan 只有 `issue` / `both` 可以产生 GitHub mutation，只有 `local` / `both` 可以写项目 plan；publish 的 feature-branch commit/push/PR，以及 release 的 unit metadata、默认分支 release commit/push、tags/Releases 也是各自 outcome 内授权的副作用。部分成功必须保留并如实报告。release 的 agent-derived release set 必须跨轮确认，且只有在远程 branch commit 核验后才能逐 identity 打 tag。
 8. 共享 change type、memory catalog 和跨 skill 规则各有单一真源；复制而非引用会造成漂移，不是可接受的扩展方式。
 9. 不在仓库根目录放 `SKILL.md`。
 
@@ -237,6 +250,10 @@ node skills/doctor/scripts/checker.ts . --json
 ### 2026-07-22：implement 按证据同步 durable docs
 
 上下文：implement 只闭环代码与 check 时，已经由 plan、显式目标或 verified behavior 证明的持久文档义务仍需用户手动补做，最终 check 也看不到完整交付 diff。决定：implement 在实现验证后先完成只读 check 修复闭环，再只因 plan Spec delta、显式文档 target 或 verified durable-claim drift 调用独立 docs；docs 有写入时对代码、测试和文档完整 diff 再运行 final check，repair 改变 truth 时先重新同步。后果：earned durable truth 能在同一 outcome 内完成，无触发时明确报告 not needed；docs 的 catalog、authority 和独立入口不变，implement 仍不自动 publish/release。详见 [implement durable docs plan](plans/2026-07-22-feat-implement-durable-docs-finish.md)。
+
+### 2026-07-31：plan artifact target 由用户显式拥有
+
+上下文：单一的 local-first + best-effort Issue 路径让纯本地 planning 无法避免远程尝试，也让另一任务执行期间的大量 Issue intake 必须污染当前 worktree 或逐项建立计划。决定：保留一个公共 `plan` skill，但把 artifact target 正交建模为 `local`、`issue`、`both`，裸调用默认 `both`，且只由用户显式选择；三个 target 使用独立 reference 和完成语义，`issue` 支持 1–20 个明确分隔的同仓条目，批量 mutation 以整批 preflight、串行 create、hidden marker、首错停止和完整 ledger 限制非原子风险。后果：公共 inventory 仍为 11，change type 与 artifact target 不混用；`local` 零 GitHub mutation，`issue` 零项目写入，`both` local-first 且远程失败报告 `partial`，agent 不会把失败解释为切换 target 的授权。详见 [plan output targets plan](plans/2026-07-31-feat-plan-output-targets.md)。
 
 ## 未来项
 

@@ -34,7 +34,7 @@ shape · · ·▶ plan · · ·▶ implement ⇄ check · · ·▶ publish · ·
 
 用户决定调用哪个 public skill，也决定何时进入下一个能力。Skills 没有从想法一路自动推进到发布的 orchestrator。
 
-这不禁止 skill 在**自己的公开 outcome 内**组合必要能力：shape 缺事实时可以取得 explore context；plan 在本地方案之后尽力创建一个 Issue 投影；implement 先调用只读 check 完成实现修复闭环，再只在 plan Spec delta、显式文档 target 或 verified durable-claim drift 提供证据时调用 docs，并让完整 diff 通过 final check。docs 的 catalog 与 authority 边界不会因自动组合而放宽。
+这不禁止 skill 在**自己的公开 outcome 内**组合必要能力：shape 缺事实时可以取得 explore context；plan 由用户选择 `local`、`issue` 或 `both` artifact target，裸调用固定为 `both`，agent 不替用户分流；implement 先调用只读 check 完成实现修复闭环，再只在 plan Spec delta、显式文档 target 或 verified durable-claim drift 提供证据时调用 docs，并让完整 diff 通过 final check。docs 的 catalog 与 authority 边界不会因自动组合而放宽。
 
 因此，“用户拥有串联”保护的是宏观授权，而不是强迫用户手动推动每一个内部校验或已经 earned 的持久化动作。implement 无 docs 触发时明确结束于 `not needed`，不会为流程完整感写文档；无论是否写 docs，它都不自动进入 publish/release。没有 plan、Issue、check 记录或 docs 记录时，其他 skill 仍按自己真正需要的输入判断，而不是按流程历史拒绝工作。
 
@@ -48,7 +48,7 @@ SKILL.md frontmatter、Outcome Contract、描述质量、引用、resolver、ski
 
 SKILL.md 先说 outcome 和边界，再解释关键约束保护什么。流程按条件出现，不为完整感制造 ceremony。用户已经说明或已经同意的决定是输入，除非新证据推翻，不重复交回用户确认。
 
-Shape 是这条原则的直接体现：它只在会话中解决实质决策前沿，不再承担文件产出。Plan 才把已经足够明确的 change 持久化。把思考和 artifact 分开，让每个入口都更清楚。
+Shape 是这条原则的直接体现：它只在会话中解决实质决策前沿，不再承担 artifact 产出。Plan 才按用户明确选择把已经足够清楚的 change 持久化为本地方案、Issue work items 或二者。把思考、artifact target 和实现分开，让每个入口都更清楚。
 
 ## 边界：明确不做的
 
@@ -74,7 +74,7 @@ Doctor 审计项目文档↔代码漂移、依赖/CI/文件等项目健康；它
 
 ### 5. 通用项目管理与内容输入处理
 
-Plan 的 GitHub Issue 只是同一 change 的可选投影。Skills 不管理 GitHub Projects、状态流、milestone、assignee、拆票、sub-issue、跨仓同步或通用任务系统。
+Plan 的 GitHub Issue 是 `issue` / `both` 的显式开发 artifact，不是通用项目管理入口。`issue` 只接收 1–20 个用户明确分隔的同仓条目，`both` 只为一个 local plan 处理一个 Issue companion；Skills 不管理 GitHub Projects、状态流、milestone、assignee、agent 自动拆票、sub-issue、跨仓批次或通用任务系统。
 
 URL/PDF 抓取、任意内容整理和深度研究属于通用输入层。需要事实时可以使用已有工具，但 Skills 不重复造一个内容摄取产品。
 

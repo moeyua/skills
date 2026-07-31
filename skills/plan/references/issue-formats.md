@@ -1,6 +1,6 @@
 # Issue Formats
 
-Read this file only when plan is ready to attempt its optional GitHub Issue. Render exactly one schema matching the plan's change type; keep its section identity and order unchanged.
+Read this file only for the `issue` or `both` target. Render exactly one schema for each Issue work item, matching that item's change type; keep its section identity and order unchanged.
 
 ## Shared rules
 

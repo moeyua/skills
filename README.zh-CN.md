@@ -14,7 +14,7 @@ Skills 是一套服务于软件开发与项目持久记忆的克制指令系统�
 | :---------- | :----------------------------------------------------------------------- |
 | `explore`   | 只读建立项目/模块理解；可输出报告，也可作为内嵌上下文                    |
 | `shape`     | 在对话中形成 grounded、边界清楚的设计方向；不写文件、不产生 mutation     |
-| `plan`      | 一份可执行本地方案，以及尽力创建的同范围 GitHub Issue                    |
+| `plan`      | 按选择把既定工作持久化为本地方案、GitHub Issue work items 或二者         |
 | `implement` | 工作代码/测试、check 裁决、earned-docs 判定与完整总结                    |
 | `check`     | 可独立调用的 review/test/e2e 裁决；只读                                  |
 | `docs`      | 把既定 truth 写入 spec、PRODUCT、ARCHITECTURE、DESIGN、ROADMAP 或 README |
@@ -45,6 +45,8 @@ npx skills add .
 
 安装后可调用 `/explore`、`/shape`、`/plan`、`/implement`、`/check`、`/docs`、`/publish`、`/release`、`/converge`、`/doctor` 或 `/handoff`。
 
+`/plan` 默认使用 `both`。`/plan local` 为一项 change 只写本地实施方案且零 GitHub mutation；`/plan issue` 为 1–20 个明确分隔的同仓条目只创建或复用 Issues 且零项目写入；`/plan both` 先写一份本地方案，再创建或复用它的一个 Issue companion。Agent 不推断或改变用户选择的 target。
+
 ## 能力如何连接
 
 ```text
@@ -65,7 +67,7 @@ converge / doctor / handoff 保持正交，按需调用。
 四个组合被刻意限制在局部：
 
 - `shape` 缺事实时可以取得只读的 `explore` 上下文。
-- `plan` 永远先写本地方案，再尽力创建至多一个匹配的 GitHub Issue；GitHub 失败不使方案失败，也不阻塞后续工作。
+- `plan` 遵循用户选择的 artifact target：`local` 只写一份方案，`issue` 以零项目写入处理有界同仓 Issue 批次，默认 `both` 先写一份方案再处理它的一个 Issue companion；远程失败保留有效方案并报告 `partial`。
 - `implement` 只在自身已授权 outcome 内组合 check 与 docs，不改变二者的独立入口和原有边界。
 - `publish` 有 canonical Issue 关联时把 closing reference 带入 PR；没有 Issue 是正常发布状态。
 
@@ -84,7 +86,7 @@ converge / doctor / handoff 保持正交，按需调用。
 | `refactor` | 行为不变量与 regression coverage  |
 | `perf`     | baseline、数值目标、可比测量      |
 
-shape 用它聚焦思考，plan 用它决定方案结构与可选 Issue label，implement 用它选择 TDD、不变量或测量纪律。Brainstorm 只是 shape 的一种对话用途，不是持久 mode。
+shape 用它聚焦思考，plan 用它决定本地方案证据以及每个 Issue 的 schema/label，implement 用它选择 TDD、不变量或测量纪律。Brainstorm 只是 shape 的一种对话用途，不是持久 mode。
 
 ## 持久记忆
 
