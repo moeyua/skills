@@ -1,6 +1,6 @@
 # Plan File Template
 
-Write plans to `plans/YYYY-MM-DD-<slug>.md`. A plan is an implementation handoff: include what implement cannot infer and omit sections whose trigger is absent.
+Use this template only for the `local` and `both` targets. Write plans to `plans/YYYY-MM-DD-<slug>.md`. A plan is an implementation handoff: include what implement cannot infer and omit sections whose trigger is absent.
 
 ## Required core
 
