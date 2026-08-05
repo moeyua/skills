@@ -14,11 +14,9 @@ import {
   findSkillFiles,
   checkSkillFiles,
   checkDescriptionConformance,
-  checkOutcomeContract,
   checkReferencesExist,
   checkMarkdownLinks,
   checkNoRootSkill,
-  checkTriggerJaccard,
   checkResolverConsistency,
   checkSpecPairing,
 } from "./checks.ts";
@@ -28,8 +26,6 @@ import {
 interface SkillSpec {
   name: string;
   description?: string;
-  when_to_use?: string;
-  dispatch_intent?: string;
   body?: string;
 }
 
@@ -38,15 +34,7 @@ interface RepoOpts {
   rootSkill?: boolean;
 }
 
-const DEFAULT_BODY = `# Stub
-
-## Outcome Contract
-
-- Outcome: ok
-- Done when: ok
-- Evidence: ok
-- Output: ok
-`;
+const DEFAULT_BODY = "# Stub\n\nA lightweight capability guide.\n";
 
 function defaultDesc(name: string): string {
   return `${name} skill placeholder body that crosses forty chars. Use when triggered. Not for unrelated cases.`;
@@ -57,8 +45,6 @@ function buildFrontmatter(s: SkillSpec): string {
     "---",
     `name: ${s.name}`,
     `description: "${s.description ?? defaultDesc(s.name)}"`,
-    `when_to_use: "${s.when_to_use ?? `${s.name}-trigger, $${s.name}`}"`,
-    `dispatch_intent: "${s.dispatch_intent ?? `${s.name} intent`}"`,
     "---",
     "",
   ].join("\n");
@@ -185,28 +171,6 @@ describe("checkDescriptionConformance", () => {
   });
 });
 
-describe("checkOutcomeContract", () => {
-  it("passes when section and 4 fields present", () => {
-    const root = repo([{ name: "x" }]);
-    expect(() => checkOutcomeContract(root)).not.toThrow();
-  });
-
-  it("fails when Outcome Contract section missing", () => {
-    const root = repo([{ name: "x", body: "# Stub\n\nno contract here\n" }]);
-    expect(() => checkOutcomeContract(root)).toThrow(/MISSING OUTCOME CONTRACT/);
-  });
-
-  it("fails when a field missing", () => {
-    const root = repo([
-      {
-        name: "x",
-        body: "## Outcome Contract\n\n- Outcome: ok\n- Done when: ok\n- Evidence: ok\n",
-      },
-    ]);
-    expect(() => checkOutcomeContract(root)).toThrow(/Output:/);
-  });
-});
-
 describe("checkReferencesExist", () => {
   it("passes when no references mentioned", () => {
     const root = repo([{ name: "x" }]);
@@ -289,26 +253,6 @@ describe("checkNoRootSkill", () => {
   it("fails when root SKILL.md exists", () => {
     const root = repo([{ name: "x" }], { rootSkill: true });
     expect(() => checkNoRootSkill(root)).toThrow(/ROOT SKILL.md DISALLOWED/);
-  });
-});
-
-describe("checkTriggerJaccard", () => {
-  it("passes when keyword sets are disjoint", () => {
-    const root = repo([
-      { name: "a", when_to_use: "alpha, $a" },
-      { name: "b", when_to_use: "beta, $b" },
-    ]);
-    const map = checkSkillFiles(root);
-    expect(() => checkTriggerJaccard(map)).not.toThrow();
-  });
-
-  it("fails when keyword sets overlap above threshold", () => {
-    const root = repo([
-      { name: "a", when_to_use: "shared, common, words" },
-      { name: "b", when_to_use: "shared, common, words" },
-    ]);
-    const map = checkSkillFiles(root);
-    expect(() => checkTriggerJaccard(map)).toThrow(/TRIGGER OVERLAP/);
   });
 });
 

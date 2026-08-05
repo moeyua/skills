@@ -2,7 +2,10 @@
 
 import type { NormalizedTranscript, ToolCallEvent } from "../normalize/events.ts";
 
-export type CheckName = "shape-write-boundary" | "shape-implementation-boundary";
+export type CheckName =
+  | "shape-write-boundary"
+  | "shape-implementation-boundary"
+  | "shape-worktree-evidence";
 
 export interface Violation {
   check: CheckName;
@@ -13,6 +16,12 @@ export interface Violation {
 
 export interface CheckResult {
   violations: Violation[];
+  warnings?: Violation[];
+}
+
+export interface RunCheckOptions {
+  worktreeChanges?: string[] | undefined;
+  worktreeCheckError?: string;
 }
 
 function invokesAnotherSkill(text: string): boolean {
@@ -44,8 +53,12 @@ function invokesImplement(call: ToolCallEvent): boolean {
   return /(?:^|["'\n:]\s*)(?:please\s+)?implement\b/i.test(withoutGuards);
 }
 
-export function runChecks(transcript: NormalizedTranscript): CheckResult {
+export function runChecks(
+  transcript: NormalizedTranscript,
+  opts: RunCheckOptions = {},
+): CheckResult {
   const violations: Violation[] = [];
+  const warnings: Violation[] = [];
   const handoffIndex = transcript.events.findIndex(
     (event) => event.kind === "user-message" && invokesAnotherSkill(event.text),
   );
@@ -72,5 +85,25 @@ export function runChecks(transcript: NormalizedTranscript): CheckResult {
     }
   }
 
-  return { violations };
+  if (opts.worktreeCheckError !== undefined) {
+    warnings.push({
+      check: "shape-worktree-evidence",
+      severity: "warn",
+      turn: transcript.turnCount,
+      evidence: `无法核验 fixture 工作树: ${opts.worktreeCheckError}`,
+    });
+  } else if (
+    handoffIndex === -1 &&
+    opts.worktreeChanges !== undefined &&
+    opts.worktreeChanges.length > 0
+  ) {
+    violations.push({
+      check: "shape-write-boundary",
+      severity: "hard",
+      turn: transcript.turnCount,
+      evidence: `shape 结束后的 fixture 工作树存在变更: ${opts.worktreeChanges.join("; ")}`,
+    });
+  }
+
+  return { violations, warnings };
 }

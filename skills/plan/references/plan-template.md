@@ -72,4 +72,4 @@ Derive a short kebab-case slug such as `fix-login-loop`, `feat-rbac`, `refactor-
 
 - `draft`: plan wrote the file
 - `approved`: the user authorized implementation
-- `done`: implement completed the work and final check loop
+- `done`: implement completed every required outcome, acceptance item, and applicable verification

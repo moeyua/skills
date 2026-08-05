@@ -20,7 +20,6 @@ const PUBLIC_SKILLS = [
 ] as const;
 
 const CHANGE_TYPE_CONSUMERS = ["shape", "plan", "implement"] as const;
-
 function directories(path: string): string[] {
   return readdirSync(path, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())

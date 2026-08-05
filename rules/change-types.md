@@ -14,7 +14,7 @@ An intentional observable behavior change is `fix` or `feat`, not `refactor`. An
 Use the vocabulary proportionally:
 
 - shape uses it only when classifying a concrete change helps focus the discussion;
-- plan selects exactly one type for plan structure and the optional GitHub Issue label;
+- plan selects exactly one type per work item; `local` / `both` contain one coherent change, while an `issue` batch may classify its explicitly separated items independently;
 - implement uses the known or inferred type to choose TDD, invariant protection, or measurement.
 
 `brainstorm` describes a conversational use of shape. It is not a change type, plan mode, label, or persistent status.

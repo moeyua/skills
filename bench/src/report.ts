@@ -24,6 +24,7 @@ export interface SessionReport {
   sourcePath: string;
   turnCount: number;
   mechanicalViolations: Violation[];
+  mechanicalWarnings: Violation[];
   judge: JudgeResult;
   score: number | null;
   runLabel?: RunLabel;
@@ -40,6 +41,7 @@ export function buildSessionReport(
     sourcePath: transcript.sourcePath,
     turnCount: transcript.turnCount,
     mechanicalViolations: checks.violations,
+    mechanicalWarnings: checks.warnings ?? [],
     judge,
     score: judge.status === "ok" ? judge.verdict.score : null,
     ...(runLabel !== undefined && { runLabel }),
@@ -143,6 +145,20 @@ export function renderSummaryMarkdown(
     lines.push("");
   }
   if (!anyViolation) lines.push("无。", "");
+
+  lines.push("## 机械证据警告", "");
+  let anyWarning = false;
+  for (const r of reports) {
+    const warnings = r.mechanicalWarnings ?? [];
+    if (warnings.length === 0) continue;
+    anyWarning = true;
+    lines.push(`### ${shortLabel(r)}`, "");
+    for (const warning of warnings) {
+      lines.push(`- [${warning.severity}] ${warning.check} @T${warning.turn}:${warning.evidence}`);
+    }
+    lines.push("");
+  }
+  if (!anyWarning) lines.push("无。", "");
 
   lines.push("## 各会话摘要", "");
   for (const r of reports) {

@@ -64,6 +64,30 @@ describe("buildSessionReport", () => {
     expect(report.score).toBe(6);
   });
 
+  it("reports unavailable mechanical evidence as a warning, not a violation", () => {
+    const report = buildSessionReport(
+      transcript("warning"),
+      {
+        violations: [],
+        warnings: [
+          {
+            check: "shape-worktree-evidence",
+            severity: "warn",
+            turn: 12,
+            evidence: "fixture unavailable",
+          },
+        ],
+      },
+      okJudge(8, [["甲", "pass"]]),
+    );
+    expect(report.mechanicalViolations).toHaveLength(0);
+    expect(report.mechanicalWarnings).toHaveLength(1);
+    const markdown = renderSummaryMarkdown([report]);
+    expect(markdown).toContain("机械检查违规\n\n无。");
+    expect(markdown).toContain("机械证据警告");
+    expect(markdown).toContain("fixture unavailable");
+  });
+
   it("carries judge-error with a null score", () => {
     const report = buildSessionReport(
       transcript("s2"),

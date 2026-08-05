@@ -2,41 +2,36 @@
 
 ## Purpose
 
-plan skill 把一项已经足够明确的 change 持久化为可执行本地方案，并在 GitHub 可用时尽力创建同一意图的 Issue 投影。
+plan 把已经足够明确的工作持久化为用户选择的本地计划、GitHub Issues 或二者。
 
 ## Requirements
 
-### Requirement: plan 始终先产出本地方案
+### Requirement: target 契约保持 local issue both
 
-plan 必须先写一个 `plans/YYYY-MM-DD-<slug>.md`，再尝试任何 GitHub side effect；本地方案包含 change type、边界、路径级步骤、独立 verify、整体验证和适用的专属证据，且不得含意图级占位符。
-Verify: manual(integration)
-
-### Requirement: plan 不要求先运行 shape
-
-plan 必须复用已有 shape 结论，但不得把 shape artifact 或调用历史设为门禁；当前请求足够明确时必须能直接产出方案。
-Verify: manual(integration)
-
-### Requirement: 四种共享变更类型决定方案结构
-
-plan 必须从共享真源选择恰好一个 `fix`、`feat`、`refactor` 或 `perf`，并使用对应的 root-cause/regression、interface/acceptance、invariant/coverage 或 baseline/target/measurement 质量门槛；brainstorm 不是 plan mode。
+plan 必须支持 `local`、`issue`、`both` 三个 target；省略 target 时必须使用 `both`，不得按仓库状态、GitHub 可用性、工作量或失败预期擅自切换或 fallback。
 Verify: [plan artifact contract](../../tests/plan.test.ts)
 
-### Requirement: GitHub Issue 是尽力创建的伴随产物
+### Requirement: local 与 both 各承载一个 coherent change
 
-plan 必须把 Issue 创建视为 local plan 之后的 best-effort projection。CLI、认证、仓库、权限、label、网络或 Issue 创建失败时必须保留有效 plan、准确报告降级状态，并允许后续 skill 继续。
+`local` 必须只写一个可执行计划且零 GitHub mutation；`both` 必须先写并验证本地计划，再创建或复用至多一个 companion Issue。Issue 失败只使 `both` partial，不得删除、失效或阻塞本地计划。
+Verify: [plan artifact contract](../../tests/plan.test.ts)
+
+### Requirement: issue target 保留显式 item 边界
+
+`issue` 必须只接受同一仓库 1–20 个显式分开的 work items，保持顺序和一 item 至多一 Issue；不得自动拆分、合并、换仓或写项目文件。
 Verify: manual(integration)
 
-### Requirement: 一个 plan 最多关联一个 Issue
+### Requirement: plan 可直接进入但不授权实现
 
-plan 必须以 frontmatter 中已有或用户显式提供并验证的 canonical Issue URL 为唯一身份；存在关联时必须复用，不得按标题搜索、猜测或创建替代 Issue。新建成功后才把 URL 写回 frontmatter；不明确的失败不得自动重试。
+清晰请求不得因缺少 shape 或其他调用历史而被拒绝；plan 只能创建所选 artifact，不得实现、提交、推送、开 PR 或把 artifact 当成实现授权。
 Verify: manual(integration)
 
-### Requirement: plan 与 Issue 共享意图且不重复确认
+### Requirement: 类型与格式按 target 渐进加载
 
-plan 与 Issue 必须从同一组已知事实、范围、约束与验收渲染；`/plan` 调用已经授权这两个公开产出，不得另设理解卡或 prose 审批门槛。Issue 的所有用户可见字段使用用户当前语言，显式语言要求优先。
-Verify: manual(integration)
+每个 work item 必须选择一个共享 `fix`、`feat`、`refactor` 或 `perf`；local 只加载对应 plan quality reference，每个 Issue create candidate 只加载自身 type 的一个 Issue schema，并保持用户语言、对应 lowercase label 和完整可观察验收。一个 batch 所需的缺失 change-type labels 必须各创建至多一次。
+Verify: [plan Issue projection contract](../../tests/plan.test.ts)
 
-### Requirement: Issue 保持安全且范围有限
+### Requirement: canonical Issue identity 唯一且安全
 
-Issue 必须只使用与 change type 相同的一个 lowercase label、固定 semantic schema 和安全 body file；不得管理 Projects、状态、milestone、assignee、sub-issue 或 dependencies，也不得编辑既有 Issue。
+显式或 plan 已记录的 canonical URL 必须验证后复用，不得按标题搜索、编辑既有 Issue 或创建替代 identity。`both` 的仓库解析顺序必须是显式 repository、canonical Issue URL 携带的 repository、当前 repository；Issue mutation 的认证、用户语言、安全 body file 和 exclusions 由 `issue` / `both` target reference 定义，临时 body file 在成功、失败或结果模糊后都必须清理。`local` 只有收到显式 canonical URL 时才可按其 target contract 做条件式认证和只读验证，不得因此产生 GitHub mutation。label 创建失败必须映射到首个依赖该 label 的 failed row、保留 reused rows，并把其余 create candidates 标为 not-attempted；所有 partial/ambiguous state 必须准确记录。
 Verify: [plan Issue projection contract](../../tests/plan.test.ts)

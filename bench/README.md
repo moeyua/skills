@@ -31,14 +31,14 @@ node bench/src/calibrate.ts [--repeat 3]
                                     ┌───────────┴───────────┐
                                     ▼                       ▼
                               机械 checker             LLM judge（claude -p）
-                          （零写入/零实现）         （逐 Requirement 结果质量）
+                       （Git-visible 变更/零实现）  （逐 Requirement 结果质量）
                                     └───────────┬───────────┘
                                                 ▼
                                       reporter（JSON + Markdown）
 ```
 
 - `src/normalize/` — 两种会话格式归一化为统一事件流；新增 host 只需加 parser。
-- `src/checks/` — 只检查机械可知的边界：shape 是否写了任何文件或调用 implement。它不判断问题数量、固定 summary 或阶段顺序。
+- `src/checks/` — 检查 transcript 中可识别的写入、driver fixture 结束时仍存在的 Git-visible 变更，以及 implement 调用；fixture 证据不可用时单列 warning。它不声称捕获已恢复或被忽略的瞬时写入，也不判断问题数量、固定 summary 或阶段顺序。
 - `src/judge/` — 逐条评估 grounding、交互比例、实质决策覆盖、推荐质量、已定内容复用与会话结论完整度；Requirement 清单运行时读自 `specs/shape/spec.md`，spec 更新自动跟随。
 - `src/driver/` — user-sim 按意图卡答题；claude 侧经 Agent SDK `canUseTool` 代答 AskUserQuestion，codex 侧经 `exec` / `exec resume` 多轮驱动。
 - `scenarios/` + `fixtures/` — 场景卡与合成项目；fixture 复制到临时目录后现场 `git init`，保证每次起点一致。
@@ -70,6 +70,7 @@ bench 不是 skill，不进 `specs/`（`checkSpecPairing` 强制 specs ↔ skill
 
 - **输入**：transcript 必须是 claude projects JSONL 或 codex rollout JSONL；无法识别的文件报错并指出路径与原因，其余合法文件继续判卷，整体 exit 非 0。
 - **判定范围**：同一 host transcript 中，用户显式调用其他 skill 时，shape 判定在该用户消息前结束；没有显式 handoff 时，所有后续写入或实现仍归 shape。
+- **工作树证据**：driver run 比较 fixture 最终 `git status --porcelain`；它证明是否留下 tracked/untracked Git-visible 变更，不证明运行期间从未写过已恢复或被忽略的文件。`judge` 已有 transcript 时没有 fixture，报告必须显示 evidence warning 而不是机械违规。
 - **判定输出**：逐条 Requirement `pass|fail|n.a.` + 证据轮次 + 0–10 总分；judge 输出两次不合 schema 时，该会话标 `judge-error`，不中断整批。
 - **驱动器错误语义**：codex `exec resume` 失败则该 run 中止并保留已有 transcript；SDK 非 success 结局标 `error`；超过 `--max-turns`（默认 30）未收束标 `timeout`。
 - **完成信号**：assistant 的最终消息不再请求用户输入即视为会话收束；仍在提问则由 user-sim 回答，超过 `--max-turns` 记为 timeout。文件写入从不构成 shape 完成信号。

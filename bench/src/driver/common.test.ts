@@ -2,10 +2,12 @@
  * Unit tests for shared driver helpers.
  */
 
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, it, expect } from "vite-plus/test";
 import { endsWithQuestion } from "./common.ts";
+import { inspectFixtureWorktree, prepareFixture } from "./fixture.ts";
 
 describe("endsWithQuestion", () => {
   it("detects a plain trailing question", () => {
@@ -38,5 +40,28 @@ describe("shape driver completion", () => {
     );
 
     expect(sources.join("\n")).not.toContain("planWritten");
+  });
+});
+
+describe("fixture worktree evidence", () => {
+  it("distinguishes a clean fixture from shell-created changes", () => {
+    const source = mkdtempSync(join(tmpdir(), "shape-bench-source-"));
+    writeFileSync(join(source, "tracked.txt"), "before\n");
+    const workDir = prepareFixture(source, "worktree-test");
+    try {
+      expect(inspectFixtureWorktree(workDir)).toEqual({ changes: [] });
+      writeFileSync(join(workDir, "tracked.txt"), "after\n");
+      writeFileSync(join(workDir, "created.txt"), "new\n");
+      const observation = inspectFixtureWorktree(workDir);
+      expect(observation.changes).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining("tracked.txt"),
+          expect.stringContaining("created.txt"),
+        ]),
+      );
+    } finally {
+      rmSync(source, { recursive: true, force: true });
+      rmSync(workDir, { recursive: true, force: true });
+    }
   });
 });

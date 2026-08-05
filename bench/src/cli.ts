@@ -67,14 +67,17 @@ export function runJudgeCommand(
       continue;
     }
     log(`判卷中:${path}(${transcript.session.host},${transcript.turnCount} 轮)…`);
-    const checks = runChecks(transcript);
+    const checks = runChecks(transcript, {
+      worktreeChanges: undefined,
+      worktreeCheckError: "transcript-only judge 没有 fixture 工作树证据",
+    });
     const judgeOpts: JudgeOptions = { repoRoot, runModel: opts.runModel, model: opts.model };
     const judge = judgeTranscript(transcript, judgeOpts);
     const report = buildSessionReport(transcript, checks, judge);
     reports.push(report);
     log(
       judge.status === "ok"
-        ? `  → 总分 ${judge.verdict.score},机械违规 ${checks.violations.length} 项`
+        ? `  → 总分 ${judge.verdict.score},机械违规 ${checks.violations.length} 项,证据警告 ${checks.warnings?.length ?? 0} 项`
         : `  → judge-error:${judge.errors.join(";")}`,
     );
   }
@@ -213,7 +216,12 @@ async function runRunCommand(opts: RunCommandOptions): Promise<number> {
           );
           continue;
         }
-        const checks = runChecks(transcript);
+        const checks = runChecks(transcript, {
+          worktreeChanges: drive.worktreeChanges,
+          ...(drive.worktreeCheckError !== undefined && {
+            worktreeCheckError: drive.worktreeCheckError,
+          }),
+        });
         const judge = judgeTranscript(transcript, {
           repoRoot,
           scenarioNote: `这是驱动器场景「${card.title}」(类型:${card.kind})。用户由模拟器扮演,初始意图:${card.initialIntent}`,
@@ -231,7 +239,7 @@ async function runRunCommand(opts: RunCommandOptions): Promise<number> {
         const last = reports.at(-1);
         console.log(
           last?.judge.status === "ok"
-            ? `  → 总分 ${String(last.score)},机械违规 ${last.mechanicalViolations.length} 项`
+            ? `  → 总分 ${String(last.score)},机械违规 ${last.mechanicalViolations.length} 项,证据警告 ${last.mechanicalWarnings.length} 项`
             : `  → judge-error`,
         );
       }

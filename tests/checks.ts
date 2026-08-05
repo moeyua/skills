@@ -11,7 +11,7 @@
 
 import { readdirSync, readFileSync, statSync, existsSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
-import { parseFrontmatter, parseWhenToUseKeywords, type SkillFrontmatter } from "./frontmatter.ts";
+import { parseFrontmatter, type SkillFrontmatter } from "./frontmatter.ts";
 
 // ---------- skill file discovery ----------
 
@@ -81,24 +81,6 @@ export function checkDescriptionConformance(skills: Map<string, SkillFrontmatter
       throw new Error(
         `DESCRIPTION MISSING EXCLUSION CLAUSE: ${name}; description must include "Not for ..."`,
       );
-    }
-  }
-}
-
-// ---------- outcome contract ----------
-
-const OUTCOME_FIELDS = ["Outcome:", "Done when:", "Evidence:", "Output:"];
-
-export function checkOutcomeContract(root: string): void {
-  for (const path of findSkillFiles(root)) {
-    const text = readFileSync(path, "utf-8");
-    if (!text.includes("## Outcome Contract")) {
-      throw new Error(`MISSING OUTCOME CONTRACT: ${path}`);
-    }
-    const section = text.split("## Outcome Contract", 2)[1]?.split("\n## ", 2)[0] ?? "";
-    const missing = OUTCOME_FIELDS.filter((field) => !section.includes(field));
-    if (missing.length > 0) {
-      throw new Error(`INCOMPLETE OUTCOME CONTRACT: ${path}; missing: ${missing.join(", ")}`);
     }
   }
 }
@@ -186,31 +168,6 @@ export function checkNoRootSkill(root: string): void {
     throw new Error(
       `ROOT SKILL.md DISALLOWED at ${rootSkill}; breaks 'npx skills add' nested discovery`,
     );
-  }
-}
-
-// ---------- trigger keyword overlap (Jaccard) ----------
-
-const JACCARD_THRESHOLD = 0.5;
-
-export function checkTriggerJaccard(skills: Map<string, SkillFrontmatter>): void {
-  const names = [...skills.keys()].sort();
-  for (let i = 0; i < names.length; i++) {
-    const a = names[i]!;
-    const setA = parseWhenToUseKeywords(skills.get(a)!.when_to_use);
-    for (let j = i + 1; j < names.length; j++) {
-      const b = names[j]!;
-      const setB = parseWhenToUseKeywords(skills.get(b)!.when_to_use);
-      const shared = new Set([...setA].filter((kw) => setB.has(kw)));
-      const union = new Set([...setA, ...setB]);
-      if (union.size === 0) continue;
-      const jaccard = shared.size / union.size;
-      if (jaccard >= JACCARD_THRESHOLD) {
-        throw new Error(
-          `TRIGGER OVERLAP: ${a} vs ${b} jaccard=${jaccard.toFixed(2)} shared=${[...shared].sort().join(", ")}`,
-        );
-      }
-    }
   }
 }
 
