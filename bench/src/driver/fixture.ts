@@ -12,6 +12,11 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { execFileSync } from "node:child_process";
 
+export interface FixtureWorktreeObservation {
+  changes: string[];
+  error?: string;
+}
+
 export function prepareFixture(fixtureDir: string, label: string): string {
   const workDir = mkdtempSync(join(tmpdir(), `shape-bench-${label}-`));
   cpSync(fixtureDir, workDir, { recursive: true });
@@ -30,4 +35,20 @@ export function prepareFixture(fixtureDir: string, label: string): string {
     "fixture baseline",
   );
   return workDir;
+}
+
+export function inspectFixtureWorktree(workDir: string): FixtureWorktreeObservation {
+  try {
+    const output = execFileSync(
+      "git",
+      ["-C", workDir, "status", "--porcelain=v1", "--untracked-files=all"],
+      { encoding: "utf8" },
+    );
+    return { changes: output.split("\n").filter((line) => line.length > 0) };
+  } catch (cause) {
+    return {
+      changes: [],
+      error: cause instanceof Error ? cause.message : String(cause),
+    };
+  }
 }

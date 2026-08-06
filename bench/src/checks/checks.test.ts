@@ -32,9 +32,9 @@ describe("shape-write-boundary", () => {
     "/repo/DESIGN.md",
     "/home/u/.claude/projects/x/memory/MEMORY.md",
   ])("flags every file write, including %s", (path) => {
-    const hits = runChecks(transcript(writeCall(2, path))).violations.filter(
-      (violation) => violation.check === "shape-write-boundary",
-    );
+    const hits = runChecks(transcript(writeCall(2, path)), {
+      worktreeChanges: [],
+    }).violations.filter((violation) => violation.check === "shape-write-boundary");
 
     expect(hits).toHaveLength(1);
     expect(hits[0]?.evidence).toContain(path);
@@ -51,7 +51,7 @@ describe("shape-write-boundary", () => {
       ...writeCall(2, "/repo/plans/2026-07-21-feat-x.md"),
     ]);
 
-    expect(runChecks(t).violations).toHaveLength(0);
+    expect(runChecks(t, { worktreeChanges: [] }).violations).toHaveLength(0);
   });
 });
 
@@ -68,7 +68,7 @@ describe("shape-implementation-boundary", () => {
       },
     ]);
 
-    const hits = runChecks(t).violations.filter(
+    const hits = runChecks(t, { worktreeChanges: [] }).violations.filter(
       (violation) => violation.check === "shape-implementation-boundary",
     );
     expect(hits).toHaveLength(1);
@@ -94,7 +94,7 @@ describe("shape-implementation-boundary", () => {
       },
     ]);
 
-    expect(runChecks(t).violations).toHaveLength(0);
+    expect(runChecks(t, { worktreeChanges: [] }).violations).toHaveLength(0);
   });
 
   it("does not mistake a read-only task guard for an implementation request", () => {
@@ -128,7 +128,7 @@ describe("shape-implementation-boundary", () => {
     ]);
 
     expect(
-      runChecks(t).violations.filter(
+      runChecks(t, { worktreeChanges: [] }).violations.filter(
         (violation) => violation.check === "shape-implementation-boundary",
       ),
     ).toHaveLength(1);
@@ -148,6 +148,34 @@ describe("adaptive conversation has no ceremony checker", () => {
       },
     ]);
 
-    expect(runChecks(t).violations).toHaveLength(0);
+    expect(runChecks(t, { worktreeChanges: [] }).violations).toHaveLength(0);
+  });
+});
+
+describe("shape-worktree-boundary", () => {
+  it("flags fixture changes even when the transcript contains no recognized write tool", () => {
+    const hits = runChecks(transcript([]), { worktreeChanges: [" M src/notes.js"] }).violations;
+    expect(hits).toEqual([
+      expect.objectContaining({
+        check: "shape-write-boundary",
+        severity: "hard",
+        evidence: expect.stringContaining("src/notes.js"),
+      }),
+    ]);
+  });
+
+  it("reports unavailable fixture evidence instead of claiming a mechanical clean run", () => {
+    const result = runChecks(transcript([]), {
+      worktreeChanges: undefined,
+      worktreeCheckError: "fixture unavailable",
+    });
+    expect(result.violations).toHaveLength(0);
+    expect(result.warnings).toEqual([
+      expect.objectContaining({
+        check: "shape-worktree-evidence",
+        severity: "warn",
+        evidence: expect.stringContaining("fixture unavailable"),
+      }),
+    ]);
   });
 });

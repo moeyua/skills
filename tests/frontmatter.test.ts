@@ -2,7 +2,7 @@ import { describe, it, expect } from "vite-plus/test";
 import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { parseFrontmatter, parseWhenToUseKeywords, FrontmatterError } from "./frontmatter.ts";
+import { parseFrontmatter, FrontmatterError } from "./frontmatter.ts";
 
 function writeStub(content: string): string {
   const dir = mkdtempSync(join(tmpdir(), "skills-test-"));
@@ -16,16 +16,14 @@ describe("parseFrontmatter", () => {
     const path = writeStub(`---
 name: explore
 description: "Use when ... . Not for ..."
-when_to_use: "a, b, c"
-dispatch_intent: "test"
 ---
 
 body`);
     const result = parseFrontmatter(path);
-    expect(result.name).toBe("explore");
-    expect(result.description).toBe("Use when ... . Not for ...");
-    expect(result.when_to_use).toBe("a, b, c");
-    expect(result.dispatch_intent).toBe("test");
+    expect(result).toEqual({
+      name: "explore",
+      description: "Use when ... . Not for ...",
+    });
     rmSync(path);
   });
 
@@ -48,16 +46,5 @@ description: "x"
 `);
     expect(() => parseFrontmatter(path)).toThrow(/MISSING name/);
     rmSync(path);
-  });
-});
-
-describe("parseWhenToUseKeywords", () => {
-  it("splits comma-separated keywords and lowercases", () => {
-    const set = parseWhenToUseKeywords("Fix, Crash , error");
-    expect(set).toEqual(new Set(["fix", "crash", "error"]));
-  });
-
-  it("returns empty set for empty input", () => {
-    expect(parseWhenToUseKeywords("")).toEqual(new Set());
   });
 });

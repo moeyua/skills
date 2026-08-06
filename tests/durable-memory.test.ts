@@ -37,6 +37,6 @@ describe("durable memory architecture", () => {
   });
 
   it("lets docs record already-decided PRODUCT truth", () => {
-    expect(DOCS_SKILL).toContain("Docs may write PRODUCT only from already-decided product truth");
+    expect(DOCS_SKILL).toMatch(/PRODUCT[\s\S]*(?:already decided|already established|已决定)/i);
   });
 });

@@ -1,57 +1,37 @@
-# Docs Skill Specification
+# Docs Specification
 
 ## Purpose
 
-docs skill 从权威来源维护六类 durable memory（spec、PRODUCT、ARCHITECTURE、DESIGN、ROADMAP、README）或用户明确指定的项目文档；它记录已经确立的 truth，不负责作出决定。
+docs 从权威来源维护六类 durable memory 或用户明确指定的项目文档；它记录 truth，不作产品决定。
 
 ## Requirements
 
-### Requirement: 默认目录只包含六类记忆
+### Requirement: 目标按需选择
 
-未指定 catalog 外目标时，docs 必须按 `rules/memory-catalog.md` 在 spec、PRODUCT、ARCHITECTURE、DESIGN、ROADMAP、README 中选择适用目标，并加载对应 format；不得创建 WORKFLOW 或 agent 自行发明的第七类默认 artifact。
+用户指定目标时 docs 必须留在该 artifact；否则必须先读 memory catalog，只选择适用目标，再只读被选中的 format。不得把 catalog 当成六份文档都要填的 checklist，也不得发明第七类默认 artifact。
 Verify: [durable memory architecture](../../tests/durable-memory.test.ts)
 
-### Requirement: 选目标前建立可靠上下文
+### Requirement: 每个 claim 都有 authority
 
-当前项目或记忆上下文不足时，docs 必须按目标风险取得 explore context；该上下文只帮助定位事实，不替代 catalog 对目标 Source 的要求。
+内容必须来自用户/维护者决定、grounded shape 结论、plan 决定或 Spec delta、verified landed behavior、权威契约或明确 correction。代码可证明 mechanics，不得独自证明 positioning、rationale、priority 或 intended behavior。
 Verify: manual(integration)
 
-### Requirement: 逐目标 anti-invention
+### Requirement: PRODUCT truth 必须已经决定
 
-docs 写任一目标必须依据用户/维护者已定决定、grounded shape 结论、plan delta/key decision、验证后的 landed behavior、权威契约、现有文档或明确 correction；源缺失时必须省略或停问，不得从实现反推意图。
+docs 可记录 already decided 的 PRODUCT positioning、哲学和边界；需要自行判断方向、价值或 scope 时必须省略该 claim 或停在具体 authority 边界。
+Verify: [durable memory architecture](../../tests/durable-memory.test.ts)
+
+### Requirement: Spec delta 按 requirement identity 合并
+
+ADDED/MODIFIED/REMOVED 必须按持久 requirement 名加入、替换或删除，并以 landed behavior 核对最终契约；每条 requirement 保留恰好一个 `Verify:`。
 Verify: manual(integration)
 
-### Requirement: docs 可记录已决定的 PRODUCT truth
+### Requirement: touched range 形成一致文档
 
-PRODUCT 定位、哲学或边界已经由用户、维护者或 shape 会话决定时，docs 必须能按 product format 写入或修正；需要 docs 自行判断方向、价值或边界时必须停止该 claim，不得替用户裁决。
+docs 必须保留正确内容并重塑 touched range，不得追加补丁式纠错段落；ARCHITECTURE/DESIGN 只记当前，ROADMAP 只记已决定未来项，README 只投影已定定位与 verified usage。
 Verify: manual(integration)
 
-### Requirement: 合并或补写行为契约
+### Requirement: 文档调用止于文档结果
 
-存在 plan `## Spec delta` 时，docs 必须按 requirement 名执行 ADDED/MODIFIED/REMOVED 并用 landed evidence 核对；无 delta 时只可从明确行为契约、权威 skill/API 或维护者陈述 correction/backfill，不得从代码独自推断产品行为。
-Verify: manual(integration)
-
-### Requirement: 用户明确指定时可写 catalog 外文档
-
-只有用户明确指定路径、文档类型或具体 artifact 时，docs 才可维护 catalog 外项目文档；内容仍须有权威来源且不得自行扩展到 sibling docs、索引、changelog 或 release-note 文件。
-Verify: manual(integration)
-
-### Requirement: 设计记忆不含未来且 ROADMAP 只记录
-
-ARCHITECTURE 与 DESIGN 必须只记录当前 truth；ROADMAP 只记录维护者已经决定的未来项、优先级或日期，docs 不主动规划、排期或判断价值。
-Verify: manual(integration)
-
-### Requirement: README 是入口投影
-
-README 必须从 PRODUCT、ARCHITECTURE 与验证后的用法合成，不得发明定位、营销主张或充当 changelog/release notes。
-Verify: manual(integration)
-
-### Requirement: 不够 memory-worthy 不开位置
-
-内容不值得长期复用时，docs 必须不新建文件/section/entry；需要写时应重塑 touched range 并保留仍正确的既有内容，而非追加补丁式段落。
-Verify: manual(integration)
-
-### Requirement: 每次调用止于文档结果
-
-docs 完成后必须报告目标、变更与权威来源并停止，不得自动调用 publish、release 或其他后续能力。
+docs 不得编辑实现、执行项目级 drift audit、提交、推送、开 PR 或 release；完成后报告 target、truth、authority 与因缺权威省略的内容。
 Verify: manual(integration)

@@ -324,8 +324,27 @@ describe("plan Issue projection contract", () => {
   );
 
   it("uses the user's language and the active GitHub account", () => {
-    expect(skill).toContain("Use the user's current language for every user-visible Issue field");
-    expect(skill).toContain("gh auth status --active --hostname github.com");
+    const local = readFileSync(TARGET_PATHS.local, "utf8");
+    const issue = readFileSync(TARGET_PATHS.issue, "utf8");
+    const both = readFileSync(TARGET_PATHS.both, "utf8");
+
+    expect(skill).toContain("use the user's current language for every user-visible Issue field");
+    expect(skill).not.toContain("gh auth status --active --hostname github.com");
+    expect(issue).toContain("gh auth status --active --hostname github.com");
+    expect(both).toContain("gh auth status --active --hostname github.com");
+    expect(local).toMatch(
+      /existing canonical Issue URL[\s\S]*run `gh auth status[\s\S]*read-only verification/i,
+    );
+    expect(issue).toContain("user's current language");
+    expect(issue + both).toContain("safe temporary body file");
+    expect(both).toMatch(
+      /temporary body file[\s\S]*(?:remove|delete)[\s\S]*(?:success|failure|ambiguous)/i,
+    );
     expect(formats).toContain("Render each semantic section as one natural visible `##` heading");
+  });
+
+  it("projects each create candidate through its own type and creates batch labels once", () => {
+    expect(formats).toMatch(/each create candidate[\s\S]*its own[\s\S]*(?:type|schema)/i);
+    expect(formats).toMatch(/all missing[\s\S]*change-type labels[\s\S]*at most once/i);
   });
 });

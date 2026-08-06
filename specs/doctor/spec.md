@@ -2,42 +2,31 @@
 
 ## Purpose
 
-doctor skill 给项目做只读体检:审计「文档说的」与「代码做的」是否一致(主),并机械检查依赖陈旧 / CI 状态 / 文件大小 / 链接引用是否还在(次)。它只检测、只报告、只指路,绝不修改、提交或自动调用其他 skill。是校验支柱的 loop 外正交审计半边。
-
-> 说明:doctor 的行为是 agent 遵循 SKILL.md 的 prose,机械层由随 skill 装的 `scripts/checker.ts` 执行;下面每条都标 `manual(integration)`——靠实跑 `/doctor` 验。
+doctor 提供全项目只读体检：文档 claim 与项目事实的漂移为主，确定性健康 probe 为辅。
 
 ## Requirements
 
-### Requirement: 只读、只指路、不接管
+### Requirement: 只读、只报告
 
-doctor 必须不修改任何文件,不提交、不推送、不自动调用其他 skill;脚本与观察命令(node checker / pnpm outdated / gh / git log)只采集事实,不改。发现问题指向对应 skill(文档漂移→docs、成批 catalog 格式漂移→converge、已授权代码修复→implement、未决正确性/简化设计→shape、scope 蔓延→交用户),不接管去做。(Previously: 指路对象无 converge;更早由 health 执行该职责。)
+doctor 不得修改、提交、推送或调用 fixing capability；脚本和环境命令只采集证据。
 Verify: manual(integration)
 
-### Requirement: 审计前缺少项目上下文时先做 explore context preflight
+### Requirement: 不熟悉时先取得项目骨架
 
-doctor 在机械检查和 docs-vs-code 判断前，若当前项目/记忆布局上下文缺失、过期或不足以支撑 drift 判断，必须调用 explore 的 context mode 建立事实基础。调用时根据审计范围选择 core 或 deep，不产出独立 Explore Report，并把读取证据纳入 Health Report。
-
-该 preflight 不改变 doctor 只读、只报告、不自动调用修复 skill 的边界。
+项目或 memory layout 不足以支撑判断时必须取得 explore context；已具备新鲜事实时不得机械重复 preflight。
 Verify: manual(integration)
 
-### Requirement: 主检查——文档声称 vs 代码实际
+### Requirement: docs-vs-code 是主检查
 
-doctor 必须把「文档声称的行为」与「代码实际的行为」是否一致作为首要检查,逐条核实(对 Skills 格式文档以每条 `### Requirement:` 为离散 claim 逐条核;对散文文档 best-effort,核不动的不硬判),标出不符处(含散文式架构 / 技术选型声称与代码不符),给 observed-vs-claimed 裁决,报告置于最前;不就地改。(Previously: health 执行该职责。)
-(Previously:格式身份沿用项目旧名;逐条审计语义不变。)
+Spec requirement 必须逐 claim 核对，散文文档只核可证实 claim；无法判断的 rationale 不得强行裁决，模型 finding 只报告高置信 observed-vs-claimed 矛盾。
 Verify: manual(integration)
 
-### Requirement: 机械先于模型、确定性层用随装脚本
+### Requirement: 机械事实交给 checker
 
-doctor 必须先跑机械检查产出确定性事实:其中纯文件系统的确定性检查(文档格式合规、链接 / 锚点 / 引用解析、占位符、文件大小)由随 skill 装的脚本 `node ${CLAUDE_SKILL_DIR}/scripts/checker.ts` 执行,环境查询(依赖陈旧、CI 状态、git 时间戳)由 Bash 执行;模型判断只用于机械做不到的语义判断(行为是否一致),不替代可机械确定的检查。(Previously: health 执行该职责。)
-Verify: manual(integration)
+Spec shape、Markdown links/anchors、placeholders 和 source size 必须由随装 checker 处理；依赖、CI、history probe 只在 scope 和 prerequisites 适用时运行，缺失依赖准确记为 skipped。
+Verify: [checker contract](../../tests/checker.test.ts)
 
-### Requirement: 两类对象、自适应且探不到即跳过
+### Requirement: 报告区分事实、判断和 owner
 
-doctor 查两类对象:Skills 维护的文档(假定 Skills 格式,查格式合规 + 漂移)与项目本身(任意项目,查依赖 / CI / 文件大小 / 链接)。项目本身那类必须按现状自适应(检出包管理器 / CI / 文档位置),依赖缺失(无 manifest / 无 GitHub remote / 无文档 / 无 node 24)时优雅跳过并在报告说明,不报错、不为某项目类型写专属逻辑。(Previously: health 执行该职责。)
-(Previously:文档/格式身份沿用项目旧名;两类对象的边界不变。)
-Verify: manual(integration)
-
-### Requirement: 模型 finding 过滤分级、跳过项需标明
-
-doctor 报告必须含机械 findings(事实)与模型 findings;模型 findings 只报 confidence ≥ 80,按 Critical / Important / Suggestion 分级并给 routing;被跳过的检查须在报告标明。(Previously: health 执行该职责。)
+机械 finding 必须作为事实；model finding 必须带 severity、confidence 和 evidence；每项可能修复必须指出 Docs、Converge、Implement 或 Shape 等 owner，但 doctor 自身停止在 advisory report。
 Verify: manual(integration)

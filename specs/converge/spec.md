@@ -2,39 +2,31 @@
 
 ## Purpose
 
-converge skill 把项目的 memory catalog 文档批量收敛到 Skills 当前规范:逐份判定状态、按状态选动作,幂等。不做项目级 init/update 二分——空项目跑一遍即初始化,Skills 升级后跑一遍即对齐,写了一半的项目跑一遍即补全。格式权威来源是同装 docs skill 的 formats,机械扫描复用同装 doctor 的 checker。
-
-> 说明:converge 的行为是 agent 遵循 SKILL.md 的 prose;机械信号来自同装 doctor 的 `scripts/checker.ts`。下面每条都标 `manual(integration)`——靠实跑 `/converge` 双端验收(brownfield fixture 的 init 端 + Skills 自身的 align 端)加幂等复跑(工作树零 diff)验;「同级资产引用、缺失即停」靠卸载 docs 后运行应停验。
+converge 按文档逐一判定并幂等收敛整个 durable-memory catalog，格式真源来自同装 Docs，机械信号来自同装 Doctor。
 
 ## Requirements
 
-### Requirement: 逐份状态判定与幂等收敛
+### Requirement: 逐文档状态决定动作
 
-converge 必须对 memory catalog 的每份文档逐一判定状态(不适用 / 缺失 / 格式不符 / 半成品 / 内容漂移 / 已达标)并按状态选动作;适用性按 catalog 的 When needed 判定,不适用项跳过并在报告注明;状态判定优先机械信号(checker 输出、文件存在性、节标题匹配),模型判定只用于内容漂移档。对已收敛项目紧接复跑,必须全部跳过(含不适用项)且不产生任何文件改动。
-(Previously: Purpose 以项目旧名指代目标格式;逐份状态判定语义不变。)
+每份 catalog artifact 必须判为不适用、缺失、格式不符、半成品、内容漂移或已达标，并执行对应 create/re-shell/fill/stop-for-authority/skip 动作；适用性和格式先用机械证据，model 只判断 claim drift。
 Verify: manual(integration)
 
-### Requirement: 已有内容为权威来源
+### Requirement: sibling asset 缺失即停
 
-converge 对已存在的用户内容只重排结构、只补空缺,必须不推倒重写;内容与代码矛盾时必须列出矛盾交用户裁决。
+Docs catalog/formats 或 Doctor checker 缺失时 converge 必须零写入停止，不得凭记忆重建；Node 24+ 缺失只跳过 checker 并准确报告。
 Verify: manual(integration)
 
-### Requirement: 初次创作豁免
+### Requirement: 保留 authored truth
 
-PRODUCT 与 specs 从无到有时,converge 以维护者访谈为权威来源实填,代码仅用于印证陈述、不得反推;访谈答不上的节留骨架并注明来源缺失。文档一旦存在,已决定 truth 的单目标维护回归 docs，新的 PRODUCT 意图仍由 shape 解决。
+已有内容必须保留，结构可重排、空缺只能从允许来源补；内容与代码冲突必须交维护者裁决。PRODUCT/Specs 从无到有时可用维护者回答，代码不得反推 intent。
 Verify: manual(integration)
 
-### Requirement: 分级确认
+### Requirement: 来源明确时自主收敛
 
-动内容的改动(重排用户所写、修内容漂移、访谈补缺)必须逐份先呈现「改什么 + 为什么」并获确认;纯格式对齐可批量执行,完成后必须给出总览。
+来源明确且不会丢失 authored meaning 时，re-shell 和 gap fill 必须作为已授权 converge outcome 的机械动作自主执行。只有来源冲突、可能丢失 authored content、将引入新产品 intent 或缺少所需 authority 时才停止并请求维护者裁决；不受影响的文件可继续。
 Verify: manual(integration)
 
-### Requirement: 同级资产引用、缺失即停
+### Requirement: catalog-only 且幂等
 
-converge 的格式权威来源是同装 docs skill 的 references/formats/\*,机械扫描复用同装 doctor 的 scripts/checker.ts;任一缺失必须停下报依赖,不得降级或凭记忆编造格式。checker 缺 Node 24 时沿用 doctor 契约:注明跳过,模型判定继续。
-Verify: manual(integration)
-
-### Requirement: 只管 catalog 文档的批量收敛
-
-converge 只收敛 memory catalog 文档,至多额外创建 `plans/` 目录骨架;不装 host 侧任何东西,不碰 catalog 外文档,不做依赖/CI 检查(doctor),不做单目标零散修正(docs)。
+converge 只能写 catalog artifacts 和必要的 plans 目录骨架；不得安装 host 配置、触碰 catalog 外文档或做依赖/CI audit。完成后立即复跑必须零 diff。
 Verify: manual(integration)

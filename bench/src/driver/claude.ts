@@ -13,7 +13,7 @@ import { globSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { query } from "@anthropic-ai/claude-agent-sdk";
-import { prepareFixture } from "./fixture.ts";
+import { inspectFixtureWorktree, prepareFixture } from "./fixture.ts";
 import { simulateUser, matchOptionLabel, type QuestionOption } from "./user-sim.ts";
 import { endsWithQuestion, type DriveResult } from "./common.ts";
 import type { ScenarioCard } from "../scenario.ts";
@@ -80,6 +80,7 @@ export async function runClaudeScenario(
 
   const finish = (status: DriveResult["status"]): DriveResult => {
     const transcriptPath = sessionId === "" ? null : findTranscript(sessionId);
+    const worktree = inspectFixtureWorktree(workDir);
     return {
       scenario: card.id,
       host: "claude",
@@ -88,6 +89,8 @@ export async function runClaudeScenario(
       turns,
       status: transcriptPath === null && status !== "error" ? "error" : status,
       workDir,
+      worktreeChanges: worktree.error === undefined ? worktree.changes : undefined,
+      ...(worktree.error !== undefined && { worktreeCheckError: worktree.error }),
       ...(transcriptPath === null && { error: "找不到会话 transcript JSONL" }),
     };
   };

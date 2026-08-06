@@ -3,7 +3,7 @@
  *
  * Zero runtime dependencies — stdlib only. So first-run doesn't require `pnpm install`.
  *
- * Skills frontmatter has 4 string fields: name, description, when_to_use, dispatch_intent.
+ * Skills frontmatter has 2 string fields: name and description.
  */
 
 import { readFileSync } from "node:fs";
@@ -11,8 +11,6 @@ import { readFileSync } from "node:fs";
 export interface SkillFrontmatter {
   name: string;
   description: string;
-  when_to_use: string;
-  dispatch_intent: string;
 }
 
 export class FrontmatterError extends Error {
@@ -23,7 +21,7 @@ export class FrontmatterError extends Error {
 }
 
 const REQUIRED_FIELDS = ["name", "description"] as const;
-const ALL_FIELDS = ["name", "description", "when_to_use", "dispatch_intent"] as const;
+const ALL_FIELDS = ["name", "description"] as const;
 type FieldName = (typeof ALL_FIELDS)[number];
 
 export function parseFrontmatter(filePath: string): SkillFrontmatter {
@@ -62,8 +60,6 @@ export function parseFrontmatter(filePath: string): SkillFrontmatter {
   return {
     name: fields.name!,
     description: fields.description!,
-    when_to_use: fields.when_to_use ?? "",
-    dispatch_intent: fields.dispatch_intent ?? "",
   };
 }
 
@@ -80,13 +76,4 @@ function parseScalar(raw: string, filePath: string, field: string): string {
     return raw.slice(1, -1);
   }
   return raw;
-}
-
-export function parseWhenToUseKeywords(whenToUse: string): Set<string> {
-  return new Set(
-    whenToUse
-      .split(",")
-      .map((kw) => kw.trim().toLowerCase())
-      .filter(Boolean),
-  );
 }

@@ -1,6 +1,6 @@
 # Issue Formats
 
-Read this file only for the `issue` or `both` target. Render exactly one schema for each Issue work item, matching that item's change type; keep its section identity and order unchanged.
+Read this file only when the selected target is ready to create one or more GitHub Issues. For each create candidate, render exactly one schema matching its own change type; keep that schema's section identity and order unchanged. The `both` target is the one-candidate case.
 
 ## Shared rules
 
@@ -12,7 +12,7 @@ Read this file only for the `issue` or `both` target. Render exactly one schema 
 
 ## Label metadata
 
-Create only the selected missing label. Never rewrite an existing label.
+Create all missing change-type labels required by the current batch, each at most once. Never rewrite an existing label.
 
 | Label      | Description                    | Color    |
 | ---------- | ------------------------------ | -------- |

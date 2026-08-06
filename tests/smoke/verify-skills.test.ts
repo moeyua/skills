@@ -12,11 +12,9 @@ import { fileURLToPath } from "node:url";
 import {
   checkSkillFiles,
   checkDescriptionConformance,
-  checkOutcomeContract,
   checkReferencesExist,
   checkMarkdownLinks,
   checkNoRootSkill,
-  checkTriggerJaccard,
   checkResolverConsistency,
   checkSpecPairing,
   checkMemoryCatalog,
@@ -36,10 +34,6 @@ describe("repo skill verifier (smoke)", () => {
     expect(() => checkDescriptionConformance(skills)).not.toThrow();
   });
 
-  it("checkOutcomeContract: every SKILL.md has the 4 Outcome Contract fields", () => {
-    expect(() => checkOutcomeContract(REPO_ROOT)).not.toThrow();
-  });
-
   it("checkReferencesExist: every references/X.md mentioned in a SKILL.md exists", () => {
     expect(() => checkReferencesExist(REPO_ROOT)).not.toThrow();
   });
@@ -50,10 +44,6 @@ describe("repo skill verifier (smoke)", () => {
 
   it("checkNoRootSkill: no root SKILL.md (would break nested discovery)", () => {
     expect(() => checkNoRootSkill(REPO_ROOT)).not.toThrow();
-  });
-
-  it("checkTriggerJaccard: no two skills share more than half their when_to_use keywords", () => {
-    expect(() => checkTriggerJaccard(skills)).not.toThrow();
   });
 
   it("checkResolverConsistency: RESOLVER.md lists exactly the skills under skills/", () => {

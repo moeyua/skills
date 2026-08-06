@@ -12,7 +12,7 @@ import { spawnSync } from "node:child_process";
 import { globSync, mkdtempSync, readFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
-import { prepareFixture } from "./fixture.ts";
+import { inspectFixtureWorktree, prepareFixture } from "./fixture.ts";
 import { simulateUser } from "./user-sim.ts";
 import { endsWithQuestion, type DriveResult } from "./common.ts";
 import type { ScenarioCard } from "../scenario.ts";
@@ -73,6 +73,7 @@ export function runCodexScenario(
 
   const finish = (status: DriveResult["status"], error?: string): DriveResult => {
     const transcriptPath = sessionId === "" ? null : findRollout(sessionId);
+    const worktree = inspectFixtureWorktree(workDir);
     return {
       scenario: card.id,
       host: "codex",
@@ -81,6 +82,8 @@ export function runCodexScenario(
       turns,
       status: transcriptPath === null && status !== "error" ? "error" : status,
       workDir,
+      worktreeChanges: worktree.error === undefined ? worktree.changes : undefined,
+      ...(worktree.error !== undefined && { worktreeCheckError: worktree.error }),
       ...(error !== undefined && { error }),
       ...(transcriptPath === null && error === undefined && { error: "找不到 rollout JSONL" }),
     };

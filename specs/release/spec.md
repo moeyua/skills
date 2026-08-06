@@ -17,7 +17,6 @@ Verify: [release contract](../../tests/release.test.ts)
 
 显式 tag 只选择精确目标，不绕过版本合法性。对尚不存在、需要新建发布状态的 identity，identity 自身的 version/sequence 与每个 unit target 都必须相对权威 current version、identity/unit baselines 满足项目策略的 successor、version-group、initial-version 和 prerelease 规则。新 identity 必须是合法后继且不得复用既有 identity version；每个实际 changed unit target 必须是合法 forward successor。aggregate identity 覆盖的 member 只有被权威项目策略明确标记 unchanged 时才可等于 current version，这不属于 identity-version 复用；通用 SemVer 回退不得自行发明 aggregate 或 unchanged-member 语义。未经策略允许的相等 target、降级 target 或新 identity version 复用必须零 mutation 停止；既有 identity 与恢复状态继续按统一 predicate 幂等核验。
 
-(Previously: 显式 tag 只能映射一个根 package。)
 Verify: [release contract](../../tests/release.test.ts)
 
 ### Requirement: 项目权威版本策略优先于通用 SemVer

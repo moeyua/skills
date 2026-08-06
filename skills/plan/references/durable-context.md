@@ -1,1 +1,0 @@
-../../../rules/durable-context.md

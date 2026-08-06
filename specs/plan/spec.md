@@ -83,5 +83,5 @@ Verify: [plan artifact contract](../../tests/plan.test.ts)
 
 ### Requirement: Issue 保持安全且范围有限
 
-Issue 必须只使用与 change type 相同的一个 lowercase label、固定 semantic schema 和安全 body file；所有 GitHub access 先核验 active account，case-only label collision 必须在 Issue mutation 前停止，本轮已经创建的 labels 必须在所有完成或失败结果中准确报告；不得管理 Projects、状态、milestone、assignee、sub-issue 或 dependencies，也不得编辑既有 Issue。
+Issue 必须只使用与 change type 相同的一个 lowercase label、固定 semantic schema 和安全 body file；所有 GitHub access 先核验 active account，case-only label collision 必须在 Issue mutation 前停止，本轮已经创建的 labels 必须在所有完成或失败结果中准确报告；不得管理 Projects、状态、milestone、assignee、sub-issue 或 dependencies，也不得编辑既有 Issue。GitHub provider 调用细节必须位于 target reference 而非主 SKILL；`local` 仅在存在 canonical URL 时条件式认证，`both` 必须按显式 repository、canonical URL 所属 repository、当前 repository 的顺序解析身份，临时 body file 必须在成功、失败或结果模糊后清理。label 创建失败必须映射到首个依赖该 label 的 `failed` row，保留 `reused` rows，并把其余 create candidates 标记为 `not-attempted`。
 Verify: [plan Issue projection contract](../../tests/plan.test.ts)

@@ -13,6 +13,8 @@ export interface DriveResult {
   turns: number;
   status: "completed" | "timeout" | "error";
   workDir: string;
+  worktreeChanges: string[] | undefined;
+  worktreeCheckError?: string;
   error?: string;
 }
 
