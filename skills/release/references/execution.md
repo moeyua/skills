@@ -13,18 +13,26 @@ Switch to the resolved default branch and reconcile it with the fetched remote t
 
 Continue only from equal/fast-forward state or a recovery state accepted by recovery.md.
 
-Before returning any fully or partially existing set, require all existing identities to point to the same verified release commit and that committed tree to satisfy every confirmed unit target and group/propagation constraint.
+Before returning any fully or partially existing set, require all existing identities to point to the same verified release commit and that committed tree to satisfy every confirmed unit target, group/propagation constraint, and applicable repository-metadata requirement.
 
-## Version transaction
+## Release metadata transaction
 
-Resolve a repository-declared command or deterministic sequence that changes every confirmed changed unit, preserves every policy-declared unchanged unit, and touches only declared package-manager/release-tool-owned version/dependency metadata.
+Resolve a repository-declared command or deterministic sequence that produces the complete confirmed set:
 
-It must be one verified non-tagging version transaction, be non-committing and non-publishing, must not stage files, and must not change branches, tags, or other refs. Verify its behavior from installed CLI help or authoritative documentation. Examples for an established single-package npm/pnpm repository include:
+- every confirmed unit target version;
+- every required dependency propagation result;
+- every applicable version-bound repository release metadata target and confirmed or project-determined content.
+
+When the topology has no version-bound repository release metadata, the transaction must not create a changelog file, note entry, or placeholder. When it does, follow the repository's existing structure and semantics rather than imposing a common file type or schema. The sequence may combine established release tools with bounded edits when the repository itself has no generator.
+
+It must be one verified non-tagging release metadata transaction. Every part must be non-committing and non-publishing, must not stage files, and must not change branches, tags, or other refs. Verify tool behavior from installed CLI help or authoritative documentation. Examples for an established single-package npm/pnpm repository include:
 
     pnpm version <version> --no-git-tag-version
     npm version <version> --no-git-tag-version
 
-Record canonical HEAD, index, and relevant refs before execution; afterward require HEAD, index, and refs remain unchanged. Validate the semantic working-tree diff before staging explicit resolved paths.
+Before execution, resolve the expected paths and semantic result for versions, dependencies, and applicable repository metadata. Record canonical HEAD, index, and relevant refs; afterward require HEAD, index, and refs remain unchanged. Reject any extra path or content that is not part of the complete release set.
+
+Run the repository-defined validation that materially covers the changed release metadata before staging. Choose the narrowest sufficient proof from project instructions, tests, and release tooling; a failing or unavailable required check stops at the transaction diff rather than being bypassed.
 
 ## Release commit and branch push
 
@@ -38,7 +46,7 @@ For one identity the label is the exact tag:
 
 For multiple identities, use the repository's authoritative release-label policy. If no policy exists, form the label deterministically in stable unit order from the exact tags, joined with `+`.
 
-The release-commit predicate requires the expected parent and subject, every unit target, group and dependency-propagation invariants, non-empty allowed metadata paths, and a semantic diff against its parent that changes only confirmed versions and declared dependency metadata.
+The release-commit predicate requires the expected parent and subject; every unit target; group and dependency-propagation invariants; applicable version-bound repository release metadata; non-empty allowed metadata paths; and a semantic diff against its parent that exactly produces the complete confirmed set without unrelated content.
 
 After git commit, validate HEAD with that predicate and require the tree/index to be clean. Apply the predicate to every fresh commit, local-ahead recovery, and remote commit reuse. Do not bypass hooks, amend, discard, or normalize a failed result automatically.
 
@@ -64,6 +72,6 @@ For each release identity in deterministic order:
 
    gh release create <tag> --verify-tag --generate-notes --title <tag> --notes-start-tag <identity-baseline-tag>
 
-Omit --notes-start-tag only for a verified first release. GitHub-generated notes are the release notes. Do not create notes files. Add prerelease state only when explicitly requested or required by authoritative policy.
+Omit `--notes-start-tag` only for a verified first release. GitHub-generated notes remain the GitHub Release notes; they neither replace nor duplicate version-bound repository release metadata. Add prerelease state only when explicitly requested or required by authoritative policy.
 
-Record each tag and Release independently. If one identity fails, preserve completed objects and resume only the missing identities on a later run.
+Record shared repository metadata and each identity independently. If one identity fails, preserve completed objects and resume only the missing state on a later run.

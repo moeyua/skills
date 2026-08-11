@@ -66,13 +66,13 @@ Two deliberate exceptions preserve correctness rather than uniformity:
 
 The product rationale for adaptive composition lives in [PRODUCT.md](./PRODUCT.md). Technically, each capability is independently invokable, and a capability may use another capability's output or bounded behavior without transferring ownership of external state. The exact public routes live in [skills/RESOLVER.md](./skills/RESOLVER.md).
 
-| mutation                                                        | owning authorization               |
-| --------------------------------------------------------------- | ---------------------------------- |
-| local plan                                                      | Plan target `local` or `both`      |
-| GitHub Issue                                                    | Plan target `issue` or `both`      |
-| project implementation/docs                                     | explicit authorized change outcome |
-| commit, push, PR                                                | Publish outcome                    |
-| version metadata, default-branch release commit, tags, Releases | Release outcome                    |
+| mutation                                                                                                        | owning authorization               |
+| --------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| local plan                                                                                                      | Plan target `local` or `both`      |
+| GitHub Issue                                                                                                    | Plan target `issue` or `both`      |
+| project implementation/docs                                                                                     | explicit authorized change outcome |
+| commit, push, PR                                                                                                | Publish outcome                    |
+| version/dependency and version-bound repository release metadata, default-branch release commit, tags, Releases | Release outcome                    |
 
 Check remains read-only and Docs remains authority-bound when composed; neither grants Publish or Release.
 
@@ -92,19 +92,19 @@ Shared symlinks remain only for true semantic sources: `change-types.md` is cons
 
 ## Artifact and state flow
 
-| artifact/state                     | producer        | useful consumers                | absence/failure                                           |
-| ---------------------------------- | --------------- | ------------------------------- | --------------------------------------------------------- |
-| conversational direction           | Shape           | Plan, Implement, Docs           | not a gate                                                |
-| local implementation plan          | Plan            | Implement, Publish, Docs        | clear requests may proceed without it                     |
-| canonical Issue problem record/URL | Plan/user       | Publish                         | omit closing reference if absent                          |
-| working diff and verification      | Implement/Check | Docs, Publish                   | consumers require only evidence relevant to their outcome |
-| durable memories                   | Docs/Converge   | all fact-gathering capabilities | load only applicable targets                              |
-| branch/upstream/PR state           | Publish         | reviewers                       | partial success is preserved                              |
-| release basis/commit/tags/Releases | Release         | users/GitHub                    | resume from verified canonical state                      |
+| artifact/state                              | producer        | useful consumers                | absence/failure                                           |
+| ------------------------------------------- | --------------- | ------------------------------- | --------------------------------------------------------- |
+| conversational direction                    | Shape           | Plan, Implement, Docs           | not a gate                                                |
+| local implementation plan                   | Plan            | Implement, Publish, Docs        | clear requests may proceed without it                     |
+| canonical Issue problem record/URL          | Plan/user       | Publish                         | omit closing reference if absent                          |
+| working diff and verification               | Implement/Check | Docs, Publish                   | consumers require only evidence relevant to their outcome |
+| durable memories                            | Docs/Converge   | all fact-gathering capabilities | load only applicable targets                              |
+| branch/upstream/PR state                    | Publish         | reviewers                       | partial success is preserved                              |
+| release basis/metadata commit/tags/Releases | Release         | users/GitHub                    | resume from verified canonical state                      |
 
 Plan target semantics are stable: omitted target is `both`; `both` writes local before Issue; `issue` accepts 1–20 explicitly bounded same-repository problems; no target silently falls back to another. Every Issue body newly rendered by Plan remains a problem record even when paired with a local plan, and only the local artifact carries implementation decisions, path-level scope, ordering, and verification; verified canonical Issues are associated without body edits.
 
-Release models authoritative version sources as release units, project-tool coordination as version groups, exact tag/GitHub mappings as release identities, and the confirmed combination as a release set. Derived/expanded sets wait for next-turn confirmation. Every path re-resolves from the fetched default branch, runs one verified non-tagging/non-committing/non-publishing version transaction, creates one release commit, and publishes each identity recoverably.
+Release models authoritative version sources as release units, project-tool coordination as version groups, exact tag/GitHub mappings as release identities, and any existing version-bound repository release metadata as an optional part of the confirmed release set. Derived or substantively expanded sets wait for next-turn confirmation. Every path re-resolves from the fetched default branch, runs one verified non-tagging/non-committing/non-publishing release metadata transaction, creates one commit containing the complete set, and publishes each identity recoverably. The same semantic predicate governs fresh execution, local recovery, and remote reuse without imposing one metadata filename, schema, or tool.
 
 ## Truth and verification
 
@@ -142,6 +142,10 @@ node skills/doctor/scripts/checker.ts . --json
 9. No `SKILL.md` exists at the repository root.
 
 ## Key decisions
+
+### 2026-08-11: release owns version-bound repository metadata
+
+Some repositories make a user-facing changelog entry or another committed artifact an invariant of the target version. Release now includes such existing version-bound repository release metadata in its release set and commit instead of requiring a separate implementation/PR handoff. Repository instructions, specifications, code, tests, and release tooling establish whether that surface exists; absence never causes Release to invent one. Agent-derived substantive content uses the existing set-expansion confirmation judgment, while deterministic or already-matching content does not add a mandatory round trip.
 
 ### 2026-08-05: lightweight context architecture
 
