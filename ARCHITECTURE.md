@@ -81,7 +81,7 @@ Check remains read-only and Docs remains authority-bound when composed; neither 
 Notable reference families:
 
 - Explore: scoped deep-dive and report interface.
-- Plan: one target contract (`local`, `issue`, or `both`), then only the selected change-type/template/Issue schema.
+- Plan: one target contract (`local`, `issue`, or `both`); local plans load the selected change-type/template, while every Issue uses the shared problem-record schema.
 - Check: review, test, and e2e methods load independently.
 - Docs: the memory catalog indexes six target-specific formats.
 - Publish: git state, PR construction, and recovery.
@@ -95,14 +95,14 @@ Shared symlinks remain only for true semantic sources: `change-types.md` is cons
 | artifact/state                     | producer        | useful consumers                | absence/failure                                           |
 | ---------------------------------- | --------------- | ------------------------------- | --------------------------------------------------------- |
 | conversational direction           | Shape           | Plan, Implement, Docs           | not a gate                                                |
-| local plan                         | Plan            | Implement, Publish, Docs        | clear requests may proceed without it                     |
-| canonical Issue URL                | Plan/user       | Publish                         | omit closing reference if absent                          |
+| local implementation plan          | Plan            | Implement, Publish, Docs        | clear requests may proceed without it                     |
+| canonical Issue problem record/URL | Plan/user       | Publish                         | omit closing reference if absent                          |
 | working diff and verification      | Implement/Check | Docs, Publish                   | consumers require only evidence relevant to their outcome |
 | durable memories                   | Docs/Converge   | all fact-gathering capabilities | load only applicable targets                              |
 | branch/upstream/PR state           | Publish         | reviewers                       | partial success is preserved                              |
 | release basis/commit/tags/Releases | Release         | users/GitHub                    | resume from verified canonical state                      |
 
-Plan target semantics are stable: omitted target is `both`; `both` writes local before Issue; `issue` accepts 1–20 explicitly bounded same-repository items; no target silently falls back to another.
+Plan target semantics are stable: omitted target is `both`; `both` writes local before Issue; `issue` accepts 1–20 explicitly bounded same-repository problems; no target silently falls back to another. Every Issue body newly rendered by Plan remains a problem record even when paired with a local plan, and only the local artifact carries implementation decisions, path-level scope, ordering, and verification; verified canonical Issues are associated without body edits.
 
 Release models authoritative version sources as release units, project-tool coordination as version groups, exact tag/GitHub mappings as release identities, and the confirmed combination as a release set. Derived/expanded sets wait for next-turn confirmation. Every path re-resolves from the fetched default branch, runs one verified non-tagging/non-committing/non-publishing version transaction, creates one release commit, and publishes each identity recoverably.
 
@@ -136,7 +136,7 @@ node skills/doctor/scripts/checker.ts . --json
 3. Main Skills remain capability guides and conditional routers, not copies of deep references or fixed global stages.
 4. Explore retains its fixed Overview; Release retains its high-consequence safety predicates.
 5. Agent-owned composition stays inside the user's authorized outcome and preserves each supporting capability's boundary.
-6. Plan target semantics, Publish history safety, and Release confirmation/recovery identities do not drift.
+6. Plan target and artifact semantics, Publish history safety, and Release confirmation/recovery identities do not drift.
 7. The durable-memory catalog contains exactly six types.
 8. `change-types.md` and `memory-catalog.md` each have one shared source.
 9. No `SKILL.md` exists at the repository root.

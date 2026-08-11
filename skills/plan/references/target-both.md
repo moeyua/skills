@@ -4,7 +4,7 @@ Use this contract only when the resolved artifact target is `both`.
 
 ## Mutation boundary
 
-Persist one coherent change as a local implementation plan and at most one GitHub Issue companion. The local plan must exist and validate before any Issue mutation. This order is fixed: local before Issue.
+Persist one coherent change as a local implementation plan and at most one GitHub Issue companion. A newly created Issue is a problem record; the local plan owns implementation decisions, path-level scope, sequencing, and verification. A verified canonical Issue is reused without editing its existing body. The local plan must exist and validate before any Issue mutation. This order is fixed: local before Issue.
 
 An Issue failure makes the overall result `partial`; it never removes, invalidates, or blocks implementation from the completed local plan. Do not fall back, retry automatically, or create a replacement Issue after an ambiguous result. Do not manage Projects, status, milestones, assignees, dependencies, or sub-issues, and never edit an existing Issue.
 
@@ -12,7 +12,7 @@ An Issue failure makes the overall result `partial`; it never removes, invalidat
 
 1. Confirm the request is one coherent change. If it contains independent changes, stop before writing and ask which change should become the paired artifacts.
 2. Select one shared change type. Read `references/plan-template.md`, the matching `references/mode-*.md`, and `references/issue-formats.md`.
-3. Ground both artifacts from the same settled intent. Render their target-specific structure without letting either artifact introduce new scope; use the user's current language for every user-visible Issue field.
+3. Ground both artifacts from the same settled problem and observable outcome. Keep their responsibilities separate: render the local plan as the implementation handoff and the Issue as a problem record, without copying approach, architecture, path-level changes, dependencies, migration design, implementation order, or test implementation plans into the Issue. Neither artifact may introduce new scope; use the user's current language for every user-visible Issue field.
 4. Write and validate `plans/YYYY-MM-DD-<slug>.md` with `status: draft` and no `issue:` field.
 5. Start the GitHub portion by running `gh auth status --active --hostname github.com`. Failure leaves the plan valid and finishes `partial`.
 6. Resolve one canonical repository before URL verification or remote mutation: use an explicit `OWNER/REPOSITORY` first, otherwise the repository named by an explicitly supplied canonical Issue URL, otherwise the current repository from `gh repo view --json nameWithOwner -q .nameWithOwner`. Verify the resolved repository is readable. Failure leaves the plan valid and finishes `partial`.

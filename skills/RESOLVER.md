@@ -8,7 +8,7 @@
 | --------- | --------------------------------------------------------------------- | --------------------------- |
 | Explore   | reliable project/module understanding or facts for another capability | `skills/explore/SKILL.md`   |
 | Shape     | resolving material uncertainty into a grounded direction              | `skills/shape/SKILL.md`     |
-| Plan      | persisting settled work as local plans, Issues, or both               | `skills/plan/SKILL.md`      |
+| Plan      | persisting implementation-ready work or bounded problems              | `skills/plan/SKILL.md`      |
 | Implement | changing the project inside an authorized outcome                     | `skills/implement/SKILL.md` |
 | Check     | obtaining a read-only review/test/e2e verdict                         | `skills/check/SKILL.md`     |
 | Docs      | recording established truth in an authorized document target          | `skills/docs/SKILL.md`      |
@@ -21,7 +21,7 @@
 ## Common distinctions
 
 - Explore maps facts; Doctor judges project-wide drift; Check judges one change.
-- Shape resolves unsettled direction; Plan persists settled work; Implement changes the project.
+- Shape resolves unsettled direction; Plan records bounded problems or persists implementation-ready work; Implement changes the project.
 - Docs writes focused established truth; Converge batch-aligns the catalog; Doctor only reports.
 - Publish creates reviewable branch/PR state; Release creates version/tag/Release state.
 - Handoff is transient conversation context, not project documentation.

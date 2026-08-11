@@ -15,23 +15,14 @@ const TARGET_PATHS = {
 
 const EXPECTED_CHANGE_TYPES = ["fix", "feat", "refactor", "perf"] as const;
 
-const REQUIRED_SECTIONS = {
-  fix: ["background", "problem", "reproduction", "expected", "actual", "scope", "acceptance"],
-  feat: ["background", "goal", "user_scenario", "scope", "non_goals", "acceptance"],
-  refactor: ["background", "refactor_goal", "behavior_invariants", "scope", "acceptance"],
-  perf: [
-    "background",
-    "performance_problem",
-    "metric",
-    "baseline",
-    "target",
-    "measurement",
-    "scope",
-    "acceptance",
-  ],
+const REQUIRED_PROBLEM_KEYS = {
+  fix: "problem",
+  feat: "gap",
+  refactor: "structural_problem",
+  perf: "performance_problem",
 } as const;
 
-function extractSchema(markdown: string, type: keyof typeof REQUIRED_SECTIONS): string {
+function extractSchema(markdown: string, type: keyof typeof REQUIRED_PROBLEM_KEYS): string {
   const pattern = "^## `" + type + "`\\n\\n([\\s\\S]*?)(?=\\n## `|(?![\\s\\S]))";
   const match = new RegExp(pattern, "m").exec(markdown);
   expect(match, `missing centralized ${type} schema`).not.toBeNull();
@@ -132,6 +123,12 @@ describe("plan target contracts", () => {
     expect(issue).toMatch(/batch marker/i);
     expect(issue).toMatch(/created.+reused.+blocked.+failed.+unknown.+not-attempted/is);
     expect(issue).toMatch(/first.+failure.+stop/is);
+    expect(issue).toMatch(/bounded development problem/i);
+    expect(issue).toMatch(
+      /missing solution.+target architecture.+complete acceptance.+(?:is|are) not.+block/is,
+    );
+    expect(issue).not.toMatch(/every item has settled intent, scope, and observable acceptance/i);
+    expect(issue).not.toMatch(/every schema section must be present/i);
   });
 
   it("defines a complete ledger for preflight and label failures", () => {
@@ -178,6 +175,7 @@ describe("plan target contracts", () => {
     expect(both).toMatch(/Start the GitHub portion by running `gh auth status/is);
     expect(both).toMatch(/case-only label collision.+partial.+do not create/is);
     expect(both).toMatch(/report.+labels created by this run/is);
+    expect(both).toMatch(/Issue.+problem record.+local plan.+implementation/is);
   });
 
   it("locks mock transaction transcripts, ledger completion, and zero project writes", () => {
@@ -313,15 +311,34 @@ describe("plan Issue projection contract", () => {
     expect(formats).not.toMatch(/(?:^## |^\| )`brainstorm`/m);
   });
 
-  it.each(Object.entries(REQUIRED_SECTIONS))(
-    "locks the semantic section order for %s",
-    (type, expected) => {
-      const schema = extractSchema(formats, type as keyof typeof REQUIRED_SECTIONS);
+  it.each(Object.entries(REQUIRED_PROBLEM_KEYS))(
+    "requires a problem statement without an implementation target for %s",
+    (type, requiredProblemKey) => {
+      const schema = extractSchema(formats, type as keyof typeof REQUIRED_PROBLEM_KEYS);
       const sections = [...schema.matchAll(/^\| `([a-z_]+)`\s+\|/gm)].map((match) => match[1]!);
 
-      expect(sections).toEqual(expected);
+      expect(sections).toContain(requiredProblemKey);
+      expect(schema).toMatch(new RegExp("\\| `" + requiredProblemKey + "`\\s+\\| Required\\s+\\|"));
     },
   );
+
+  it("keeps every GitHub Issue problem-oriented while the local plan owns implementation", () => {
+    const issue = readFileSync(TARGET_PATHS.issue, "utf8");
+    const both = readFileSync(TARGET_PATHS.both, "utf8");
+    const template = readFileSync(TEMPLATE_PATH, "utf8");
+
+    expect(formats).toMatch(/what.+why.+observable resolved state.+never.+how/is);
+    expect(formats).toMatch(
+      /do not prescribe.+technical approach.+target architecture.+path.+symbol.+dependency.+migration.+implementation order.+test implementation plan/is,
+    );
+    expect(formats).toMatch(/unknown solution.+remain unknown.+not.+task/is);
+    expect(formats).not.toContain("Every section is required");
+    expect(formats).not.toContain("`refactor_goal`");
+    expect(formats).not.toMatch(/commands, tools, or sampling method/i);
+    expect(issue).toMatch(/problem-oriented Issue/i);
+    expect(both).toMatch(/Issue.+problem record.+local plan.+implementation/is);
+    expect(template).toMatch(/implementation handoff/i);
+  });
 
   it("uses the user's language and the active GitHub account", () => {
     const local = readFileSync(TARGET_PATHS.local, "utf8");
@@ -340,7 +357,9 @@ describe("plan Issue projection contract", () => {
     expect(both).toMatch(
       /temporary body file[\s\S]*(?:remove|delete)[\s\S]*(?:success|failure|ambiguous)/i,
     );
-    expect(formats).toContain("Render each semantic section as one natural visible `##` heading");
+    expect(formats).toContain(
+      "Render each included semantic section as one natural visible `##` heading",
+    );
   });
 
   it("projects each create candidate through its own type and creates batch labels once", () => {

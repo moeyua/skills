@@ -67,7 +67,7 @@ Doctor audits the project, not the agent host's plugins, hooks, MCP configuratio
 
 ### General project management and content ingestion
 
-Plan's Issues are projections of development work, not a Projects/status/milestone/assignee system. URL/PDF ingestion and open-ended research remain general input capabilities rather than new Skills in this suite.
+Issues created by Plan are bounded problem records: they preserve what is wrong or missing, why it matters, and an observable resolved state when known, while local plans own the implementation approach. Verified canonical Issues may be associated without rewriting their existing bodies. Plan is not a Projects/status/milestone/assignee system. URL/PDF ingestion and open-ended research remain general input capabilities rather than new Skills in this suite.
 
 ## Using this document
 
