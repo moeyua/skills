@@ -2,7 +2,7 @@
 
 ## Purpose
 
-plan skill 按用户选择，把已经足够明确的开发工作持久化为本地实施方案、GitHub Issue work items，或二者；未指定 artifact target 时固定使用 `both`。
+plan skill 按用户选择，把可实施的开发工作持久化为本地方案、把边界清楚的开发问题持久化为 problem-oriented GitHub Issues，或同时产出职责分离的二者；未指定 artifact target 时固定使用 `both`。
 
 ## Requirements
 
@@ -23,7 +23,8 @@ Verify: [plan target contracts](../../tests/plan.test.ts)
 
 ### Requirement: issue target 零项目写入并支持同仓批量
 
-`issue` 必须接受 1–20 个用户明确分隔、属于同一 canonical repository 的条目，为每项独立选择 change type 并创建或复用至多一个 Issue；除必定清理且位于项目外的安全临时 body file 外，不得写 plan、工作树、branch 或其他项目状态。零项、21 项以上、跨仓或边界不清必须在 mutation 前 `blocked`，不得自动拆批。
+`issue` 必须接受 1–20 个用户明确分隔、属于同一 canonical repository 的 bounded development problems，为每项独立选择 change type 并创建或复用至多一个 Issue；solution、target architecture 或完整 acceptance 尚未确定不得成为 blocker，只有 repository、item boundary 或问题本身不足以可靠记录时才可在 mutation 前 `blocked`。除必定清理且位于项目外的安全临时 body file 外，不得写 plan、工作树、branch 或其他项目状态；零项、21 项以上、跨仓或边界不清不得自动拆批。
+(Previously: `issue` 接受 1–20 个明确同仓 work items，但没有区分问题记录与实施交接所需的成熟度。)
 Verify: [plan target contracts](../../tests/plan.test.ts)
 
 ### Requirement: issue 批次具有稳定事务语义
@@ -50,14 +51,15 @@ Verify: manual(integration)
 
 ### Requirement: plan 不要求先运行 shape
 
-plan 必须复用已有 shape 结论，但不得把 shape artifact 或调用历史设为门禁；当前请求足够明确时必须能直接按所选 target 持久化工作。
+plan 必须复用已有 shape 结论，但不得把 shape artifact 或调用历史设为门禁；`local` / `both` 的 change 已达到实施成熟度，或 `issue` 的 problem 已足以准确记录时，必须能直接按所选 target 持久化。
+(Previously: 当前请求足够明确时必须能直接按所选 target 持久化工作，但没有按 artifact 职责区分“足够明确”。)
 Verify: [plan artifact contract](../../tests/plan.test.ts)
 
 ### Requirement: 四种共享变更类型决定产物证据
 
-plan 必须从共享真源为每个 work item 选择恰好一个 `fix`、`feat`、`refactor` 或 `perf`。本地方案使用对应的 root-cause/regression、interface/acceptance、invariant/coverage 或 baseline/target/measurement 质量门槛；每个 Issue 使用同一类型的 single lowercase label 与 semantic schema；brainstorm 不是 plan mode。
+plan 必须从共享真源为每个 work item 选择恰好一个 `fix`、`feat`、`refactor` 或 `perf`。本地方案使用对应的 root-cause/regression、interface/acceptance、invariant/coverage 或 baseline/target/measurement 质量门槛；每个 Issue 使用同一类型的 single lowercase label 与 problem-evidence schema，不得借分类选择 target structure、未来工具或实现方式；brainstorm 不是 plan mode。
 
-(Previously: 四种类型只决定单个本地方案结构和可选 Issue label。)
+(Previously: 每个 Issue 使用同一类型的 single lowercase label 与 semantic schema，但 schema 没有排除 target structure、未来工具或实现方式。)
 Verify: [plan Issue projection contract](../../tests/plan.test.ts)
 
 ### Requirement: Issue 是显式 target 产物
@@ -76,12 +78,18 @@ Verify: [plan target contracts](../../tests/plan.test.ts)
 
 ### Requirement: 产物共享意图且不重复确认
 
-`both` 的本地方案与 Issue 必须从同一组已知事实、范围、约束与验收渲染；`issue` 必须从每个用户明确条目渲染对应 intake Issue。调用已经授权所选 target 的公开产出，不得另设理解卡或 prose 审批门槛；Issue 的所有用户可见字段使用用户当前语言，显式语言要求优先。
+`both` 的本地方案与 Issue 必须从同一问题、已知事实、外部约束和可观察结果渲染，但职责保持分离：Issue 只记录问题，本地 plan 承载方案、路径级 scope、顺序和验证；`issue` 必须从每个用户明确条目渲染对应 problem record。调用已经授权所选 target 的公开产出，不得另设理解卡或 prose 审批门槛；Issue 的所有用户可见字段使用用户当前语言，显式语言要求优先。
 
-(Previously: 裸 `/plan` 固定授权 local plan 与可选 Issue companion 两个产出。)
+(Previously: `both` 的本地方案与 Issue 从同一组已知事实、范围、约束与验收渲染，但没有明确两种 artifact 的内容职责。)
 Verify: [plan artifact contract](../../tests/plan.test.ts)
+
+### Requirement: Issue 只记录问题而不规定实现
+
+`issue` 与 `both` 新建的每个 Issue 必须记录问题或能力缺口、其重要性以及已知的可观察完成状态；可以包含有证据支持的背景、复现、现有测量、影响、外部约束、非目标和验收，但不得规定 technical approach、target architecture、待改 path/symbol、dependency choice、migration design、implementation order 或 test implementation plan。未知 solution 必须保持未知，不得为填满 schema 而变成调查、测量或实现任务；只有对应类型的 problem section 必填，其余 section 必须在有事实支持时才出现。
+Verify: [plan Issue projection contract](../../tests/plan.test.ts)
 
 ### Requirement: Issue 保持安全且范围有限
 
-Issue 必须只使用与 change type 相同的一个 lowercase label、固定 semantic schema 和安全 body file；所有 GitHub access 先核验 active account，case-only label collision 必须在 Issue mutation 前停止，本轮已经创建的 labels 必须在所有完成或失败结果中准确报告；不得管理 Projects、状态、milestone、assignee、sub-issue 或 dependencies，也不得编辑既有 Issue。GitHub provider 调用细节必须位于 target reference 而非主 SKILL；`local` 仅在存在 canonical URL 时条件式认证，`both` 必须按显式 repository、canonical URL 所属 repository、当前 repository 的顺序解析身份，临时 body file 必须在成功、失败或结果模糊后清理。label 创建失败必须映射到首个依赖该 label 的 `failed` row，保留 `reused` rows，并把其余 create candidates 标记为 `not-attempted`。
+Issue 必须只使用与 change type 相同的一个 lowercase label、problem-oriented semantic schema 和安全 body file；所有 GitHub access 先核验 active account，case-only label collision 必须在 Issue mutation 前停止，本轮已经创建的 labels 必须在所有完成或失败结果中准确报告；不得管理 Projects、状态、milestone、assignee、sub-issue 或 dependencies，也不得编辑既有 Issue。GitHub provider 调用细节必须位于 target reference 而非主 SKILL；`local` 仅在存在 canonical URL 时条件式认证，`both` 必须按显式 repository、canonical URL 所属 repository、当前 repository 的顺序解析身份，临时 body file 必须在成功、失败或结果模糊后清理。label 创建失败必须映射到首个依赖该 label 的 `failed` row，保留 `reused` rows，并把其余 create candidates 标记为 `not-attempted`。
+(Previously: Issue 使用固定 semantic schema，但没有把 problem-oriented 内容边界纳入安全契约。)
 Verify: [plan Issue projection contract](../../tests/plan.test.ts)

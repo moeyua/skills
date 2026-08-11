@@ -4,7 +4,7 @@ Use this contract only when the resolved artifact target is `issue`.
 
 ## Mutation boundary
 
-Persist 1–20 explicitly separated work items as GitHub Issues in the same repository. This target guarantees zero project writes: do not create or modify plans, source files, documentation, tests, configuration, or other worktree content. Safe temporary Issue-body files outside the project are allowed during a create call and must be removed afterward.
+Persist 1–20 explicitly separated bounded development problems as problem-oriented Issues in the same repository. Each newly created Issue is a problem record, not an implementation handoff; a verified canonical Issue is reused without editing its existing body. This target guarantees zero project writes: do not create or modify plans, source files, documentation, tests, configuration, or other worktree content. Safe temporary Issue-body files outside the project are allowed during a create call and must be removed afterward.
 
 Each input item maps to at most one Issue. Preserve the user's item boundaries and order. Never auto-split prose, combine adjacent items, or move an item to another repository.
 
@@ -14,12 +14,12 @@ Zero items, more than 20 items, or items spanning multiple repositories make the
 
 Complete preflight for the entire batch before the first mutation:
 
-1. Validate that there are 1–20 explicit item boundaries and that every item has settled intent, scope, and observable acceptance. If boundaries or intent are materially unclear, return `blocked`.
+1. Validate that there are 1–20 explicit item boundaries and enough factual context to identify each bounded development problem and distinguish it from adjacent items. A missing solution, target architecture, or complete acceptance criteria is not a blocker. If the repository, item boundary, or problem itself is materially unclear, return `blocked`.
 2. Run `gh auth status --active --hostname github.com`.
 3. Resolve one canonical repository in this order: an explicit `OWNER/REPOSITORY`; otherwise the repository named by all explicitly supplied canonical Issue URLs when they agree; otherwise the current repository through `gh repo view --json nameWithOwner -q .nameWithOwner`. Verify repository read and Issue-write access. Every item and canonical URL must target that same repository.
 4. Classify every item independently as `fix`, `feat`, `refactor`, or `perf`.
 5. For every explicitly supplied canonical Issue URL, verify that it belongs to the resolved repository. A verified URL is `reused`; an invalid or unverifiable identity blocks the entire batch. Never search by title.
-6. Read `references/issue-formats.md`; render and validate every not-yet-associated title and body in the user's current language. Every schema section must be present, ordered, non-empty, factual, and placeholder-free.
+6. Read `references/issue-formats.md`; render and validate every not-yet-associated title and body in the user's current language. The required problem statement must be present; every included section must follow schema order, be non-empty, factual, placeholder-free, and free of implementation prescriptions. Omit unsupported optional sections instead of inventing facts or tasks.
 7. List repository labels once. Reuse exact lowercase labels. Reject case-only collisions. Determine the complete set of missing change-type labels and their metadata before mutation.
 8. Generate one unpredictable batch identifier. Give each create candidate a unique hidden batch marker derived from the batch identifier and its zero-padded input position, for example `<!-- codex-plan-issue-batch: UUID/03 -->`.
 
