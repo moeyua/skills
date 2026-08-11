@@ -14,6 +14,8 @@ const MODEL = read("skills/release/references/model.md");
 const EXECUTION = read("skills/release/references/execution.md");
 const RECOVERY = read("skills/release/references/recovery.md");
 const SPEC = read("specs/release/spec.md");
+const PRODUCT = read("PRODUCT.md");
+const ARCHITECTURE = read("ARCHITECTURE.md");
 
 const requirementNames = [...SPEC.matchAll(/^### Requirement: (.+)$/gm)].map((match) => match[1]!);
 
@@ -64,13 +66,37 @@ describe("release progressive interface", () => {
     expect(MODEL).toContain("post-fetch basis mismatch invalidates the confirmation");
   });
 
-  it("uses one side-effect-free version transaction and one verified commit", () => {
+  it("owns optional version-bound repository metadata without imposing one format", () => {
+    expect(MODEL).toContain("version-bound repository release metadata");
+    expect(MODEL).toMatch(/instructions[\s\S]*specifications[\s\S]*code[\s\S]*tests/i);
+    expect(MODEL).toMatch(/fixed filename[\s\S]*schema/i);
+    expect(MODEL).toMatch(/substantive user-visible content[\s\S]*confirmation/i);
+    expect(EXECUTION).toContain("release metadata transaction");
+    for (const result of [
+      "unit target version",
+      "dependency propagation",
+      "version-bound repository release metadata",
+    ]) {
+      expect(EXECUTION).toContain(result);
+    }
+    expect(EXECUTION).toMatch(
+      /no version-bound repository release metadata[\s\S]*must not create/i,
+    );
+    expect(RECOVERY).toContain("repository release metadata <state>");
+    expect(SPEC).toContain("版本绑定仓库发布元数据");
+    expect(PRODUCT).toContain("version-bound repository release metadata");
+    expect(ARCHITECTURE).toContain("version-bound repository release metadata");
+    expect(EXECUTION).not.toContain("Do not create notes files");
+    expect(SPEC).not.toContain("不生成 repo changelog/release-note 文件");
+  });
+
+  it("uses one side-effect-free release metadata transaction and one verified commit", () => {
     expect(EXECUTION).toContain("origin GitHub remote");
     expect(EXECUTION).toContain("working GitHub CLI authentication");
     expect(EXECUTION).toContain("clean tree");
     expect(EXECUTION).toContain("git merge --ff-only origin/<default-branch>");
     expect(EXECUTION).toContain("same verified release commit");
-    expect(EXECUTION).toContain("one verified non-tagging version transaction");
+    expect(EXECUTION).toContain("one verified non-tagging release metadata transaction");
     expect(EXECUTION).toContain("non-committing and non-publishing");
     expect(EXECUTION).toContain("must not stage files");
     expect(EXECUTION).toContain("HEAD, index, and refs remain unchanged");
@@ -90,9 +116,9 @@ describe("release progressive interface", () => {
   });
 
   it("recovers canonical partial state without destructive rollback", () => {
-    expect(RECOVERY).toContain("One validated version diff");
+    expect(RECOVERY).toContain("One validated release metadata diff");
     expect(RECOVERY).toContain("One validated local release commit ahead");
-    expect(RECOVERY).toContain("do not repeat the version transaction or commit");
+    expect(RECOVERY).toContain("do not repeat the release metadata transaction or commit");
     expect(RECOVERY).toContain("do not delete the tag");
     expect(RECOVERY).toContain("There is no destructive rollback");
     expect(requirementNames).toContain("既有发布状态与失败恢复共享同一 predicate");
@@ -100,8 +126,8 @@ describe("release progressive interface", () => {
 
   it("retains the bounded release exclusions", () => {
     expect(ENTRY).toMatch(/Never[\s\S]*deploy[\s\S]*registry package/i);
-    expect(RECOVERY).toContain(
-      "no deployment, rollback, changelog, artifact upload, registry publish, or automatic PR",
+    expect(RECOVERY).toMatch(
+      /no deployment, rollback, arbitrary changelog creation, artifact upload, registry publish, or automatic PR/i,
     );
     expect(requirementNames).toContain("通用发布仍排除部署与制品");
   });

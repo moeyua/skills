@@ -19,7 +19,7 @@ Read [PRODUCT.md](./PRODUCT.md) for product principles and [ARCHITECTURE.md](./A
 | `check`     | A read-only review/test/e2e verdict matched to the question and risk            |
 | `docs`      | Established truth recorded in the six-type catalog or a named project document  |
 | `publish`   | Missing commit, push, and pull-request actions completed from current state     |
-| `release`   | A confirmed release set, one default-branch version commit, tags, and Releases  |
+| `release`   | A confirmed release set, one complete metadata commit, tags, and Releases       |
 | `converge`  | Idempotent catalog-wide alignment to current memory formats                     |
 | `doctor`    | Read-only whole-project documentation drift and health audit                    |
 | `handoff`   | A compact, host-neutral continuation summary                                    |

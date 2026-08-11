@@ -19,7 +19,7 @@ Skills 为现代 coding agent 提供清晰的能力接口、项目特有判断�
 | `check`     | 按问题与风险选择 review/test/e2e 的只读 verdict                     |
 | `docs`      | 把既定 truth 写入六类 catalog memory 或用户指定文档                 |
 | `publish`   | 从当前状态完成缺失的 commit、push 与 pull request                   |
-| `release`   | 已确认 release set、一个默认分支版本提交、tags 与 Releases          |
+| `release`   | 已确认 release set、一个完整发布元数据提交、tags 与 Releases        |
 | `converge`  | 幂等地把整个 catalog 对齐到当前 memory formats                      |
 | `doctor`    | 只读的全项目文档漂移与健康审计                                      |
 | `handoff`   | 紧凑、host-neutral 的继续工作摘要                                   |

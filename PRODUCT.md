@@ -57,9 +57,13 @@ Supporting capabilities may be composed inside an authorized outcome, but one ou
 
 The six catalog memories are the default durable surface. A user may explicitly name another project document, but the agent does not invent a seventh catalog category, sibling guide, changelog, or release-notes file.
 
+This boundary does not exclude version-bound repository release metadata that authoritative project facts already make part of a release. Release may update that existing surface with the target version; it still does not invent a new documentation system.
+
 ### Release-adjacent operations
 
-Release is intentionally narrower than deployment or distribution. It does not absorb rollback, registry publishing, artifact upload, repository changelog generation, automatic PRs, or release-train management.
+Release is intentionally narrower than deployment or distribution. It does not absorb rollback, registry publishing, artifact upload, arbitrary changelog creation, automatic PRs, or release-train management.
+
+As decided on 2026-08-11, Release owns an existing version-bound repository release metadata surface together with version and dependency metadata when repository authority makes them one release invariant. Its shape and mechanics remain repository-defined and Agent-resolved; repositories without that invariant gain no new file, schema, or confirmation ritual.
 
 ### Agent-host administration
 
