@@ -44,7 +44,7 @@ Verify: [plan artifact contract](../../tests/plan.test.ts)
 
 ### Requirement: 仅 local 与 both 产出本地方案
 
-`local` 与 `both` 产出的方案必须包含 change type、边界、路径级步骤、独立 verify、整体验证和适用的专属证据，且不得含意图级占位符；`both` 必须在任何 Issue mutation 前完成本地写入，`issue` 不得写项目文件。
+`local` 与 `both` 产出的方案必须包含 change type、边界、路径级步骤、独立 verify、整体验证和适用的专属证据，且不得含意图级占位符；每个实施步骤与条件段必须可追溯到既定目标、验收或必要支撑工作，不得把偶然发现或可选完善提升为方案范围；`both` 必须在任何 Issue mutation 前完成本地写入，`issue` 不得写项目文件。
 
 (Previously: `plan 始终先产出本地方案` 要求所有调用先写本地方案。)
 Verify: manual(integration)
@@ -53,6 +53,11 @@ Verify: manual(integration)
 
 plan 必须复用已有 shape 结论，但不得把 shape artifact 或调用历史设为门禁；`local` / `both` 的 change 已达到实施成熟度，或 `issue` 的 problem 已足以准确记录时，必须能直接按所选 target 持久化。
 (Previously: 当前请求足够明确时必须能直接按所选 target 持久化工作，但没有按 artifact 职责区分“足够明确”。)
+Verify: [plan artifact contract](../../tests/plan.test.ts)
+
+### Requirement: plan 保持既定决策与范围
+
+plan 必须把用户明确决定或同意的方向、约束与非目标作为 artifact 约束，不得静默重做、重新解释或打开；agent 从含糊上下文推断的偏好不属于既定决定。与方向一致的必要事实按 artifact 所需比例纳入，仓库可回答的事实和可逆实现选择由 agent 直接补全，旁支与可选优化必须排除。只有检查得到的仓库事实、既有契约或权威资料证明既定决定不可行、相互矛盾或具有实质风险时才可重新打开；plan 必须在任何 artifact mutation 前报告原决定、新证据与影响，并等待该决定重新收敛。
 Verify: [plan artifact contract](../../tests/plan.test.ts)
 
 ### Requirement: 四种共享变更类型决定产物证据
@@ -78,7 +83,7 @@ Verify: [plan target contracts](../../tests/plan.test.ts)
 
 ### Requirement: 产物共享意图且不重复确认
 
-`both` 的本地方案与 Issue 必须从同一问题、已知事实、外部约束和可观察结果渲染，但职责保持分离：Issue 只记录问题，本地 plan 承载方案、路径级 scope、顺序和验证；`issue` 必须从每个用户明确条目渲染对应 problem record。调用已经授权所选 target 的公开产出，不得另设理解卡或 prose 审批门槛；Issue 的所有用户可见字段使用用户当前语言，显式语言要求优先。
+`both` 的本地方案与 Issue 必须从同一问题、已知事实、外部约束和可观察结果渲染，但职责保持分离：Issue 只记录问题，本地 plan 承载方案、路径级 scope、顺序和验证；`issue` 必须从每个用户明确条目渲染对应 problem record。调用已经授权所选 target 的公开产出，除“plan 保持既定决策与范围”定义的实质证据冲突外，不得另设理解卡或 prose 审批门槛；Issue 的所有用户可见字段使用用户当前语言，显式语言要求优先。
 
 (Previously: `both` 的本地方案与 Issue 从同一组已知事实、范围、约束与验收渲染，但没有明确两种 artifact 的内容职责。)
 Verify: [plan artifact contract](../../tests/plan.test.ts)

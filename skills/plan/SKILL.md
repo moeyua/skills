@@ -21,7 +21,13 @@ Once the target and its required repository and item boundaries are explicit, th
 
 ## Ground the work
 
-Do not require shape or another artifact to have run. Reuse the current conversation and inspect only repository facts needed by the selected artifact.
+Do not require shape or another artifact to have run. Reuse the current conversation and inspect only repository facts needed by the selected artifact. Treat what the user explicitly decided or agreed—including constraints and non-goals—as artifact constraints; inferred preferences are not settled decisions. Do not silently revise, reinterpret, or reopen settled decisions.
+
+Classify new findings before including them:
+
+- Include necessary facts that support the settled direction only in proportion to the selected artifact. Resolve repository-answerable facts and reversible implementation choices directly without asking for confirmation.
+- Exclude adjacent problems and optional improvements; artifact completeness does not authorize new scope.
+- When inspected repository facts, existing contracts, or authoritative sources show a settled decision is infeasible, contradictory, or materially risky, stop before any artifact mutation. State the settled decision, new evidence, and impact, then wait for the decision to be settled again. This is unresolved intent, not a second confirmation or prose-approval gate. A more complete alternative or agent preference is not new evidence.
 
 `local` and `both` require one implementation-ready change. Resolve gaps that could change outcome, scope, public behavior, hard-to-reverse architecture, or acceptance; never put unresolved intent in the local plan as `TODO` or `TBD`.
 

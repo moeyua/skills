@@ -1,6 +1,6 @@
 # Plan File Template
 
-Use this template only for the `local` and `both` targets. Write plans to `plans/YYYY-MM-DD-<slug>.md`. A plan is an implementation handoff: include what implement cannot infer and omit sections whose trigger is absent.
+Use this template only for the `local` and `both` targets. Write plans to `plans/YYYY-MM-DD-<slug>.md`. A plan is an implementation handoff: include what implement cannot infer and omit sections whose trigger is absent. Keep scope and detail proportional to `Building`, established acceptance, and necessary supporting work.
 
 ## Required core
 
@@ -63,6 +63,8 @@ Include a section only when its trigger exists; omit it otherwise.
 Do not emit a conditional heading merely to write `None`.
 
 ## Implementation-step bar
+
+Every implementation step and conditional section must trace to `Building`, established acceptance, or necessary supporting work. Incidental findings and optional improvements must not become steps or sections.
 
 Each step states an outcome, names path-level scope, carries an independent verification signal, follows only listed prerequisites, and contains no unresolved intent decision. Exact line locating, final wording, and micro-edit order belong to implement.
 
