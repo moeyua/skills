@@ -96,21 +96,18 @@ describe("plan artifact contract", () => {
   });
 
   it("preserves settled decisions and surfaces material conflicts before artifacts", () => {
-    expect(skill).toMatch(
+    const expectations = [
       /user.+explicitly.+(?:decided|agreed).+(?:constraints|non-goals).+artifact constraints/is,
-    );
-    expect(skill).toMatch(/do not silently.+(?:revise|reinterpret|reopen)/is);
-    expect(skill).toMatch(/inferred preferences.+not.+settled decisions/is);
-    expect(skill).toMatch(
+      /do not silently.+(?:revise|reinterpret|reopen)/is,
+      /inferred preferences.+not.+settled decisions/is,
       /repository facts.+existing contracts.+authoritative sources.+(?:infeasible|contradictory|materially risky)/is,
-    );
-    expect(skill).toMatch(
       /before.+artifact mutation.+settled decision.+new evidence.+impact.+wait/is,
-    );
-    expect(skill).toMatch(/unresolved intent.+not.+second confirmation/is);
-    expect(skill).toMatch(
+      /unresolved intent.+not.+second confirmation/is,
       /repository-answerable facts.+reversible implementation choices.+without.+confirmation/is,
-    );
+    ];
+    for (const pattern of expectations) {
+      expect(skill).toMatch(pattern);
+    }
   });
 
   it("keeps local plan scope proportional and traceable", () => {
@@ -119,15 +116,13 @@ describe("plan artifact contract", () => {
 
     expect(local).toMatch(/without introducing new scope/i);
     expect(both).toMatch(/neither artifact may introduce new scope/i);
-    expect(template).toMatch(
+    for (const pattern of [
       /scope and detail.+proportional.+Building.+acceptance.+necessary supporting work/is,
-    );
-    expect(template).toMatch(
       /every.+(?:step|conditional section).+trace.+Building.+acceptance.+necessary supporting work/is,
-    );
-    expect(template).toMatch(
       /incidental findings.+optional improvements.+(?:must not|do not).+(?:steps|sections)/is,
-    );
+    ]) {
+      expect(template).toMatch(pattern);
+    }
   });
 });
 
