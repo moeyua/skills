@@ -94,6 +94,41 @@ describe("plan artifact contract", () => {
   it("does not require an earlier shape session", () => {
     expect(skill).toContain("Do not require shape");
   });
+
+  it("preserves settled decisions and surfaces material conflicts before artifacts", () => {
+    expect(skill).toMatch(
+      /user.+explicitly.+(?:decided|agreed).+(?:constraints|non-goals).+artifact constraints/is,
+    );
+    expect(skill).toMatch(/do not silently.+(?:revise|reinterpret|reopen)/is);
+    expect(skill).toMatch(/inferred preferences.+not.+settled decisions/is);
+    expect(skill).toMatch(
+      /repository facts.+existing contracts.+authoritative sources.+(?:infeasible|contradictory|materially risky)/is,
+    );
+    expect(skill).toMatch(
+      /before.+artifact mutation.+settled decision.+new evidence.+impact.+wait/is,
+    );
+    expect(skill).toMatch(/unresolved intent.+not.+second confirmation/is);
+    expect(skill).toMatch(
+      /repository-answerable facts.+reversible implementation choices.+without.+confirmation/is,
+    );
+  });
+
+  it("keeps local plan scope proportional and traceable", () => {
+    const local = readFileSync(TARGET_PATHS.local, "utf8");
+    const both = readFileSync(TARGET_PATHS.both, "utf8");
+
+    expect(local).toMatch(/without introducing new scope/i);
+    expect(both).toMatch(/neither artifact may introduce new scope/i);
+    expect(template).toMatch(
+      /scope and detail.+proportional.+Building.+acceptance.+necessary supporting work/is,
+    );
+    expect(template).toMatch(
+      /every.+(?:step|conditional section).+trace.+Building.+acceptance.+necessary supporting work/is,
+    );
+    expect(template).toMatch(
+      /incidental findings.+optional improvements.+(?:must not|do not).+(?:steps|sections)/is,
+    );
+  });
 });
 
 describe("plan target contracts", () => {

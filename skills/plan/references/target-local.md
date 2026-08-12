@@ -13,7 +13,7 @@ Read-only GitHub access is allowed only to verify an existing canonical Issue UR
 1. Confirm the request is one coherent change. If it contains independent changes, stop before writing and ask which change should become the local plan.
 2. When an existing canonical Issue URL is available, run `gh auth status --active --hostname github.com` before any URL or repository lookup, then perform the read-only verification described above. Verification failure does not block the local plan.
 3. Select one shared change type and read `references/plan-template.md` plus the matching `references/mode-*.md`.
-4. Ground path-level scope, implementation order, acceptance, and change-type evidence from the conversation and repository.
+4. Ground path-level scope, implementation order, acceptance, and change-type evidence from the settled conversation and repository without introducing new scope; apply the main Plan conflict gate before writing.
 5. Write `plans/YYYY-MM-DD-<slug>.md` with `status: draft`. Include no unresolved intent placeholders.
 6. Read the file back and verify its frontmatter, required sections, path-level scope, and executable checks.
 
