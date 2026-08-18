@@ -27,19 +27,32 @@ This composition is adaptive rather than a hidden fixed pipeline. An explicit Sk
 
 External mutations remain bounded by their owning outcome. Implementation does not silently become publish or release; an Issue target, commit/push/PR, and release transaction each require the corresponding user authorization.
 
-### 3. Clear interfaces and progressive disclosure
+### 3. Intent fidelity across outcomes
+
+Adaptive composition does not let the agent silently reframe the work. Four distinctions preserve the user's meaning as context and artifacts accumulate:
+
+- **Intent** — the active outcome and horizon come from the user's statements, accepted decisions, and authoritative project intent. A mechanism, local task, artifact, or intermediate state does not replace that outcome.
+- **Authority** — a consequential commitment is settled only by a user decision or authoritative project intent. Agent inference, recommendation, silence, or the existence of a summary, plan, code change, or merged artifact does not create that authority.
+- **Evidence** — a completion claim cannot exceed the evidence actually established for the observable outcome. Static checks and intermediate success remain useful without becoming end-to-end proof.
+- **Invalidation** — when the user rejects a premise, conclusions that actually depended on it reopen; unrelated settled decisions remain stable.
+
+These are semantic distinctions, not a universal form, ledger, or confirmation workflow. Each capability applies only the part needed for its own outcome.
+
+**Attestation** constrains who may produce a consequential claim and which stable basis it covers across those four distinctions; it is not a fifth state. A capability may establish its own outcome and report the evidence it actually produced, but it cannot manufacture missing upstream authority or grant itself a downstream independent verdict. In particular, implementation can produce an identifiable candidate and local evidence, while only Check can attest independent acceptance for that exact basis. A recorded attestation is a time-scoped snapshot, not proof that no later contradictory result exists; a current acceptance claim must establish that the basis still matches and that the referenced result is the latest applicable evidence available in the current context. A legacy `done` artifact without a complete basis-scoped attestation remains historical completion only—missing provenance is not inferred or backfilled. Lower-assurance outcomes remain valid results when reported honestly.
+
+### 4. Clear interfaces and progressive disclosure
 
 Frontmatter descriptions are the runtime routing interface. The main body explains judgment and routes to conditional references. Target schemas, recovery state machines, complex provider behavior, document formats, and other deep knowledge load only when the task triggers them.
 
 Explore deliberately keeps a fixed Overview before scoped depth. Necessary project identity, instructions, architecture, and global documents are still read in full and in sequence; progressive disclosure applies after that skeleton and to domain-specific depth.
 
-### 4. Durable truth is a first-class capability
+### 5. Durable truth is a first-class capability
 
 The default catalog contains exactly six memories: domain Specs, PRODUCT, ARCHITECTURE, DESIGN, ROADMAP, and README. Docs records only truth with an authoritative source; code can establish mechanics but cannot invent product intent.
 
 Specs, tests, code, formats, mockups, and rubrics are valuable high-fidelity references. They may be detailed because they are loaded for a relevant question, not injected into every capability call.
 
-### 5. Tools protect mechanical invariants
+### 6. Tools protect mechanical invariants
 
 Deterministic checks own what code can know: frontmatter shape, public inventory, reference resolution, Skill↔Spec pairing, memory-format indexing, Markdown links, and checker facts. Tests should protect interfaces and product invariants rather than exact prompt wording or one mandatory body template.
 

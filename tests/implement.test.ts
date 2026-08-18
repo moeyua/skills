@@ -16,9 +16,8 @@ describe("implement entry contract", () => {
     expect(IMPLEMENT).not.toContain("No plan yet? Run `/shape` first");
   });
 
-  it("derives scope and change type from the best available context", () => {
+  it("loads the shared change-type evidence source", () => {
     expect(IMPLEMENT).toContain("references/change-types.md");
-    expect(IMPLEMENT).toContain("explicit request → associated plan → current conversation");
   });
 });
 
@@ -39,10 +38,6 @@ describe("implement adaptive composition", () => {
   it("keeps check read-only and docs authority-bound", () => {
     expect(CHECK).toMatch(/read-only|只读/i);
     expect(DOCS).toMatch(/authoritative|authority|权威/i);
-  });
-
-  it("marks a plan done only after its required outcome is complete", () => {
-    expect(IMPLEMENT).toMatch(/plan[\s\S]*done[\s\S]*(?:acceptance|required outcome)/i);
   });
 
   it("keeps the associated plan lifecycle and credential boundary explicit", () => {

@@ -13,7 +13,7 @@ Verify: [durable memory architecture](../../tests/durable-memory.test.ts)
 
 ### Requirement: 每个 claim 都有 authority
 
-内容必须来自用户/维护者决定、grounded shape 结论、plan 决定或 Spec delta、verified landed behavior、权威契约或明确 correction。代码可证明 mechanics，不得独自证明 positioning、rationale、priority 或 intended behavior。
+内容必须来自用户/维护者决定、经用户审阅的 Shape Design Summary 中已定 claim、有权威 basis 的 plan 决定或 Spec delta、verified landed behavior、权威契约或明确 correction。Summary、plan、代码或 merged artifact 只能携带其来源已有的 authority，其存在不得建立未披露的产品 intent；代码可证明 mechanics，不得独自证明 positioning、rationale、priority 或 intended behavior。前提已被纠正的 superseded claim 不得继续传播。
 Verify: manual(integration)
 
 ### Requirement: PRODUCT truth 必须已经决定

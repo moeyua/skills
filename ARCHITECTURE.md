@@ -62,6 +62,51 @@ Two deliberate exceptions preserve correctness rather than uniformity:
 - Explore always completes a fixed Overview and reads necessary architecture/global documents before scoped depth.
 - Release retains strict predicates for public, difficult-to-reverse state, but separates modeling, execution, and recovery into conditional references.
 
+## Intent fidelity and attestation flow
+
+[PRODUCT.md](./PRODUCT.md) is the canonical source for Intent, Authority, Evidence, Invalidation, and the Attestation constraint over their claims. This architecture records only how those states move and which capability can attest each outcome: capabilities exchange artifacts and conversational context without treating either as undifferentiated truth; main Skills carry their stage-specific projection, while artifacts preserve the source, producer, stable basis, and status of claims they pass on. The states do not require a runtime ledger.
+
+```text
+user statements + authoritative project intent
+                    |
+                    v
+      Intent · Authority · Evidence
+                    |
+          +---------+----------+
+          |                    |
+          v                    v
+ reviewed Shape summary   direct Skill entry
+          |              (minimal reconstruction)
+          +---------+----------+
+                    v
+       capability outcome or artifact
+                    |
+        producer-bounded attestation
+                    |
+          correction / new evidence
+                    v
+        invalidate actual dependents
+
+Handoff snapshots the current state for another context;
+the snapshot does not create authority.
+```
+
+Shape and Handoff are visible checkpoints, not mandatory upstream stages. Shape ends by presenting a Design Summary for review; agreement settles that direction but does not select another public capability. Handoff preserves continuation-critical state when context moves. Every other capability remains directly enterable and reconstructs only the state its outcome needs from the current request and authoritative project facts.
+
+| capability | intent-fidelity and attestation responsibility                                                            |
+| ---------- | --------------------------------------------------------------------------------------------------------- |
+| Explore    | keep documentation claims, observed facts, and source conflicts distinguishable                           |
+| Shape      | expose the active outcome, consequential decisions, recommendations, and material forks for user review   |
+| Plan       | persist settled direction without turning Agent inference or the artifact itself into authority           |
+| Implement  | produce a change candidate, local evidence, and limitations without self-attesting independent acceptance |
+| Check      | independently attest pass, findings, or inconclusive for only the change and evidence it actually checked |
+| Docs       | record only claims whose authority already exists; code establishes mechanics, not product intent         |
+| Publish    | attest exact commit/push/PR state without upgrading implementation assurance                              |
+| Release    | attest the exact authorized release state without substituting for implementation acceptance              |
+| Converge   | preserve authored meaning and stop on source conflict or missing authority                                |
+| Doctor     | separate deterministic facts from model judgment and evidence                                             |
+| Handoff    | carry active, superseded, candidate, evidenced, and pending-attestation state without settling it         |
+
 ## Composition and side-effect topology
 
 The product rationale for adaptive composition lives in [PRODUCT.md](./PRODUCT.md). Technically, each capability is independently invokable, and a capability may use another capability's output or bounded behavior without transferring ownership of external state. The exact public routes live in [skills/RESOLVER.md](./skills/RESOLVER.md).
@@ -74,7 +119,7 @@ The product rationale for adaptive composition lives in [PRODUCT.md](./PRODUCT.m
 | commit, push, PR                                                                                                | Publish outcome                    |
 | version/dependency and version-bound repository release metadata, default-branch release commit, tags, Releases | Release outcome                    |
 
-Check remains read-only and Docs remains authority-bound when composed; neither grants Publish or Release.
+Check remains read-only and Docs remains authority-bound when composed; neither grants implementation repair, Publish, or Release. A caller may mechanically project only an exact Check result whose producer and stable candidate basis remain applicable, but cannot reinterpret or manufacture any field.
 
 ## Progressive reference topology
 
@@ -92,15 +137,31 @@ Shared symlinks remain only for true semantic sources: `change-types.md` is cons
 
 ## Artifact and state flow
 
-| artifact/state                              | producer        | useful consumers                | absence/failure                                           |
-| ------------------------------------------- | --------------- | ------------------------------- | --------------------------------------------------------- |
-| conversational direction                    | Shape           | Plan, Implement, Docs           | not a gate                                                |
-| local implementation plan                   | Plan            | Implement, Publish, Docs        | clear requests may proceed without it                     |
-| canonical Issue problem record/URL          | Plan/user       | Publish                         | omit closing reference if absent                          |
-| working diff and verification               | Implement/Check | Docs, Publish                   | consumers require only evidence relevant to their outcome |
-| durable memories                            | Docs/Converge   | all fact-gathering capabilities | load only applicable targets                              |
-| branch/upstream/PR state                    | Publish         | reviewers                       | partial success is preserved                              |
-| release basis/metadata commit/tags/Releases | Release         | users/GitHub                    | resume from verified canonical state                      |
+| artifact/state                              | producer      | useful consumers                | absence/failure                                                              |
+| ------------------------------------------- | ------------- | ------------------------------- | ---------------------------------------------------------------------------- |
+| reviewed conversational direction           | Shape + user  | Plan, Implement, Docs, Handoff  | absent for direct entry; agreement does not authorize another public outcome |
+| local implementation plan                   | Plan          | Implement, Publish, Docs        | clear requests may proceed without it                                        |
+| canonical Issue problem record/URL          | Plan/user     | Publish                         | omit closing reference if absent                                             |
+| identifiable candidate + local evidence     | Implement     | Check, Docs, Publish, Handoff   | valid lower-assurance result; does not imply independent acceptance          |
+| Check result: basis + producer + pair       | Check         | Implement, Publish, Handoff     | findings deny acceptance but do not authorize repair                         |
+| durable memories                            | Docs/Converge | all fact-gathering capabilities | load only applicable targets                                                 |
+| branch/upstream/PR state                    | Publish       | reviewers                       | partial success is preserved                                                 |
+| release basis/metadata commit/tags/Releases | Release       | users/GitHub                    | resume from verified canonical state                                         |
+
+An associated local plan projects this flow without becoming its authority source:
+
+```text
+draft --explicit implementation request--> approved
+approved --Implement candidate-----------> candidate
+candidate --Check findings---------------> candidate
+candidate --Check inconclusive-----------> candidate
+candidate --Check acceptance pass--------> done
+candidate --active/new Implement auth----> approved
+```
+
+Without a plan, the same candidate basis, evidence producer, limitations, and Check producer + verdict + acceptance-field pair stay in the result report or Handoff; Implement does not create an artifact merely to track assurance. Only an independent Check `pass` paired with `attested for the exact current candidate` and the same stable basis is an acceptance pass. Findings leave the candidate unaccepted; a still-active Implement authorization or a new explicit implementation request—not the finding—authorizes repair and moves an associated plan to `approved`. Any repair produces a new basis and invalidates the old result.
+
+A plan's Assurance is the last authorized, time-scoped projection for its exact basis, not a globally current acceptance oracle. A consumer must establish that the basis still matches and use the latest applicable Check result available in its current context before claiming current acceptance; otherwise it reports only the historical snapshot or obtains a new Check. A legacy `done` plan with no complete Assurance is historical implementation completion with acceptance not established; consumers never invent or backfill its missing basis, producer, verdict, or acceptance. A later finding against a closed done plan supersedes the older result in any context or Handoff that carries it, but Check remains read-only: the finding neither rewrites the plan, reopens it, nor authorizes repair. Persisting globally latest validity would require a separate authorized writer or ledger, which this architecture intentionally does not provide.
 
 Plan target semantics are stable: omitted target is `both`; `both` writes local before Issue; `issue` accepts 1–20 explicitly bounded same-repository problems; no target silently falls back to another. Every Issue body newly rendered by Plan remains a problem record even when paired with a local plan, and only the local artifact carries implementation decisions, path-level scope, ordering, and verification; verified canonical Issues are associated without body edits.
 
@@ -140,8 +201,14 @@ node skills/doctor/scripts/checker.ts . --json
 7. The durable-memory catalog contains exactly six types.
 8. `change-types.md` and `memory-catalog.md` each have one shared source.
 9. No `SKILL.md` exists at the repository root.
+10. Artifacts preserve but do not create intent authority; capability outcomes cannot manufacture upstream authority or downstream acceptance; corrections reopen actual dependents, and completion claims do not exceed outcome-relevant evidence.
+11. Shape's reviewed Design Summary and Handoff's continuation snapshot improve state visibility without becoming mandatory upstream artifacts or a fixed capability chain.
 
 ## Key decisions
+
+### 2026-08-18: intent fidelity and completion attestation are producer-bounded
+
+The suite now carries intent source, consequential authority, outcome-matched evidence, and correction invalidation across capability boundaries. Shape exposes a reviewed Design Summary before handoff, while direct entry remains valid. Implement produces an identifiable candidate and local evidence; only a fresh independent Check can attest acceptance for that basis. Findings deny acceptance without authorizing repair, and an authorized repair creates a new basis that must be checked again to regain acceptance. Local plans project `draft → approved → candidate → done`, but no artifact creates its own transition authority. This separates execution from acceptance without forcing every small Implement through Check or pretending Markdown is a host-enforced gate.
 
 ### 2026-08-11: release owns version-bound repository metadata
 

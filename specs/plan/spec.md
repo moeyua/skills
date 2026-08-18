@@ -49,15 +49,20 @@ Verify: [plan artifact contract](../../tests/plan.test.ts)
 (Previously: `plan 始终先产出本地方案` 要求所有调用先写本地方案。)
 Verify: manual(integration)
 
+### Requirement: local plan 区分实施授权、candidate 与独立验收
+
+本地 plan 必须支持 `draft → approved → candidate → done`：新 plan 是 draft；显式用户请求或仍处于执行中的 Implement authorization 产生 approved；Implement 记录可稳定复算的 candidate basis、本地 evidence 与限制后产生 candidate；只有 acceptance-scoped Check 对同一 basis 返回 pass 与 `attested for the exact current candidate` 才产生 done。普通 scoped pass、findings 或 inconclusive 必须保持 candidate；finding 只否定 acceptance，不得产生 approved 或 repair authority。candidate/done plan 必须保存一个最后获授权投影的 time-scoped Assurance snapshot，包含 basis、Implement producer、evidence/limitations、Check producer、verdict 和 acceptance，授权投影变化时替换而不追加 ledger。任何状态都只是其有权 producer event 的投影，不得由 plan artifact 自行产生 authority。legacy `done` 缺少完整 Assurance 时只能解释为 historical implementation completion、acceptance not established，不得从状态或 artifact existence 伪造/回填 basis、producer、verdict 或 acceptance。带完整 Assurance 的 done 也是 exact accepted candidate 的历史 closed record，不证明不存在 later result；消费者声明 current acceptance 前必须核对 basis，并使用当前上下文可得的 latest applicable Check result，无法建立 applicability 时只能报告历史 snapshot 或重新 Check。后来 finding 在携带它的上下文/Handoff 中 supersede 旧结果，但不得修改/静默重开 plan 或授权修复；持久化 globally latest validity 需要另行授权 writer/ledger，不属于本契约。无关联 plan 的直接 Implement 不得为了记录这些状态自动创建 plan。
+Verify: [plan artifact contract](../../tests/plan.test.ts)
+
 ### Requirement: plan 不要求先运行 shape
 
 plan 必须复用已有 shape 结论，但不得把 shape artifact 或调用历史设为门禁；`local` / `both` 的 change 已达到实施成熟度，或 `issue` 的 problem 已足以准确记录时，必须能直接按所选 target 持久化。
 (Previously: 当前请求足够明确时必须能直接按所选 target 持久化工作，但没有按 artifact 职责区分“足够明确”。)
 Verify: [plan artifact contract](../../tests/plan.test.ts)
 
-### Requirement: plan 保持既定决策与范围
+### Requirement: plan 保持既定决策、来源与范围
 
-plan 必须把用户明确决定或同意的方向、约束与非目标作为 artifact 约束，不得静默重做、重新解释或打开；agent 从含糊上下文推断的偏好不属于既定决定。与方向一致的必要事实按 artifact 所需比例纳入，仓库可回答的事实和可逆实现选择由 agent 直接补全，旁支与可选优化必须排除。只有检查得到的仓库事实、既有契约或权威资料证明既定决定不可行、相互矛盾或具有实质风险时才可重新打开；plan 必须在任何 artifact mutation 前报告原决定、新证据与影响，并等待该决定重新收敛。
+plan 必须把用户明确决定或同意的方向、约束与非目标作为 artifact 约束，不得静默重做、重新解释或打开；agent 从含糊上下文推断的偏好不属于既定决定。Design Summary、plan、代码或 merged artifact 只能传递其来源已有的 authority，其存在不得把未披露的重大选择升级为用户决定。用户否定一个前提时，plan 必须丢弃它并只重新判断实际依赖它的 artifact 内容。与方向一致的必要事实按 artifact 所需比例纳入，仓库可回答的事实和可逆实现选择由 agent 直接补全，旁支与可选优化必须排除。只有检查得到的仓库事实、既有契约或权威资料证明既定决定不可行、相互矛盾或具有实质风险时才可重新打开；plan 必须在任何 artifact mutation 前报告原决定、新证据与影响，并等待该决定重新收敛。Shape artifact 不是 Plan 的入口门，Plan artifact 也不授权 implementation。
 Verify: [plan artifact contract](../../tests/plan.test.ts)
 
 ### Requirement: 四种共享变更类型决定产物证据

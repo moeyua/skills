@@ -13,7 +13,12 @@ Verify: manual(integration)
 
 ### Requirement: 只保留会改变下一步的内容
 
-摘要必须按实际任务选择用户请求/目标、已完成工作与验证、当前状态、pending work、关键决定、显式约束、阻塞和至多十个关键文件；不得强制填满固定大模板。
+摘要必须按实际任务选择 active outcome/horizon、用户请求、已完成工作与实际 evidence、当前状态、pending work、关键决定、显式约束、影响继续工作的 superseded premise、待授权 next outcome、阻塞和至多十个关键文件；不得强制填满固定大模板。
+Verify: manual(integration)
+
+### Requirement: 摘要保留来源但不创造 authority
+
+handoff 必须在会改变后续行为时区分 settled decision、Agent inference、实际 evidence 与 unresolved authority；acceptance 仍相关时还必须保留 current candidate 的 stable basis、evidence 与 producer、latest Check producer/reference 和 verdict + acceptance-field pair、Check basis 是否仍匹配 current candidate、finding 或 missing evidence，以及 pending acceptance。摘要及其引用的 artifact 只是 continuation cache，不得把未披露偏好升级为用户决定，也不得把 Implement 自报、artifact existence 或缺少完整 Assurance 的 legacy done 升级为 independent acceptance；历史中仍出现已被纠正的 premise 不得因此重新生效。
 Verify: manual(integration)
 
 ### Requirement: 不猜测不可见状态

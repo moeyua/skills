@@ -17,7 +17,7 @@ Use an associated plan, Issue, or verification result when available, but never 
 
 ## Boundaries
 
-Publish never implements or fixes the change, rewrites history, force-pushes, amends, deletes branches, changes user configuration, stages secrets, merges, or releases. It does not turn failed validation into permission to bypass hooks.
+Publish never implements or fixes the change, rewrites history, force-pushes, amends, deletes branches, changes user configuration, stages secrets, merges, or releases. It does not turn failed validation into permission to bypass hooks. Commit, push, and PR state attest delivery only; publishing a candidate, repeating its evidence, or reading a legacy `done` plan without complete Assurance does not convert it into independent acceptance or a Check pass. When Check state is relevant, preserve the candidate's stable basis, Check producer/reference, exact verdict + acceptance-field pair, and whether the checked basis still matches the published candidate.
 
 Commit, push, and PR are separate durable outcomes. Keep every valid completed stage and report the exact remaining state; never simulate atomic rollback.
 

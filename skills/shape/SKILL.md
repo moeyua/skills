@@ -9,7 +9,9 @@ Shape turns uncertainty into a direction the user can evaluate. Match investigat
 
 ## Work from the actual decision frontier
 
-Start with the user's outcome and every decision already settled in the conversation. Reopen one only when new evidence changes it.
+Start with the user's active outcome, current horizon, and every decision already settled in the conversation. Do not silently replace the outcome with a named mechanism, local task, artifact, or intermediate result.
+
+Only the user's statements, accepted decisions, and authoritative project intent settle a consequential preference. Keep Agent recommendations and interpretations visibly provisional; a summary, plan, code change, merged artifact, or silence does not make one a user decision. When the user rejects a premise, discard it and revisit the conclusions that actually depended on it before continuing.
 
 - If the direction is already determined, synthesize it directly.
 - If a discoverable fact blocks judgment, investigate it; use Explore context when the project is unfamiliar.
@@ -22,8 +24,10 @@ For subjective outcomes, prefer the highest-fidelity practical reference or prev
 
 Read `references/change-types.md` only when classifying a concrete change as `fix`, `feat`, `refactor`, or `perf` sharpens the evidence or boundary. Do not force a type onto open-ended exploration.
 
-## Boundaries and finish
+## Boundaries and Design Summary
 
 Shape is read-only. It may gather facts, but it does not write plans, Issues, specs, code, or project files and does not advance into implementation or delivery.
 
-Finish with the recommended direction, included and excluded scope, consequential decisions, and any genuinely unresolved material choice. A summary communicates the result; it is not another approval gate. Mention Plan only as an optional way to persist settled work.
+Before Shape ends or another public capability begins, present a visible **Design Summary** and stop for the user's review. Include only applicable content: the active outcome and horizon; included and excluded scope; settled consequential decisions; Agent recommendations kept distinct from those decisions; genuinely unresolved material choices; evidence that would demonstrate the outcome; and the currently authorized outcome. Omit empty categories rather than filling a template.
+
+If the user corrects the Summary, invalidate its dependent conclusions and present the revised Summary before finishing. Agreement with a Design Summary settles that direction only; it does not authorize Plan, Implement, or delivery. A later user message may both accept the shown direction and explicitly request another public outcome, in which case that capability has its own authorization. Mention Plan only as an optional way to persist settled work.

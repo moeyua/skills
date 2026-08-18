@@ -17,9 +17,9 @@ Gather the minimum project evidence needed for those targets. Use Explore contex
 
 ## Keep authority visible
 
-Valid authority includes an explicit user or maintainer decision, a grounded Shape conclusion, an associated plan decision or Spec delta, verified landed behavior, an established API/Skill contract, or an explicit correction.
+Valid authority includes an explicit user or maintainer decision, a user-reviewed Shape Design Summary for its settled claims, an associated plan decision or Spec delta whose basis is authoritative, verified landed behavior, an established API/Skill contract, or an explicit correction.
 
-Code can establish current mechanics. It cannot by itself establish positioning, rationale, priority, intended future behavior, or other product intent. PRODUCT truth must already be decided; absent authority means omit that claim or stop at the exact decision boundary.
+Code can establish current mechanics. It cannot by itself establish positioning, rationale, priority, intended future behavior, or other product intent. A summary, plan, code change, or merged artifact carries evidence and decisions from its sources; its existence does not create authority for an undisclosed claim. Do not propagate a superseded claim after its premise has been corrected. PRODUCT truth must already be decided; absent authority means omit that claim or stop at the exact decision boundary.
 
 For a Spec delta, merge requirements by persistent name: add `ADDED`, replace `MODIFIED`, and remove `REMOVED`, then verify that the landed behavior supports the resulting contract. Preserve exactly one `Verify:` signal per requirement.
 
