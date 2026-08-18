@@ -21,7 +21,7 @@ Once the target and its required repository and item boundaries are explicit, th
 
 ## Ground the work
 
-Do not require shape or another artifact to have run. Reuse the current conversation and inspect only repository facts needed by the selected artifact. Treat what the user explicitly decided or agreed—including constraints and non-goals—as artifact constraints; inferred preferences are not settled decisions. Do not silently revise, reinterpret, or reopen settled decisions.
+Do not require shape or another artifact to have run. Reuse the current conversation and inspect only repository facts needed by the selected artifact. Treat what the user explicitly decided or agreed—including constraints and non-goals—as artifact constraints; inferred preferences are not settled decisions. A Design Summary, plan, code change, or merged artifact carries only the authority of the sources it records; its existence does not settle an undisclosed consequential preference. Do not silently revise, reinterpret, or reopen settled decisions. When the user rejects a premise, discard it and revisit only artifact content that actually depended on it.
 
 Classify new findings before including them:
 
@@ -41,6 +41,8 @@ Select one type per work item from `references/change-types.md`: `fix`, `feat`, 
 
 Each local plan and Issue work item has at most one GitHub Issue identity. A user-supplied or already recorded canonical URL is that identity: verify and reuse it when the selected target permits, never search by title, and never create a replacement merely because verification failed.
 
-Plan creates only the selected artifacts. It never implements, commits, pushes, opens a pull request, or treats an artifact as implementation approval.
+Plan creates only the selected artifacts. It never implements, commits, pushes, opens a pull request, or treats a Design Summary or planning artifact as implementation approval.
+
+A newly written local plan starts as `draft`. Later lifecycle states are projections of outcomes produced elsewhere: an explicit or still-active implementation authorization yields `approved`, Implement may produce an identifiable `candidate`, and only an acceptance-scoped Check `pass` that records the same stable basis yields `done`. Findings deny acceptance but do not authorize repair or produce `approved`. The plan records the last authorized, time-scoped assurance snapshot without creating its authority or proving that no later Check result exists. Interpret a legacy `done` plan without complete Assurance only as historical implementation completion with acceptance not established; never infer or backfill missing provenance.
 
 Report the selected target and every artifact's exact result. Include only paths and canonical URLs verified to exist, preserve partial success as its target contract defines, and never convert failure into an unrequested fallback.

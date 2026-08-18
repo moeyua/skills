@@ -26,7 +26,7 @@ Verify: manual(integration)
 只有会改变范围、可观察行为、难逆架构、风险或验收的选择才需要讨论；用户委托判断时必须给出推荐。主观结果只有在高保真 reference/preview 真能改变决定时才需要展示，不形成统一确认阶段。
 Verify: manual(integration)
 
-### Requirement: 会话结论完整但不成为新 gate
+### Requirement: 会话结论必须通过 Design Summary 审阅
 
-shape 必须给出推荐方向、included/excluded scope、关键决定与真正未决事项；总结用于传达结果，不得成为额外审批门槛。
+shape 必须在结束或进入另一 public capability 前输出可审阅的 Design Summary，并在该轮保持只读停止。Summary 必须按实际内容让 active outcome/horizon、included/excluded scope、已定重大决定、Agent recommendation、真正未决选择、与 outcome 匹配的 success evidence 及当前 authorization 可区分，空项必须省略。用户纠正 Summary 时，依赖被否定前提的结论必须失效并在 revised Summary 中重新呈现；对 Summary 的普通同意只确认方向，不授权 Plan、Implement 或交付，后续消息明确同时接受方向并请求另一 outcome 时才授权对应能力。
 Verify: manual(integration)

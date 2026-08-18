@@ -14,7 +14,6 @@ const TARGET_PATHS = {
 } as const;
 
 const EXPECTED_CHANGE_TYPES = ["fix", "feat", "refactor", "perf"] as const;
-
 const REQUIRED_PROBLEM_KEYS = {
   fix: "problem",
   feat: "gap",

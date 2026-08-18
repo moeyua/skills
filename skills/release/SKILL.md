@@ -29,6 +29,6 @@ Read `references/recovery.md` when any release metadata diff, commit, push, tag,
 
 ## Boundaries and result
 
-Never guess an ambiguous release identity or repository metadata contract, invent a repository changelog where none exists, mutate before required confirmation, force-push, rewrite history, move/delete a tag or Release, create a PR, deploy, roll back, upload artifacts, or publish a registry package.
+Never guess an ambiguous release identity or repository metadata contract, invent a repository changelog where none exists, mutate before required confirmation, force-push, rewrite history, move/delete a tag or Release, create a PR, deploy, roll back, upload artifacts, or publish a registry package. A verified tag or GitHub Release attests exact release state only; it does not supply missing implementation acceptance or a Check pass.
 
 Report proposed, created, existing, partial, or no-op state; units and identities; policy and basis; repository release metadata state; confirmation state; metadata transaction; release commit/branch push; each tag and Release URL/GitHub-notes state; exact recovery point; and bounded exclusions. Stop after this release outcome.
