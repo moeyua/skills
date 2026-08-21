@@ -14,6 +14,26 @@ Each Issue records what is wrong or missing, why it matters, and the observable 
 - Acceptance criteria are optional. Include them only when already established by the user, an existing contract, or inspected evidence, and write them as observable Markdown checkboxes.
 - Do not output `TODO`, `TBD`, ellipses, generic placeholders, or invented facts.
 
+## Paired managed envelope
+
+Use this envelope only for an Issue created or synchronized by the `both` target. The semantic Markdown rendered from the selected schema is the `managed body`. Normalize it to LF line endings, remove leading and trailing blank lines, and leave no trailing LF. Render exactly one block:
+
+```markdown
+<!-- codex-plan-managed-issue: v1 type=fix sha256=<64 lowercase hexadecimal characters> -->
+<managed body>
+<!-- /codex-plan-managed-issue -->
+```
+
+Replace `fix` with the selected change type. Compute the SHA-256 over these exact UTF-8 bytes, with each `\0` denoting one NUL byte and with no final NUL:
+
+```text
+codex-plan-managed-issue:v1\0<title>\0<change type>\0<managed body>
+```
+
+The canonical title, the marker's one change-type label, and the managed body are Plan-owned. Text before or after the managed block, comments, and labels outside `fix` / `feat` / `refactor` / `perf` are human-owned and remain byte-for-byte unchanged during synchronization. Exactly one start marker, one end marker, the declared lowercase type label, and a matching digest are required before an existing Issue is writable.
+
+A missing marker, duplicate marker, unknown version, malformed boundary, missing or additional change-type label, or digest mismatch means ownership or concurrency is not established. Return `conflict` without editing. An Issue explicitly authorized for adoption after such a conflict may establish the first valid envelope only after the current Issue facts have been reconciled with the settled problem; never infer adoption from association alone.
+
 ## Label metadata
 
 Create all missing change-type labels required by the current batch, each at most once. Never rewrite an existing label.

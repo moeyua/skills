@@ -1,6 +1,6 @@
 ---
 name: plan
-description: "Persist implementation-ready work as a local plan, bounded development problems as GitHub Issues, or both. Use when the user asks to plan, capture implementation work, or create Issues from a clear problem. Not for exploring product direction (use shape), executing changes (use implement), editing existing Issues, or managing Projects and task status."
+description: "Persist implementation-ready work as a local plan, bounded development problems as GitHub Issues, or both. Use when the user asks to plan, capture implementation work, or create Issues from a clear problem. Not for exploring product direction (use shape), executing changes (use implement), arbitrary Issue maintenance, or managing Projects and task status."
 ---
 
 # Plan
@@ -9,7 +9,7 @@ Plan persists implementation-ready work or bounded development problems through 
 
 - `local` — one implementation plan in `plans/`;
 - `issue` — 1–20 explicitly separated, problem-oriented GitHub Issues in one repository;
-- `both` — one local plan followed by at most one matching problem record.
+- `both` — one local plan followed by at most one matching problem record, created or synchronized.
 
 Resolve the artifact target before any side effect. When the target is omitted, use `both`. If the user supplies conflicting targets, stop before side effects. Never infer, recommend, or switch the target from repository state, GitHub availability, worktree conditions, task size, or expected failure. Do not fall back to or retry through a different artifact target.
 
@@ -35,11 +35,11 @@ Classify new findings before including them:
 
 The targets have different cardinality: `local` and `both` accept one coherent change; `issue` accepts 1–20 explicitly separated work items for the same repository. Never auto-split, merge, regroup, or reroute work to fit a target.
 
-Select one type per work item from `references/change-types.md`: `fix`, `feat`, `refactor`, or `perf`. For a local plan, load only the matching `references/mode-fix.md`, `references/mode-feat.md`, `references/mode-refactor.md`, or `references/mode-perf.md`. Load `references/issue-formats.md` only for Issue creation, and use the user's current language for every user-visible Issue field. Every new Issue records the problem, why it matters, and the observable resolved state when known; it never carries the technical approach, target architecture, path-level changes, or implementation steps from a local plan.
+Select one type per work item from `references/change-types.md`: `fix`, `feat`, `refactor`, or `perf`. For a local plan, load only the matching `references/mode-fix.md`, `references/mode-feat.md`, `references/mode-refactor.md`, or `references/mode-perf.md`. Load `references/issue-formats.md` only for Issue creation or `both` synchronization, and use the user's current language for every user-visible Issue field. Every Plan-rendered Issue projection records the problem, why it matters, and the observable resolved state when known; it never carries the technical approach, target architecture, path-level changes, or implementation steps from a local plan.
 
 ## Identity and result
 
-Each local plan and Issue work item has at most one GitHub Issue identity. A user-supplied or already recorded canonical URL is that identity: verify and reuse it when the selected target permits, never search by title, and never create a replacement merely because verification failed.
+Each local plan and Issue work item has at most one GitHub Issue identity. A user-supplied or already recorded canonical URL is that identity: verify and reuse it when the selected target permits, never search by title, and never create a replacement merely because verification failed. The canonical identity stays stable while `both` may update a verified Plan-managed problem record for that same bounded problem; content revision is not identity replacement. The `local` target never mutates GitHub, and `issue` continues to reuse existing identities without editing them.
 
 Plan creates only the selected artifacts. It never implements, commits, pushes, opens a pull request, or treats a Design Summary or planning artifact as implementation approval.
 

@@ -8,7 +8,7 @@
 | --------- | --------------------------------------------------------------------- | --------------------------- |
 | Explore   | reliable project/module understanding or facts for another capability | `skills/explore/SKILL.md`   |
 | Shape     | resolving material uncertainty into a grounded direction              | `skills/shape/SKILL.md`     |
-| Plan      | persisting implementation-ready work or bounded problems              | `skills/plan/SKILL.md`      |
+| Plan      | persisting local plans, bounded Issues, or safely synchronized pairs  | `skills/plan/SKILL.md`      |
 | Implement | changing the project inside an authorized outcome                     | `skills/implement/SKILL.md` |
 | Check     | obtaining a read-only review/test/e2e verdict                         | `skills/check/SKILL.md`     |
 | Docs      | recording established truth in an authorized document target          | `skills/docs/SKILL.md`      |
@@ -26,4 +26,4 @@
 - Publish creates reviewable branch/PR state; Release creates version/repository-metadata/tag/Release state.
 - Handoff is transient conversation context, not project documentation.
 
-Plan's route preserves the explicit `local`, `issue`, and `both` targets; omitted target means `both`. Explore retains a fixed Overview before scoped depth. For context topology and side-effect ownership, see [ARCHITECTURE.md](../ARCHITECTURE.md).
+Plan's route preserves the explicit `local`, `issue`, and `both` targets; omitted target means `both`. Only `both` may synchronize a verified Plan-managed problem record while preserving its canonical Issue identity; `local` has zero GitHub mutation and `issue` remains create/reuse-only. Explore retains a fixed Overview before scoped depth. For context topology and side-effect ownership, see [ARCHITECTURE.md](../ARCHITECTURE.md).
