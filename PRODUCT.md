@@ -84,7 +84,7 @@ Doctor audits the project, not the agent host's plugins, hooks, MCP configuratio
 
 ### General project management and content ingestion
 
-Issues created by Plan are bounded problem records: they preserve what is wrong or missing, why it matters, and an observable resolved state when known, while local plans own the implementation approach. Verified canonical Issues may be associated without rewriting their existing bodies. Plan is not a Projects/status/milestone/assignee system. URL/PDF ingestion and open-ended research remain general input capabilities rather than new Skills in this suite.
+Issues created by Plan are bounded problem records: they preserve what is wrong or missing, why it matters, and an observable resolved state when known, while local plans own the implementation approach. Canonical identity stays stable, but `both` may synchronize the Plan-managed problem record for that same bounded problem; implementation-only revisions remain no-ops, and missing ownership, external edits, or identity changes fail closed instead of being overwritten. `local` has zero GitHub mutation, `issue` remains create/reuse-only, and Plan is not a Projects/status/milestone/assignee system. URL/PDF ingestion and open-ended research remain general input capabilities rather than new Skills in this suite.
 
 ## Using this document
 

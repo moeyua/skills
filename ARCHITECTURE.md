@@ -126,7 +126,7 @@ Check remains read-only and Docs remains authority-bound when composed; neither 
 Notable reference families:
 
 - Explore: scoped deep-dive and report interface.
-- Plan: one target contract (`local`, `issue`, or `both`); local plans load the selected change-type/template, while every Issue uses the shared problem-record schema.
+- Plan: one target contract (`local`, `issue`, or `both`); local plans load the selected change-type/template, every Issue uses the shared problem-record schema, and `both` additionally loads the managed-envelope rules for paired synchronization.
 - Check: review, test, and e2e methods load independently.
 - Docs: the memory catalog indexes six target-specific formats.
 - Publish: git state, PR construction, and recovery.
@@ -137,16 +137,16 @@ Shared symlinks remain only for true semantic sources: `change-types.md` is cons
 
 ## Artifact and state flow
 
-| artifact/state                              | producer      | useful consumers                | absence/failure                                                              |
-| ------------------------------------------- | ------------- | ------------------------------- | ---------------------------------------------------------------------------- |
-| reviewed conversational direction           | Shape + user  | Plan, Implement, Docs, Handoff  | absent for direct entry; agreement does not authorize another public outcome |
-| local implementation plan                   | Plan          | Implement, Publish, Docs        | clear requests may proceed without it                                        |
-| canonical Issue problem record/URL          | Plan/user     | Publish                         | omit closing reference if absent                                             |
-| identifiable candidate + local evidence     | Implement     | Check, Docs, Publish, Handoff   | valid lower-assurance result; does not imply independent acceptance          |
-| Check result: basis + producer + pair       | Check         | Implement, Publish, Handoff     | findings deny acceptance but do not authorize repair                         |
-| durable memories                            | Docs/Converge | all fact-gathering capabilities | load only applicable targets                                                 |
-| branch/upstream/PR state                    | Publish       | reviewers                       | partial success is preserved                                                 |
-| release basis/metadata commit/tags/Releases | Release       | users/GitHub                    | resume from verified canonical state                                         |
+| artifact/state                              | producer      | useful consumers                | absence/failure                                                                 |
+| ------------------------------------------- | ------------- | ------------------------------- | ------------------------------------------------------------------------------- |
+| reviewed conversational direction           | Shape + user  | Plan, Implement, Docs, Handoff  | absent for direct entry; agreement does not authorize another public outcome    |
+| local implementation plan                   | Plan          | Implement, Publish, Docs        | clear requests may proceed without it                                           |
+| canonical Issue problem record/URL          | Plan/user     | Plan `both`, Publish            | omit closing reference if absent; unmanaged or conflicted content is not edited |
+| identifiable candidate + local evidence     | Implement     | Check, Docs, Publish, Handoff   | valid lower-assurance result; does not imply independent acceptance             |
+| Check result: basis + producer + pair       | Check         | Implement, Publish, Handoff     | findings deny acceptance but do not authorize repair                            |
+| durable memories                            | Docs/Converge | all fact-gathering capabilities | load only applicable targets                                                    |
+| branch/upstream/PR state                    | Publish       | reviewers                       | partial success is preserved                                                    |
+| release basis/metadata commit/tags/Releases | Release       | users/GitHub                    | resume from verified canonical state                                            |
 
 An associated local plan projects this flow without becoming its authority source:
 
@@ -163,7 +163,7 @@ Without a plan, the same candidate basis, evidence producer, limitations, and Ch
 
 A plan's Assurance is the last authorized, time-scoped projection for its exact basis, not a globally current acceptance oracle. A consumer must establish that the basis still matches and use the latest applicable Check result available in its current context before claiming current acceptance; otherwise it reports only the historical snapshot or obtains a new Check. A legacy `done` plan with no complete Assurance is historical implementation completion with acceptance not established; consumers never invent or backfill its missing basis, producer, verdict, or acceptance. A later finding against a closed done plan supersedes the older result in any context or Handoff that carries it, but Check remains read-only: the finding neither rewrites the plan, reopens it, nor authorizes repair. Persisting globally latest validity would require a separate authorized writer or ledger, which this architecture intentionally does not provide.
 
-Plan target semantics are stable: omitted target is `both`; `both` writes local before Issue; `issue` accepts 1–20 explicitly bounded same-repository problems; no target silently falls back to another. Every Issue body newly rendered by Plan remains a problem record even when paired with a local plan, and only the local artifact carries implementation decisions, path-level scope, ordering, and verification; verified canonical Issues are associated without body edits.
+Plan target semantics are stable: omitted target is `both`; `both` writes local before Issue mutation; `issue` accepts 1–20 explicitly bounded same-repository problems; no target silently falls back to another. Every Issue projection rendered by Plan remains a problem record even when paired with a local plan, and only the local artifact carries implementation decisions, path-level scope, ordering, and verification. A paired Issue created by `both` wraps its Plan-owned title/type/body projection in a versioned SHA-256 managed envelope. Later `both` revisions keep the canonical URL stable, skip implementation-only changes, update a validated projection for the same bounded problem, preserve content outside the block and unrelated labels, and fail closed on ownership, digest, or identity conflicts. `local` never mutates GitHub, and pure `issue` reuse remains read-only.
 
 Release models authoritative version sources as release units, project-tool coordination as version groups, exact tag/GitHub mappings as release identities, and any existing version-bound repository release metadata as an optional part of the confirmed release set. Derived or substantively expanded sets wait for next-turn confirmation. Every path re-resolves from the fetched default branch, runs one verified non-tagging/non-committing/non-publishing release metadata transaction, creates one commit containing the complete set, and publishes each identity recoverably. The same semantic predicate governs fresh execution, local recovery, and remote reuse without imposing one metadata filename, schema, or tool.
 
@@ -205,6 +205,10 @@ node skills/doctor/scripts/checker.ts . --json
 11. Shape's reviewed Design Summary and Handoff's continuation snapshot improve state visibility without becoming mandatory upstream artifacts or a fixed capability chain.
 
 ## Key decisions
+
+### 2026-08-20: paired Issue identity is stable while its managed problem record is revisable
+
+The earlier create/reuse-only rule protected canonical identity by making every existing Issue body immutable. That left a paired Issue stale when a pre-implementation plan revision changed the underlying problem, constraints, or observable result. `both` now distinguishes identity from content: it may synchronize only a versioned, digest-verified managed problem block for the same bounded problem, while preserving human-owned content and returning a conflict instead of overwriting unknown or externally changed state. The GitHub edit surface has no compare-and-swap guarantee, so every edit receives one read-back and the attestation remains a time-scoped observation; `local` and pure `issue` retain their previous mutation boundaries.
 
 ### 2026-08-18: intent fidelity and completion attestation are producer-bounded
 

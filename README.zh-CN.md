@@ -14,7 +14,7 @@ Skills 为现代 coding agent 提供清晰的能力接口、项目特有判断�
 | ----------- | ------------------------------------------------------------------- |
 | `explore`   | 只读建立项目/模块理解；固定 Overview 后再 scoped deep-dive          |
 | `shape`     | 在对话中形成 grounded、边界清楚的方向                               |
-| `plan`      | 本地实施计划、只记录问题的 GitHub Issues 或二者                     |
+| `plan`      | 本地计划、只记录问题的 Issues，或可安全同步 Issue 的成对产物        |
 | `implement` | 完成已授权变更，以相称证据验证并保持直接受影响的 durable truth 准确 |
 | `check`     | 按问题与风险选择 review/test/e2e 的只读 verdict                     |
 | `docs`      | 把既定 truth 写入六类 catalog memory 或用户指定文档                 |

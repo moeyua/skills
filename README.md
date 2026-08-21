@@ -14,7 +14,7 @@ Read [PRODUCT.md](./PRODUCT.md) for product principles and [ARCHITECTURE.md](./A
 | ----------- | ------------------------------------------------------------------------------- |
 | `explore`   | Read-only project/module understanding; fixed Overview before scoped depth      |
 | `shape`     | A grounded, bounded direction in conversation                                   |
-| `plan`      | Local implementation plans, problem-oriented GitHub Issues, or both             |
+| `plan`      | Local plans, problem-oriented Issues, or paired artifacts with safe Issue sync  |
 | `implement` | An authorized working change with proportional proof and accurate durable truth |
 | `check`     | A read-only review/test/e2e verdict matched to the question and risk            |
 | `docs`      | Established truth recorded in the six-type catalog or a named project document  |
