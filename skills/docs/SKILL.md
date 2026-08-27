@@ -25,6 +25,6 @@ For a Spec delta, merge requirements by persistent name: add `ADDED`, replace `M
 
 ## Edit coherently
 
-Preserve correct content and reshape the touched range into one coherent document rather than appending a corrective patch note. Keep current truth in ARCHITECTURE and DESIGN, already-decided future items in ROADMAP, and user-facing verified entry information in README.
+Preserve correct content and reshape the touched range into one coherent document rather than appending a corrective patch note. Keep current truth in ARCHITECTURE and DESIGN, already-decided future items in ROADMAP, and user-facing verified entry information in README. When an authorized change is a clean break, remove the superseded design from current truth rather than documenting both paths; describe compatibility or migration only when its authority is established.
 
 Docs does not edit implementation or perform git/GitHub delivery. Report changed targets, truth recorded, authority used, and claims omitted for lack of authority, then stop.

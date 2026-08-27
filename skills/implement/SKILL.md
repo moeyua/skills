@@ -15,6 +15,8 @@ Preserve separable user changes. Stop on overlapping work whose ownership is amb
 
 State the observable outcome and path-level scope. Mechanical decisions consistent with the repository are yours. A new product semantic, dependency, external side effect, or scope expansion is not mechanical and needs authority.
 
+Fallbacks, compatibility layers, migrations, dual paths, and legacy paths are not mechanical safety; they require explicit user authority or authoritative project intent. When the authorized outcome replaces or removes a design, remove superseded code, configuration, tests, and directly affected durable truth instead of preserving both paths.
+
 ## Build with proportional proof
 
 Read `references/change-types.md` when it helps select evidence:
@@ -53,6 +55,8 @@ Consume the exact Check verdict + acceptance-field pair mechanically:
 Any repair or other change to the checked basis creates a new stable candidate basis; an earlier pass does not attest the changed result. A plan's `done`/Assurance is a time-scoped record, so current acceptance also requires basis match and the latest applicable Check result available in the current context. A later finding supersedes an older pass wherever that result is available, but does not rewrite or reopen the plan or authorize repair; that needs a new explicit implementation outcome, with a new plan only if requested. Implement never reinterprets findings, converts a scoped pass, its own tests, or dogfood into an acceptance verdict, or grants itself `done`.
 
 Retry a plausibly flaky command once. Stop when the same finding returns without new evidence, or when progress requires changed intent, expanded scope, a new dependency, or missing document authority.
+
+A failed, ambiguous, or missing required state remains its exact non-success result. It may bound the candidate or assurance claim, but never becomes success or permission to add an alternate path.
 
 A mechanism, local fix, static check, intermediate state, or running job is evidence only for what it actually establishes; it does not replace the user's observable outcome.
 

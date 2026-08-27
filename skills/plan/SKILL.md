@@ -29,6 +29,8 @@ Classify new findings before including them:
 - Exclude adjacent problems and optional improvements; artifact completeness does not authorize new scope.
 - When inspected repository facts, existing contracts, or authoritative sources show a settled decision is infeasible, contradictory, or materially risky, stop before any artifact mutation. State the settled decision, new evidence, and impact, then wait for the decision to be settled again. This is unresolved intent, not a second confirmation or prose-approval gate. A more complete alternative or agent preference is not new evidence.
 
+Treat whether a fallback, compatibility layer, migration, dual path, or legacy path exists as consequential continuity scope rather than a reversible implementation detail. Do not add one without an explicit user decision or authoritative project intent; when the authorized direction replaces or removes an old design, keep the plan a clean break.
+
 `local` and `both` require one implementation-ready change. Resolve gaps that could change outcome, scope, public behavior, hard-to-reverse architecture, or acceptance; never put unresolved intent in the local plan as `TODO` or `TBD`.
 
 `issue` requires only a bounded development problem that can be stated factually and distinguished from adjacent items. Its solution, target architecture, and complete acceptance may remain unknown. Inspect facts needed to establish the problem, evidence, impact, repository identity, and item boundary; never invent a solution or turn an unknown into an implementation task merely to make the Issue look actionable.

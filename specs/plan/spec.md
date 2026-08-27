@@ -45,7 +45,7 @@ Verify: [plan artifact contract](../../tests/plan.test.ts)
 
 ### Requirement: 仅 local 与 both 产出本地方案
 
-`local` 与 `both` 产出的方案必须包含 change type、边界、路径级步骤、独立 verify、整体验证和适用的专属证据，且不得含意图级占位符；每个实施步骤与条件段必须可追溯到既定目标、验收或必要支撑工作，不得把偶然发现或可选完善提升为方案范围；`both` 必须在任何 Issue mutation 前完成本地写入，`issue` 不得写项目文件。
+`local` 与 `both` 产出的方案必须包含 change type、边界、路径级步骤、独立 verify、整体验证和适用的专属证据，且不得含意图级占位符；每个实施步骤与条件段必须可追溯到既定目标、验收或必要支撑工作，不得把偶然发现或可选完善提升为方案范围。Architecture、Rollback 等条件段只有在既定 outcome 或权威项目契约要求时才能描述 transition、migration 或恢复，不得把 safe migration 当作默认完整性要求；`both` 必须在任何 Issue mutation 前完成本地写入，`issue` 不得写项目文件。
 
 (Previously: `plan 始终先产出本地方案` 要求所有调用先写本地方案。)
 Verify: manual(integration)
@@ -63,7 +63,7 @@ Verify: [plan artifact contract](../../tests/plan.test.ts)
 
 ### Requirement: plan 保持既定决策、来源与范围
 
-plan 必须把用户明确决定或同意的方向、约束与非目标作为 artifact 约束，不得静默重做、重新解释或打开；agent 从含糊上下文推断的偏好不属于既定决定。Design Summary、plan、代码或 merged artifact 只能传递其来源已有的 authority，其存在不得把未披露的重大选择升级为用户决定。用户否定一个前提时，plan 必须丢弃它并只重新判断实际依赖它的 artifact 内容。与方向一致的必要事实按 artifact 所需比例纳入，仓库可回答的事实和可逆实现选择由 agent 直接补全，旁支与可选优化必须排除。只有检查得到的仓库事实、既有契约或权威资料证明既定决定不可行、相互矛盾或具有实质风险时才可重新打开；plan 必须在任何 artifact mutation 前报告原决定、新证据与影响，并等待该决定重新收敛。Shape artifact 不是 Plan 的入口门，Plan artifact 也不授权 implementation。
+plan 必须把用户明确决定或同意的方向、约束与非目标作为 artifact 约束，不得静默重做、重新解释或打开；agent 从含糊上下文推断的偏好不属于既定决定。Design Summary、plan、代码或 merged artifact 只能传递其来源已有的 authority，其存在不得把未披露的重大选择升级为用户决定。用户否定一个前提时，plan 必须丢弃它并只重新判断实际依赖它的 artifact 内容。失败、歧义或必要状态缺失必须保持可见，不得被写成成功前提或未请求的替代路径；不得擅自增加 fallback、兼容层、迁移、双路径或 legacy path，只有明确用户决定或权威项目契约可以建立对应连续性要求，且各 artifact 仍遵守自身的问题/实施职责边界；已授权替换在没有该 authority 时必须保持 clean break。与方向一致的必要事实按 artifact 所需比例纳入，仓库可回答的事实和可逆实现选择由 agent 直接补全，旁支与可选优化必须排除。只有检查得到的仓库事实、既有契约或权威资料证明既定决定不可行、相互矛盾或具有实质风险时才可重新打开；plan 必须在任何 artifact mutation 前报告原决定、新证据与影响，并等待该决定重新收敛。Shape artifact 不是 Plan 的入口门，Plan artifact 也不授权 implementation。
 Verify: [plan artifact contract](../../tests/plan.test.ts)
 
 ### Requirement: 四种共享变更类型决定产物证据

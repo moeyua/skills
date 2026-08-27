@@ -33,7 +33,7 @@ Verify: manual(integration)
 
 ### Requirement: verdict 只覆盖实际证据
 
-check 必须报告稳定 candidate basis、Check producer/reference，并对该 candidate 返回恰好一个 pass、findings 或 inconclusive verdict，另报恰好一个 acceptance field：`attested for the exact current candidate`、`not requested` 或 `not established`。只有覆盖原始 outcome、authorization boundary 与完整 current basis 的 acceptance-scoped pass 才能使用第一个值；普通 scoped pass 必须是 not requested，findings、inconclusive 或覆盖不完整必须是 not established。check 只能对实际读取、执行或观察的 scope 使用 holds up；必须报告高置信 finding、命令/观察结果和重要未运行证据，过滤推测性或纯风格噪声。任何后续相关改动都建立新 basis，并要求新 candidate 在恢复 acceptance 前再次 Check。
+check 必须报告稳定 candidate basis、Check producer/reference，并对该 candidate 返回恰好一个 pass、findings 或 inconclusive verdict，另报恰好一个 acceptance field：`attested for the exact current candidate`、`not requested` 或 `not established`。只有覆盖原始 outcome、authorization boundary 与完整 current basis 的 acceptance-scoped pass 才能使用第一个值；普通 scoped pass 必须是 not requested，findings、inconclusive 或覆盖不完整必须是 not established。compatibility 只有在 requested claim，或 acceptance Check 的原始 outcome / 权威项目契约建立时才是约束；在该 selected scope 内，失败掩盖、未授权 fallback / 兼容层 / 迁移 / 双路径 / legacy path，或 clean break 后残留 superseded path 必须产生 finding。只有 selected claim 依赖该边界且 evidence 无法判断时才返回 inconclusive；普通 scoped check 不得为了证明全局不存在这些路径而扩大 scope。check 只能对实际读取、执行或观察的 scope 使用 holds up；必须报告高置信 finding、命令/观察结果和重要未运行证据，过滤推测性或纯风格噪声。任何后续相关改动都建立新 basis，并要求新 candidate 在恢复 acceptance 前再次 Check。
 Verify: manual(integration)
 
 ### Requirement: verdict 只读且由 caller 机械投影

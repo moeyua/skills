@@ -4,9 +4,9 @@ Read the complete relevant diff, applicable project instructions, and enough sur
 
 Focus where the change creates risk:
 
-- correctness and compatibility;
-- error and edge handling;
-- scope and intent consistency;
+- correctness and contract-authorized compatibility;
+- explicit failure, ambiguity, missing-state, and edge handling;
+- scope and intent consistency, including clean breaks and alternate paths;
 - coverage that can distinguish the new behavior;
 - unnecessary complexity or duplication.
 

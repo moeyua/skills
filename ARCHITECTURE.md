@@ -64,7 +64,7 @@ Two deliberate exceptions preserve correctness rather than uniformity:
 
 ## Intent fidelity and attestation flow
 
-[PRODUCT.md](./PRODUCT.md) is the canonical source for Intent, Authority, Evidence, Invalidation, and the Attestation constraint over their claims. This architecture records only how those states move and which capability can attest each outcome: capabilities exchange artifacts and conversational context without treating either as undifferentiated truth; main Skills carry their stage-specific projection, while artifacts preserve the source, producer, stable basis, and status of claims they pass on. The states do not require a runtime ledger.
+[PRODUCT.md](./PRODUCT.md) is the canonical source for Intent, Authority, Evidence, Invalidation, their fail-close and clean-break consequences, and the Attestation constraint over their claims. This architecture records only how those states move and which capability can attest each outcome: capabilities exchange artifacts and conversational context without treating either as undifferentiated truth; main Skills carry their stage-specific projection, while artifacts preserve the source, producer, stable basis, and status of claims they pass on. The states do not require a runtime ledger.
 
 ```text
 user statements + authoritative project intent
@@ -93,19 +93,21 @@ the snapshot does not create authority.
 
 Shape and Handoff are visible checkpoints, not mandatory upstream stages. Shape ends by presenting a Design Summary for review; agreement settles that direction but does not select another public capability. Handoff preserves continuation-critical state when context moves. Every other capability remains directly enterable and reconstructs only the state its outcome needs from the current request and authoritative project facts.
 
-| capability | intent-fidelity and attestation responsibility                                                            |
-| ---------- | --------------------------------------------------------------------------------------------------------- |
-| Explore    | keep documentation claims, observed facts, and source conflicts distinguishable                           |
-| Shape      | expose the active outcome, consequential decisions, recommendations, and material forks for user review   |
-| Plan       | persist settled direction without turning Agent inference or the artifact itself into authority           |
-| Implement  | produce a change candidate, local evidence, and limitations without self-attesting independent acceptance |
-| Check      | independently attest pass, findings, or inconclusive for only the change and evidence it actually checked |
-| Docs       | record only claims whose authority already exists; code establishes mechanics, not product intent         |
-| Publish    | attest exact commit/push/PR state without upgrading implementation assurance                              |
-| Release    | attest the exact authorized release state without substituting for implementation acceptance              |
-| Converge   | preserve authored meaning and stop on source conflict or missing authority                                |
-| Doctor     | separate deterministic facts from model judgment and evidence                                             |
-| Handoff    | carry active, superseded, candidate, evidenced, and pending-attestation state without settling it         |
+| capability | intent-fidelity and attestation responsibility                                                              |
+| ---------- | ----------------------------------------------------------------------------------------------------------- |
+| Explore    | keep documentation claims, observed facts, and source conflicts distinguishable                             |
+| Shape      | expose the active outcome, failed or unresolved conditions, continuity choices, and recommendations         |
+| Plan       | persist settled direction without inventing authority, success, or an unrequested continuity path           |
+| Implement  | produce a candidate and local evidence, removing superseded paths when the authorized outcome replaces them |
+| Check      | independently attest only inspected evidence and reject masked failure or unauthorized continuity           |
+| Docs       | record authoritative current truth without carrying a superseded design through a clean break               |
+| Publish    | attest exact commit/push/PR state without upgrading implementation assurance                                |
+| Release    | attest the exact authorized release state without substituting for implementation acceptance                |
+| Converge   | preserve authored meaning and stop on source conflict or missing authority                                  |
+| Doctor     | separate deterministic facts from model judgment and evidence                                               |
+| Handoff    | carry active, superseded, candidate, evidenced, and pending-attestation state without settling it           |
+
+Fail-close and clean-break do not create stages or a generic recovery framework. Each capability applies the canonical boundary only to its own claim, artifact, or side effect.
 
 ## Composition and side-effect topology
 
@@ -203,6 +205,7 @@ node skills/doctor/scripts/checker.ts . --json
 9. No `SKILL.md` exists at the repository root.
 10. Artifacts preserve but do not create intent authority; capability outcomes cannot manufacture upstream authority or downstream acceptance; corrections reopen actual dependents, and completion claims do not exceed outcome-relevant evidence.
 11. Shape's reviewed Design Summary and Handoff's continuation snapshot improve state visibility without becoming mandatory upstream artifacts or a fixed capability chain.
+12. Each capability preserves fail-close and clean-break at its own boundary: no claim manufactures success from a required failure, ambiguity, or missing state, and no authorized replacement retains an unapproved continuity path.
 
 ## Key decisions
 
