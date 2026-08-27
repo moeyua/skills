@@ -28,7 +28,7 @@ Verify: manual(integration)
 
 ### Requirement: touched range 形成一致文档
 
-docs 必须保留正确内容并重塑 touched range，不得追加补丁式纠错段落；ARCHITECTURE/DESIGN 只记当前，ROADMAP 只记已决定未来项，README 只投影已定定位与 verified usage。
+docs 必须保留正确内容并重塑 touched range，不得追加补丁式纠错段落；ARCHITECTURE/DESIGN 只记当前，ROADMAP 只记已决定未来项，README 只投影已定定位与 verified usage。已授权变更是 clean break 时，当前 truth 必须移除 superseded design 而不是并列保留新旧路径；兼容或迁移只有在其 authority 已建立时才能记录。
 Verify: manual(integration)
 
 ### Requirement: 文档调用止于文档结果

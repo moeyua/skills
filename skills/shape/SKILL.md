@@ -13,6 +13,8 @@ Start with the user's active outcome, current horizon, and every decision alread
 
 Only the user's statements, accepted decisions, and authoritative project intent settle a consequential preference. Keep Agent recommendations and interpretations visibly provisional; a summary, plan, code change, merged artifact, or silence does not make one a user decision. When the user rejects a premise, discard it and revisit the conclusions that actually depended on it before continuing.
 
+A failed, ambiguous, or missing required condition stays visible rather than becoming a resolved direction or an unrequested alternate path. Fallbacks, compatibility layers, migrations, dual paths, and legacy paths are consequential continuity choices, not mechanical safety; an authorized replacement is a clean break unless explicit user authority or authoritative project intent requires continuity.
+
 - If the direction is already determined, synthesize it directly.
 - If a discoverable fact blocks judgment, investigate it; use Explore context when the project is unfamiliar.
 - If viable choices would materially change scope, observable behavior, hard-to-reverse architecture, risk, or acceptance, compare them and recommend one.

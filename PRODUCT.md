@@ -36,6 +36,11 @@ Adaptive composition does not let the agent silently reframe the work. Four dist
 - **Evidence** — a completion claim cannot exceed the evidence actually established for the observable outcome. Static checks and intermediate success remain useful without becoming end-to-end proof.
 - **Invalidation** — when the user rejects a premise, conclusions that actually depended on it reopen; unrelated settled decisions remain stable.
 
+Two operating consequences apply throughout project development:
+
+- **Fail-close** — A failed, ambiguous, or missing required state remains exactly that. It may yield an honest partial or lower-assurance result, but it is never success and never authorizes an unrequested alternate path.
+- **Clean-break** — When the authorized outcome replaces or removes a design, the superseded path is removed. A fallback, compatibility layer, migration, dual path, or legacy path is additional scope and requires an explicit user decision or authoritative project intent; perceived safety does not create authority.
+
 These are semantic distinctions, not a universal form, ledger, or confirmation workflow. Each capability applies only the part needed for its own outcome.
 
 **Attestation** constrains who may produce a consequential claim and which stable basis it covers across those four distinctions; it is not a fifth state. A capability may establish its own outcome and report the evidence it actually produced, but it cannot manufacture missing upstream authority or grant itself a downstream independent verdict. In particular, implementation can produce an identifiable candidate and local evidence, while only Check can attest independent acceptance for that exact basis. A recorded attestation is a time-scoped snapshot, not proof that no later contradictory result exists; a current acceptance claim must establish that the basis still matches and that the referenced result is the latest applicable evidence available in the current context. A legacy `done` artifact without a complete basis-scoped attestation remains historical completion only—missing provenance is not inferred or backfilled. Lower-assurance outcomes remain valid results when reported honestly.

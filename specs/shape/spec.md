@@ -23,7 +23,7 @@ Verify: manual(integration)
 
 ### Requirement: 只处理实质决策前沿
 
-只有会改变范围、可观察行为、难逆架构、风险或验收的选择才需要讨论；用户委托判断时必须给出推荐。主观结果只有在高保真 reference/preview 真能改变决定时才需要展示，不形成统一确认阶段。
+只有会改变范围、可观察行为、难逆架构、风险或验收的选择才需要讨论；用户委托判断时必须给出推荐。失败、歧义或必要状态缺失不得被包装成已解决方向或未请求的替代路径。fallback、兼容层、迁移、双路径和 legacy path 属于需要 authority 的重大连续性选择；已授权 outcome 明确替换旧设计且没有权威连续性要求时，方向必须保持 clean break。主观结果只有在高保真 reference/preview 真能改变决定时才需要展示，不形成统一确认阶段。
 Verify: manual(integration)
 
 ### Requirement: 会话结论必须通过 Design Summary 审阅

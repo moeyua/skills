@@ -23,7 +23,7 @@ Verify: manual(integration)
 
 ### Requirement: Agent 承接机械决策
 
-implement 必须自行处理定位、项目一致的命名/措辞、微观编辑顺序和相称验证；不得静默决定新产品语义、扩大 scope、添加依赖或吸收未授权外部副作用。Design Summary、plan、代码或 merged state 只能携带其来源已有的 authority，不得把未披露的重大选择变成用户决定。用户否定前提时，必须丢弃它并重审实际依赖它的编辑与结论。
+implement 必须自行处理定位、项目一致的命名/措辞、微观编辑顺序和相称验证；不得静默决定新产品语义、扩大 scope、添加依赖或吸收未授权外部副作用。fallback、兼容层、迁移、双路径和 legacy path 不是机械安全选择，只有明确用户决定或权威项目 intent 可以授权；已授权 outcome 替换或删除旧设计时，必须移除 superseded code、configuration、tests 与直接受影响的 durable truth，不得保留双路径。Design Summary、plan、代码或 merged state 只能携带其来源已有的 authority，不得把未披露的重大选择变成用户决定。用户否定前提时，必须丢弃它并重审实际依赖它的编辑与结论。
 Verify: manual(integration)
 
 ### Requirement: TDD 按需保留
@@ -48,5 +48,5 @@ Verify: [implement contract](../../tests/implement.test.ts)
 
 ### Requirement: 完成状态和报告真实
 
-implement 必须持续保留 active outcome/horizon，不得用 Agent 选择的机制、局部修复、静态检查、中间状态或运行中的 job 替代用户 outcome，也不得把自己的 tests、dogfood 或判断升级为 Check attestation。最终报告必须区分 candidate 与 accepted，只对与 claimed outcome 匹配的实际 evidence 声明完成，并列出 stable candidate basis、实际改动、evidence 及 producer、Check producer、exact verdict + acceptance-field pair、Check basis 是否仍匹配 current candidate、known limitations、实际使用的支持能力、重要未运行检查与剩余边界，不得暗示更高层 outcome、independent acceptance 或 publish/release 已发生。
+implement 必须持续保留 active outcome/horizon，不得用 Agent 选择的机制、局部修复、静态检查、中间状态或运行中的 job 替代用户 outcome，也不得把自己的 tests、dogfood 或判断升级为 Check attestation。失败、歧义、必要状态缺失或未完成的 clean break 必须保持 exact non-success，不得由 fallback、局部成功或较低保证 evidence 升级为完成。最终报告必须区分 candidate 与 accepted，只对与 claimed outcome 匹配的实际 evidence 声明完成，并列出 stable candidate basis、实际改动、evidence 及 producer、Check producer、exact verdict + acceptance-field pair、Check basis 是否仍匹配 current candidate、known limitations、实际使用的支持能力、重要未运行检查与剩余边界，不得暗示更高层 outcome、independent acceptance 或 publish/release 已发生。
 Verify: [implement contract](../../tests/implement.test.ts)

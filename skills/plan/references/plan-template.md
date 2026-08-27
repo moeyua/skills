@@ -55,7 +55,7 @@ Include a section only when its trigger exists; omit it otherwise.
 - `## Approach` — viable paths create a consequential trade-off. Record the recommendation and why it wins.
 - `## Key decisions` — non-obvious choices or constraints must survive the conversation.
 - `## Assumptions & risks` — a consequential assumption, risk, or non-blocking unknown affects implementation or verification.
-- `## Architecture` — the change crosses module boundaries, introduces a layer/service, or swaps a technical dependency. Describe current → target structure, responsibilities, data flow, and safe migration. Draw an ASCII diagram when more than three components exchange data.
+- `## Architecture` — the change crosses module boundaries, introduces a layer/service, or swaps a technical dependency. Describe current → target structure, responsibilities, and data flow. Describe a transition or migration only when the settled outcome or authoritative project contract requires one; otherwise keep the replacement a clean break. Draw an ASCII diagram when more than three components exchange data.
 - `## Public surface changes` — API, schema, configuration, CLI, file format, or another caller-facing interface changes.
 - `## Spec delta` — externally observable behavior changes. Express `ADDED`, `MODIFIED`, or `REMOVED` requirements by persistent spec name so docs can merge them mechanically.
 - `## Rollback` — external state, persistent data/schema, deployment configuration, or a migration needs prepared reversal.
