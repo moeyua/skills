@@ -223,9 +223,66 @@ A1、A2、A3、A5、A6 各在 Astra 上 before/after 重复三次，其余场景
 
 ## Assurance
 
-- Candidate basis: `56427bcf6496c3f9d73126d0374de59cd2486add + sha256:095718ad07ee565802f5a85d819e40132e60e9827bc633cd58c7791b4f2b6326`；完整已声明变更由 `bench/results/astra-2026-09-07/recompute-basis.py` 可独立复算，只剔除此计划 status/Assurance 投影；本地证据 manifest 为 `sha256:0c277d66b3e034d77fbb5ed0503f4f2b82344ebcad46158de025ef0012e57826`（2940 文件，`bench/results/astra-2026-09-07/evidence-manifest.json`）。
+- Candidate basis: `56427bcf6496c3f9d73126d0374de59cd2486add + sha256:095718ad07ee565802f5a85d819e40132e60e9827bc633cd58c7791b4f2b6326`；规范复算过程完整保存在下方“候选源码复算”，不依赖本地评测目录或预先生成的文件清单。
 - Candidate producer: Implement，当前任务 `/root`；本地分支 `feat/astra-skill-behavior`。
 - Evidence and limitations: 11 个 skill 与可达 references 已审查；252 项测试、格式/lint/type、11/11 skill 格式校验通过，候选产品文件 Doctor checker 无发现。隔离 v2 的 Astra before/after 各完成 37 场景、48 顶层轮次、3 个实际独立检查者，共 102 份原始记录，机械重放无装载缺失或已检出违规；不将机械结果视为语义判卷。普通结果长度与 A7 计划回写有实测变化，A6-unavailable 中新版两次增加重复测试。Gold 历史载荷发送待用户明确授权，Claude 默认模型 probe 返回无效模型标识，跨宿主 smoke 尚未运行，没有校准后的 judge 分数。完整记录在 `bench/results/astra-2026-09-07/REPORT.md`。手工清单中未勾选的综合效果与验收条目保留待核验，不以局部观察替代完整证明。
 - Check producer: 独立只读 `/root/candidate_review`；结果引用 `bench/results/astra-2026-09-07/independent-review.md` 的“最终完整候选独立 Check”。已独立复算完整 candidate basis 与 evidence manifest，二者匹配。完整判卷、Gold、Claude smoke 仍缺证据；实际发布样本只覆盖前置边界，轮次间纠正不证明 mid-turn steering。未发现新的高置信实现缺陷不等于原目标已验收。
 - Verdict: inconclusive
 - Acceptance: not established
+
+### 候选源码复算
+
+在包含基线提交的仓库克隆中检出待核验候选，保持文件字节、符号链接和执行位不变，然后在仓库内运行以下只读命令。原独立 Check 对应提交 `6ae4dcd17daa7954d84f7bdcd7e1e6b0101350f3` 的候选内容；后续提交须复算后再判断是否仍匹配，不能只凭分支名沿用结论。
+
+文件集合取基线到当前工作树的全部变化路径，加上所有未被 Git 忽略的未跟踪路径，去重并按 Python 字符串顺序排序。每项记录相对路径、当前 mode 和内容 SHA-256；删除项为 `mode: absent`、`sha256: null`，符号链接对链接目标字符串本身取哈希。只有本计划首个 `status` 行和完整 `## Assurance` 节被规范化排除，其余计划正文仍参与身份。最后对代码所示 payload 的规范 JSON 字节取 SHA-256；代码中的字段、排除说明字符串和序列化参数均属于算法。
+
+```sh
+python3 - <<'PY'
+from pathlib import Path
+import hashlib
+import json
+import re
+import stat
+import subprocess
+
+root = Path(subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True).strip())
+base = "56427bcf6496c3f9d73126d0374de59cd2486add"
+plan = "plans/2026-09-07-feat-astra-skill-behavior.md"
+
+def git(*args):
+    return subprocess.check_output(["git", "-C", str(root), *args]).decode("utf-8")
+
+changed = set(git("diff", "--name-only", "-z", base).split("\0"))
+changed.update(git("ls-files", "--others", "--exclude-standard", "-z").split("\0"))
+rows = []
+for name in sorted(changed - {""}):
+    path = root / name
+    if not path.exists() and not path.is_symlink():
+        rows.append({"path": name, "mode": "absent", "sha256": None})
+        continue
+    mode = "120000" if path.is_symlink() else (
+        "100755" if path.stat().st_mode & stat.S_IXUSR else "100644"
+    )
+    content = str(path.readlink()).encode("utf-8") if path.is_symlink() else path.read_bytes()
+    if name == plan:
+        body = re.sub(r"(?m)^status: .*$", "status: <excluded projection>", content.decode("utf-8"), count=1)
+        body = re.sub(r"(?ms)^## Assurance\n.*?(?=^## |\Z)", "", body)
+        content = (body.rstrip() + "\n").encode("utf-8")
+    rows.append({"path": name, "mode": mode, "sha256": hashlib.sha256(content).hexdigest()})
+
+payload = {
+    "baseRevision": base,
+    "files": rows,
+    "exclusions": [
+        "associated plan status line and Assurance section",
+        "git-ignored local evaluation evidence (separately identified)",
+    ],
+}
+canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+print(base + " + sha256:" + hashlib.sha256(canonical).hexdigest())
+PY
+```
+
+### 本地原始证据的独立限制
+
+`bench/results/astra-2026-09-07/` 中的原始会话、独立报告与证据 manifest 未跟踪、未上传，仓库克隆不包含它们。上述源码复算不读取这个目录，也不能证明其中的评测记录或 Check 结论。历史证据清单身份为 `sha256:0c277d66b3e034d77fbb5ed0503f4f2b82344ebcad46158de025ef0012e57826`（2940 文件）；没有本地清单和原始文件的读者无法独立复核该证据身份。本次 Implement 已在不含该目录的临时仓库克隆中直接执行上方命令：结果与原 basis 一致，status 投影变化不改变结果，真实候选文件变化会改变结果。原独立 Check 未审阅后来补入的复算说明；这次可复现性验证不产生新的独立 attestation，验收仍未建立。
