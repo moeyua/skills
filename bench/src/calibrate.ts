@@ -98,7 +98,7 @@ export function runCalibration(goldenRoot: string, repoRoot: string, repeat: num
     };
     console.log(`\n== ${baseline.case}(人工 ${baseline.manualScore} 分,判 ${repeat} 次)`);
     for (let round = 1; round <= repeat; round++) {
-      const judge = judgeTranscript(transcript, { repoRoot });
+      const judge = judgeTranscript(transcript, { skill: "shape", repoRoot });
       compareOne(baseline, judge, outcome, round);
       const last = outcome.scores[outcome.scores.length - 1];
       console.log(`  第 ${round} 次:score=${last ?? "judge-error"}`);

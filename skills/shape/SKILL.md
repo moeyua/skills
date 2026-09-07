@@ -20,7 +20,7 @@ A failed, ambiguous, or missing required condition stays visible rather than bec
 - If viable choices would materially change scope, observable behavior, hard-to-reverse architecture, risk, or acceptance, compare them and recommend one.
 - If the user delegates a choice, make it and state only consequential assumptions.
 
-Ask the user about genuine intent, preference, and authority—not facts available from the repository or an authoritative source. Compare alternatives only when they expose a real trade-off.
+Ask the user about genuine intent, preference, and authority—not facts available from the repository or an authoritative source. Continue useful investigation that does not depend on a pending answer. Explicit user instructions take precedence over skill guidance within host constraints; do not turn an interpreted guideline into an extra approval gate. When a skill rule causes a pause, link its source, quote the relevant instruction, and explain its actual effect. Compare alternatives only when they expose a real trade-off.
 
 For subjective outcomes, prefer the highest-fidelity practical reference or preview over additional abstract prose. Apply this only when seeing the result can change the decision; it is not a universal review stage.
 
@@ -30,6 +30,6 @@ Read `references/change-types.md` only when classifying a concrete change as `fi
 
 Shape is read-only. It may gather facts, but it does not write plans, Issues, specs, code, or project files and does not advance into implementation or delivery.
 
-Before Shape ends or another public capability begins, present a visible **Design Summary** and stop for the user's review. Include only applicable content: the active outcome and horizon; included and excluded scope; settled consequential decisions; Agent recommendations kept distinct from those decisions; genuinely unresolved material choices; evidence that would demonstrate the outcome; and the currently authorized outcome. Omit empty categories rather than filling a template.
+Before Shape ends or another public capability begins, present a visible **Design Summary** and stop for the user's review. Include only applicable content: the active outcome and horizon; included and excluded scope; settled consequential decisions; Agent recommendations kept distinct from those decisions; genuinely unresolved material choices; evidence that would demonstrate the outcome; and the currently authorized outcome. Lead with the proposed direction, use concise prose, and omit empty categories rather than filling a template.
 
 If the user corrects the Summary, invalidate its dependent conclusions and present the revised Summary before finishing. Agreement with a Design Summary settles that direction only; it does not authorize Plan, Implement, or delivery. A later user message may both accept the shown direction and explicitly request another public outcome, in which case that capability has its own authorization. Mention Plan only as an optional way to persist settled work.

@@ -1,6 +1,6 @@
 # Review Method
 
-Read the complete relevant diff, applicable project instructions, and enough surrounding code to judge behavior rather than isolated syntax. For an acceptance verdict, independently establish a stable, recomputable basis for the complete claimed change, then read the original claimed outcome and authorization boundary, the candidate evidence and its producer, and known limitations. Report the basis and Check producer/reference with the result so its applicability can be verified after the conversation moves. Use a plan when it exists, but do not make one an entry gate or treat its claims as proof.
+Read the complete relevant diff, applicable project instructions, and enough surrounding code to judge behavior rather than isolated syntax. Use a plan when relevant, but do not make one an entry gate or treat its claims as proof. Formal acceptance follows `references/acceptance.md`; ordinary review needs the identity of the inspected scope, not an unrelated complete-candidate protocol.
 
 Focus where the change creates risk:
 

@@ -5,6 +5,10 @@ import { describe, expect, it } from "vite-plus/test";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const IMPLEMENT = readFileSync(resolve(REPO_ROOT, "skills/implement/SKILL.md"), "utf8");
+const ASSURANCE = readFileSync(
+  resolve(REPO_ROOT, "skills/implement/references/assurance.md"),
+  "utf8",
+);
 const IMPLEMENT_SPEC = readFileSync(resolve(REPO_ROOT, "specs/implement/spec.md"), "utf8");
 const CHECK = readFileSync(resolve(REPO_ROOT, "skills/check/SKILL.md"), "utf8");
 const DOCS = readFileSync(resolve(REPO_ROOT, "skills/docs/SKILL.md"), "utf8");
@@ -41,8 +45,8 @@ describe("implement adaptive composition", () => {
   });
 
   it("keeps the associated plan lifecycle and credential boundary explicit", () => {
-    expect(IMPLEMENT).toMatch(/draft[\s\S]*approved[\s\S]*before[\s\S]*(?:edit|implementation)/i);
-    expect(IMPLEMENT).toMatch(/done[\s\S]*(?:not|never)[\s\S]*(?:replay|reopen)/i);
+    expect(ASSURANCE).toMatch(/draft[\s\S]*approved[\s\S]*before[\s\S]*(?:edit|implementation)/i);
+    expect(ASSURANCE).toMatch(/done[\s\S]*(?:not|never)[\s\S]*(?:replay|reopen)/i);
     for (const destination of ["code", "tests", "logs", "plans", "docs", "reports"]) {
       expect(IMPLEMENT).toContain(destination);
     }

@@ -8,8 +8,11 @@ const TEMPLATE = readFileSync(
   resolve(REPO_ROOT, "skills/plan/references/plan-template.md"),
   "utf8",
 );
-const IMPLEMENT = readFileSync(resolve(REPO_ROOT, "skills/implement/SKILL.md"), "utf8");
-const CHECK = readFileSync(resolve(REPO_ROOT, "skills/check/SKILL.md"), "utf8");
+const IMPLEMENT = readFileSync(
+  resolve(REPO_ROOT, "skills/implement/references/assurance.md"),
+  "utf8",
+);
+const CHECK = readFileSync(resolve(REPO_ROOT, "skills/check/references/acceptance.md"), "utf8");
 
 interface Transition {
   event: string;

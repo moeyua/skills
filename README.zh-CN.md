@@ -60,7 +60,7 @@ pnpm lint
 node skills/doctor/scripts/checker.ts . --json
 ```
 
-开发期 [Shape bench](./bench/README.md) 用于评估对话质量与副作用边界，不随 Skill 安装。
+开发期 [行为 bench](./bench/README.md) 可对指定 Skill 判卷，并保留 Shape 自动场景。以 GPT-6 Astra 为主要行为验收模型，Codex 与 Claude Code 使用同一套 Skills；普通实现/检查简要报告，正式验收保留独立证据。bench 不随 Skill 安装。
 
 ## 致谢
 

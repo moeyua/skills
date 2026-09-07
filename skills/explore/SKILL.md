@@ -9,7 +9,7 @@ Explore builds a trustworthy map of a project before answering a broad understan
 
 ## Start with the fixed Overview
 
-Complete this skeleton before a scoped deep-dive:
+Complete this skeleton before a scoped deep-dive, reusing already-read facts that remain current:
 
 1. Confirm the project root and identity.
 2. Read the root README, the ecosystem manifest, and every applicable project instruction file.
@@ -20,7 +20,7 @@ The Overview is fixed; its depth is not. “Necessary global documents” means 
 
 ## Deepen progressively
 
-After the Overview, follow the user's scope and the risk of the invoking task. Locate evidence with file listings and search before opening files, avoid rereading unchanged material, and stop when more reading is unlikely to change the answer.
+After the Overview, follow the user's scope and the risk of the invoking task. Where the host allows it, independent modules may be investigated in parallel with clear questions and source-backed results; keep the shared project skeleton consistent. Locate evidence with file listings and search before opening files, avoid rereading unchanged material, and stop when more reading is unlikely to change the answer.
 
 Read `references/deep-dive.md` when a module, behavior, or high-risk cross-cutting area needs detailed mapping. Read `references/report.md` only when exploration itself is the deliverable.
 
@@ -30,4 +30,4 @@ Use the code, tests, configuration, history, and authoritative external sources 
 
 Explore is strictly read-only. It does not diagnose a bug, audit documentation drift, make a product or architecture decision, edit files, or launch mutation. Those boundaries keep its facts reusable by shape, implement, check, docs, and doctor.
 
-In report mode, return the structured understanding and stop. In context mode, carry only the relevant facts and source paths into the invoking capability; do not emit a second report.
+In report mode, return the structured understanding and stop. In context mode, return only relevant facts, source paths, and missing evidence to the invoking capability, which continues its authorized outcome; do not emit a second report or end that task.

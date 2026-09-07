@@ -51,7 +51,7 @@ Token values accept hex/CSS colors, dimensions (with units), typography objects,
 
 ## Source
 
-The maintainer's stated design intent + design files / mockups / an existing design system, expressed in the `design.md` shape above. Don't invent visual rules, tokens, or positioning the maintainer never set — stop and ask.
+The maintainer's stated design intent + design files / mockups / an existing design system, expressed in the `design.md` shape above. Do not invent visual rules, tokens, or positioning the maintainer never set. Omit or ask about the unsupported decision, and continue unrelated edits grounded in the existing design authority.
 
 ## Boundary
 

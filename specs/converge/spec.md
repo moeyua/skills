@@ -23,7 +23,7 @@ Verify: manual(integration)
 
 ### Requirement: 来源明确时自主收敛
 
-来源明确且不会丢失 authored meaning 时，re-shell 和 gap fill 必须作为已授权 converge outcome 的机械动作自主执行。只有来源冲突、可能丢失 authored content、将引入新产品 intent 或缺少所需 authority 时才停止并请求维护者裁决；不受影响的文件可继续。
+来源明确且不会损失 authored meaning 时，converge 自主 re-shell/fill 并完成适用目标；只有来源冲突、内容可能丢失、新产品 intent 或必要 authority 缺失时才请求方向，具体说明 affected document/claim 和规则来源，继续不受影响的已授权文件。缺 sibling asset 的完整性边界仍按对应 requirement 停止。
 Verify: manual(integration)
 
 ### Requirement: catalog-only 且幂等

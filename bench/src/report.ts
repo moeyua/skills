@@ -9,6 +9,8 @@ import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import type { NormalizedTranscript, SessionInfo } from "./normalize/events.ts";
 import type { CheckResult, Violation } from "./checks/index.ts";
+import { unknownExecution, type ExecutionIdentity } from "./identity.ts";
+import type { PublicSkill } from "./judge/spec.ts";
 import type { JudgeResult } from "./judge/index.ts";
 
 export interface RunLabel {
@@ -20,6 +22,8 @@ export interface RunLabel {
 }
 
 export interface SessionReport {
+  skill: PublicSkill;
+  identity: ExecutionIdentity;
   session: SessionInfo;
   sourcePath: string;
   turnCount: number;
@@ -35,8 +39,11 @@ export function buildSessionReport(
   checks: CheckResult,
   judge: JudgeResult,
   runLabel?: RunLabel,
+  identity: ExecutionIdentity = unknownExecution(),
 ): SessionReport {
   return {
+    skill: judge.identity.skill,
+    identity: { ...identity, effortObserved: transcript.session.effort ?? identity.effortObserved },
     session: transcript.session,
     sourcePath: transcript.sourcePath,
     turnCount: transcript.turnCount,
@@ -68,14 +75,15 @@ export function renderSummaryMarkdown(
   reports: SessionReport[],
   baseline?: SessionReport[],
 ): string {
-  const lines: string[] = ["# shape bench 判卷汇总", ""];
+  const lines: string[] = ["# skills bench 判卷汇总", ""];
   const labels = reports.map(shortLabel);
 
   const requirementNames: string[] = [];
   for (const r of reports) {
     if (r.judge.status !== "ok") continue;
     for (const req of r.judge.verdict.requirements) {
-      if (!requirementNames.includes(req.requirement)) requirementNames.push(req.requirement);
+      const key = `${r.skill ?? "unknown"} / ${req.requirement}`;
+      if (!requirementNames.includes(key)) requirementNames.push(key);
     }
   }
 
@@ -85,7 +93,9 @@ export function renderSummaryMarkdown(
   for (const name of requirementNames) {
     const cells = reports.map((r) => {
       if (r.judge.status !== "ok") return "judge-error";
-      const req = r.judge.verdict.requirements.find((x) => x.requirement === name);
+      const req = r.judge.verdict.requirements.find(
+        (x) => `${r.skill ?? "unknown"} / ${x.requirement}` === name,
+      );
       return req === undefined ? "—" : verdictMark(req.verdict);
     });
     lines.push(`| ${name} | ${cells.join(" | ")} |`);
@@ -97,7 +107,9 @@ export function renderSummaryMarkdown(
   const repeated = new Map<string, SessionReport[]>();
   for (const r of reports) {
     if (r.runLabel === undefined) continue;
-    const key = `${r.runLabel.scenarioId}@${r.runLabel.host}`;
+    const conditions = comparisonKey(r);
+    if (conditions === null) continue;
+    const key = `${r.runLabel.scenarioId}@${r.runLabel.host} / ${r.skill} / ${conditions} / ${r.identity.source?.hash}`;
     const list = repeated.get(key) ?? [];
     list.push(r);
     repeated.set(key, list);
@@ -164,6 +176,11 @@ export function renderSummaryMarkdown(
   for (const r of reports) {
     lines.push(`### ${shortLabel(r)}`, "");
     lines.push(`- 来源:\`${r.sourcePath}\``);
+    lines.push(
+      `- skill:${r.skill ?? "不可得"};源码:${r.identity?.source?.hash ?? "不可得"};装载证据:${r.identity?.loadEvidence ?? "不可得"}`,
+    );
+    lines.push(`- 执行身份:\`${JSON.stringify(r.identity ?? null)}\`;null 表示不可得`);
+    lines.push(`- Judge / rubric:\`${JSON.stringify(r.judge.identity ?? null)}\`;null 表示不可得`);
     lines.push(`- 轮次:${r.turnCount},模型:${r.session.model ?? "?"}`);
     if (r.judge.status === "ok") {
       lines.push(`- 总分:${r.judge.verdict.score}`);
@@ -187,8 +204,8 @@ export function writeResults(outRoot: string, reports: SessionReport[]): string 
   for (const r of reports) {
     const name =
       r.runLabel === undefined
-        ? basename(r.sourcePath).replace(/\.jsonl$/, "")
-        : `${r.runLabel.scenarioId}-${r.runLabel.host}-${r.runLabel.run}`;
+        ? `${r.skill}-${basename(r.sourcePath).replace(/\.jsonl$/, "")}`
+        : `${r.skill}-${r.runLabel.scenarioId}-${r.runLabel.host}-${r.runLabel.run}`;
     writeFileSync(join(dir, `${name}.json`), JSON.stringify(r, null, 2));
   }
   writeFileSync(join(dir, "report.md"), renderSummaryMarkdown(reports));
@@ -202,10 +219,11 @@ export function requirementFailRates(reports: SessionReport[]): Map<string, numb
     if (r.judge.status !== "ok") continue;
     for (const req of r.judge.verdict.requirements) {
       if (req.verdict === "n.a.") continue;
-      const c = counts.get(req.requirement) ?? { fail: 0, judged: 0 };
+      const key = `${r.skill ?? "unknown"} / ${req.requirement}`;
+      const c = counts.get(key) ?? { fail: 0, judged: 0 };
       c.judged += 1;
       if (req.verdict === "fail") c.fail += 1;
-      counts.set(req.requirement, c);
+      counts.set(key, c);
     }
   }
   const rates = new Map<string, number>();
@@ -224,10 +242,31 @@ export function renderBaselineComparison(
   reports: SessionReport[],
   baseline: SessionReport[],
 ): string[] {
-  const runRates = requirementFailRates(reports);
-  const baseRates = requirementFailRates(baseline);
+  const eligible = reports.filter((report) => {
+    const key = comparisonKey(report);
+    return key !== null && baseline.some((base) => comparisonKey(base) === key);
+  });
+  const excluded = reports.length - eligible.length;
+  const groups = [...new Set(eligible.map((report) => comparisonKey(report)!))];
+  if (groups.length === 0)
+    return [
+      "## 与真实会话基线对比",
+      "",
+      "不可比：缺少可核验身份或 skill、场景、模型、推理、工具、judge/rubric 条件不同；未合并分数。",
+      "",
+    ];
+  if (groups.length > 1)
+    return groups.flatMap((key) =>
+      renderBaselineComparison(
+        eligible.filter((r) => comparisonKey(r) === key),
+        baseline.filter((r) => comparisonKey(r) === key),
+      ),
+    );
+  const runRates = requirementFailRates(eligible);
+  const baseRates = requirementFailRates(baseline.filter((r) => comparisonKey(r) === groups[0]));
   const names = [...new Set([...runRates.keys(), ...baseRates.keys()])];
   const lines: string[] = ["## 与真实会话基线对比", ""];
+  lines.push(`可比条件:${groups[0]};排除 ${excluded} 个不可比会话。`, "");
   lines.push("| Requirement | 本次 fail 率 | 基线 fail 率 | 一致性 |");
   lines.push("| --- | --- | --- | --- |");
   const suspects: string[] = [];
@@ -256,4 +295,39 @@ export function renderBaselineComparison(
 export function loadReportsFromDir(dir: string): SessionReport[] {
   const files = readdirSync(dir).filter((f) => f.endsWith(".json"));
   return files.map((f) => JSON.parse(readFileSync(join(dir, f), "utf8")) as SessionReport);
+}
+
+/** Source hashes may differ in a before/after comparison; every other controlled condition must match. */
+export function comparisonKey(report: SessionReport): string | null {
+  const identity = report.identity;
+  const judge = report.judge.identity;
+  if (
+    !report.skill ||
+    !identity?.source?.hash ||
+    identity.source.hash !== identity.source.installedHash ||
+    !identity.loadEvidence ||
+    !identity.toolEnvironment ||
+    !identity.scenarioHash ||
+    !identity.fixtureHash ||
+    !identity.effortObserved ||
+    !report.session.model ||
+    !judge?.modelObserved ||
+    !judge.effort ||
+    !judge.rubricHash
+  )
+    return null;
+  return JSON.stringify([
+    report.skill,
+    report.session.host,
+    report.session.model,
+    identity.effortObserved,
+    identity.toolEnvironment,
+    identity.scenarioHash,
+    identity.fixtureHash,
+    judge.modelObserved,
+    judge.effort,
+    judge.runner,
+    judge.rubricHash,
+    judge.specHash,
+  ]);
 }

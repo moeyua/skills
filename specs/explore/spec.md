@@ -28,5 +28,5 @@ Verify: manual(integration)
 
 ### Requirement: 报告与上下文使用同一事实基础
 
-用户请求探索时必须输出结构化报告并停止；被其他能力用于 context 时不得额外输出 Explore Report，只传递该 outcome 需要的事实与路径。
+用户独立请求探索时必须输出与范围相称的结构化报告并停止；被其他能力用于 context 时只返回相关事实、路径和缺证据项，由仍获授权的调用方继续 outcome，不额外输出 Explore Report 或结束整个任务。
 Verify: manual(integration)

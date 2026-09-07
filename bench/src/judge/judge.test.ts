@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from "vite-plus/test";
 import { join } from "node:path";
-import { extractRequirements, loadShapeSpec } from "./spec.ts";
+import { extractRequirements, loadSkillSpec } from "./spec.ts";
 import { renderTranscript, renderTranscriptCapped } from "./render.ts";
 import { buildJudgePrompt } from "./prompt.ts";
 import { parseJudgeOutput } from "./schema.ts";
@@ -53,7 +53,7 @@ function sampleTranscript(): NormalizedTranscript {
 describe("extractRequirements", () => {
   it("extracts requirements from the live shape spec without pinning its content", () => {
     // the judge follows spec updates by design — assert structure, not count
-    const spec = loadShapeSpec(REPO_ROOT);
+    const spec = loadSkillSpec(REPO_ROOT, "shape");
     const reqs = extractRequirements(spec);
     expect(reqs.length).toBeGreaterThanOrEqual(1);
     for (const r of reqs) {
@@ -105,6 +105,7 @@ describe("renderTranscript", () => {
 describe("buildJudgePrompt", () => {
   it("embeds the spec, the transcript, and the requirement count", () => {
     const prompt = buildJudgePrompt({
+      skill: "shape",
       specText: "### Requirement: 甲\n\n必须做甲。",
       requirementNames: ["甲"],
       renderedTranscript: "[T1] USER: hi",
@@ -116,7 +117,7 @@ describe("buildJudgePrompt", () => {
     expect(prompt).toContain("重复确认");
     expect(prompt).toContain("会话结论");
     expect(prompt).toContain("未表达的偏好不等于委托");
-    expect(prompt).toContain("显式调用其他 skill");
+    expect(prompt).toContain("显式调用其他公共 skill");
     expect(prompt).toContain("任何文件写入");
     expect(prompt).not.toContain("named mode");
     expect(prompt).not.toContain("阶段固定为");
@@ -178,6 +179,7 @@ describe("judgeTranscript with injected model", () => {
 
   it("returns ok on first valid response", () => {
     const result = judgeTranscript(sampleTranscript(), {
+      skill: "shape",
       specText,
       runModel: () => goodResponse,
     });
@@ -191,6 +193,7 @@ describe("judgeTranscript with injected model", () => {
   it("retries once on invalid output, then succeeds", () => {
     let calls = 0;
     const result = judgeTranscript(sampleTranscript(), {
+      skill: "shape",
       specText,
       runModel: () => {
         calls += 1;
@@ -203,6 +206,7 @@ describe("judgeTranscript with injected model", () => {
 
   it("marks judge-error after two invalid responses", () => {
     const result = judgeTranscript(sampleTranscript(), {
+      skill: "shape",
       specText,
       runModel: () => "garbage",
     });
@@ -211,5 +215,29 @@ describe("judgeTranscript with injected model", () => {
       expect(result.attempts).toBe(2);
       expect(result.errors.length).toBeGreaterThan(0);
     }
+  });
+});
+
+describe("spec selection", () => {
+  it("rejects non-public names and missing skill", async () => {
+    const { parseSkill, PUBLIC_SKILLS } = await import("./spec.ts");
+    expect(PUBLIC_SKILLS).toHaveLength(11);
+    for (const skill of PUBLIC_SKILLS)
+      expect(extractRequirements(loadSkillSpec(REPO_ROOT, skill)).length).toBeGreaterThan(0);
+    expect(() => parseSkill(undefined)).toThrow(/--skill/);
+    expect(() => parseSkill("../shape")).toThrow(/--skill/);
+  });
+  it("changes rubric identity when the target spec changes", () => {
+    const opts = {
+      skill: "shape" as const,
+      specText: "### Requirement: 甲\nbody",
+      runModel: () => "invalid",
+    };
+    const before = judgeTranscript(sampleTranscript(), opts);
+    const after = judgeTranscript(sampleTranscript(), {
+      ...opts,
+      specText: opts.specText + " changed",
+    });
+    expect(before.identity.rubricHash).not.toBe(after.identity.rubricHash);
   });
 });

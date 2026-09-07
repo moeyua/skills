@@ -13,12 +13,12 @@ Verify: manual(integration)
 
 ### Requirement: 复用既定决定
 
-用户陈述、授权与已接受结论必须作为输入；没有新证据时不得重开、重复确认或制造新的阶段。
+用户陈述、授权与已接受结论必须作为输入；没有新证据时不得重开、重复确认或制造新阶段。在适用宿主约束内显式用户指令优先于 skill 指导；因 skill 规则暂停时必须提供实际来源链接、短引文和适用原因，不得把 Agent 解释变成额外批准门槛。
 Verify: manual(integration)
 
 ### Requirement: 事实缺口由 Agent 调查
 
-影响判断的可发现事实必须从项目或权威来源取得，项目陌生时可自主组合 explore context；不得把可检索事实交回用户补齐。
+影响判断的可发现事实必须从项目或权威来源取得，陌生结构可自主组合 explore context；不得把可检索事实交回用户。对 pending 意图选择，继续调查不依赖答案的有效事实，不把等待当作批准；维持 Shape 只读审阅边界。
 Verify: manual(integration)
 
 ### Requirement: 只处理实质决策前沿

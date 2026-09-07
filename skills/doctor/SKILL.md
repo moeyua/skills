@@ -20,10 +20,10 @@ For documentation drift:
 - extract checkable claims from README, ARCHITECTURE, and other prose; leave uncheckable rationale undecided;
 - report only high-confidence contradictions, clearly separating the document claim from observed code/configuration.
 
-Run dependency, CI, or history probes only when the requested scope includes them and the project exposes the required manifest, remote, or history. A missing prerequisite is a named skip, not a failure.
+Independent claim groups may be investigated in parallel when the host permits it and results retain their source evidence. Run dependency, CI, or history probes only when the requested scope includes them and the project exposes the required manifest, remote, or history. A missing prerequisite is a named skip, not a failure.
 
 ## Boundary and report
 
 Doctor never edits, commits, pushes, or invokes a fixing capability. Mechanical findings are facts; model findings include severity, confidence, evidence, and the likely owning capability—Docs for doc correction, Converge for catalog-wide alignment, Implement for an authorized code repair, Shape for unresolved correctness.
 
-Report scope, checks run/skipped, docs-vs-code findings first, mechanical findings second, and the owner of each possible follow-up. Stop after the advisory report.
+Report the scoped advisory result concisely: actionable docs-vs-code findings first, mechanical findings second, actual checks and material skips, and the likely owner of follow-up work. A missing prerequisite does not block unrelated probes. End a standalone audit there; when providing context to an authorized caller, return evidence without starting repairs or ending that caller's task.

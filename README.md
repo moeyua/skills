@@ -60,7 +60,7 @@ pnpm lint
 node skills/doctor/scripts/checker.ts . --json
 ```
 
-The development-only [Shape bench](./bench/README.md) evaluates conversational quality and side-effect boundaries. It is not installed as a Skill.
+The development-only [behavior bench](./bench/README.md) judges a selected Skill and retains automated Shape scenarios. GPT-6 Astra is the primary behavior evaluation model; Codex and Claude Code use the same Skill set. Ordinary implementation/check results stay concise, while formal acceptance retains independent evidence. The bench is not installed as a Skill.
 
 ## Acknowledgements
 

@@ -43,5 +43,5 @@ Verify: [publish state machine](../../tests/publish.test.ts)
 
 ### Requirement: 发布状态不升级实现验收
 
-publish 只能 attest 实际 commit、push 与 PR state，并准确转述 candidate stable basis、evidence、Check producer/reference、exact verdict + acceptance-field pair 及 checked basis 是否仍匹配 published candidate；发布 candidate、PR 可 review、重复测试结果或缺少完整 Assurance 的 legacy done 不得被升级为 independent acceptance、Check pass 或 done。
+publish 只能 attest 实际 commit、push 与 PR state。普通 upstream 结果不要求额外验收字段；涉及正式 acceptance 或已记录 plan assurance 时，必须准确转述 candidate stable basis、evidence、Check producer/reference、exact verdict + acceptance-field pair 及 checked basis 是否仍匹配 published candidate。发布 candidate、PR 可 review、重复测试结果或缺少完整 Assurance 的 legacy done 不得被升级为 independent acceptance、Check pass 或 done。
 Verify: manual(integration)

@@ -13,12 +13,12 @@ Read `references/git-state.md` before mutation. It defines protected states, exp
 
 Read `references/pull-request.md` when a GitHub PR can be created or reused, or when a non-GitHub remote needs a manual PR/MR handoff. Read `references/recovery.md` when an earlier commit/push/PR may already exist, a remote result is ambiguous, or any stage fails.
 
-Use an associated plan, Issue, or verification result when available, but never make one an entry gate. Preserve unrelated working-tree changes and stop before staging when ownership is unclear.
+Once publication is authorized, complete every missing in-scope stage without asking again for the same authorization. Use an associated plan, Issue, or verification result when available, but never make one an entry gate. Preserve unrelated working-tree changes and stop before staging when ownership is unclear.
 
 ## Boundaries
 
-Publish never implements or fixes the change, rewrites history, force-pushes, amends, deletes branches, changes user configuration, stages secrets, merges, or releases. It does not turn failed validation into permission to bypass hooks. Commit, push, and PR state attest delivery only; publishing a candidate, repeating its evidence, or reading a legacy `done` plan without complete Assurance does not convert it into independent acceptance or a Check pass. When Check state is relevant, preserve the candidate's stable basis, Check producer/reference, exact verdict + acceptance-field pair, and whether the checked basis still matches the published candidate.
+Publish never implements or fixes the change, rewrites history, force-pushes, amends, deletes branches, changes user configuration, stages secrets, merges, or releases. It does not turn failed validation into permission to bypass hooks. Commit, push, and PR state attest delivery only; publishing a candidate, repeating its evidence, or reading a legacy `done` plan without complete Assurance does not convert it into independent acceptance or a Check pass. Ordinary implementation or scoped Check results need no added attestation fields. When formal Check state or a recorded plan acceptance is relevant, preserve the candidate's stable basis, Check producer/reference, exact verdict + acceptance-field pair, and whether the checked basis still matches the published candidate.
 
 Commit, push, and PR are separate durable outcomes. Keep every valid completed stage and report the exact remaining state; never simulate atomic rollback.
 
-Finish with complete, partial, or no-op state; commits created or reused; push target; PR URL/state or precise manual/degraded result; verification represented accurately; and remaining local changes. Stop before merge or Release.
+Report complete, partial, or no-op state with the actual commits, push target and PR outcome, relevant verification and remaining local changes. If a rule blocks a stage, link and quote it with the observed condition and exact remaining action; retain completed stages. Stop before merge or Release unless that outcome was separately authorized through its owning capability.

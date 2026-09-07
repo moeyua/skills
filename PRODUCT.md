@@ -4,7 +4,7 @@
 
 Skills assumes modern agents already possess strong general reasoning. Its value is not to prescribe every step; it supplies clear capability interfaces, project-specific judgment, trustworthy sources, and boundaries around consequential side effects.
 
-The current context architecture follows the direction described in Anthropic's [The new rules of context engineering for Claude 5 generation models](https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models): prefer judgment over exhaustive rules, interfaces over examples, progressive disclosure over upfront context, concise descriptions over repetition, and rich references over overloaded prompts.
+The context architecture draws on Anthropic's [The new rules of context engineering for Claude 5 generation models](https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models): prefer judgment over exhaustive rules, interfaces over examples, progressive disclosure over upfront context, concise descriptions over repetition, and rich references over overloaded prompts. One common skill set serves Codex and Claude Code; GPT-6 Astra is the primary model for current behavior calibration, informed by [OpenAI's model guidance](https://developers.openai.com/api/docs/guides/latest-model). The relevant outcomes are autonomous follow-through within authorization, proportional verification, useful delegation, and concise evidence-backed communication.
 
 ## Design philosophy
 
@@ -22,6 +22,8 @@ Rules that restate general competence, enumerate every possible mistake, repeat 
 ### 2. Outcome authorization with agent-owned composition
 
 The user expresses the outcome and its authorization boundary. The agent owns the micro-orchestration needed to finish it: gathering facts, using TDD when useful, selecting verification depth, obtaining independent judgment, and synchronizing directly affected durable truth.
+
+Supporting capabilities return to the active owner, which continues already-authorized work. A blocked dependent action does not stop unrelated authorized work, and repeated command failure calls for diagnosis rather than blind retry. Required checks end once sufficient evidence is established unless new changes, failures, or unresolved concerns warrant more. Independent work may be delegated when the host permits it and the benefit exceeds coordination cost.
 
 This composition is adaptive rather than a hidden fixed pipeline. An explicit Skill invocation remains a useful way to narrow or control the public outcome, but the user should not have to manually invoke every supporting capability. Already-settled decisions remain inputs unless new evidence invalidates them.
 
@@ -43,7 +45,7 @@ Two operating consequences apply throughout project development:
 
 These are semantic distinctions, not a universal form, ledger, or confirmation workflow. Each capability applies only the part needed for its own outcome.
 
-**Attestation** constrains who may produce a consequential claim and which stable basis it covers across those four distinctions; it is not a fifth state. A capability may establish its own outcome and report the evidence it actually produced, but it cannot manufacture missing upstream authority or grant itself a downstream independent verdict. In particular, implementation can produce an identifiable candidate and local evidence, while only Check can attest independent acceptance for that exact basis. A recorded attestation is a time-scoped snapshot, not proof that no later contradictory result exists; a current acceptance claim must establish that the basis still matches and that the referenced result is the latest applicable evidence available in the current context. A legacy `done` artifact without a complete basis-scoped attestation remains historical completion only—missing provenance is not inferred or backfilled. Lower-assurance outcomes remain valid results when reported honestly.
+**Attestation** constrains who may produce a consequential claim and which stable basis it covers across those four distinctions; it is not a fifth state. A capability may establish its own outcome and report the evidence it actually produced, but it cannot manufacture missing upstream authority or grant itself a downstream independent verdict. Ordinary implementation and scoped checks report the outcome, actual evidence, and material limitations without a mandatory assurance form. Formal acceptance and associated plan records load the detailed protocol only when needed: implementation produces an identifiable candidate and local evidence, while only independent Check can attest acceptance for that exact basis. A recorded attestation is a time-scoped snapshot, not proof that no later contradictory result exists; a current acceptance claim must establish that the basis still matches and that the referenced result is the latest applicable evidence available in the current context. A legacy `done` artifact without a complete basis-scoped attestation remains historical completion only—missing provenance is not inferred or backfilled. Lower-assurance outcomes remain valid results when reported honestly.
 
 ### 4. Clear interfaces and progressive disclosure
 

@@ -20,10 +20,10 @@ Existing authored content is authoritative. Re-shell format without losing it, f
 
 When PRODUCT or Specs do not exist at all, maintainer answers may supply initial truth; code only corroborates it. Missing authority stays visibly missing. Once a document exists, focused maintenance belongs to Docs and new product intent belongs to Shape.
 
-When the source is explicit and no authored meaning can be lost, re-shelling and gap filling are mechanical parts of the authorized convergence outcome and may proceed across the catalog. Stop for maintainer direction only when sources conflict, an edit could lose authored content, a claim would introduce new product intent, or the required authority is missing; unaffected files may continue.
+When the source is explicit and no authored meaning can be lost, re-shelling and gap filling are mechanical parts of the authorized convergence outcome and may proceed across the catalog. Stop for maintainer direction only when sources conflict, an edit could lose authored content, a claim would introduce new product intent, or the required authority is missing; continue unaffected authorized files while that decision is pending. If a skill rule blocks an edit, link and quote its source and identify the affected document or claim.
 
 ## Boundary and finish
 
 Converge writes only applicable catalog documents and, when needed, a `plans/` directory skeleton. It does not install host configuration, touch catalog-external docs, audit dependencies/CI, or perform delivery.
 
-Immediately rerunning a completed convergence must produce no diff. Report each document's state, action or skip reason, declined/stopped files, and the idempotence evidence.
+Immediately rerunning a completed convergence must produce no diff. Report each applicable document's state and action concisely, with skip or stop reasons and the actual idempotence evidence. Return supporting results to an already-authorized caller without treating convergence as permission for a different outcome.

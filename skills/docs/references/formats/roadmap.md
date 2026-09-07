@@ -9,7 +9,7 @@ The home for deferred / future items, so the other memory artifacts stay about t
 
 ## Source
 
-What the maintainer has decided to defer or plan. Append when a new deferral is decided; remove an item once it lands. Don't add items the maintainer didn't decide — stop and ask.
+What the maintainer has decided to defer or plan. Append when a new deferral is decided; remove an item once it lands. Do not add items the maintainer did not decide. Leave unsupported proposals out, ask only when their decision is needed for the requested result, and complete the already-decided updates.
 
 ## Boundary
 

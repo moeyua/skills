@@ -43,6 +43,7 @@ describe("runJudgeCommand", () => {
     const logs: string[] = [];
     try {
       const result = runJudgeCommand([CLAUDE_SAMPLE, badFile], {
+        skill: "shape",
         repoRoot,
         outRoot: join(repoRoot, "results"),
         runModel: () => GOOD_RESPONSE,
@@ -67,6 +68,7 @@ describe("runJudgeCommand", () => {
     const repoRoot = tempRepo();
     try {
       const result = runJudgeCommand([CLAUDE_SAMPLE], {
+        skill: "shape",
         repoRoot,
         outRoot: join(repoRoot, "results"),
         runModel: () => GOOD_RESPONSE,
@@ -84,5 +86,45 @@ describe("runJudgeCommand", () => {
     const result = runJudgeCommand([], { log: (l) => logs.push(l) });
     expect(result.exitCode).toBe(1);
     expect(logs.join("\n")).toContain("用法");
+  });
+});
+
+describe("explicit skill selection", () => {
+  it("rejects missing skill before invoking the model", () => {
+    let called = false;
+    const result = runJudgeCommand([CLAUDE_SAMPLE], {
+      runModel: () => {
+        called = true;
+        return GOOD_RESPONSE;
+      },
+      log: () => {},
+    });
+    expect(result.exitCode).toBe(1);
+    expect(called).toBe(false);
+  });
+  it("loads the selected spec and records unknown execution identity honestly", () => {
+    const repoRoot = tempRepo();
+    mkdirSync(join(repoRoot, "specs/implement"), { recursive: true });
+    writeFileSync(join(repoRoot, "specs/implement/spec.md"), SPEC.replace("甲", "实施"));
+    try {
+      const result = runJudgeCommand([CLAUDE_SAMPLE], {
+        skill: "implement",
+        repoRoot,
+        outRoot: join(repoRoot, "results"),
+        log: () => {},
+        runModel: (prompt) => {
+          expect(prompt).toContain("implement spec 全文");
+          expect(prompt).toContain("### Requirement: 实施");
+          expect(prompt).not.toContain("任何文件写入、GitHub mutation");
+          return GOOD_RESPONSE.replace('"甲"', '"实施"');
+        },
+      });
+      expect(result.exitCode).toBe(0);
+      expect(result.reports[0]?.skill).toBe("implement");
+      expect(result.reports[0]?.identity.source).toBeNull();
+      expect(result.reports[0]?.judge.identity.specHash).toMatch(/^[a-f0-9]{64}$/);
+    } finally {
+      rmSync(repoRoot, { recursive: true, force: true });
+    }
   });
 });

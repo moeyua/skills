@@ -27,7 +27,15 @@ node bench/src/calibrate.ts --repeat 3 # 判 3 次，量化 judge 抖动
 | case-2-skland-token           |      6 | 保持对话且尊重约束，但证据不可见并静默决定多角色等实质取舍     |
 | case-3-redundant-confirmation |      4 | 已充分指定且已同意后仍重复确认，没有收束会话方向               |
 
-## 当前校准处置（2026-07-21）
+## 当前校准处置（2026-09-07）
+
+judge 已增加显式 skill 选择，Shape 校准明确选择 `shape`；当前 prompt/rubric 尚未完成实际校准。运行 `node bench/src/calibrate.ts --repeat 3` 前，自动审批因案例 1 会将本机历史项目会话发送给 Claude 服务而拒绝命令，待维护者明确授权该载荷。三份实际待发送内容仅保存在本地忽略的评测目录中，未发送。
+
+另用不含项目内容的 `OK` 请求分别探测当前 `--bare` 与正常登录路径，两者均返回 Bedrock `400`、模型标识无效、token 为 0。当前代码没有显式绑定 judge 模型，沿用宿主默认；需要可用的模型配置才能继续。此结果不能证明认证问题，也不产生校准分数。
+
+本轮没有校准后的 LLM judge 评分。Astra 真实会话的行为、产物与辅助度量可独立归档，但不能冒充校准评分或沿用历史 rubric 分数。实际 judge effort 不可观察时保持缺失，自动比较须拒绝条件不全的数据。
+
+## 上次校准处置（2026-07-21）
 
 `node bench/src/calibrate.ts --repeat 3` 在 case 1 第一轮返回 `judge-error`；诊断确认固定 judge 模型 `claude-fable-5` 已无可用渠道，网关返回 `503 model_not_found`。维护者确认该模型已下架，而替换模型会改变 judge 本身，不能作为同一 rubric 的可比校准，因此明确停止本轮校准，不再用其他模型补跑。
 
