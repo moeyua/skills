@@ -23,12 +23,12 @@ Read `references/model.md` whenever identity, topology, version selection, propa
 
 Before any mutation, fetch the remote default branch and re-resolve the exact set from that commit. A cross-turn candidate requires its recorded basis to be unchanged exactly; a current-turn exact tag may continue only when refreshed mapping and successor validity still determine the same complete set.
 
-After authorization and revalidation, read `references/execution.md`. It owns the verified non-tagging, non-committing, non-publishing release metadata transaction, release commit, branch push, tags, and GitHub Releases.
+An already-confirmed exact set needs no additional prose approval; unresolved or expanded identities still follow their stated confirmation rule. After authorization and revalidation, read `references/execution.md`. It owns the verified non-tagging, non-committing, non-publishing release metadata transaction, release commit, branch push, tags, and GitHub Releases.
 
 Read `references/recovery.md` when any release metadata diff, commit, push, tag, or Release may already exist or a stage fails. Preserve valid partial success and resume only verified missing state.
 
 ## Boundaries and result
 
-Never guess an ambiguous release identity or repository metadata contract, invent a repository changelog where none exists, mutate before required confirmation, force-push, rewrite history, move/delete a tag or Release, create a PR, deploy, roll back, upload artifacts, or publish a registry package. A verified tag or GitHub Release attests exact release state only; it does not supply missing implementation acceptance or a Check pass.
+Never guess an ambiguous release identity or repository metadata contract, invent a repository changelog where none exists, mutate before required confirmation, force-push, rewrite history, move/delete a tag or Release, create a PR, deploy, roll back, upload artifacts, or publish a registry package. A verified tag or GitHub Release attests exact release state only; it does not supply missing implementation acceptance or a Check pass. Ordinary upstream results require no added attestation fields; preserve existing formal acceptance evidence only when relevant.
 
-Report proposed, created, existing, partial, or no-op state; units and identities; policy and basis; repository release metadata state; confirmation state; metadata transaction; release commit/branch push; each tag and Release URL/GitHub-notes state; exact recovery point; and bounded exclusions. Stop after this release outcome.
+Lead with proposed, created, existing, partial, or no-op state. Include the applicable set, policy/basis and confirmation, metadata transaction, commit/push, tag and Release results, and precise recovery point. Omit fields for phases that do not apply; a proposed set still includes everything its confirmation contract requires. When a rule requires a pause, link and quote its source and state the observed condition. Stop after this release outcome.

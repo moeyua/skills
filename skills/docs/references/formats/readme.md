@@ -9,7 +9,7 @@ The project's entry point: what it is, how to use it, where to go next. Audience
 - **标题 + 一句话定位 / Title + one-line positioning** — the project's name and what it is, in a sentence. _(standard-readme: Title + Short Description, both required)_
 - **上手 / Getting started** — install or first-run steps. _(GitHub "how to get started"; standard-readme Install)_
 - **用法 / Usage** — the main commands / entry points. For a non-tool repo (a pure library / doc repo) this may merge into 上手 or be omitted. _(standard-readme: Usage required only when installable)_
-- **链接 / Links** — pointers to `PRODUCT.md` / `ARCHITECTURE.md` for the deeper story. _(Google docguide: a link to deeper docs is the minimum a README owes)_
+- **链接 / Links** — pointers to existing relevant deeper documentation, such as `PRODUCT.md` / `ARCHITECTURE.md`. Omit absent targets instead of creating sibling documents to satisfy the format.
 
 **Optional** (only when the project warrants — mirror "consider which sections apply"):
 
@@ -19,10 +19,10 @@ Keep it the size the project warrants — a small tool needs only Title + positi
 
 ## Source
 
-Synthesized from `PRODUCT.md` (positioning / philosophy) and `ARCHITECTURE.md` (structure / commands). If both sources are absent, stop and ask — don't invent positioning.
+Use `PRODUCT.md` for established positioning and `ARCHITECTURE.md` for structure and commands when present. Explicit maintainer intent can establish positioning directly; verified project entry points establish usage. Missing upstream documents do not block those grounded edits. Omit an unsupported claim or ask for its missing decision while completing unaffected content.
 
 ## Boundary
 
 - A one-time synthesis of the entry, **not** ongoing ownership of external marketing copy.
-- No invented positioning or selling claims beyond what PRODUCT/ARCHITECTURE say.
+- No invented positioning or selling claims beyond established maintainer intent and authoritative project sources.
 - Not changelog / release notes / API reference — those are out of scope (PRODUCT.md boundary #2/#3).

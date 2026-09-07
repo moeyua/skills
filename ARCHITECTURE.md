@@ -26,7 +26,7 @@ skills/
 ├── specs/<name>/spec.md              # observable behavior contracts
 ├── plans/                             # point-in-time implementation handoffs
 ├── tests/                             # deterministic interface/invariant checks
-└── bench/                             # development-only Shape behavior evaluation
+└── bench/                             # development-only skill behavior evaluation
 ```
 
 There is no production runtime package or generated workflow engine. The product surface is Markdown, conditional references, and Doctor's zero-dependency checker.
@@ -93,19 +93,19 @@ the snapshot does not create authority.
 
 Shape and Handoff are visible checkpoints, not mandatory upstream stages. Shape ends by presenting a Design Summary for review; agreement settles that direction but does not select another public capability. Handoff preserves continuation-critical state when context moves. Every other capability remains directly enterable and reconstructs only the state its outcome needs from the current request and authoritative project facts.
 
-| capability | intent-fidelity and attestation responsibility                                                              |
-| ---------- | ----------------------------------------------------------------------------------------------------------- |
-| Explore    | keep documentation claims, observed facts, and source conflicts distinguishable                             |
-| Shape      | expose the active outcome, failed or unresolved conditions, continuity choices, and recommendations         |
-| Plan       | persist settled direction without inventing authority, success, or an unrequested continuity path           |
-| Implement  | produce a candidate and local evidence, removing superseded paths when the authorized outcome replaces them |
-| Check      | independently attest only inspected evidence and reject masked failure or unauthorized continuity           |
-| Docs       | record authoritative current truth without carrying a superseded design through a clean break               |
-| Publish    | attest exact commit/push/PR state without upgrading implementation assurance                                |
-| Release    | attest the exact authorized release state without substituting for implementation acceptance                |
-| Converge   | preserve authored meaning and stop on source conflict or missing authority                                  |
-| Doctor     | separate deterministic facts from model judgment and evidence                                               |
-| Handoff    | carry active, superseded, candidate, evidenced, and pending-attestation state without settling it           |
+| capability | intent-fidelity and attestation responsibility                                                      |
+| ---------- | --------------------------------------------------------------------------------------------------- |
+| Explore    | keep documentation claims, observed facts, and source conflicts distinguishable                     |
+| Shape      | expose the active outcome, failed or unresolved conditions, continuity choices, and recommendations |
+| Plan       | persist settled direction without inventing authority, success, or an unrequested continuity path   |
+| Implement  | deliver behavior with proof; identify a candidate when a plan or formal acceptance requires it      |
+| Check      | report scoped evidence; independently attest formal acceptance only for a matching complete basis   |
+| Docs       | record authoritative current truth without carrying a superseded design through a clean break       |
+| Publish    | attest exact commit/push/PR state without upgrading implementation assurance                        |
+| Release    | attest the exact authorized release state without substituting for implementation acceptance        |
+| Converge   | preserve authored meaning and stop on source conflict or missing authority                          |
+| Doctor     | separate deterministic facts from model judgment and evidence                                       |
+| Handoff    | carry active, superseded, candidate, evidenced, and pending-attestation state without settling it   |
 
 Fail-close and clean-break do not create stages or a generic recovery framework. Each capability applies the canonical boundary only to its own claim, artifact, or side effect.
 
@@ -121,7 +121,7 @@ The product rationale for adaptive composition lives in [PRODUCT.md](./PRODUCT.m
 | commit, push, PR                                                                                                | Publish outcome                    |
 | version/dependency and version-bound repository release metadata, default-branch release commit, tags, Releases | Release outcome                    |
 
-Check remains read-only and Docs remains authority-bound when composed; neither grants implementation repair, Publish, or Release. A caller may mechanically project only an exact Check result whose producer and stable candidate basis remain applicable, but cannot reinterpret or manufacture any field.
+Check remains read-only and Docs remains authority-bound when composed; neither grants new implementation repair, Publish, or Release. The active caller retains its existing authorization and continues applicable work after a support result. A caller may mechanically project only an exact Check result whose producer and stable candidate basis remain applicable, but cannot reinterpret or manufacture any field.
 
 ## Progressive reference topology
 
@@ -129,7 +129,8 @@ Notable reference families:
 
 - Explore: scoped deep-dive and report interface.
 - Plan: one target contract (`local`, `issue`, or `both`); local plans load the selected change-type/template, every Issue uses the shared problem-record schema, and `both` additionally loads the managed-envelope rules for paired synchronization.
-- Check: review, test, and e2e methods load independently.
+- Implement: associated plan state and formal acceptance consumption load from `references/assurance.md` only when triggered.
+- Check: review, test, and e2e methods load independently; formal claims additionally load `references/acceptance.md`.
 - Docs: the memory catalog indexes six target-specific formats.
 - Publish: git state, PR construction, and recovery.
 - Release: release-set model, execution, and recovery.
@@ -139,16 +140,17 @@ Shared symlinks remain only for true semantic sources: `change-types.md` is cons
 
 ## Artifact and state flow
 
-| artifact/state                              | producer      | useful consumers                | absence/failure                                                                 |
-| ------------------------------------------- | ------------- | ------------------------------- | ------------------------------------------------------------------------------- |
-| reviewed conversational direction           | Shape + user  | Plan, Implement, Docs, Handoff  | absent for direct entry; agreement does not authorize another public outcome    |
-| local implementation plan                   | Plan          | Implement, Publish, Docs        | clear requests may proceed without it                                           |
-| canonical Issue problem record/URL          | Plan/user     | Plan `both`, Publish            | omit closing reference if absent; unmanaged or conflicted content is not edited |
-| identifiable candidate + local evidence     | Implement     | Check, Docs, Publish, Handoff   | valid lower-assurance result; does not imply independent acceptance             |
-| Check result: basis + producer + pair       | Check         | Implement, Publish, Handoff     | findings deny acceptance but do not authorize repair                            |
-| durable memories                            | Docs/Converge | all fact-gathering capabilities | load only applicable targets                                                    |
-| branch/upstream/PR state                    | Publish       | reviewers                       | partial success is preserved                                                    |
-| release basis/metadata commit/tags/Releases | Release       | users/GitHub                    | resume from verified canonical state                                            |
+| artifact/state                              | producer          | useful consumers                | absence/failure                                                                 |
+| ------------------------------------------- | ----------------- | ------------------------------- | ------------------------------------------------------------------------------- |
+| reviewed conversational direction           | Shape + user      | Plan, Implement, Docs, Handoff  | absent for direct entry; agreement does not authorize another public outcome    |
+| local implementation plan                   | Plan              | Implement, Publish, Docs        | clear requests may proceed without it                                           |
+| canonical Issue problem record/URL          | Plan/user         | Plan `both`, Publish            | omit closing reference if absent; unmanaged or conflicted content is not edited |
+| identifiable candidate + local evidence     | Implement         | Check, Docs, Publish, Handoff   | valid lower-assurance result; does not imply independent acceptance             |
+| scoped Check verdict + actual evidence      | Check             | Implement, Publish, Handoff     | does not establish independent acceptance or authorize repair                   |
+| formal attestation: basis + producer + pair | independent Check | Implement, Publish, Handoff     | missing evidence leaves acceptance unestablished                                |
+| durable memories                            | Docs/Converge     | all fact-gathering capabilities | load only applicable targets                                                    |
+| branch/upstream/PR state                    | Publish           | reviewers                       | partial success is preserved                                                    |
+| release basis/metadata commit/tags/Releases | Release           | users/GitHub                    | resume from verified canonical state                                            |
 
 An associated local plan projects this flow without becoming its authority source:
 
@@ -161,7 +163,7 @@ candidate --Check acceptance pass--------> done
 candidate --active/new Implement auth----> approved
 ```
 
-Without a plan, the same candidate basis, evidence producer, limitations, and Check producer + verdict + acceptance-field pair stay in the result report or Handoff; Implement does not create an artifact merely to track assurance. Only an independent Check `pass` paired with `attested for the exact current candidate` and the same stable basis is an acceptance pass. Findings leave the candidate unaccepted; a still-active Implement authorization or a new explicit implementation request—not the finding—authorizes repair and moves an associated plan to `approved`. Any repair produces a new basis and invalidates the old result.
+Without a plan or formal acceptance request, results and Handoff retain only relevant behavior, actual verification and limitations; no complete-diff identity or producer/acceptance form is required. Formal acceptance without a plan keeps its complete basis and provenance in the conversation. Associated plans retain the existing Assurance schema; an ordinary scoped verdict may record the local fact `not requested` but cannot fabricate an attestation. Only an independent Check `pass` paired with `attested for the exact current candidate` and the same stable basis is an acceptance pass. Findings leave the candidate unaccepted; a still-active Implement authorization or a new explicit implementation request—not the finding—authorizes repair and moves an associated plan to `approved`. Any repair produces a new basis and invalidates the old result.
 
 A plan's Assurance is the last authorized, time-scoped projection for its exact basis, not a globally current acceptance oracle. A consumer must establish that the basis still matches and use the latest applicable Check result available in its current context before claiming current acceptance; otherwise it reports only the historical snapshot or obtains a new Check. A legacy `done` plan with no complete Assurance is historical implementation completion with acceptance not established; consumers never invent or backfill its missing basis, producer, verdict, or acceptance. A later finding against a closed done plan supersedes the older result in any context or Handoff that carries it, but Check remains read-only: the finding neither rewrites the plan, reopens it, nor authorizes repair. Persisting globally latest validity would require a separate authorized writer or ledger, which this architecture intentionally does not provide.
 
@@ -177,7 +179,7 @@ Verification has three layers:
 
 1. structure and interface tests: frontmatter, public inventory, references, resolver, Skill↔Spec pairing, memory formats, and Markdown links;
 2. deterministic project checks: Doctor's checker for Spec shape, links/anchors, placeholders, and file size;
-3. behavior evaluation: the existing development-only Shape bench, run when its scope is affected.
+3. behavior evaluation: the development-only bench judges explicitly selected skills against their contracts, retains shape automatic driving, and compares only recorded compatible configurations and evaluation bases.
 
 Development commands come from `package.json`:
 
@@ -208,6 +210,10 @@ node skills/doctor/scripts/checker.ts . --json
 12. Each capability preserves fail-close and clean-break at its own boundary: no claim manufactures success from a required failure, ambiguity, or missing state, and no authorized replacement retains an unapproved continuity path.
 
 ## Key decisions
+
+### 2026-09-07: Astra calibration and conditional acceptance
+
+One shared skill set now uses proportional ordinary results and conditionally loaded formal acceptance. The plan lifecycle and formal attestation schema are unchanged; ordinary Check no longer requires their fields. Supporting calls return to the authorized owner, and local missing evidence is reported without stopping unrelated work. The development bench selects a skill explicitly, loads project-level source snapshots for shape driving, and records comparison provenance. Behavior claims require actual sessions; static tests alone do not establish model improvement.
 
 ### 2026-08-20: paired Issue identity is stable while its managed problem record is revisable
 

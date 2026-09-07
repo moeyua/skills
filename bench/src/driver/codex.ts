@@ -1,11 +1,9 @@
 /**
  * codex CLI driver: full shape session via `codex exec` + `codex exec resume`.
  *
- * shape reaches codex as a user-level skill installed by the skills CLI
- * (~/.agents/skills/shape), invoked the way real sessions invoke it:
- * a markdown link to the SKILL.md plus the intent. Free-text questions are
- * answered by the user-sim; a resume failure aborts the run and keeps the
- * rollout transcript judgeable (per the plan's error contract).
+ * The requested repository source is installed as a project skill snapshot.
+ * A markdown link points to that exact entry; the report checks correlated
+ * tool output for actual loading. A failed resume preserves the transcript.
  */
 
 import { spawnSync } from "node:child_process";
@@ -14,11 +12,13 @@ import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import { inspectFixtureWorktree, prepareFixture } from "./fixture.ts";
 import { simulateUser } from "./user-sim.ts";
-import { endsWithQuestion, type DriveResult } from "./common.ts";
+import { endsWithQuestion, driverIdentity, type DriveResult } from "./common.ts";
 import type { ScenarioCard } from "../scenario.ts";
 
 export interface CodexDriverOptions {
   model?: string;
+  skillsRoot?: string;
+  effort?: string;
   maxTurns?: number;
   runSimModel?: (prompt: string) => string;
   log?: (line: string) => void;
@@ -65,7 +65,8 @@ export function runCodexScenario(
   const scratch = mkdtempSync(join(tmpdir(), `shape-bench-codex-out-`));
   const lastMessageFile = join(scratch, "last-message.txt");
 
-  const skillPath = join(homedir(), ".agents/skills/shape/SKILL.md");
+  const identity = driverIdentity(workDir, "codex", card, fixturesRoot, opts);
+  const skillPath = join(identity.source!.installedPath, "SKILL.md");
   let prompt = `[$shape](${skillPath}) ${card.initialIntent}`;
   let history = "";
   let sessionId = "";
@@ -75,6 +76,7 @@ export function runCodexScenario(
     const transcriptPath = sessionId === "" ? null : findRollout(sessionId);
     const worktree = inspectFixtureWorktree(workDir);
     return {
+      identity,
       scenario: card.id,
       host: "codex",
       sessionId,
@@ -108,6 +110,8 @@ export function runCodexScenario(
           ]
         : ["exec", "resume", sessionId, "--json", "--skip-git-repo-check", "-o", lastMessageFile];
     if (opts.model !== undefined) args.push("-m", opts.model);
+    if (opts.effort !== undefined)
+      args.push("-c", `model_reasoning_effort=${JSON.stringify(opts.effort)}`);
     args.push(prompt);
 
     const res = spawnSync("codex", args, {

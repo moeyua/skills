@@ -49,6 +49,11 @@ export function renderTranscript(
         if (e.sidechain === true) break;
         lines.push(`${t} TOOL_RESULT: ${truncate(e.output, maxTool)}`);
         break;
+      case "skill-injection":
+        lines.push(
+          `${t} SKILL_INJECTION (host context, not user input): ${truncate(e.rawText, maxUser)}`,
+        );
+        break;
       case "file-write":
         lines.push(`${t} FILE_WRITE ${e.path}(${e.tool})${tag}`);
         break;

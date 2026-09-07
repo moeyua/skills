@@ -12,6 +12,7 @@ import {
   type SessionReport,
 } from "./report.ts";
 import type { NormalizedTranscript } from "./normalize/events.ts";
+import { unknownExecution } from "./identity.ts";
 import type { JudgeResult } from "./judge/index.ts";
 
 function transcript(id: string): NormalizedTranscript {
@@ -23,8 +24,38 @@ function transcript(id: string): NormalizedTranscript {
   };
 }
 
+const judgeIdentity = {
+  skill: "shape" as const,
+  specHash: "spec",
+  rubricHash: "rubric",
+  modelRequested: "judge",
+  modelObserved: "judge",
+  effort: "high",
+  effortRequested: "high",
+  runner: "injected",
+};
+
+function comparable(report: SessionReport): SessionReport {
+  report.identity = {
+    ...unknownExecution(),
+    source: {
+      root: "/source",
+      installedPath: "/installed",
+      hash: "source",
+      installedHash: "source",
+    },
+    loadEvidence: "read",
+    effortObserved: "high",
+    toolEnvironment: "test",
+    scenarioHash: "scenario",
+    fixtureHash: "fixture",
+  };
+  return report;
+}
+
 function okJudge(score: number, verdicts: [string, "pass" | "fail" | "n.a."][]): JudgeResult {
   return {
+    identity: judgeIdentity,
     status: "ok",
     attempts: 1,
     rawResponse: "{}",
@@ -93,6 +124,7 @@ describe("buildSessionReport", () => {
       transcript("s2"),
       { violations: [] },
       {
+        identity: judgeIdentity,
         status: "judge-error",
         errors: ["bad json"],
         attempts: 2,
@@ -131,8 +163,8 @@ describe("renderSummaryMarkdown", () => {
         ["乙", "pass"],
       ]),
     );
-    const md = renderSummaryMarkdown([r1, r2]);
-    expect(md).toContain("| 甲 |");
+    const md = renderSummaryMarkdown([comparable(r1), comparable(r2)]);
+    expect(md).toContain("| shape / 甲 |");
     expect(md).toContain("✓");
     expect(md).toContain("✗");
     expect(md).toContain("n.a.");
@@ -145,6 +177,7 @@ describe("renderSummaryMarkdown", () => {
       transcript("s3"),
       { violations: [] },
       {
+        identity: judgeIdentity,
         status: "judge-error",
         errors: ["x"],
         attempts: 2,
@@ -168,7 +201,7 @@ describe("renderSummaryMarkdown", () => {
       okJudge(6.5, [["甲", "fail"]]),
       { scenarioId: "feat-x", host: "codex", run: 2, driveStatus: "completed" },
     );
-    const md = renderSummaryMarkdown([r1, r2]);
+    const md = renderSummaryMarkdown([comparable(r1), comparable(r2)]);
     expect(md).toContain("重复运行波动");
     expect(md).toContain("feat-x@codex");
     expect(md).toContain("8 / 6.5");
@@ -195,8 +228,8 @@ describe("requirementFailRates", () => {
       ]),
     );
     const rates = requirementFailRates([r1, r2]);
-    expect(rates.get("甲")).toBe(0.5);
-    expect(rates.get("乙")).toBe(0);
+    expect(rates.get("shape / 甲")).toBe(0.5);
+    expect(rates.get("shape / 乙")).toBe(0);
   });
 });
 
@@ -212,7 +245,7 @@ describe("renderBaselineComparison", () => {
     const base = [
       buildSessionReport(transcript("y"), { violations: [] }, okJudge(8, [["甲", "pass"]])),
     ];
-    const lines = renderBaselineComparison(run, base).join("\n");
+    const lines = renderBaselineComparison(run.map(comparable), base.map(comparable)).join("\n");
     expect(lines).toContain("与真实会话基线对比");
     expect(lines).toContain("harness 疑点");
     expect(lines).toContain("甲");
@@ -225,7 +258,50 @@ describe("renderBaselineComparison", () => {
     const base = [
       buildSessionReport(transcript("y"), { violations: [] }, okJudge(8, [["甲", "pass"]])),
     ];
-    const lines = renderBaselineComparison(run, base).join("\n");
+    const lines = renderBaselineComparison(run.map(comparable), base.map(comparable)).join("\n");
     expect(lines).toContain("无显著背离");
   });
+});
+
+describe("comparison identity", () => {
+  it("isolates identical requirement names across skills", () => {
+    const shape = comparable(
+      buildSessionReport(transcript("a"), { violations: [] }, okJudge(8, [["甲", "pass"]])),
+    );
+    const implement = { ...shape, skill: "implement" as const };
+    const rates = requirementFailRates([shape, implement]);
+    expect([...rates.keys()]).toEqual(["shape / 甲", "implement / 甲"]);
+    const markdown = renderSummaryMarkdown([shape, implement]);
+    expect(markdown).toContain("| shape / 甲 | ✓ | — |");
+    expect(markdown).toContain("| implement / 甲 | — | ✓ |");
+  });
+  it.each(["rubric", "model", "effort", "missing", "tools", "config"])(
+    "does not compare mismatched %s evidence",
+    (field) => {
+      const current = comparable(
+        buildSessionReport(transcript("current"), { violations: [] }, okJudge(8, [["甲", "pass"]])),
+      );
+      const baseline = structuredClone(current);
+      if (field === "rubric") baseline.judge.identity.rubricHash = "old-rubric";
+      if (field === "model") baseline.session.model = "different-model";
+      if (field === "effort") baseline.identity.effortObserved = "low";
+      if (field === "missing") baseline.identity.loadEvidence = null;
+      if (field === "tools") {
+        baseline.identity.toolEnvironment = null;
+        baseline.identity.toolEnvironmentDetails = {
+          host: "codex",
+          version: "known",
+          node: "known",
+          platform: "known",
+          settings: "user",
+          toolsObserved: null,
+        };
+      }
+      if (field === "config")
+        baseline.identity.toolEnvironment = "different-user-config-mcp-permissions";
+      const text = renderBaselineComparison([current], [baseline]).join("\n");
+      expect(text).toContain("不可比");
+      expect(text).not.toContain("无显著背离");
+    },
+  );
 });

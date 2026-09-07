@@ -65,3 +65,164 @@ describe("fixture worktree evidence", () => {
     }
   });
 });
+
+describe("project skill snapshots", () => {
+  it("loads the specified source including dereferenced shared references, without dirtying the fixture", async () => {
+    const { mkdirSync, symlinkSync, lstatSync } = await import("node:fs");
+    const { installSkillSnapshot, observeSkillLoad, driverIdentity } = await import("./common.ts");
+    const { unknownExecution } = await import("../identity.ts");
+    const { hashTree } = await import("../identity.ts");
+    const source = mkdtempSync(join(tmpdir(), "bench-snapshot-"));
+    mkdirSync(join(source, "skills/shape/references"), { recursive: true });
+    writeFileSync(
+      join(source, "skills/shape/SKILL.md"),
+      "---\nname: shape\n---\n# Snapshot version\n",
+    );
+    writeFileSync(join(source, "shared.md"), "shared before\n");
+    symlinkSync("../../../shared.md", join(source, "skills/shape/references/shared.md"));
+    const fixture = mkdtempSync(join(tmpdir(), "bench-fixture-"));
+    writeFileSync(join(fixture, "README.md"), "fixture\n");
+    const workDir = prepareFixture(fixture, "snapshot");
+    try {
+      const snapshot = installSkillSnapshot(workDir, "codex", "shape", join(source, "skills"));
+      expect(snapshot.installedPath).toBe(join(workDir, ".agents/skills/shape"));
+      expect(readFileSync(join(snapshot.installedPath, "SKILL.md"), "utf8")).toContain(
+        "Snapshot version",
+      );
+      expect(lstatSync(join(snapshot.installedPath, "references/shared.md")).isSymbolicLink()).toBe(
+        false,
+      );
+      const driver = driverIdentity(
+        workDir,
+        "claude",
+        {
+          id: "test",
+          title: "test",
+          kind: "feat",
+          fixture: ".",
+          initialIntent: "test",
+          intentCard: "test",
+          answerPolicy: "test",
+          path: "test.md",
+        },
+        fixture,
+        { skillsRoot: join(source, "skills") },
+      );
+      expect(driver.toolEnvironment).toBeNull();
+      expect(driver.toolEnvironmentDetails?.toolsObserved).toBeNull();
+      expect(snapshot.hash).toBe(snapshot.installedHash);
+      const entry = join(snapshot.installedPath, "SKILL.md");
+      const identity = { ...unknownExecution(), source: snapshot };
+      const transcript: import("../normalize/events.ts").NormalizedTranscript = {
+        session: { host: "codex", sessionId: "test", cwd: workDir, model: undefined },
+        sourcePath: "/tmp/test.jsonl",
+        turnCount: 1,
+        events: [
+          {
+            kind: "tool-call",
+            name: "exec_command",
+            callId: "load",
+            input: { cmd: `cat ${entry}` },
+            timestamp: undefined,
+            turn: 1,
+          },
+        ],
+      };
+      expect(observeSkillLoad(transcript, identity).loadEvidence).toBeNull();
+      transcript.events.push({
+        kind: "tool-result",
+        callId: "load",
+        output: JSON.stringify({ output: readFileSync(entry, "utf8") }),
+        timestamp: undefined,
+        turn: 1,
+      });
+      expect(observeSkillLoad(transcript, identity).loadEvidence).toContain(entry);
+      const { parseCodexLines } = await import("../normalize/codex.ts");
+      const contentBlocks = parseCodexLines(
+        [
+          {
+            type: "response_item",
+            payload: {
+              type: "custom_tool_call",
+              name: "exec",
+              call_id: "load",
+              input: `cat ${entry}`,
+            },
+          },
+          {
+            type: "response_item",
+            payload: {
+              type: "custom_tool_call_output",
+              call_id: "load",
+              output: [
+                { type: "input_text", text: "Script completed\nOutput:" },
+                {
+                  type: "input_text",
+                  text: JSON.stringify({ exit_code: 0, output: readFileSync(entry, "utf8") }),
+                },
+              ],
+            },
+          },
+        ],
+        "/fixture/rollout.jsonl",
+      );
+      expect(observeSkillLoad(contentBlocks, identity).loadEvidence).toContain(entry);
+      const injection = (path: string, body: string) => ({
+        type: "response_item",
+        payload: {
+          type: "message",
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: `<skill>\n<name>shape</name>\n<path>${path}</path>\n${body}\n</skill>`,
+            },
+          ],
+          internal_chat_message_metadata_passthrough: {
+            turn_id: "t1",
+            content_item_kinds: ["skills.selected_skill_instructions"],
+          },
+        },
+      });
+      const localInjection = parseCodexLines(
+        [injection(entry, readFileSync(entry, "utf8"))],
+        "/fixture/local.jsonl",
+      );
+      expect(localInjection.turnCount).toBe(0);
+      expect(observeSkillLoad(localInjection, identity).loadEvidence).toContain(
+        "Host skill injection",
+      );
+      const oldInjection = parseCodexLines(
+        [injection("/home/user/.agents/skills/shape/SKILL.md", "# Previous global Shape body")],
+        "/fixture/mixed.jsonl",
+      );
+      expect(
+        observeSkillLoad(
+          { ...contentBlocks, events: [...oldInjection.events, ...contentBlocks.events] },
+          identity,
+        ).loadEvidence,
+      ).toBeNull();
+
+      expect(inspectFixtureWorktree(workDir).changes).toEqual([]);
+      writeFileSync(join(source, "shared.md"), "shared after\n");
+      expect(hashTree(join(source, "skills/shape"))).not.toBe(snapshot.hash);
+      expect(readFileSync(join(snapshot.installedPath, "references/shared.md"), "utf8")).toBe(
+        "shared before\n",
+      );
+      expect(() =>
+        installSkillSnapshot(workDir, "codex", "shape", join(source, "missing")),
+      ).toThrow();
+    } finally {
+      for (const dir of [source, fixture, workDir]) rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("execution metadata", () => {
+  it("requires explicit unknown fields instead of accepting an empty identity", async () => {
+    const { parseExecutionIdentity, unknownExecution } = await import("../identity.ts");
+    expect(parseExecutionIdentity(unknownExecution()).source).toBeNull();
+    expect(() => parseExecutionIdentity({})).toThrow(/metadata/);
+    expect(() => parseExecutionIdentity({ ...unknownExecution(), source: {} })).toThrow(/source/);
+  });
+});

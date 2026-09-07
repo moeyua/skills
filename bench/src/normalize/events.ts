@@ -17,6 +17,7 @@ export interface SessionInfo {
   sessionId: string;
   cwd: string | undefined;
   model: string | undefined;
+  effort?: string;
 }
 
 interface BaseEvent {
@@ -47,6 +48,17 @@ export interface ToolResultEvent extends BaseEvent {
   kind: "tool-result";
   callId: string | undefined;
   output: string;
+  /** Original structured output when the host supplied content blocks or an unknown shape. */
+  rawOutput?: unknown;
+}
+
+/** Host-labelled skill context; it is evidence, not an additional user request. */
+export interface SkillInjectionEvent extends BaseEvent {
+  kind: "skill-injection";
+  name: string | undefined;
+  path: string | undefined;
+  body: string | undefined;
+  rawText: string;
 }
 
 export interface FileWriteEvent extends BaseEvent {
@@ -60,7 +72,8 @@ export type BenchEvent =
   | AssistantMessageEvent
   | ToolCallEvent
   | ToolResultEvent
-  | FileWriteEvent;
+  | FileWriteEvent
+  | SkillInjectionEvent;
 
 export interface NormalizedTranscript {
   session: SessionInfo;

@@ -161,3 +161,112 @@ describe("normalizeTranscript / errors", () => {
     }
   });
 });
+
+describe("Codex tool result content blocks", () => {
+  it("renders actual input_text blocks and preserves their original payload", async () => {
+    const { parseCodexLines } = await import("./codex.ts");
+    const { renderTranscript } = await import("../judge/render.ts");
+    const output = [
+      { type: "input_text", text: "Script completed\nOutput:\n" },
+      {
+        type: "input_text",
+        text: JSON.stringify({ exit_code: 0, output: "tests 4\npass 4\nfail 0\n" }),
+      },
+    ];
+    const t = parseCodexLines(
+      [
+        {
+          type: "response_item",
+          payload: { type: "custom_tool_call_output", call_id: "call-test", output },
+        },
+      ],
+      "/fixture/rollout.jsonl",
+    );
+    const result = ofKind(t.events, "tool-result")[0];
+    expect(typeof result?.output).toBe("string");
+    expect(result?.output).toContain("pass 4");
+    expect(result).toHaveProperty("rawOutput", output);
+    const rendered = renderTranscript(t);
+    expect(rendered).toContain("pass 4");
+    expect(rendered).not.toContain("[object Object]");
+  });
+  it.each(
+    [
+      undefined,
+      null,
+      { unexpected: true },
+      [],
+      [{ type: "image", image_url: "image" }],
+      [{ type: "future_text", text: "not an observed text type" }],
+    ].map((output) => ({ output })),
+  )("marks unavailable tool text for %j instead of inferring content", async ({ output }) => {
+    const { parseCodexLines } = await import("./codex.ts");
+    const t = parseCodexLines(
+      [{ type: "response_item", payload: { type: "function_call_output", output } }],
+      "/fixture/rollout.jsonl",
+    );
+    const result = ofKind(t.events, "tool-result")[0];
+    expect(result?.output).toContain("工具结果文本不可得");
+    expect(result).toHaveProperty("rawOutput", output);
+  });
+  it("keeps text and marks non-text blocks in mixed output", async () => {
+    const { parseCodexLines } = await import("./codex.ts");
+    const t = parseCodexLines(
+      [
+        {
+          type: "response_item",
+          payload: {
+            type: "function_call_output",
+            output: [{ type: "text", text: "known" }, { type: "image" }],
+          },
+        },
+      ],
+      "/fixture/rollout.jsonl",
+    );
+    const result = ofKind(t.events, "tool-result")[0];
+    expect(result?.output).toContain("known");
+    expect(result?.output).toContain("工具结果文本不可得");
+  });
+});
+
+describe("Codex metadata user turns", () => {
+  it("counts one user request while excluding host-tagged context and selected skill injection", async () => {
+    const { parseCodexLines } = await import("./codex.ts");
+    const message = (texts: string[], kinds: string[]) => ({
+      type: "response_item",
+      payload: {
+        type: "message",
+        role: "user",
+        content: texts.map((text) => ({ type: "input_text", text })),
+        internal_chat_message_metadata_passthrough: { turn_id: "t1", content_item_kinds: kinds },
+      },
+    });
+    const t = parseCodexLines(
+      [
+        { type: "event_msg", payload: { type: "task_started" } },
+        message(
+          [
+            "<recommended_plugins>host data</recommended_plugins>",
+            "# AGENTS.md host instructions",
+            "<environment_context>host data</environment_context>",
+          ],
+          ["plugins.recommendations", "agents_md.instructions", "environments.environment_context"],
+        ),
+        message(["<skill> this is literal text in the user's real request"], ["user.text"]),
+        message(["More text from the same user turn"], ["user.text"]),
+        message(
+          ["<skill>selected skill instructions</skill>"],
+          ["skills.selected_skill_instructions"],
+        ),
+        { type: "event_msg", payload: { type: "task_complete" } },
+      ],
+      "/fixture/rollout.jsonl",
+    );
+    expect(t.turnCount).toBe(1);
+    expect(ofKind(t.events, "user-message").map((event) => event.text)).toEqual([
+      "<skill> this is literal text in the user's real request",
+      "More text from the same user turn",
+    ]);
+    expect(ofKind(t.events, "user-message").every((event) => event.turn === 1)).toBe(true);
+  });
+});

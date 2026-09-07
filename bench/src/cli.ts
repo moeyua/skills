@@ -10,7 +10,9 @@
 
 import { parseArgs } from "node:util";
 import { join } from "node:path";
-import { existsSync, writeFileSync } from "node:fs";
+import { existsSync, writeFileSync, readFileSync } from "node:fs";
+import { parseSkill, type PublicSkill } from "./judge/spec.ts";
+import { unknownExecution, parseExecutionIdentity, type ExecutionIdentity } from "./identity.ts";
 import { normalizeTranscript } from "./normalize/index.ts";
 import { runChecks } from "./checks/index.ts";
 import { judgeTranscript, type JudgeOptions } from "./judge/index.ts";
@@ -24,13 +26,16 @@ import {
 import { loadScenarios, type ScenarioCard } from "./scenario.ts";
 import { runClaudeScenario } from "./driver/claude.ts";
 import { runCodexScenario } from "./driver/codex.ts";
-import { collectTranscript, type DriveResult } from "./driver/common.ts";
+import { collectTranscript, observeSkillLoad, type DriveResult } from "./driver/common.ts";
 
 export interface JudgeCommandOptions {
+  skill?: PublicSkill;
+  identity?: ExecutionIdentity;
   repoRoot?: string;
   outRoot?: string;
   runModel?: (prompt: string) => string;
   model?: string;
+  effort?: string;
   log?: (line: string) => void;
 }
 
@@ -51,11 +56,12 @@ export function runJudgeCommand(
   const reports: SessionReport[] = [];
   const failures: { path: string; error: string }[] = [];
 
-  if (paths.length === 0) {
-    log("用法:pnpm bench:judge <transcript.jsonl...>");
+  if (paths.length === 0 || opts.skill === undefined) {
+    log("用法:pnpm bench:judge --skill <公共名称> <transcript.jsonl...>");
     return { exitCode: 1, reports, failures, outDir: null };
   }
 
+  const skill = parseSkill(opts.skill);
   for (const path of paths) {
     let transcript;
     try {
@@ -68,12 +74,19 @@ export function runJudgeCommand(
     }
     log(`判卷中:${path}(${transcript.session.host},${transcript.turnCount} 轮)…`);
     const checks = runChecks(transcript, {
+      skill,
       worktreeChanges: undefined,
       worktreeCheckError: "transcript-only judge 没有 fixture 工作树证据",
     });
-    const judgeOpts: JudgeOptions = { repoRoot, runModel: opts.runModel, model: opts.model };
+    const judgeOpts: JudgeOptions = {
+      skill,
+      repoRoot,
+      runModel: opts.runModel,
+      model: opts.model,
+      effort: opts.effort,
+    };
     const judge = judgeTranscript(transcript, judgeOpts);
-    const report = buildSessionReport(transcript, checks, judge);
+    const report = buildSessionReport(transcript, checks, judge, undefined, opts.identity);
     reports.push(report);
     log(
       judge.status === "ok"
@@ -99,6 +112,10 @@ function main(): void {
     allowPositionals: true,
     options: {
       model: { type: "string" },
+      skill: { type: "string" },
+      "skills-root": { type: "string" },
+      metadata: { type: "string" },
+      effort: { type: "string" },
       scenario: { type: "string" },
       host: { type: "string" },
       repeat: { type: "string", default: "1" },
@@ -109,6 +126,12 @@ function main(): void {
   const [command, ...rest] = positionals;
   if (command === "judge") {
     const result = runJudgeCommand(rest, {
+      effort: values.effort,
+      skill: values.skill === undefined ? undefined : parseSkill(values.skill),
+      identity:
+        values.metadata === undefined
+          ? unknownExecution()
+          : parseExecutionIdentity(JSON.parse(readFileSync(values.metadata, "utf8"))),
       model: values.model,
     });
     process.exitCode = result.exitCode;
@@ -116,6 +139,8 @@ function main(): void {
   }
   if (command === "run") {
     void runRunCommand({
+      skillsRoot: values["skills-root"],
+      effort: values.effort,
       scenario: values.scenario,
       host: values.host,
       repeat: Number(values.repeat),
@@ -132,6 +157,8 @@ function main(): void {
 }
 
 interface RunCommandOptions {
+  skillsRoot?: string;
+  effort?: string;
   scenario?: string;
   host?: string;
   repeat: number;
@@ -171,6 +198,15 @@ async function runRunCommand(opts: RunCommandOptions): Promise<number> {
       return 1;
     }
   }
+  const claudeEfforts = ["low", "medium", "high", "xhigh", "max"] as const;
+  if (
+    opts.host !== "codex" &&
+    opts.effort !== undefined &&
+    !claudeEfforts.includes(opts.effort as (typeof claudeEfforts)[number])
+  ) {
+    console.error("Claude effort 仅支持 low / medium / high / xhigh / max");
+    return 1;
+  }
   const hosts = opts.host === undefined ? [...HOSTS] : [opts.host as (typeof HOSTS)[number]];
 
   const reports: SessionReport[] = [];
@@ -186,11 +222,15 @@ async function runRunCommand(opts: RunCommandOptions): Promise<number> {
           drive =
             host === "claude"
               ? await runClaudeScenario(card, fixturesRoot, {
+                  skillsRoot: opts.skillsRoot,
+                  effort: opts.effort as "low" | "medium" | "high" | "xhigh" | "max" | undefined,
                   maxTurns: opts.maxTurns,
                   model: opts.model,
                   log: console.log,
                 })
               : runCodexScenario(card, fixturesRoot, {
+                  skillsRoot: opts.skillsRoot,
+                  effort: opts.effort as "low" | "medium" | "high" | "xhigh" | "max" | undefined,
                   maxTurns: opts.maxTurns,
                   model: opts.model,
                   log: console.log,
@@ -200,7 +240,7 @@ async function runRunCommand(opts: RunCommandOptions): Promise<number> {
           console.log(`  ✗ 驱动异常:${cause instanceof Error ? cause.message : String(cause)}`);
           continue;
         }
-        if (drive.status === "error") anyRunError = true;
+        if (drive.status !== "completed") anyRunError = true;
         console.log(
           `  驱动结束:${drive.status},${drive.turns} 轮,session=${drive.sessionId}${drive.error === undefined ? "" : `,错误:${drive.error}`}`,
         );
@@ -217,23 +257,31 @@ async function runRunCommand(opts: RunCommandOptions): Promise<number> {
           continue;
         }
         const checks = runChecks(transcript, {
+          skill: "shape",
           worktreeChanges: drive.worktreeChanges,
           ...(drive.worktreeCheckError !== undefined && {
             worktreeCheckError: drive.worktreeCheckError,
           }),
         });
         const judge = judgeTranscript(transcript, {
+          skill: "shape",
           repoRoot,
           scenarioNote: `这是驱动器场景「${card.title}」(类型:${card.kind})。用户由模拟器扮演,初始意图:${card.initialIntent}`,
         });
         reports.push(
-          buildSessionReport(transcript, checks, judge, {
-            scenarioId: card.id,
-            host,
-            run,
-            driveStatus: drive.status,
-            ...(drive.error !== undefined && { driveError: drive.error }),
-          }),
+          buildSessionReport(
+            transcript,
+            checks,
+            judge,
+            {
+              scenarioId: card.id,
+              host,
+              run,
+              driveStatus: drive.status,
+              ...(drive.error !== undefined && { driveError: drive.error }),
+            },
+            observeSkillLoad(transcript, drive.identity),
+          ),
         );
         archives.push(drive);
         const last = reports.at(-1);

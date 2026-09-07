@@ -1,82 +1,60 @@
-# shape bench
+# skills bench
 
-评测 shape skill 的行为质量：它是否用与不确定性和风险相称的交互，在会话中产出有事实支撑、决策清楚、边界完整的方向。bench 不把固定阶段、问题数量或标题格式当作质量，也不评价具体产品设计的个人审美。三个用途按优先级是：失败诊断、`skills/shape/` 回归对比、Claude Code 与 codex 的模型对比。
+仓库开发期行为评测工具：已有 Claude Code / Codex 会话可以按 11 个公共 skill 的 spec 判卷；自动驱动仍限于 Shape。它评估实际能力结果、授权边界和相称交互，不以固定流程、问题数量或标题格式评分，也不替代独立 Check 验收。
 
-这是仓库开发工具，不属于 skills 交付物；运行时零依赖，所有 judge 与 user-sim 模型调用复用本机 claude CLI 登录，不需要 API key。
-
-## 快速开始
+## 使用
 
 ```bash
-# 判已有会话（输入 claude projects JSONL 或 codex rollout JSONL，格式自动识别）
-pnpm bench:judge <transcript.jsonl...>
+# skill 必填，不推断也不默认 Shape；格式自动识别
+pnpm bench:judge --skill implement <transcript.jsonl...>
 
-# 驱动器：跑场景 → 收 transcript → 自动判卷
-pnpm bench:run [--scenario <id>] [--host claude|codex] [--repeat N] \
-               [--baseline <results目录>] [--max-turns N]
+# 可提供该会话采集的执行身份；同次命令所有 transcript 必须共享该身份
+pnpm bench:judge --skill check --metadata execution.json \
+  --model <judge模型> --effort high <transcript.jsonl>
 
-# gold case 校准（rubric 改动后必跑；--repeat 3 量化判分抖动）
-node bench/src/calibrate.ts [--repeat 3]
+# 自动 Shape 场景：临时项目内装载指定源码，默认当前仓库 skills/
+pnpm bench:run --scenario <id> --host codex --model gpt-6-astra \
+  --effort high --skills-root /path/to/before/skills --repeat 3
+
+# 其他参数：--baseline <results目录>、--max-turns N（默认30）
+# gold 校准（prompt/render/schema 改变后必须执行，调用真实模型）
+node bench/src/calibrate.ts --repeat 3
 ```
 
-成本提示：一场 `bench:run` = 完整 shape 会话 + user-sim 若干次 + judge 一次。`--scenario` / `--host` 过滤是日常工作方式；缺省全量（9 场景 × 双 host）留给回归节点。
+`--skill` 支持 explore、shape、plan、implement、check、docs、publish、release、converge、doctor、handoff；相应读取 `specs/<skill>/spec.md`。自动驱动与 gold 校准显式传 Shape。其他能力使用隔离会话、归档真实 transcript，再选目标 skill 判卷；不建立通用副作用驱动器。Issue / Publish / Release 的评测只在 stub 或隔离 fixture 中观察，不发布真实远程状态。
 
-## 架构
+所有模型调用会计费。一次驱动包括 Shape 会话、user-sim 和 judge。日常用 `--scenario` / `--host` 过滤；缺省仍运行 9 场景 × 双 host。`run --model/--effort` 指被评模型；`judge --model/--effort` 指判卷模型。Claude effort 支持 low / medium / high / xhigh / max；实际可用等级取决于模型与宿主。
 
-```text
-场景卡 + fixture ──► driver（双 adapter）──► 原始 transcript（JSONL）
-                    claude: Agent SDK             │
-                    codex:  exec/resume           ▼
-已有真实会话 JSONL ─────────────────────► normalizer（统一事件流）
-                                                │
-                                    ┌───────────┴───────────┐
-                                    ▼                       ▼
-                              机械 checker             LLM judge（claude -p）
-                       （Git-visible 变更/零实现）  （逐 Requirement 结果质量）
-                                    └───────────┬───────────┘
-                                                ▼
-                                      reporter（JSON + Markdown）
-```
+## 源码与身份
 
-- `src/normalize/` — 两种会话格式归一化为统一事件流；新增 host 只需加 parser。
-- `src/checks/` — 检查 transcript 中可识别的写入、driver fixture 结束时仍存在的 Git-visible 变更，以及 implement 调用；fixture 证据不可用时单列 warning。它不声称捕获已恢复或被忽略的瞬时写入，也不判断问题数量、固定 summary 或阶段顺序。
-- `src/judge/` — 逐条评估 grounding、交互比例、实质决策覆盖、推荐质量、已定内容复用与会话结论完整度；Requirement 清单运行时读自 `specs/shape/spec.md`，spec 更新自动跟随。
-- `src/driver/` — user-sim 按意图卡答题；claude 侧经 Agent SDK `canUseTool` 代答 AskUserQuestion，codex 侧经 `exec` / `exec resume` 多轮驱动。
-- `scenarios/` + `fixtures/` — 场景卡与合成项目；fixture 复制到临时目录后现场 `git init`，保证每次起点一致。
-- `golden/` — 人工判卷基准与校准记录（rubric 修订史、判分抖动），见 [golden/README.md](golden/README.md)。
+驱动器复制 fixture 并初始化临时 Git 仓库，将所选 Shape 源码复制到项目级 `.agents/skills/shape`（Codex）或 `.claude/skills/shape`（Claude Code），同时解引用 shared references。复制前后计算含路径与文件内容的 SHA-256；安装作为 fixture 初始状态提交，避免将安装误判为模型写入。不会覆盖全局 skills，也不会安装新依赖。宿主现有登录和配置仍可能影响执行。版本、设置来源等已知诊断放在 `toolEnvironmentDetails`；driver 不能核验实际 user config、MCP、工具与权限的完整身份，因此 `toolEnvironment` 保持 null，不将诊断 JSON 冒充可比条件。
 
-## 场景卡格式
+驱动提示指向临时项目中的精确 `SKILL.md`。只有宿主结构化 skill 注入的路径与完整正文匹配，或关联工具调用及结果包含该 entry 完整内容，且安装树未变化时，才记录 `loadEvidence`。同名旧版本或其他路径的注入与新源码读取混用时，该字段为 null，不能声称纯指定版本装载。提示中的路径和复制成功本身不是已加载证明。临时目录保留以便诊断。
 
-`scenarios/<id>.md` 的 YAML frontmatter 包含 `id`（等于文件名）、`kind`（`explore` 或四种 change type）、`title`、`fixture`，正文三节缺一不可：
+每个 JSON 报告包括：
 
-- **初始意图** — 作为 shape 调用参数的用户原话。
-- **意图卡** — 隐藏动机、约束、成功标准；只有 user-sim 知道，不主动全盘托出。
-- **答题策略** — 开放问题如何答；意图卡未覆盖的信息一律答“你决定”。
+- `skill`：被评公共名称。
+- `identity.source`：源码目录、安装路径、源码 hash 与安装 hash。
+- `session.model`、`identity.modelRequested`、`effortRequested/effortObserved`：实际可观察模型与请求设置分开；Codex turn context 可提供实际 effort。
+- `identity.toolEnvironment`、`scenarioHash`、`fixtureHash`、`loadEvidence`：宿主版本/条件、场景、fixture 与装载证据。
+- `judge.identity`：skill、spec hash、包含 spec 的 rubric hash、请求/观察到的 judge 模型、effort 与调用方式。CLI envelope 的单一 `modelUsage` 可识别实际 judge 模型；实际 judge effort 无直接观察时仍为 null。
 
-格式由 `src/scenario.test.ts` 机械校验。
+**null 表示不可得**，不能用请求值补造实际设置。`--metadata` 接受 `src/identity.ts` 的 `ExecutionIdentity` JSON，仅适用于有归档证据的执行条件；没有 metadata 的已有会话保留未知源码、场景与工具条件，不猜测当前仓库就是当时使用版本。
 
-## 结果解读
+## 判定与比较
 
-产物在 `bench/results/<timestamp>/`（gitignored）：每会话判定 JSON、原始 transcript 归档与 `report.md`。
+normalizer → 按 skill 的机械检查 + LLM judge → JSON / Markdown reporter，保留现有 adapter 结构。Codex 工具结果支持真实 string 与 content-block 数组；提取已知文本块、在 `rawOutput` 保留原始结构，未知或非文本块显式标记文本不可得。用户轮次优先使用 `event_msg.user_message`；缺失时按宿主 `content_item_kinds` / `turn_id` 区分正文与注入，现存无 metadata 的旧 rollout 保留原 fallback。宿主 selected skill 注入作为独立事件保留，不增加用户轮次。Requirement 在运行时从选定 spec 加载，judge 输出逐项 `pass|fail|n.a.`、证据轮次、理由和 0–10 总分；两次输出无效则 `judge-error`，不中断其余合法文件。格式不可识别的输入列路径和原因，其余文件仍判卷，整体退出非 0。
 
-- **矩阵**：Requirement × 会话，`✓ / ✗ / n.a. / judge-error`。10 分表示事实充分、交互恰当、无可避免轮次且方向完整；8 分表示正确可用但有轻微多余交互或小缺口；6 分表示仍可用但有未决实质决定、证据不足或多次可避免交互；4 分及以下表示结论不能指导后续工作、违背明确意图、重复确认阻塞或出现硬违规。
-- **轮次**：turn count 是交互成本的诊断信号，不是越少越好的独立分数；遗漏实质决策不会因轮次少而得分。
-- **判分噪声**：以最近一次 gold 校准记录为准；微小分差必须结合逐项 verdict 和抖动解读。
-- **`--repeat >1`**：逐次分数与波动幅度单列，暴露行为和判卷稳定性。
-- **`--baseline`**：与真实会话基线的逐条 fail 率对比；显著不一致（≥50 个百分点）标“harness 疑点”，先检查模拟用户/headless 分布偏移。
+机械只读边界适用于 Shape / Explore / Check / Doctor / Handoff；Implement / Docs 等能力的合法写入不套用 Shape 禁写规则，其范围与外部副作用由 spec 判卷。写工具事件证明模型发出了写入请求，**不单独证明落盘成功**；宿主阻止只证明阻止发生，不能当作模型主动守住边界。最终 `git status --porcelain` 只证明仍存在的 Git-visible 改动，捕获不到已经恢复或被忽略的瞬时写入。没有 fixture 或跨 skill 共用工作树时，缺失归属证据单列 warning。
 
-## 行为契约
+用户开头的 `/公共skill` 或正文中唯一明确的 `[$skill](...)` 调用选择后续动作归属，直到下一次显式用户调用；Markdown 调用可以带自然语言前缀；代码示例、引文及多个不同 skill 的歧义引用不推定 handoff，未知 slash 命令不会抹去归属。再次调用原 skill 后重新纳入其判定。Agent 内部支持调用不构成用户 handoff，不能用它提前结束调用方任务或豁免越界；组合语义仍按 owner 的授权和 spec 判定。
 
-bench 不是 skill，不进 `specs/`（`checkSpecPairing` 强制 specs ↔ skills 配对）；对外契约固化于此：
+矩阵按 **skill + requirement identity** 分行。重复运行波动及 baseline 对比只在模型、实际 effort、工具条件、场景、fixture、judge 与 rubric 身份相同且源码装载可核验时分组；before/after 允许源码 hash 不同，但不能换用各自 spec 后混分。旧报告或关键条件缺失显示“不可比”，不以同名 requirement、默认设置或旧 rubric 补齐。确认是否可避免、检查是否重复需要结合人工证据；轮次、输出长度和分数不是独立质量结论。
 
-- **输入**：transcript 必须是 claude projects JSONL 或 codex rollout JSONL；无法识别的文件报错并指出路径与原因，其余合法文件继续判卷，整体 exit 非 0。
-- **判定范围**：同一 host transcript 中，用户显式调用其他 skill 时，shape 判定在该用户消息前结束；没有显式 handoff 时，所有后续写入或实现仍归 shape。
-- **工作树证据**：driver run 比较 fixture 最终 `git status --porcelain`；它证明是否留下 tracked/untracked Git-visible 变更，不证明运行期间从未写过已恢复或被忽略的文件。`judge` 已有 transcript 时没有 fixture，报告必须显示 evidence warning 而不是机械违规。
-- **判定输出**：逐条 Requirement `pass|fail|n.a.` + 证据轮次 + 0–10 总分；judge 输出两次不合 schema 时，该会话标 `judge-error`，不中断整批。
-- **驱动器错误语义**：codex `exec resume` 失败则该 run 中止并保留已有 transcript；SDK 非 success 结局标 `error`；超过 `--max-turns`（默认 30）未收束标 `timeout`。
-- **完成信号**：assistant 的最终消息不再请求用户输入即视为会话收束；仍在提问则由 user-sim 回答，超过 `--max-turns` 记为 timeout。文件写入从不构成 shape 完成信号。
-- **副作用**：调用 claude / codex CLI（计费）；fixture 在系统临时目录运行；只向 `bench/results/` 写产物，不修改仓库其他文件。
-- **Not exposed**：judge prompt 与统一事件流中间表示可演化；只承诺 CLI 与报告 JSON 字段。
+## 场景与产物
 
-## 校准纪律
+`scenarios/<id>.md` frontmatter 包含 id（同文件名）、kind（explore 或四种 change type）、title、fixture；正文包含初始意图、意图卡、答题策略。user-sim 只按卡片回答，未知项回答“你决定”。现有 `scenario.test.ts` 机械验证结构。
 
-改动 judge prompt / render / schema 后，必须重跑 `node bench/src/calibrate.ts --repeat 3`：逐项方向与人工基准一致、总分差 ≤1、抖动录入 [golden/README.md](golden/README.md) 的校准结果表，修订动因追加进 rubric 修订记录。历史流程 rubric 的分数不得与 outcome-first rubric 直接比较。
+产物写到 `bench/results/<timestamp>/`（gitignored）：每会话判定 JSON、驱动原始 transcript 归档、`report.md`。transcript-only 输入由调用者自行归档。`codex exec resume` 失败保留已有 transcript 并中止 run；SDK 非 success 记 error，达到 max-turns 记 timeout。assistant 最终消息未请求用户输入仅是现有 headless 收束启发式，不能证明 mid-turn steering 或独立 agent 上下文。
+
+`golden/` 保留人工基准和校准记录。judge prompt / render / schema 变更后须运行三次 gold 校准，逐项方向与人工一致、总分差 ≤1，并记录抖动；历史 rubric 分数不可直接比较。单元测试不调用真实模型，不可替代 Astra 行为证据。

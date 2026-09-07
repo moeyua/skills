@@ -11,17 +11,21 @@ import { spawnSync } from "node:child_process";
 export interface RunClaudeOptions {
   model?: string;
   timeoutMs?: number;
+  effort?: string;
+  onModel?: (model: string | null) => void;
 }
 
 interface ClaudeEnvelope {
   result?: string;
   is_error?: boolean;
   subtype?: string;
+  modelUsage?: Record<string, unknown>;
 }
 
 export function runClaudeText(prompt: string, opts: RunClaudeOptions = {}): string {
   const args = ["-p", "--bare", "--output-format", "json"];
   if (opts.model !== undefined) args.push("--model", opts.model);
+  if (opts.effort !== undefined) args.push("--effort", opts.effort);
   const res = spawnSync("claude", args, {
     input: prompt,
     encoding: "utf8",
@@ -43,5 +47,7 @@ export function runClaudeText(prompt: string, opts: RunClaudeOptions = {}): stri
   if (envelope.is_error === true || typeof envelope.result !== "string") {
     throw new Error(`claude CLI 返回错误(subtype=${envelope.subtype ?? "?"})`);
   }
+  const models = Object.keys(envelope.modelUsage ?? {});
+  opts.onModel?.(models.length === 1 ? models[0]! : null);
   return envelope.result;
 }

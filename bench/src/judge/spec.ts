@@ -1,7 +1,7 @@
 /**
- * Shape spec loading and requirement extraction.
+ * Selected skill spec loading and requirement extraction.
  *
- * The judge reads specs/shape/spec.md at runtime (never a hardcoded copy),
+ * The judge reads specs/<skill>/spec.md at runtime (never a hardcoded copy),
  * so spec updates flow into judging without touching bench code.
  */
 
@@ -13,8 +13,30 @@ export interface SpecRequirement {
   body: string;
 }
 
-export function loadShapeSpec(repoRoot: string): string {
-  const path = join(repoRoot, "specs/shape/spec.md");
+export const PUBLIC_SKILLS = [
+  "explore",
+  "shape",
+  "plan",
+  "implement",
+  "check",
+  "docs",
+  "publish",
+  "release",
+  "converge",
+  "doctor",
+  "handoff",
+] as const;
+export type PublicSkill = (typeof PUBLIC_SKILLS)[number];
+
+export function parseSkill(value: unknown): PublicSkill {
+  if (typeof value !== "string" || !PUBLIC_SKILLS.includes(value as PublicSkill)) {
+    throw new Error(`--skill 必须显式选择: ${PUBLIC_SKILLS.join(" / ")}`);
+  }
+  return value as PublicSkill;
+}
+
+export function loadSkillSpec(repoRoot: string, skill: PublicSkill): string {
+  const path = join(repoRoot, "specs", parseSkill(skill), "spec.md");
   return readFileSync(path, "utf8");
 }
 

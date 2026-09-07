@@ -33,7 +33,7 @@ Verify: manual(visual)
 
 ## Source
 
-The plan's `## Spec delta`, merged mechanically by requirement name: `ADDED` append, `MODIFIED` replace the same-named requirement (keep a `(Previously: ...)` note), `REMOVED` delete. Read the landed code alongside the delta to confirm the contract matches what was built. If there's no delta, or a MODIFIED/REMOVED names a requirement that isn't there — stop and ask; don't reverse-engineer a contract from the code.
+Use an authoritative behavior contract, explicit user correction, or the plan's `## Spec delta`. Merge a supplied delta by requirement name: `ADDED` append, `MODIFIED` replace the same-named requirement, `REMOVED` delete. Read the landed behavior alongside that authority to confirm the contract matches what was built. A missing delta is not an entry gate when the requested correction already has authority. An unresolved MODIFIED/REMOVED identity blocks that requirement, not unrelated valid changes. Do not invent intended behavior from code, preserve superseded behavior as a historical note in the current contract, or silently rename an unmatched requirement.
 
 ## Boundary
 

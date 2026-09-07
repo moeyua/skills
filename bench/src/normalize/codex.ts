@@ -8,8 +8,10 @@
  * Real user inputs surface twice: as event_msg{user_message} and as
  * response_item message/user (mixed in with injected AGENTS.md, sandbox
  * instructions, environment context). event_msg is the authoritative user-turn
- * source; response_item user messages are only used as a fallback when a
- * rollout contains no user_message events at all.
+ * source. When those events are absent, current host content_item_kinds and
+ * turn_id distinguish user.text from context; older metadata-less rollouts
+ * retain their existing response_item fallback. Selected skill injections
+ * remain separate evidence and never increment user turns.
  */
 
 import type { BenchEvent, NormalizedTranscript, SessionInfo } from "./events.ts";
@@ -33,6 +35,7 @@ interface CodexLine {
     cwd?: string;
     // turn_context
     model?: string;
+    effort?: string;
     // event_msg
     message?: string;
     // response_item message
@@ -44,7 +47,11 @@ interface CodexLine {
     input?: string;
     call_id?: string;
     // *_output
-    output?: string;
+    output?: unknown;
+    internal_chat_message_metadata_passthrough?: {
+      turn_id?: string;
+      content_item_kinds?: string[];
+    };
   };
 }
 
@@ -53,6 +60,25 @@ function contentText(content: { type?: string; text?: string }[] | undefined): s
   return content
     .filter((b) => typeof b.text === "string")
     .map((b) => b.text)
+    .join("\n");
+}
+
+function toolOutputText(output: unknown): string {
+  if (typeof output === "string") return output;
+  if (!Array.isArray(output) || output.length === 0)
+    return "[工具结果文本不可得：缺失或未知输出结构]";
+  return output
+    .map((block: unknown) => {
+      if (typeof block === "object" && block !== null) {
+        const value = block as { type?: unknown; text?: unknown };
+        if (
+          ["input_text", "output_text", "text"].includes(String(value.type)) &&
+          typeof value.text === "string"
+        )
+          return value.text;
+      }
+      return "[工具结果文本不可得：非文本或未知 content block；原始数据保留于 rawOutput]";
+    })
     .join("\n");
 }
 
@@ -88,9 +114,11 @@ export function parseCodexLines(lines: object[], sourcePath: string): Normalized
 
   const events: BenchEvent[] = [];
   let turn = 0;
+  const semanticTurns = new Map<string, number>();
   let sessionId: string | undefined;
   let cwd: string | undefined;
-  let model: string | undefined;
+  const models = new Set<string>();
+  const efforts = new Set<string>();
 
   for (const raw of lines) {
     const line = raw as CodexLine;
@@ -104,7 +132,8 @@ export function parseCodexLines(lines: object[], sourcePath: string): Normalized
       continue;
     }
     if (line.type === "turn_context") {
-      model ??= p.model;
+      if (p.model !== undefined) models.add(p.model);
+      if (p.effort !== undefined) efforts.add(p.effort);
       continue;
     }
     if (line.type === "event_msg") {
@@ -118,13 +147,56 @@ export function parseCodexLines(lines: object[], sourcePath: string): Normalized
 
     switch (p.type) {
       case "message": {
+        if (p.role === "user") {
+          const kinds = p.internal_chat_message_metadata_passthrough?.content_item_kinds;
+          for (const [index, block] of (p.content ?? []).entries()) {
+            if (
+              kinds?.[index] !== "skills.selected_skill_instructions" ||
+              typeof block.text !== "string"
+            )
+              continue;
+            const rawText = block.text;
+            events.push({
+              kind: "skill-injection",
+              turn,
+              timestamp,
+              name: rawText.match(/<name>([^<]+)<\/name>/)?.[1]?.trim(),
+              path: rawText.match(/<path>([^<]+)<\/path>/)?.[1]?.trim(),
+              body: rawText.match(/<\/path>\s*([\s\S]*?)\s*<\/skill>\s*$/)?.[1],
+              rawText,
+            });
+          }
+        }
         const text = contentText(p.content);
         if (text.trim() === "") break;
         if (p.role === "assistant") {
           events.push({ kind: "assistant-message", turn, timestamp, text });
-        } else if (p.role === "user" && !hasUserMessageEvents && !isInjectedUserText(text)) {
-          turn += 1;
-          events.push({ kind: "user-message", turn, timestamp, text });
+        } else if (p.role === "user" && !hasUserMessageEvents) {
+          const metadata = p.internal_chat_message_metadata_passthrough;
+          const kinds = metadata?.content_item_kinds;
+          if (Array.isArray(kinds)) {
+            // Current hosts identify actual user text independently of its content.
+            const userText = contentText(
+              p.content?.filter((_, index) => kinds[index] === "user.text"),
+            );
+            if (userText === "") break;
+            const previous =
+              metadata?.turn_id === undefined ? undefined : semanticTurns.get(metadata.turn_id);
+            if (previous === undefined) {
+              turn += 1;
+              if (metadata?.turn_id !== undefined) semanticTurns.set(metadata.turn_id, turn);
+            }
+            events.push({
+              kind: "user-message",
+              turn: previous ?? turn,
+              timestamp,
+              text: userText,
+            });
+          } else if (!isInjectedUserText(text)) {
+            // Existing rollouts without semantic metadata retain their native fallback.
+            turn += 1;
+            events.push({ kind: "user-message", turn, timestamp, text });
+          }
         }
         break;
       }
@@ -164,7 +236,8 @@ export function parseCodexLines(lines: object[], sourcePath: string): Normalized
           turn,
           timestamp,
           callId: p.call_id,
-          output: p.output ?? "",
+          output: toolOutputText(p.output),
+          ...(typeof p.output !== "string" && { rawOutput: p.output }),
         });
         break;
       }
@@ -173,6 +246,14 @@ export function parseCodexLines(lines: object[], sourcePath: string): Normalized
     }
   }
 
-  const session: SessionInfo = { host: "codex", sessionId: sessionId ?? "", cwd, model };
+  const model = models.size === 1 ? [...models][0] : undefined;
+  const effort = efforts.size === 1 ? [...efforts][0] : undefined;
+  const session: SessionInfo = {
+    host: "codex",
+    sessionId: sessionId ?? "",
+    cwd,
+    model,
+    ...(effort !== undefined && { effort }),
+  };
   return { session, events, turnCount: turn, sourcePath };
 }

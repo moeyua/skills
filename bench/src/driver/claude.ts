@@ -15,11 +15,13 @@ import { join } from "node:path";
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { inspectFixtureWorktree, prepareFixture } from "./fixture.ts";
 import { simulateUser, matchOptionLabel, type QuestionOption } from "./user-sim.ts";
-import { endsWithQuestion, type DriveResult } from "./common.ts";
+import { endsWithQuestion, driverIdentity, type DriveResult } from "./common.ts";
 import type { ScenarioCard } from "../scenario.ts";
 
 export interface ClaudeDriverOptions {
   model?: string;
+  skillsRoot?: string;
+  effort?: "low" | "medium" | "high" | "xhigh" | "max";
   maxTurns?: number;
   /** injectable user-sim model (tests) */
   runSimModel?: (prompt: string) => string;
@@ -45,10 +47,11 @@ export async function runClaudeScenario(
   const log = opts.log ?? (() => {});
   const maxTurns = opts.maxTurns ?? 30;
   const workDir = prepareFixture(join(fixturesRoot, card.fixture), card.id);
+  const identity = driverIdentity(workDir, "claude", card, fixturesRoot, opts);
   let history = "";
   let sessionId = "";
   let turns = 0;
-  let prompt = `/shape ${card.initialIntent}`;
+  let prompt = `Read and use the project skill at ${join(identity.source!.installedPath, "SKILL.md")}. /shape ${card.initialIntent}`;
 
   const canUseTool = async (
     toolName: string,
@@ -82,6 +85,7 @@ export async function runClaudeScenario(
     const transcriptPath = sessionId === "" ? null : findTranscript(sessionId);
     const worktree = inspectFixtureWorktree(workDir);
     return {
+      identity,
       scenario: card.id,
       host: "claude",
       sessionId,
@@ -106,7 +110,8 @@ export async function runClaudeScenario(
         options: {
           cwd: workDir,
           model: opts.model,
-          settingSources: ["user"],
+          settingSources: ["user", "project"],
+          effort: opts.effort,
           canUseTool,
           ...(sessionId !== "" && { resume: sessionId }),
         },

@@ -16,7 +16,7 @@ A guiding principle (per matklad's `ARCHITECTURE.md` convention): **record what 
 
 ## Source
 
-The code's current structure (read it — it's the reality) + the plan's `## Key decisions` (the reasoning). If neither a stated decision nor the code is available for a claim, stop and ask — don't invent rationale.
+Read the code for current structure and use stated maintainer decisions or an authoritative plan for rationale. Code cannot establish why a choice was made. When a claim lacks its required source, omit it or ask about that claim while completing other grounded content; do not invent rationale or require a plan merely to record known mechanics.
 
 ## Boundary
 

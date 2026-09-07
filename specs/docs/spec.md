@@ -18,8 +18,8 @@ Verify: manual(integration)
 
 ### Requirement: PRODUCT truth 必须已经决定
 
-docs 可记录 already decided 的 PRODUCT positioning、哲学和边界；需要自行判断方向、价值或 scope 时必须省略该 claim 或停在具体 authority 边界。
-Verify: [durable memory architecture](../../tests/durable-memory.test.ts)
+docs 可记录已决定的 PRODUCT positioning、哲学和边界；需要自行决定 intent 时省略该 claim 或停在其 authority 边界，继续不受影响且有权威来源的目标。明确用户纠正、已有权威契约或核验过的 mechanics 可直接建立适用来源，缺少 plan 或上游文件本身不构成额外入口门槛。
+Verify: manual(integration)
 
 ### Requirement: Spec delta 按 requirement identity 合并
 
@@ -33,5 +33,5 @@ Verify: manual(integration)
 
 ### Requirement: 文档调用止于文档结果
 
-docs 不得编辑实现、执行项目级 drift audit、提交、推送、开 PR 或 release；完成后报告 target、truth、authority 与因缺权威省略的内容。
+docs 不编辑 implementation、执行全项目 drift audit 或 git/GitHub 交付。结果简要说明 target 和已记录 truth，只在影响可信度时展开 authority/omission；skill 规则阻塞时引用实际文件和条文并限定受影响 claim。独立调用止于文档结果，作为支持能力返回后由已获授权调用方继续，结果本身不授权新 outcome。
 Verify: manual(integration)
