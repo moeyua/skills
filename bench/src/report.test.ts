@@ -9,11 +9,16 @@ import {
   renderSummaryMarkdown,
   renderBaselineComparison,
   requirementFailRates,
+  comparisonKey,
+  loadReportsFromDir,
   type SessionReport,
 } from "./report.ts";
 import type { NormalizedTranscript } from "./normalize/events.ts";
 import { unknownExecution } from "./identity.ts";
 import type { JudgeResult } from "./judge/index.ts";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 function transcript(id: string): NormalizedTranscript {
   return {
@@ -45,6 +50,15 @@ function comparable(report: SessionReport): SessionReport {
       installedHash: "source",
     },
     loadEvidence: "read",
+    explore: {
+      source: {
+        root: "/source/explore",
+        installedPath: "/installed/explore",
+        hash: "explore-source",
+        installedHash: "explore-source",
+      },
+      loadEvidence: "explore read",
+    },
     effortObserved: "high",
     toolEnvironment: "test",
     scenarioHash: "scenario",
@@ -264,6 +278,83 @@ describe("renderBaselineComparison", () => {
 });
 
 describe("comparison identity", () => {
+  function shapeReport(id = "shape"): SessionReport {
+    return comparable(
+      buildSessionReport(transcript(id), { violations: [] }, okJudge(8, [["甲", "pass"]])),
+    );
+  }
+
+  it("permits Shape before/after comparisons only while Explore is unchanged", () => {
+    const current = shapeReport();
+    const baseline = structuredClone(current);
+    baseline.identity.source!.hash = "previous-shape";
+    baseline.identity.source!.installedHash = "previous-shape";
+    expect(comparisonKey(current)).not.toBeNull();
+    expect(comparisonKey(current)).toBe(comparisonKey(baseline));
+    expect(renderBaselineComparison([current], [baseline]).join("\n")).toContain("无显著背离");
+    baseline.identity.explore!.source.hash = "previous-explore";
+    baseline.identity.explore!.source.installedHash = "previous-explore";
+    expect(comparisonKey(current)).not.toBe(comparisonKey(baseline));
+    expect(renderBaselineComparison([current], [baseline]).join("\n")).toContain("不可比");
+  });
+
+  it.each(["unknown", "unloaded", "empty-evidence", "mismatched-installation"])(
+    "does not compare Shape with %s Explore evidence",
+    (condition) => {
+      const report = shapeReport();
+      if (condition === "unknown") report.identity.explore = null;
+      if (condition === "unloaded") report.identity.explore!.loadEvidence = null;
+      if (condition === "empty-evidence") report.identity.explore!.loadEvidence = "";
+      if (condition === "mismatched-installation")
+        report.identity.explore!.source.installedHash = "changed";
+      expect(comparisonKey(report)).toBeNull();
+      expect(renderBaselineComparison([report], [shapeReport()]).join("\n")).toContain("不可比");
+    },
+  );
+
+  it("keeps historical reports readable but excludes missing Explore identity from comparison", () => {
+    const dir = mkdtempSync(join(tmpdir(), "bench-historical-report-"));
+    try {
+      const historical = JSON.parse(JSON.stringify(shapeReport())) as Record<string, unknown>;
+      delete (historical.identity as Record<string, unknown>).explore;
+      writeFileSync(join(dir, "historical.json"), JSON.stringify(historical));
+      const [loaded] = loadReportsFromDir(dir);
+      expect(loaded!.identity).not.toHaveProperty("explore");
+      expect(comparisonKey(loaded!)).toBeNull();
+      expect(renderBaselineComparison([shapeReport()], [loaded!]).join("\n")).toContain("不可比");
+      expect(renderSummaryMarkdown([loaded!])).toContain("| shape / 甲 | ✓ |");
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("does not require or compare Explore dependency metadata for other skills", () => {
+    const report = shapeReport();
+    report.skill = "implement";
+    report.identity.explore = null;
+    const baseline = structuredClone(report);
+    baseline.identity.explore = shapeReport().identity.explore;
+    expect(comparisonKey(report)).not.toBeNull();
+    expect(comparisonKey(report)).toBe(comparisonKey(baseline));
+    expect(renderBaselineComparison([report], [baseline]).join("\n")).toContain("无显著背离");
+  });
+
+  it.each(["shape", "explore"] as const)(
+    "separates repeated-run groups when the %s snapshot changes",
+    (skill) => {
+      const first = shapeReport("first");
+      first.runLabel = { scenarioId: "same-scenario", host: "codex", run: 1 };
+      const second = structuredClone(first);
+      second.runLabel!.run = 2;
+      second.score = 6;
+      expect(renderSummaryMarkdown([first, second])).toContain("重复运行波动");
+      const source = skill === "shape" ? second.identity.source! : second.identity.explore!.source;
+      source.hash = `${skill}-changed`;
+      source.installedHash = source.hash;
+      expect(renderSummaryMarkdown([first, second])).not.toContain("重复运行波动");
+    },
+  );
+
   it("isolates identical requirement names across skills", () => {
     const shape = comparable(
       buildSessionReport(transcript("a"), { violations: [] }, okJudge(8, [["甲", "pass"]])),

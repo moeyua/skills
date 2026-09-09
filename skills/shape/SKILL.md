@@ -7,6 +7,16 @@ description: 'Shape an uncertain idea into a grounded, bounded direction through
 
 Shape turns uncertainty into a direction the user can evaluate. Match investigation and discussion to uncertainty, reversibility, and stakes; do not manufacture stages or questions to make the process look complete.
 
+## Explore the target project first
+
+Every Shape entry must use [Explore](../explore/SKILL.md) in context mode before proposing project-specific directions, alternatives, or a Design Summary. Resolve the target project from the user's request and context; the Skill installation directory is not the target by default. Load the co-installed Explore first, or locate it among the host's available Skills if that path is missing.
+
+Complete Explore's fixed Overview, then deepen for the current question. Familiarity, a small request, or an already-settled direction never waives this prerequisite. Reuse already-read facts that remain current and fill gaps rather than mechanically rereading them; refresh affected context when the project, scope, or evidence changes during the discussion. Explore owns the investigation method—do not duplicate it here.
+
+If Explore cannot be found or the target project cannot be identified or accessed, expose that specific gap. Do not reconstruct the missing Skill from memory, install it automatically, claim exploration is complete, or settle directions that depend on missing facts. Continue independent intent clarification and ask only for information unavailable from the environment.
+
+Explore returns facts, source paths, and missing evidence to Shape. Continue shaping without a separate Explore report or an exploration approval turn; this supporting call is not a handoff to another public outcome.
+
 ## Work from the actual decision frontier
 
 Start with the user's active outcome, current horizon, and every decision already settled in the conversation. Do not silently replace the outcome with a named mechanism, local task, artifact, or intermediate result.
@@ -16,7 +26,7 @@ Only the user's statements, accepted decisions, and authoritative project intent
 A failed, ambiguous, or missing required condition stays visible rather than becoming a resolved direction or an unrequested alternate path. Fallbacks, compatibility layers, migrations, dual paths, and legacy paths are consequential continuity choices, not mechanical safety; an authorized replacement is a clean break unless explicit user authority or authoritative project intent requires continuity.
 
 - If the direction is already determined, synthesize it directly.
-- If a discoverable fact blocks judgment, investigate it; use Explore context when the project is unfamiliar.
+- If a discoverable fact still blocks judgment after Explore, investigate it from the project or authoritative sources.
 - If viable choices would materially change scope, observable behavior, hard-to-reverse architecture, risk, or acceptance, compare them and recommend one.
 - If the user delegates a choice, make it and state only consequential assumptions.
 
@@ -30,6 +40,6 @@ Read `references/change-types.md` only when classifying a concrete change as `fi
 
 Shape is read-only. It may gather facts, but it does not write plans, Issues, specs, code, or project files and does not advance into implementation or delivery.
 
-Before Shape ends or another public capability begins, present a visible **Design Summary** and stop for the user's review. Include only applicable content: the active outcome and horizon; included and excluded scope; settled consequential decisions; Agent recommendations kept distinct from those decisions; genuinely unresolved material choices; evidence that would demonstrate the outcome; and the currently authorized outcome. Lead with the proposed direction, use concise prose, and omit empty categories rather than filling a template.
+Before Shape ends or hands off to another public outcome, present a visible **Design Summary** and stop for the user's review. Include only applicable content: the active outcome and horizon; included and excluded scope; settled consequential decisions; Agent recommendations kept distinct from those decisions; genuinely unresolved material choices; evidence that would demonstrate the outcome; and the currently authorized outcome. Lead with the proposed direction, use concise prose, and omit empty categories rather than filling a template.
 
 If the user corrects the Summary, invalidate its dependent conclusions and present the revised Summary before finishing. Agreement with a Design Summary settles that direction only; it does not authorize Plan, Implement, or delivery. A later user message may both accept the shown direction and explicitly request another public outcome, in which case that capability has its own authorization. Mention Plan only as an optional way to persist settled work.

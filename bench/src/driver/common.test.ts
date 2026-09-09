@@ -78,6 +78,8 @@ describe("project skill snapshots", () => {
       join(source, "skills/shape/SKILL.md"),
       "---\nname: shape\n---\n# Snapshot version\n",
     );
+    mkdirSync(join(source, "skills/explore"), { recursive: true });
+    writeFileSync(join(source, "skills/explore/SKILL.md"), "# Explore snapshot\n");
     writeFileSync(join(source, "shared.md"), "shared before\n");
     symlinkSync("../../../shared.md", join(source, "skills/shape/references/shared.md"));
     const fixture = mkdtempSync(join(tmpdir(), "bench-fixture-"));

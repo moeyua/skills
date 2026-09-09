@@ -179,6 +179,10 @@ export function renderSummaryMarkdown(
     lines.push(
       `- skill:${r.skill ?? "不可得"};源码:${r.identity?.source?.hash ?? "不可得"};装载证据:${r.identity?.loadEvidence ?? "不可得"}`,
     );
+    if (r.skill === "shape")
+      lines.push(
+        `- Explore 源码:${r.identity?.explore?.source?.hash ?? "不可得"};装载证据:${r.identity?.explore?.loadEvidence ?? "不可得"}`,
+      );
     lines.push(`- 执行身份:\`${JSON.stringify(r.identity ?? null)}\`;null 表示不可得`);
     lines.push(`- Judge / rubric:\`${JSON.stringify(r.judge.identity ?? null)}\`;null 表示不可得`);
     lines.push(`- 轮次:${r.turnCount},模型:${r.session.model ?? "?"}`);
@@ -297,7 +301,7 @@ export function loadReportsFromDir(dir: string): SessionReport[] {
   return files.map((f) => JSON.parse(readFileSync(join(dir, f), "utf8")) as SessionReport);
 }
 
-/** Source hashes may differ in a before/after comparison; every other controlled condition must match. */
+/** The primary Skill may change before/after; Shape's required Explore source is controlled. */
 export function comparisonKey(report: SessionReport): string | null {
   const identity = report.identity;
   const judge = report.judge.identity;
@@ -316,6 +320,14 @@ export function comparisonKey(report: SessionReport): string | null {
     !judge.rubricHash
   )
     return null;
+  const explore = identity.explore;
+  if (
+    report.skill === "shape" &&
+    (!explore?.source?.hash ||
+      explore.source.hash !== explore.source.installedHash ||
+      !explore.loadEvidence)
+  )
+    return null;
   return JSON.stringify([
     report.skill,
     report.session.host,
@@ -329,5 +341,6 @@ export function comparisonKey(report: SessionReport): string | null {
     judge.runner,
     judge.rubricHash,
     judge.specHash,
+    report.skill === "shape" ? explore!.source.hash : null,
   ]);
 }

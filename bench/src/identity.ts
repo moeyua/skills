@@ -27,8 +27,17 @@ export function hashTree(root: string): string {
   return hash.digest("hex");
 }
 
+export interface SkillSource {
+  root: string;
+  installedPath: string;
+  hash: string;
+  installedHash: string;
+}
+
 export interface ExecutionIdentity {
-  source: { root: string; installedPath: string; hash: string; installedHash: string } | null;
+  source: SkillSource | null;
+  /** Required support for Shape; null means its source was not observed. */
+  explore: { source: SkillSource; loadEvidence: string | null } | null;
   modelRequested: string | null;
   effortRequested: string | null;
   effortObserved: string | null;
@@ -50,6 +59,7 @@ export interface ExecutionIdentity {
 export function unknownExecution(): ExecutionIdentity {
   return {
     source: null,
+    explore: null,
     modelRequested: null,
     effortRequested: null,
     effortObserved: null,
@@ -81,14 +91,23 @@ export function parseExecutionIdentity(value: unknown): ExecutionIdentity {
     if (record[key] !== null && typeof record[key] !== "string")
       throw new Error(`metadata.${key} 必须为 string 或 null（不可得）`);
   }
-  if (record.source !== null) {
-    if (typeof record.source !== "object" || record.source === undefined)
-      throw new Error("metadata.source 必须为源码身份对象或 null");
-    const source = record.source as Record<string, unknown>;
-    for (const key of ["root", "installedPath", "hash", "installedHash"]) {
-      if (typeof source[key] !== "string" || source[key] === "")
-        throw new Error(`metadata.source.${key} 必须为非空 string`);
-    }
+  if (record.source !== null) validateSource(record.source, "metadata.source");
+  if (record.explore !== null) {
+    if (typeof record.explore !== "object" || record.explore === undefined)
+      throw new Error("metadata.explore 必须为 Explore 装载身份对象或 null");
+    const explore = record.explore as Record<string, unknown>;
+    validateSource(explore.source, "metadata.explore.source");
+    if (explore.loadEvidence !== null && typeof explore.loadEvidence !== "string")
+      throw new Error("metadata.explore.loadEvidence 必须为 string 或 null（不可得）");
   }
   return value as ExecutionIdentity;
+}
+
+function validateSource(value: unknown, label: string): void {
+  if (typeof value !== "object" || value === null) throw new Error(`${label} 必须为源码身份对象`);
+  const source = value as Record<string, unknown>;
+  for (const key of ["root", "installedPath", "hash", "installedHash"]) {
+    if (typeof source[key] !== "string" || source[key] === "")
+      throw new Error(`${label}.${key} 必须为非空 string`);
+  }
 }

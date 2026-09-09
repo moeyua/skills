@@ -25,7 +25,7 @@ The user expresses the outcome and its authorization boundary. The agent owns th
 
 Supporting capabilities return to the active owner, which continues already-authorized work. A blocked dependent action does not stop unrelated authorized work, and repeated command failure calls for diagnosis rather than blind retry. Required checks end once sufficient evidence is established unless new changes, failures, or unresolved concerns warrant more. Independent work may be delegated when the host permits it and the benefit exceeds coordination cost.
 
-This composition is adaptive rather than a hidden fixed pipeline. An explicit Skill invocation remains a useful way to narrow or control the public outcome, but the user should not have to manually invoke every supporting capability. Already-settled decisions remain inputs unless new evidence invalidates them.
+This composition is adaptive rather than a hidden fixed pipeline. An explicit Skill invocation remains a useful way to narrow or control the public outcome, but the user should not have to manually invoke every supporting capability. Shape has one required support relationship: it uses Explore context for the current target project before forming a project-related direction, even when the project is familiar, the request is simple, or the direction is settled. This support call returns to Shape without a separate report or review round; it does not make Explore or Shape an upstream requirement for other outcomes. Already-settled decisions remain inputs unless new evidence invalidates them.
 
 External mutations remain bounded by their owning outcome. Implementation does not silently become publish or release; an Issue target, commit/push/PR, and release transaction each require the corresponding user authorization.
 
@@ -51,7 +51,7 @@ These are semantic distinctions, not a universal form, ledger, or confirmation w
 
 Frontmatter descriptions are the runtime routing interface. The main body explains judgment and routes to conditional references. Target schemas, recovery state machines, complex provider behavior, document formats, and other deep knowledge load only when the task triggers them.
 
-Explore deliberately keeps a fixed Overview before scoped depth. Necessary project identity, instructions, architecture, and global documents are still read in full and in sequence; progressive disclosure applies after that skeleton and to domain-specific depth.
+Explore deliberately keeps a fixed Overview before scoped depth. Necessary project identity, instructions, architecture, and global documents are still read in full and in sequence; progressive disclosure applies after that skeleton and to domain-specific depth. Explore owns this method wherever its context is used, including Shape: current facts may be reused and gaps filled, but familiarity does not waive the required exploration. Missing Explore or an inaccessible or unidentified target project remains an explicit evidence gap rather than an invented completion or substitute method.
 
 ### 5. Durable truth is a first-class capability
 

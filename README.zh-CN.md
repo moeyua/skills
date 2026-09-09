@@ -39,11 +39,11 @@ npx skills add .
 - `-y` 跳过安装器确认。
 - `--copy` 避免默认 shared-store symlink 布局。
 
-安装结果是快照；源码变更后需要重新安装。
+安装结果是快照；源码变更后需要重新安装。Shape 运行需要 Explore 可用，请一并安装或更新两者。
 
 ## 使用方式
 
-直接进入与请求 outcome 匹配的 Skill，无需先走固定链路。Frontmatter description 负责路由，主指南只在需要时加载深层 reference。
+直接进入与请求 outcome 匹配的 Skill，无需先走固定链路。Frontmatter description 负责路由，主指南只在需要时加载深层 reference。每次 Shape 都先使用 Explore context 探索当前目标项目，复用仍有效的事实并补齐缺口，再形成方向。无需单独调用 Explore：上下文返回后，Shape 继续讨论，最终提交 Design Summary 审阅。
 
 路由差异见 [Resolver](./skills/RESOLVER.md)，context topology 与副作用归属见 [Architecture](./ARCHITECTURE.md)。
 

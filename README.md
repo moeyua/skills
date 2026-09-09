@@ -39,11 +39,11 @@ Useful flags:
 - `-y` skips installer confirmation.
 - `--copy` avoids the default shared-store symlink layout.
 
-Installation is a snapshot. Re-run it after changing this repository.
+Installation is a snapshot. Re-run it after changing this repository. Shape requires Explore to be available; install or update both together.
 
 ## Usage model
 
-Enter the Skill that matches the requested outcome; there is no required preceding chain. Its frontmatter description provides routing, and its main guide loads deeper references only when needed.
+Enter the Skill that matches the requested outcome; there is no required preceding chain. Its frontmatter description provides routing, and its main guide loads deeper references only when needed. Every Shape invocation first uses Explore context for the current target project, reusing still-valid facts and filling gaps before forming a direction. You do not need to invoke Explore separately: its context returns to Shape, which continues to the Design Summary for review.
 
 See the [Resolver](./skills/RESOLVER.md) for route distinctions and [Architecture](./ARCHITECTURE.md) for context topology and side-effect ownership.
 
