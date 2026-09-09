@@ -26,4 +26,6 @@
 - Publish creates reviewable branch/PR state; Release creates version/repository-metadata/tag/Release state.
 - Handoff is transient conversation context, not project documentation.
 
-Plan's route preserves the explicit `local`, `issue`, and `both` targets; omitted target means `both`. Only `both` may synchronize a verified Plan-managed problem record while preserving its canonical Issue identity; `local` has zero GitHub mutation and `issue` remains create/reuse-only. Explore retains a fixed Overview before scoped depth. For context topology and side-effect ownership, see [ARCHITECTURE.md](../ARCHITECTURE.md).
+Shape always uses Explore context for the current target project before forming a project-related direction, including familiar projects, simple requests, and settled directions. Explore retains its fixed Overview before scoped depth and allows current facts to be reused. This required support call returns to Shape without a separate report or review round; users invoke Shape directly, with Explore available in the installation. Missing Explore or target-project access remains an explicit gap. Other capabilities do not acquire this prerequisite.
+
+Plan's route preserves the explicit `local`, `issue`, and `both` targets; omitted target means `both`. Only `both` may synchronize a verified Plan-managed problem record while preserving its canonical Issue identity; `local` has zero GitHub mutation and `issue` remains create/reuse-only. For context topology and side-effect ownership, see [ARCHITECTURE.md](../ARCHITECTURE.md).

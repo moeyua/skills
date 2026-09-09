@@ -3,10 +3,18 @@
  */
 
 import { copyFileSync, cpSync, readFileSync } from "node:fs";
-import { basename, join, resolve } from "node:path";
+import { basename, dirname, isAbsolute, join, resolve } from "node:path";
+import ts from "typescript";
 
 import { execFileSync } from "node:child_process";
-import { hashTree, hashText, toolVersion, type ExecutionIdentity } from "../identity.ts";
+import {
+  hashTree,
+  hashText,
+  toolVersion,
+  type ExecutionIdentity,
+  type SkillSource,
+} from "../identity.ts";
+import type { NormalizedTranscript, ToolCallEvent } from "../normalize/events.ts";
 import type { ScenarioCard } from "../scenario.ts";
 import type { PublicSkill } from "../judge/spec.ts";
 
@@ -59,8 +67,17 @@ export function driverIdentity(
   fixturesRoot: string,
   opts: { skillsRoot?: string; model?: string; effort?: string },
 ): ExecutionIdentity {
+  const skillsRoot = opts.skillsRoot ?? resolve("skills");
+  // Resolve both required entries before mutating the disposable fixture.
+  for (const skill of ["shape", "explore"]) {
+    readFileSync(resolve(skillsRoot, skill, "SKILL.md"), "utf8");
+  }
   return {
-    source: installSkillSnapshot(workDir, host, "shape", opts.skillsRoot),
+    source: installSkillSnapshot(workDir, host, "shape", skillsRoot),
+    explore: {
+      source: installSkillSnapshot(workDir, host, "explore", skillsRoot),
+      loadEvidence: null,
+    },
     modelRequested: opts.model ?? null,
     effortRequested: opts.effort ?? null,
     effortObserved: null,
@@ -115,38 +132,55 @@ export function collectTranscript(result: DriveResult, destDir: string): string 
 
 /** Match host injection or correlated tool text; conflicting same-name injection prevents a pure-source claim. */
 export function observeSkillLoad(
-  transcript: import("../normalize/events.ts").NormalizedTranscript,
+  transcript: NormalizedTranscript,
   identity: ExecutionIdentity,
 ): ExecutionIdentity {
-  if (identity.source === null) return identity;
-  const path = join(identity.source.installedPath, "SKILL.md");
+  return {
+    ...identity,
+    loadEvidence: observeSourceLoad(transcript, identity.source),
+    explore:
+      identity.explore == null
+        ? null
+        : {
+            ...identity.explore,
+            loadEvidence: observeSourceLoad(transcript, identity.explore.source),
+          },
+  };
+}
+
+function observeSourceLoad(
+  transcript: NormalizedTranscript,
+  source: SkillSource | null,
+): string | null {
+  if (source === null) return null;
+  const path = join(source.installedPath, "SKILL.md");
   let content: string;
   try {
-    if (hashTree(identity.source.installedPath) !== identity.source.installedHash)
-      return { ...identity, loadEvidence: null };
+    if (hashTree(source.installedPath) !== source.installedHash) return null;
     content = readFileSync(path, "utf8").trim();
-    if (content === "") return { ...identity, loadEvidence: null };
+    if (content === "") return null;
   } catch {
-    return { ...identity, loadEvidence: null };
+    return null;
   }
   const injections = transcript.events
     .filter((event) => event.kind === "skill-injection")
-    .filter(
-      (event) =>
-        event.name === undefined || event.name === basename(identity.source!.installedPath),
-    );
+    .filter((event) => {
+      const name =
+        event.name ?? (event.path === undefined ? undefined : basename(dirname(event.path)));
+      return name === undefined || name === basename(source.installedPath);
+    });
   if (injections.some((event) => event.path !== path || event.body?.trim() !== content))
-    return { ...identity, loadEvidence: null };
+    return null;
   if (injections.length > 0)
-    return {
-      ...identity,
-      loadEvidence: `Host skill injection: ${path}; entry content matched; no conflicting same-name injection; installed tree unchanged`,
-    };
+    return `Host skill injection: ${path}; entry content matched; no conflicting same-name injection; installed tree unchanged`;
   for (const event of transcript.events) {
     if (
       event.kind !== "tool-call" ||
       event.callId === undefined ||
-      !(JSON.stringify(event.input) ?? "").includes(path)
+      !(
+        (JSON.stringify(event.input) ?? "").includes(path) ||
+        readsRelativeEntry(event, transcript.session.cwd, path)
+      )
     )
       continue;
     const result = transcript.events.find(
@@ -164,10 +198,141 @@ export function observeSkillLoad(
       }
     }
     if (outputs.some((output) => output.includes(content)))
-      return {
-        ...identity,
-        loadEvidence: `T${event.turn} ${event.name} ${event.callId}: ${path}; entry content matched; installed tree unchanged`,
-      };
+      return `T${event.turn} ${event.name} ${event.callId}: ${path}; entry content matched; installed tree unchanged`;
   }
-  return { ...identity, loadEvidence: null };
+  return null;
+}
+
+/** Recognize only literal single-file reads; never infer cwd through shell or JavaScript execution. */
+function readsRelativeEntry(event: ToolCallEvent, cwd: string | undefined, entry: string): boolean {
+  const matches = (cmd: unknown, workdir: unknown = cwd): boolean => {
+    if (typeof cmd !== "string" || typeof workdir !== "string") return false;
+    const read = cmd
+      .trim()
+      .match(/^cat[ \t]+(?:--[ \t]+)?(?:'([^'\r\n]+)'|"([^"$`\\\r\n]+)"|([^\s'"\\$`;&|<>()]+))$/);
+    const file = read?.[1] ?? read?.[2] ?? read?.[3];
+    const directory = isAbsolute(workdir)
+      ? workdir
+      : cwd !== undefined && isAbsolute(cwd)
+        ? resolve(cwd, workdir)
+        : undefined;
+    return (
+      directory !== undefined &&
+      file !== undefined &&
+      !isAbsolute(file) &&
+      resolve(directory, file) === entry
+    );
+  };
+  if (event.name === "exec_command" || event.name === "functions.exec_command") {
+    if (typeof event.input !== "object" || event.input === null) return false;
+    const input = event.input as Record<string, unknown>;
+    return matches(input.cmd, input.workdir);
+  }
+  if (event.name !== "exec" || typeof event.input !== "string") return false;
+  const script = ts.createSourceFile(
+    "tool.js",
+    event.input,
+    ts.ScriptTarget.Latest,
+    false,
+    ts.ScriptKind.JS,
+  );
+  let found = false;
+  let understood = true;
+  const isLiteral = (node: ts.Node): boolean =>
+    ts.isStringLiteralLike(node) ||
+    ts.isNumericLiteral(node) ||
+    [ts.SyntaxKind.TrueKeyword, ts.SyntaxKind.FalseKeyword, ts.SyntaxKind.NullKeyword].includes(
+      node.kind,
+    ) ||
+    (ts.isArrayLiteralExpression(node) && node.elements.every(isLiteral));
+  const visit = (node: ts.Node): void => {
+    if (ts.isSourceFile(node)) {
+      for (const statement of node.statements) visit(statement);
+      return;
+    }
+    if (ts.isExpressionStatement(node)) {
+      visit(node.expression);
+      return;
+    }
+    if (ts.isVariableStatement(node)) {
+      for (const declaration of node.declarationList.declarations) {
+        if (declaration.initializer !== undefined) visit(declaration.initializer);
+        else understood = false;
+      }
+      return;
+    }
+    if (ts.isAwaitExpression(node)) {
+      visit(node.expression);
+      return;
+    }
+    if (!ts.isCallExpression(node)) {
+      understood = false;
+      return;
+    }
+    if (ts.isIdentifier(node.expression) && node.expression.text === "text") {
+      if (node.arguments.length !== 1) {
+        understood = false;
+        return;
+      }
+      for (const argument of node.arguments) visit(argument);
+      return;
+    }
+    if (
+      ts.isPropertyAccessExpression(node.expression) &&
+      ts.isIdentifier(node.expression.expression) &&
+      node.expression.expression.text === "Promise" &&
+      ["all", "allSettled"].includes(node.expression.name.text)
+    ) {
+      const calls = node.arguments[0];
+      if (
+        node.arguments.length === 1 &&
+        calls !== undefined &&
+        ts.isArrayLiteralExpression(calls)
+      ) {
+        for (const call of calls.elements) visit(call);
+      } else understood = false;
+      return;
+    }
+    if (
+      ts.isCallExpression(node) &&
+      ts.isPropertyAccessExpression(node.expression) &&
+      ts.isIdentifier(node.expression.expression) &&
+      node.expression.expression.text === "tools" &&
+      node.expression.name.text === "exec_command"
+    ) {
+      const input = node.arguments[0];
+      if (
+        node.arguments.length === 1 &&
+        input !== undefined &&
+        ts.isObjectLiteralExpression(input)
+      ) {
+        let cmd: string | undefined;
+        let workdir = cwd;
+        let literal = true;
+        for (const property of input.properties) {
+          if (
+            !ts.isPropertyAssignment(property) ||
+            ts.isComputedPropertyName(property.name) ||
+            !isLiteral(property.initializer)
+          ) {
+            literal = false;
+            break;
+          }
+          const key = property.name.text;
+          if (key === "cmd" || key === "workdir") {
+            if (!ts.isStringLiteralLike(property.initializer)) {
+              literal = false;
+              break;
+            }
+            if (key === "cmd") cmd = property.initializer.text;
+            else workdir = property.initializer.text;
+          }
+        }
+        if (literal && matches(cmd, workdir)) found = true;
+        if (!literal) understood = false;
+      } else understood = false;
+    } else understood = false;
+  };
+  visit(script);
+  return understood && found;
 }

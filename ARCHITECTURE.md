@@ -4,7 +4,7 @@ This document records the current structure, context flow, and durable technical
 
 ## One sentence
 
-Skills is a set of 11 independently installable Markdown capabilities whose concise entry guides route agents to task-specific references and allow adaptive composition inside the user's authorized outcome.
+Skills is a set of 11 directly invokable Markdown capabilities whose concise entry guides route agents to task-specific references and compose support inside the user's authorized outcome; Shape requires Explore to be available.
 
 ## Repository layout
 
@@ -57,9 +57,10 @@ user outcome + surrounding context
 
 A main Skill is not a miniature workflow program. Content stays there only when it is useful for most calls to that capability. Detailed schemas, target transactions, recovery predicates, method guides, and document formats live in references and load only when triggered.
 
-Two deliberate exceptions preserve correctness rather than uniformity:
+Deliberate capability constraints preserve correctness rather than uniformity:
 
 - Explore always completes a fixed Overview and reads necessary architecture/global documents before scoped depth.
+- Shape always consumes Explore context for the current target project before forming project-related directions, comparisons, or its Design Summary; Explore remains the sole source of the exploration method.
 - Release retains strict predicates for public, difficult-to-reverse state, but separates modeling, execution, and recovery into conditional references.
 
 ## Intent fidelity and attestation flow
@@ -91,7 +92,7 @@ Handoff snapshots the current state for another context;
 the snapshot does not create authority.
 ```
 
-Shape and Handoff are visible checkpoints, not mandatory upstream stages. Shape ends by presenting a Design Summary for review; agreement settles that direction but does not select another public capability. Handoff preserves continuation-critical state when context moves. Every other capability remains directly enterable and reconstructs only the state its outcome needs from the current request and authoritative project facts.
+Shape and Handoff are visible checkpoints, not mandatory upstream stages. Shape first obtains Explore context, then ends by presenting a Design Summary for review; agreement settles that direction but does not select another public capability. Its internal Explore support call returns to the same outcome and does not trigger an early Summary or review. Handoff preserves continuation-critical state when context moves. Every other capability remains directly enterable and reconstructs only the state its outcome needs from the current request and authoritative project facts.
 
 | capability | intent-fidelity and attestation responsibility                                                      |
 | ---------- | --------------------------------------------------------------------------------------------------- |
@@ -112,6 +113,8 @@ Fail-close and clean-break do not create stages or a generic recovery framework.
 ## Composition and side-effect topology
 
 The product rationale for adaptive composition lives in [PRODUCT.md](./PRODUCT.md). Technically, each capability is independently invokable, and a capability may use another capability's output or bounded behavior without transferring ownership of external state. The exact public routes live in [skills/RESOLVER.md](./skills/RESOLVER.md).
+
+Shape locates Explore in the same installed skill collection first, then searches host-provided skill locations if needed. It uses Explore's context mode on the project targeted by the discussion, not the skill installation directory. Existing facts may satisfy the Overview where they remain current; gaps and project or scope changes require investigation. Familiarity, a simple request, or a settled direction cannot skip this support call. If Explore or the target project cannot be found or accessed, Shape reports the concrete gap and continues only work that does not depend on it; it neither recreates Explore from memory nor installs it automatically.
 
 | mutation                                                                                                        | owning authorization               |
 | --------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
@@ -181,6 +184,8 @@ Verification has three layers:
 2. deterministic project checks: Doctor's checker for Spec shape, links/anchors, placeholders, and file size;
 3. behavior evaluation: the development-only bench judges explicitly selected skills against their contracts, retains shape automatic driving, and compares only recorded compatible configurations and evaluation bases.
 
+Shape driving installs Shape and Explore snapshots from the same selected source root and records source, installation, and actual load evidence for both. Comparison may vary the primary Shape source while requiring the same Explore support source and verified, unchanged installed trees. Missing load or source evidence, including historical records without Explore identity, cannot establish a complete or comparable source configuration. Other skills' transcript judging does not inherit Shape's Explore requirement.
+
 Development commands come from `package.json`:
 
 ```bash
@@ -192,14 +197,14 @@ node skills/doctor/scripts/checker.ts . --json
 
 ## Installation
 
-`npx skills add .` discovers `skills/<name>/SKILL.md`. The repository root must not contain `SKILL.md`, or the installer can collapse the repository into one capability. Installation is a snapshot; source changes require reinstalling. Relative symlinks are used only for the two shared semantic sources, with `--copy` available where symlinks are unsuitable.
+`npx skills add .` discovers `skills/<name>/SKILL.md`. The repository root must not contain `SKILL.md`, or the installer can collapse the repository into one capability. Installation is a snapshot; source changes require reinstalling. Shape requires an available Explore installation, so install or update both together. Relative symlinks are used only for the two shared semantic sources, with `--copy` available where symlinks are unsuitable.
 
 ## Architecture invariants
 
 1. The installed surface is exactly the 11 Resolver entries and their 11 matching Specs.
 2. Every capability is independently enterable; upstream artifact history is optional context.
 3. Main Skills remain capability guides and conditional routers, not copies of deep references or fixed global stages.
-4. Explore retains its fixed Overview; Release retains its high-consequence safety predicates.
+4. Explore retains its fixed Overview and owns Shape's required project context; Release retains its high-consequence safety predicates.
 5. Agent-owned composition stays inside the user's authorized outcome and preserves each supporting capability's boundary.
 6. Plan target and artifact semantics, Publish history safety, and Release confirmation/recovery identities do not drift.
 7. The durable-memory catalog contains exactly six types.
