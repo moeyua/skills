@@ -19,4 +19,4 @@ Read-only GitHub access is allowed only to verify an existing canonical Issue UR
 
 ## Result
 
-Return `success` with the plan path, change type, concise summary, and association state. Return `failed` only when the local file cannot be written or reliable facts cannot bound the change. No local failure authorizes an Issue attempt.
+Record generation `success` with the plan path, change type, concise summary, and association state, or `failed` when the local file cannot be written or reliable facts cannot bound the change. Continue to Plan's [audit and corrections](audit.md) before the final report. Its corrections may write only this local plan and never GitHub. No local failure authorizes an Issue attempt.

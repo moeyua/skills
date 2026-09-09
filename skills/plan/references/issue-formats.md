@@ -1,6 +1,6 @@
 # Issue Formats
 
-Read this file only when the selected target is ready to create one or more GitHub Issues. For each create candidate, render exactly one schema matching its own change type. Preserve the relative order of the included sections. The `both` target is the one-candidate case.
+Read this file when the selected target is ready to create or correct a GitHub Issue. For each create candidate or corrected projection, render exactly one schema matching its own change type. Preserve the relative order of the included sections. The `both` target is the one-candidate case. This format grants no edit authority; the target and audit contracts determine whether a correction is writable.
 
 ## Problem-record boundary
 

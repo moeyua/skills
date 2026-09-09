@@ -4,7 +4,7 @@ Use this contract only when the resolved artifact target is `issue`.
 
 ## Mutation boundary
 
-Persist 1–20 explicitly separated bounded development problems as problem-oriented Issues in the same repository. Each newly created Issue is a problem record, not an implementation handoff; a verified canonical Issue is reused without editing its existing body. This target guarantees zero project writes: do not create or modify plans, source files, documentation, tests, configuration, or other worktree content. Safe temporary Issue-body files outside the project are allowed during a create call and must be removed afterward.
+Persist 1–20 explicitly separated bounded development problems as problem-oriented Issues in the same repository. Each newly created Issue is a problem record, not an implementation handoff; a verified canonical Issue that predates this invocation is reused without editing its existing body. Only this invocation's definitively created Issues may receive the bounded audit correction described below. This target guarantees zero project writes: do not create or modify plans, source files, documentation, tests, configuration, or other worktree content. Safe temporary Issue-body files outside the project are allowed during create or corrective edit calls and must be removed afterward.
 
 Each input item maps to at most one Issue. Preserve the user's item boundaries and order. Never auto-split prose, combine adjacent items, or move an item to another repository.
 
@@ -30,7 +30,7 @@ If one or more item-specific checks fail preflight, mutate nothing. Mark every i
 After preflight succeeds:
 
 1. Order required missing labels by the first input item that depends on each label, then create them using the centralized metadata. If a label create fails, attribute `failed` to the first input-order create candidate that needs that label, retain `reused` for already verified canonical rows, mark every other create candidate `not-attempted`, report any labels already created by this run, and stop before creating Issues.
-2. Process items sequentially in input order. Emit `reused` without editing a verified canonical Issue. For a create candidate, write its body and hidden marker to a safe temporary file, create the Issue with its one lowercase type label, capture the returned canonical URL, and remove the temporary file.
+2. Process items sequentially in input order. Emit `reused` without editing a verified canonical Issue. For a create candidate, write its body and hidden marker to a safe temporary file, create the Issue with its one lowercase type label, capture the returned canonical URL and the exact sent title/body/type as its creation snapshot, and remove the temporary file.
 3. On the first definite failure, stop. Mark that item `failed` and every later pending item `not-attempted`.
 4. On the first ambiguous create result, stop the batch permanently. Perform exactly one read-only reconciliation using that item's exact hidden batch marker and repository. If exactly one matching Issue exists, mark the current item `created`; otherwise mark it `unknown`. Mark every later pending item `not-attempted`. Never reconcile by title and never retry the create automatically.
 
@@ -40,7 +40,7 @@ Maintain a batch-level side-effect record throughout the transaction. Report the
 
 ## Transaction table
 
-This table is normative. `remote-call suffix` lists only the event-specific call after successful shared preflight; every row guarantees zero project writes.
+This table is normative for generation. `remote-call suffix` lists only the event-specific call after successful shared preflight; every row guarantees zero project writes. Audit corrections are a separate phase and cannot resume a stopped generation transaction.
 
 | event                        | current row | later create candidates | remote-call suffix               | continue |
 | ---------------------------- | ----------- | ----------------------- | -------------------------------- | -------- |
@@ -64,4 +64,12 @@ Return the batch-level created-label list plus one ordered row per input item wi
 - `unknown` — one marker-based reconciliation could not determine whether an ambiguous create succeeded;
 - `not-attempted` — processing stopped before this item.
 
-The overall result is `success` when every row is `created` or `reused`; `partial` when at least one row is `created` or `reused` and at least one row is not; `failed` when mutation began and no row is `created` or `reused`; and `blocked` when preflight stopped the batch without mutation.
+The generation result is `success` when every row is `created` or `reused`; `partial` when at least one row is `created` or `reused` and at least one row is not; `failed` when mutation began and no row is `created` or `reused`; and `blocked` when preflight stopped the batch without mutation.
+
+## Audit correction boundary
+
+After generation reaches any result, return to Plan's [audit and corrections](audit.md) with its complete ledger, readable artifacts and any stop condition. A reconciled ambiguous create remains stopped even when every row now says `created` or `reused`. Review available content without repairing remote state unless the original batch completed successfully with no stop condition.
+
+Only a `created` row from this invocation is writable in this correction phase. Before its one permitted corrective edit, read its canonical URL and require its title, full body including the exact batch marker, and single change-type label to match the saved creation snapshot. A mismatch or unreadable baseline is a conflict; a `reused` row is always read-only. The batch marker identifies this creation, not durable write ownership. Preserve unrelated labels, comments and all other project fields; the corrected body must retain the marker and remain a problem record.
+
+Use the shared remote correction transaction and its stopping outcomes. Keep generation rows and their original types/results unchanged; report any corrected type and correction result separately, with all labels created in either phase. Report findings on read-only or stopped items without turning them into edits, replacements, local plans or resumed batches.
