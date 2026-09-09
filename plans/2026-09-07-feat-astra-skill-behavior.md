@@ -34,7 +34,7 @@ issue: https://github.com/moeyua/skills/issues/48
 - 规划时源码基线为 `56427bcf6496c3f9d73126d0374de59cd2486add`，工作树干净。它是 before 语料来源，不是行为已通过的证明。
 - [Implement](../skills/implement/SKILL.md) 同时要求自主完成、允许范围内修复，并包含同一 finding 无新证据再次出现时停止的指令；其适用范围需要收窄为停止盲目重试，不能阻断可行的新调查。
 - [Check](../skills/check/SKILL.md) 对普通 scoped pass 也要求稳定 candidate basis、producer 和 acceptance field；[Implement](../skills/implement/SKILL.md) 在没有 plan 时仍要求同类报告。用户已授权改变这些普通场景的可观察契约。
-- [bench](../bench/README.md) 当前仅评 shape；[Codex driver](../bench/src/driver/codex.ts) 从全局安装路径读取 shape；[judge](../bench/src/judge/spec.ts) 固定读取 shape spec。只改源码、只跑现有字符串断言或只换 `--model` 不能证明本次目标。
+- [bench](https://github.com/moeyua/skills/blob/56427bcf6496c3f9d73126d0374de59cd2486add/bench/README.md) 当前仅评 shape；[Codex driver](https://github.com/moeyua/skills/blob/56427bcf6496c3f9d73126d0374de59cd2486add/bench/src/driver/codex.ts) 从全局安装路径读取 shape；[judge](https://github.com/moeyua/skills/blob/56427bcf6496c3f9d73126d0374de59cd2486add/bench/src/judge/spec.ts) 固定读取 shape spec。只改源码、只跑现有字符串断言或只换 `--model` 不能证明本次目标。
 
 ## Key decisions
 

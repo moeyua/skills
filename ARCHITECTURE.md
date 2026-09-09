@@ -25,8 +25,7 @@ skills/
 │   └── memory-catalog.md             # six durable-memory definitions
 ├── specs/<name>/spec.md              # observable behavior contracts
 ├── plans/                             # point-in-time implementation handoffs
-├── tests/                             # deterministic interface/invariant checks
-└── bench/                             # development-only skill behavior evaluation
+└── tests/                             # deterministic interface/invariant checks
 ```
 
 There is no production runtime package or generated workflow engine. The product surface is Markdown, conditional references, and Doctor's zero-dependency checker.
@@ -182,9 +181,7 @@ Verification has three layers:
 
 1. structure and interface tests: frontmatter, public inventory, references, resolver, Skill↔Spec pairing, memory formats, and Markdown links;
 2. deterministic project checks: Doctor's checker for Spec shape, links/anchors, placeholders, and file size;
-3. behavior evaluation: the development-only bench judges explicitly selected skills against their contracts, retains shape automatic driving, and compares only recorded compatible configurations and evaluation bases.
-
-Shape driving installs Shape and Explore snapshots from the same selected source root and records source, installation, and actual load evidence for both. Comparison may vary the primary Shape source while requiring the same Explore support source and verified, unchanged installed trees. Missing load or source evidence, including historical records without Explore identity, cannot establish a complete or comparable source configuration. Other skills' transcript judging does not inherit Shape's Explore requirement.
+3. direct behavior observation: actual sessions establish whether a capability follows its contract; static tests alone do not prove model behavior.
 
 Development commands come from `package.json`:
 
@@ -218,7 +215,7 @@ node skills/doctor/scripts/checker.ts . --json
 
 ### 2026-09-07: Astra calibration and conditional acceptance
 
-One shared skill set now uses proportional ordinary results and conditionally loaded formal acceptance. The plan lifecycle and formal attestation schema are unchanged; ordinary Check no longer requires their fields. Supporting calls return to the authorized owner, and local missing evidence is reported without stopping unrelated work. The development bench selects a skill explicitly, loads project-level source snapshots for shape driving, and records comparison provenance. Behavior claims require actual sessions; static tests alone do not establish model improvement.
+One shared skill set now uses proportional ordinary results and conditionally loaded formal acceptance. The plan lifecycle and formal attestation schema are unchanged; ordinary Check no longer requires their fields. Supporting calls return to the authorized owner, and local missing evidence is reported without stopping unrelated work. Behavior claims require actual sessions; static tests alone do not establish model improvement.
 
 ### 2026-08-20: paired Issue identity is stable while its managed problem record is revisable
 

@@ -18,6 +18,6 @@
     "verbatimModuleSyntax": true,
     "types": ["node"]
   },
-  "include": ["scripts/**/*.ts", "tests/**/*.ts", "bench/**/*.ts"],
+  "include": ["scripts/**/*.ts", "tests/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
