@@ -10,19 +10,19 @@ Read [PRODUCT.md](./PRODUCT.md) for product principles and [ARCHITECTURE.md](./A
 
 ## The 11 skills
 
-| Skill       | Outcome                                                                         |
-| ----------- | ------------------------------------------------------------------------------- |
-| `explore`   | Read-only project/module understanding; fixed Overview before scoped depth      |
-| `shape`     | A grounded, bounded direction in conversation                                   |
-| `plan`      | Local plans, problem-oriented Issues, or paired artifacts with safe Issue sync  |
-| `implement` | An authorized working change with proportional proof and accurate durable truth |
-| `check`     | A read-only review/test/e2e verdict matched to the question and risk            |
-| `docs`      | Established truth recorded in the six-type catalog or a named project document  |
-| `publish`   | Missing commit, push, and pull-request actions completed from current state     |
-| `release`   | A confirmed release set, one complete metadata commit, tags, and Releases       |
-| `converge`  | Idempotent catalog-wide alignment to current memory formats                     |
-| `doctor`    | Read-only whole-project documentation drift and health audit                    |
-| `handoff`   | A compact, host-neutral continuation summary                                    |
+| Skill       | Outcome                                                                                   |
+| ----------- | ----------------------------------------------------------------------------------------- |
+| `explore`   | Read-only project/module understanding; fixed Overview before scoped depth                |
+| `shape`     | A grounded, bounded direction in conversation                                             |
+| `plan`      | Local plans, problem-oriented Issues, or pairs, with one audit and authorized corrections |
+| `implement` | An authorized working change with proportional proof and accurate durable truth           |
+| `check`     | A read-only verdict on changes or planning artifacts, matched to question and risk        |
+| `docs`      | Established truth recorded in the six-type catalog or a named project document            |
+| `publish`   | Missing commit, push, and pull-request actions completed from current state               |
+| `release`   | A confirmed release set, one complete metadata commit, tags, and Releases                 |
+| `converge`  | Idempotent catalog-wide alignment to current memory formats                               |
+| `doctor`    | Read-only whole-project documentation drift and health audit                              |
+| `handoff`   | A compact, host-neutral continuation summary                                              |
 
 ## Install
 
@@ -39,11 +39,13 @@ Useful flags:
 - `-y` skips installer confirmation.
 - `--copy` avoids the default shared-store symlink layout.
 
-Installation is a snapshot. Re-run it after changing this repository. Shape requires Explore to be available; install or update both together.
+Installation is a snapshot. Re-run it after changing this repository. Shape requires Explore; Plan requires Check and a host that can run its audit in an independent context. Install or update each support pair together. If Plan's audit support is unavailable, it retains the artifacts and reports `inconclusive` with the missing capability.
 
 ## Usage model
 
 Enter the Skill that matches the requested outcome; there is no required preceding chain. Its frontmatter description provides routing, and its main guide loads deeper references only when needed. Every Shape invocation first uses Explore context for the current target project, reusing still-valid facts and filling gaps before forming a direction. You do not need to invoke Explore separately: its context returns to Shape, which continues to the Design Summary for review.
+
+Plan supports `local`, `issue`, and `both` (the default). After generation, it runs one independent Check, automatically corrects clear findings within the selected target's permissions, and verifies those corrections. It reports generation, audit, and revision results separately, preserving unresolved decisions and evidence gaps. New local plans remain `draft`; planning review does not authorize implementation.
 
 See the [Resolver](./skills/RESOLVER.md) for route distinctions and [Architecture](./ARCHITECTURE.md) for context topology and side-effect ownership.
 

@@ -1,6 +1,6 @@
 ---
 name: plan
-description: "Persist implementation-ready work as a local plan, bounded development problems as GitHub Issues, or both. Use when the user asks to plan, capture implementation work, or create Issues from a clear problem. Not for exploring product direction (use shape), executing changes (use implement), arbitrary Issue maintenance, or managing Projects and task status."
+description: "Persist local implementation plans, bounded development problems as GitHub Issues, or both, with a final audit and in-scope corrections. Use when the user asks to plan, capture implementation work, or create Issues from a clear problem. Not for exploring product direction (use shape), executing changes (use implement), arbitrary Issue maintenance, or managing Projects and task status."
 ---
 
 # Plan
@@ -23,7 +23,7 @@ Once the target and its required repository and item boundaries are explicit, th
 
 Do not require shape or another artifact to have run. Reuse the current conversation and inspect only repository facts needed by the selected artifact. Treat what the user explicitly decided or agreed—including constraints and non-goals—as artifact constraints; inferred preferences are not settled decisions. A Design Summary, plan, code change, or merged artifact carries only the authority of the sources it records; its existence does not settle an undisclosed consequential preference. Do not silently revise, reinterpret, or reopen settled decisions. When the user rejects a premise, discard it and revisit only artifact content that actually depended on it.
 
-Classify new findings before including them:
+During grounding, classify new findings before the initial artifact write:
 
 - Include necessary facts that support the settled direction only in proportion to the selected artifact. Resolve repository-answerable facts and reversible implementation choices directly without asking for confirmation.
 - Exclude adjacent problems and optional improvements; artifact completeness does not authorize new scope.
@@ -43,8 +43,10 @@ Select one type per work item from `references/change-types.md`: `fix`, `feat`, 
 
 Each local plan and Issue work item has at most one GitHub Issue identity. A user-supplied or already recorded canonical URL is that identity: verify and reuse it when the selected target permits, never search by title, and never create a replacement merely because verification failed. The canonical identity stays stable while `both` may update a verified Plan-managed problem record for that same bounded problem; content revision is not identity replacement. The `local` target never mutates GitHub, and `issue` continues to reuse existing identities without editing them.
 
-Plan creates only the selected artifacts. When serving an already-authorized broader outcome, return their result to its caller; a planning result itself supplies no further authorization. It never implements, commits, pushes, opens a pull request, or treats a Design Summary or planning artifact as implementation approval.
+Plan writes only the selected artifacts, including their authorized audit corrections. It never implements, commits, pushes, opens a pull request, or treats a Design Summary or planning artifact as implementation approval.
+
+After the selected target reaches its generation result, including partial results, read [the audit contract](references/audit.md). Before the final report, always obtain one planning audit from Check in a fresh independent context, then automatically correct evidenced findings within the selected target's write boundary and verify the affected items. Check stays read-only; Plan owns corrections. Use the original request, settled decisions, project evidence, and actual artifacts, not the plan's claims alone. Missing audit capability or evidence stays explicit; artifact creation and self-checking do not substitute for this audit. Internal corrections do not start another Plan invocation or full audit.
 
 For lifecycle details, load `references/plan-template.md` only when a local artifact is involved. Ordinary checks carry no independent acceptance. A newly written local plan starts as `draft`. Later lifecycle states are projections of outcomes produced elsewhere: an explicit or still-active implementation authorization yields `approved`, Implement may produce an identifiable `candidate`, and only an acceptance-scoped Check `pass` that records the same stable basis yields `done`. Findings deny acceptance but do not authorize repair or produce `approved`. The plan records the last authorized, time-scoped assurance snapshot without creating its authority or proving that no later Check result exists. Interpret a legacy `done` plan without complete Assurance only as historical implementation completion with acceptance not established; never infer or backfill missing provenance.
 
-Report the selected target and every artifact's exact result. Include only paths and canonical URLs verified to exist, preserve partial success as its target contract defines, and never convert failure into an unrequested fallback.
+Report the selected target and every artifact's exact generation result, followed by the audit verdict, verified corrections, unresolved findings and uninspected scope. Include only paths and canonical URLs verified to exist, preserve partial success as its target contract defines, and never convert failure into an unrequested fallback. A generated artifact is not proof that planning closeout succeeded. When serving an already-authorized broader outcome, return these results to its caller; they supply no further authorization.

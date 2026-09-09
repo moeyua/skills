@@ -14,9 +14,9 @@ Skills 为现代 coding agent 提供清晰的能力接口、项目特有判断�
 | ----------- | ------------------------------------------------------------------- |
 | `explore`   | 只读建立项目/模块理解；固定 Overview 后再 scoped deep-dive          |
 | `shape`     | 在对话中形成 grounded、边界清楚的方向                               |
-| `plan`      | 本地计划、只记录问题的 Issues，或可安全同步 Issue 的成对产物        |
+| `plan`      | 本地计划、问题 Issues 或成对产物，生成后审计一轮并修订已授权问题    |
 | `implement` | 完成已授权变更，以相称证据验证并保持直接受影响的 durable truth 准确 |
-| `check`     | 按问题与风险选择 review/test/e2e 的只读 verdict                     |
+| `check`     | 按问题与风险对变更或规划产物给出只读 verdict                        |
 | `docs`      | 把既定 truth 写入六类 catalog memory 或用户指定文档                 |
 | `publish`   | 从当前状态完成缺失的 commit、push 与 pull request                   |
 | `release`   | 已确认 release set、一个完整发布元数据提交、tags 与 Releases        |
@@ -39,11 +39,13 @@ npx skills add .
 - `-y` 跳过安装器确认。
 - `--copy` 避免默认 shared-store symlink 布局。
 
-安装结果是快照；源码变更后需要重新安装。Shape 运行需要 Explore 可用，请一并安装或更新两者。
+安装结果是快照；源码变更后需要重新安装。Shape 需要 Explore；Plan 需要 Check，以及能建立独立审计上下文的宿主。请一并安装或更新各自的支持 Skill。Plan 缺少审计能力时会保留产物，报告 `inconclusive` 及具体缺口。
 
 ## 使用方式
 
 直接进入与请求 outcome 匹配的 Skill，无需先走固定链路。Frontmatter description 负责路由，主指南只在需要时加载深层 reference。每次 Shape 都先使用 Explore context 探索当前目标项目，复用仍有效的事实并补齐缺口，再形成方向。无需单独调用 Explore：上下文返回后，Shape 继续讨论，最终提交 Design Summary 审阅。
+
+Plan 支持 `local`、`issue` 和默认的 `both`。生成产物后自动进行一轮独立 Check，在所选 target 的权限内修订明确问题并定向核对；生成结果、审计结论和修订结果分别报告，未决取舍与证据缺口继续保留。新本地计划保持 `draft`，规划审计不授予实施权限。
 
 路由差异见 [Resolver](./skills/RESOLVER.md)，context topology 与副作用归属见 [Architecture](./ARCHITECTURE.md)。
 

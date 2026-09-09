@@ -1,6 +1,6 @@
 ---
 name: check
-description: 'Check a change by review, tests, or end-to-end observation with depth matched to the question and risk. Use when the user says "review" / "run the tests" / "check this works" / "把关" / "验证", or asks for a pre-merge gate. Not for fixing findings, writing implementation/tests, or recording what landed.'
+description: 'Check a change or planning artifact by review, tests, or end-to-end observation with depth matched to the question and risk. Use when the user says "review" / "run the tests" / "check this works" / "把关" / "验证", or asks for a pre-merge gate. Not for fixing findings, writing implementation/tests, or recording what landed.'
 ---
 
 # Check
@@ -17,6 +17,8 @@ Treat compatibility as a constraint only when it belongs to the selected claim o
 
 Load only the methods needed: `references/review.md` for diff review, `references/test.md` for automated verification, and `references/e2e.md` for real behavior. Run the required checks; once they pass, broaden or repeat only for changed evidence, failures, or unresolved concerns.
 
+For a planning audit, use `references/review.md` to assess the actual plan or Issue against the original request and project evidence. Report its inspected version and planning quality; this does not verify the future implementation or request formal acceptance. Plan's required independent review context is specific to that supporting call, not a requirement for all Check invocations.
+
 Read `references/acceptance.md` when the request or authoritative project contract requires formal independent acceptance, `accepted`, or `done`. An ordinary test/review or broad check needs no complete-diff identity, producer form, or acceptance field. A pre-merge request determines the proof scope; formal attestation depends on the claim it asks to establish.
 
 ## Verdict and boundary
@@ -31,4 +33,4 @@ Lead with actionable findings, or the bounded conclusion when there are none. In
 
 Check is read-only: it does not edit source, tests, plans, or docs, stage, commit, push, or fix findings. Test and e2e may run the project to observe it; startup failure is evidence, not permission to patch. Check findings deny acceptance but do not authorize repair. If skill guidance prevents a requested check, link the source, quote the relevant instruction, and explain the exact limitation while completing unaffected checks.
 
-End a standalone Check with its verdict. When composed inside an authorized implementation, return the result to that caller; the caller may continue already-authorized repair, while Check itself remains read-only.
+End a standalone Check with its verdict. When composed inside an authorized outcome, including Plan or Implement, return the result to that caller; the caller may continue already-authorized corrections within its own write boundary, while Check itself remains read-only.
