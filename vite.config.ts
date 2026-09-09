@@ -5,7 +5,7 @@ export default defineConfig({
     "*.{ts,tsx,js,mjs,cjs,json,md}": "vp fmt",
   },
   test: {
-    include: ["tests/**/*.test.ts", "bench/src/**/*.test.ts"],
+    include: ["tests/**/*.test.ts"],
   },
   lint: {
     options: {

@@ -60,7 +60,7 @@ pnpm lint
 node skills/doctor/scripts/checker.ts . --json
 ```
 
-开发期 [行为 bench](./bench/README.md) 可对指定 Skill 判卷，并保留 Shape 自动场景。以 GPT-6 Astra 为主要行为验收模型，Codex 与 Claude Code 使用同一套 Skills；普通实现/检查简要报告，正式验收保留独立证据。bench 不随 Skill 安装。
+以 GPT-6 Astra 为主要行为验收模型，Codex 与 Claude Code 使用同一套 Skills，通过实际会话验证行为；普通实现/检查简要报告，正式验收保留独立证据。
 
 ## 致谢
 
