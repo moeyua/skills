@@ -6,8 +6,8 @@ import { describe, expect, it } from "vite-plus/test";
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 const PUBLIC_SKILLS = [
-  "check",
   "converge",
+  "debug",
   "docs",
   "doctor",
   "explore",
@@ -16,7 +16,9 @@ const PUBLIC_SKILLS = [
   "plan",
   "publish",
   "release",
+  "review",
   "shape",
+  "verify",
 ] as const;
 
 const CHANGE_TYPE_CONSUMERS = ["shape", "plan", "implement"] as const;

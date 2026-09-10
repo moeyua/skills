@@ -1,6 +1,6 @@
 ---
 name: doctor
-description: "Audit a whole project's health—first whether its docs still match the code, then dependency/CI/file-size staleness and broken references. A bundled deterministic script handles mechanical facts; model judgment handles docs-vs-code claims. Use when a project needs a whole-project checkup or drift audit. Not for change-scoped pre-merge review (use check), writing fixes (use docs/implement), or agent-host configuration."
+description: "Audit a whole project's health—first whether its docs still match the code, then dependency/CI/file-size staleness and broken references. A bundled deterministic script handles mechanical facts; model judgment handles docs-vs-code claims. Use when a project needs a whole-project checkup or drift audit. Not for change-scoped review (use review), validating a requested result (use verify), writing fixes (use docs/implement), or agent-host configuration."
 allowed-tools: "Bash(node *), Bash(pnpm outdated*), Bash(npm outdated*), Bash(gh run list*), Bash(git log*)"
 ---
 

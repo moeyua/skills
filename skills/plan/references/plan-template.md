@@ -75,7 +75,7 @@ Derive a short kebab-case slug such as `fix-login-loop`, `feat-rbac`, `refactor-
 - `draft`: plan wrote the file
 - `approved`: an explicit or still-active authorized Implement outcome is executing
 - `candidate`: Implement produced an identifiable change, evidence, and limitations; it may also carry findings and remains unaccepted
-- `done`: an acceptance-scoped Check attested the same stable candidate basis
+- `done`: an acceptance-scoped Verify attested the same stable candidate basis
 
 ## Lifecycle transition matrix
 
@@ -84,12 +84,12 @@ Derive a short kebab-case slug such as `fix-login-loop`, `feat-rbac`, `refactor-
 | plan-created              | Plan artifact authorization                     | none            | draft     | none         | not established                          |
 | implementation-authorized | explicit user request or active Implement scope | draft/candidate | approved  | unchanged    | unchanged                                |
 | candidate-produced        | Implement                                       | approved        | candidate | not run      | not established                          |
-| scoped-pass               | Check                                           | candidate       | candidate | pass         | not requested                            |
-| findings                  | Check                                           | candidate       | candidate | findings     | not established                          |
-| inconclusive              | Check                                           | candidate       | candidate | inconclusive | not established                          |
-| acceptance-pass           | independent Check                               | candidate       | done      | pass         | attested for the exact current candidate |
+| scoped-pass               | Verify                                          | candidate       | candidate | pass         | not requested                            |
+| findings                  | Verify                                          | candidate       | candidate | findings     | not established                          |
+| inconclusive              | Verify                                          | candidate       | candidate | inconclusive | not established                          |
+| acceptance-pass           | independent Verify                              | candidate       | done      | pass         | attested for the exact current candidate |
 
-A status is a projection of its authorized producing event, not authority created by the plan itself. Check findings never produce implementation authorization. If Check runs inside an active Implement invocation, that existing authorization may resume repair; otherwise a new explicit implementation request is required before `candidate → approved`.
+A status is a projection of its authorized producing event, not authority created by the plan itself. Review and Verify findings never produce implementation authorization. If either runs inside an active Implement invocation, that existing authorization may resume repair; otherwise a new explicit implementation request is required before `candidate → approved`.
 
 ## Legacy status interpretation
 
@@ -98,7 +98,7 @@ A status is a projection of its authorized producing event, not authority create
 | done                | missing or incomplete                  | historical implementation completion only | not established                          |
 | done                | complete basis-matched acceptance-pass | time-scoped exact-basis accepted snapshot | attested for the exact current candidate |
 
-Never invent or backfill a missing candidate basis, producer, verdict, or acceptance from legacy status or artifact existence. Obtain a new Check when current acceptance is needed.
+Never invent or backfill a missing candidate basis, producer, verdict, or acceptance from legacy status or artifact existence. Preserve historical Check records with their original field names, producer and time scope; do not rewrite them as Verify evidence or add an old-field writing path. Obtain a new Verify when current acceptance is needed.
 
 ## Recorded assurance snapshot
 
@@ -107,12 +107,12 @@ While status is `candidate` or `done`, keep exactly one recorded `## Assurance` 
 - `Candidate basis`: a stable, independently recomputable identity for the complete claimed change;
 - `Candidate producer`: Implement;
 - `Evidence and limitations`: the evidence actually produced and material missing proof;
-- `Check producer`: the independent Check reference when available, otherwise `none`;
+- `Verify producer`: the independent Verify reference when available, otherwise `none`;
 - `Verdict`: `pass`, `findings`, `inconclusive`, or `not run`;
 - `Acceptance`: `attested for the exact current candidate`, `not requested`, or `not established`.
 
-A scoped Check may omit formal provenance and acceptance fields. Project its actual verdict through the lifecycle matrix: ordinary scoped `pass` records `not requested`; `findings` and `inconclusive` record `not established`. This does not create a Check attestation. A missing requested attestation is `not established`. The artifact still requires the complete snapshot above, while an ordinary unplanned implementation does not create this record.
+A scoped Verify may omit formal provenance and acceptance fields. Project its actual verdict through the lifecycle matrix: ordinary scoped `pass` records `not requested`; `findings` and `inconclusive` record `not established`. This does not create a Verify attestation. Review outcomes belong in `Evidence and limitations`, not `Verify producer` or `Verdict`; if Verify did not run, keep `Verdict: not run`. A missing requested attestation is `not established`. The artifact still requires the complete snapshot above, while an ordinary unplanned implementation does not create this record.
 
-The candidate basis must keep its referent after the conversation moves. In a git worktree, use the base revision plus a deterministic identity for the complete claimed diff, excluding this plan's own status and Assurance projection; use an equivalent immutable identity for another surface. Replace the recorded Assurance section when an authorized projection changes—do not append a history ledger. A `done` status records that its stored Check producer, basis, verdict, and acceptance fields formed the exact acceptance-pass row when projected.
+The candidate basis must keep its referent after the conversation moves. In a git worktree, use the base revision plus a deterministic identity for the complete claimed diff, excluding this plan's own status and Assurance projection; use an equivalent immutable identity for another surface. Replace the recorded Assurance section when an authorized projection changes—do not append a history ledger. A `done` status records that its stored Verify producer, basis, verdict, and acceptance fields formed the exact acceptance-pass row when projected.
 
-`done` is a closed, time-scoped record for the exact accepted candidate, not proof of globally latest validity. Before claiming current acceptance, a consumer must establish that the basis still matches and use the latest applicable Check result available in its current context; if applicability cannot be established, report only the historical snapshot or obtain a new Check. A later finding supersedes the recorded pass in every context or Handoff that carries it, but read-only Check does not rewrite or reopen the plan and the finding does not authorize repair. A new explicit implementation outcome may proceed directly or use a new plan. Persisting globally latest validity would require a separately authorized writer or ledger and is outside this contract.
+`done` is a closed, time-scoped record for the exact accepted candidate, not proof of globally latest validity. Before claiming current acceptance, a consumer must establish that the basis still matches and use the latest applicable Verify result available in its current context; if applicability cannot be established, report only the historical snapshot or obtain a new Verify. A later Verify finding supersedes the recorded pass in every context or Handoff that carries it. A conflicting Review finding also prevents a current acceptance claim until the conflict is resolved with evidence or a new applicable Verify is obtained. Read-only Review and Verify do not rewrite or reopen the plan, and findings do not authorize repair. A new explicit implementation outcome may proceed directly or use a new plan. Persisting globally latest validity would require a separately authorized writer or ledger and is outside this contract.

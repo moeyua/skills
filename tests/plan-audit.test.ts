@@ -36,6 +36,15 @@ describe("plan post-generation audit contract", () => {
     }
   });
 
+  it("resolves the audit support link to the current Review entry", () => {
+    const audit = readFileSync(AUDIT_PATH, "utf8");
+    const links = [...audit.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)].map((match) =>
+      resolve(dirname(AUDIT_PATH), match[1]!),
+    );
+    expect(links).toContain(resolve(REPO_ROOT, "skills/review/SKILL.md"));
+    expect(existsSync(resolve(REPO_ROOT, "skills/review/SKILL.md"))).toBe(true);
+  });
+
   it("defines correction results separately from permission to continue", () => {
     expect(Object.fromEntries(readCorrectionOutcomes())).toEqual({
       "edit-success-target-match": { result: "corrected", continues: true },

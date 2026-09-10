@@ -19,7 +19,7 @@ When an associated plan needs lifecycle maintenance or the outcome requires form
 
 ## Build and verify
 
-Read `references/change-types.md` when it helps select proof. For a fix, establish expected versus actual behavior; for a feature, cover its observable interface; for a refactor, preserve behavior and side-effect invariants; for performance work, compare the same metric before and after.
+Read `references/change-types.md` when it helps select proof. For a fix, establish expected versus actual behavior and use Debug when the cause is uncertain. Diagnose against project contracts and local evidence before patching; an already supported cause needs only the missing evidence. For a feature, cover its observable interface; for a refactor, preserve behavior and side-effect invariants; for performance work, compare the same metric before and after.
 
 Use TDD when a red-to-green test is cheap, stable, and distinguishes the correction. Otherwise use existing tests or the narrowest falsifiable observation. Avoid tests that merely restate implementation or require ceremonial infrastructure. Reshape the touched range coherently, follow local style, and leave unrelated improvements alone.
 
@@ -27,7 +27,9 @@ Run required checks and the smallest evidence that can disprove the change; broa
 
 ## Continue through supporting work
 
-Compose Check for relevant review, testing, or independent judgment, and Docs for an explicit document target, Spec delta, or directly affected false claim whose correction is already authorized. Their results return to the active implementation; they do not end it. Check stays read-only, while the still-authorized Implement may investigate and repair in-scope findings. Rerun only affected proof after repair or documentation changes. Formal acceptance additionally follows `references/assurance.md`; an ordinary Check pass is not an acceptance attestation.
+Compose Debug to investigate uncertain causes, Review to identify actionable defects, Verify to establish evidence for the requested result, and Docs for an explicit document target, Spec delta, or directly affected false claim whose correction is already authorized. Their results return to the active implementation; they do not end it or require the user to authorize the same repair again. Use only the support the outcome needs, without a fixed sequence.
+
+Implement owns persistent code changes, regression tests, and necessary durable-truth updates. Debug supplies causal evidence and regression scenarios; temporary probes use the task's existing authority. The same agent can diagnose and implement. If expected behavior itself needs a consequential choice, use Shape for that choice and continue independent authorized work. Review and Verify stay read-only; Docs records only established truth. After repairing an evidenced cause, verify the regression and replay the original trigger. Rerun only affected proof after further repair or documentation changes. Formal acceptance additionally follows `references/assurance.md`; an ordinary Review or Verify pass is not an acceptance attestation.
 
 When the host permits delegation, delegate a bounded, independent investigation or verification if it saves time or improves judgment. Give it the required raw context, expected deliverable, and edit ownership; continue independent work and inspect its result. Keep tightly dependent edits local. A full-history fork does not establish independent acceptance.
 
@@ -37,6 +39,6 @@ A failed, ambiguous, or missing required state remains its exact non-success res
 
 ## Result
 
-Lead with what works, then give relevant changed paths, actual verification and important limitations. Ordinary results need no producer/acceptance form. If a plan or formal acceptance is involved, preserve the required record and report its actual state through `references/assurance.md`; do not self-attest acceptance or imply that an unperformed Check or Docs occurred.
+Lead with what works, then give relevant changed paths, actual verification and important limitations. Ordinary results need no producer/acceptance form. If a plan or formal acceptance is involved, preserve the required record and report its actual state through `references/assurance.md`; do not self-attest acceptance or imply that an unperformed supporting capability occurred.
 
 Implementation does not authorize commit, push, PR, release, deployment, or other delivery. Continue those outcomes only when separately authorized through their owning capability.

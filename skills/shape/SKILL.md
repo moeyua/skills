@@ -1,11 +1,11 @@
 ---
 name: shape
-description: 'Shape an uncertain idea into a grounded, bounded direction through conversation. Use when the user says "think it through" / "how should we do this" / "想想" / "出方案", or when material product or design choices remain unresolved. Not for writing a plan or Issue (use plan), implementing the change, or deciding whether the work is worth doing.'
+description: 'Clarify intent and key design through questions that help the user form a judgment. Use when an idea is uncertain, the user says "想想" / "我也不知道" / "怎么设计", or consequential choices remain unresolved. Not for investigating a known malfunction (use debug), writing a plan or Issue (use plan), or implementing changes.'
 ---
 
 # Shape
 
-Shape turns uncertainty into a direction the user can evaluate. Match investigation and discussion to uncertainty, reversibility, and stakes; do not manufacture stages or questions to make the process look complete.
+Shape helps the user work out what they want and why a design serves it. Success is a shared judgment the user can explain and evaluate, not merely a plausible proposal. Match the conversation to what is still uncertain; clear intent needs no forced interview.
 
 ## Explore the target project first
 
@@ -17,22 +17,31 @@ If Explore cannot be found or the target project cannot be identified or accesse
 
 Explore returns facts, source paths, and missing evidence to Shape. Continue shaping without a separate Explore report or an exploration approval turn; this supporting call is not a handoff to another public outcome.
 
-## Work from the actual decision frontier
+## Understand the difficulty before choosing the mechanism
 
-Start with the user's active outcome, current horizon, and every decision already settled in the conversation. Do not silently replace the outcome with a named mechanism, local task, artifact, or intermediate result.
+Start from the concrete difficulty, desired experience, and constraints already present in the conversation. A proposed split, rewrite, feature, or tool may be the user's tentative explanation of the problem. Distinguish that suggestion from the result they want without discarding choices they have actually settled. When the difficulty is still vague, a specific recent situation and what should have been different are often more useful than asking the user to define an architecture.
 
 Only the user's statements, accepted decisions, and authoritative project intent settle a consequential preference. Keep Agent recommendations and interpretations visibly provisional; a summary, plan, code change, merged artifact, or silence does not make one a user decision. When the user rejects a premise, discard it and revisit the conclusions that actually depended on it before continuing.
 
+Investigate discoverable facts left open by Explore yourself. Ask about intent, experience, preference, or authority that the available evidence cannot establish. Continue useful investigation that does not depend on a pending answer.
+
+## Ask in rounds that advance the judgment
+
+Find the unresolved choices that could change the outcome, scope, observable behavior, hard-to-reverse architecture, risk, or acceptance. Separate questions answerable now from those that depend on an earlier answer. Routine implementation details do not belong in this discussion.
+
+Each round asks all mutually independent, currently answerable material questions together. Do not drip-feed independent questions one at a time or include dependent questions the user cannot yet answer. There is no fixed question count or required number of rounds.
+
+Make each question easy to respond to: connect it to the user's situation, explain what the answer changes, and show concrete consequences when options differ. When viable choices exist, recommend one with a reason while leaving room for correction. Do not ask the user to invent the options, understand your taxonomy, or design the solution before they can answer.
+
+Treat “I don't know,” hesitation, or “I can't respond to this” as evidence that more help forming the judgment is needed. Use a concrete scenario, counterexample, consequence comparison, or a practical reference/preview if seeing it would change the decision. Explain your current recommendation and ask for a reaction to that concrete consequence. Do not relabel the same abstract question or treat uncertainty as consent. If the user delegates the choice, make it and state consequential assumptions.
+
+After each answer, say what it establishes or changes, update the provisional direction, and revisit only affected dependencies. Challenge a contradiction with a concrete example instead of silently choosing which statement to ignore. Once goals and constraints support a direction, propose it provisionally and examine the key design through relevant usage and failure cases. This is progressive design, not a complete solution before intent is understood or an obligation to exhaust every imaginable edge case.
+
+Stop asking when the goal and consequential design choices are clear enough to judge the direction and its evidence. If they were already clear, synthesize them directly.
+
 A failed, ambiguous, or missing required condition stays visible rather than becoming a resolved direction or an unrequested alternate path. Fallbacks, compatibility layers, migrations, dual paths, and legacy paths are consequential continuity choices, not mechanical safety; an authorized replacement is a clean break unless explicit user authority or authoritative project intent requires continuity.
 
-- If the direction is already determined, synthesize it directly.
-- If a discoverable fact still blocks judgment after Explore, investigate it from the project or authoritative sources.
-- If viable choices would materially change scope, observable behavior, hard-to-reverse architecture, risk, or acceptance, compare them and recommend one.
-- If the user delegates a choice, make it and state only consequential assumptions.
-
-Ask the user about genuine intent, preference, and authority—not facts available from the repository or an authoritative source. Continue useful investigation that does not depend on a pending answer. Explicit user instructions take precedence over skill guidance within host constraints; do not turn an interpreted guideline into an extra approval gate. When a skill rule causes a pause, link its source, quote the relevant instruction, and explain its actual effect. Compare alternatives only when they expose a real trade-off.
-
-For subjective outcomes, prefer the highest-fidelity practical reference or preview over additional abstract prose. Apply this only when seeing the result can change the decision; it is not a universal review stage.
+Explicit user instructions take precedence over skill guidance within host constraints. Do not turn an interpreted guideline into an extra approval gate. When a skill rule causes a pause, link its source, quote the relevant instruction, and explain its actual effect.
 
 Read `references/change-types.md` only when classifying a concrete change as `fix`, `feat`, `refactor`, or `perf` sharpens the evidence or boundary. Do not force a type onto open-ended exploration.
 
@@ -40,6 +49,6 @@ Read `references/change-types.md` only when classifying a concrete change as `fi
 
 Shape is read-only. It may gather facts, but it does not write plans, Issues, specs, code, or project files and does not advance into implementation or delivery.
 
-Before Shape ends or hands off to another public outcome, present a visible **Design Summary** and stop for the user's review. Include only applicable content: the active outcome and horizon; included and excluded scope; settled consequential decisions; Agent recommendations kept distinct from those decisions; genuinely unresolved material choices; evidence that would demonstrate the outcome; and the currently authorized outcome. Lead with the proposed direction, use concise prose, and omit empty categories rather than filling a template.
+Before Shape ends or hands off to another public outcome, present a visible **Design Summary** and stop for the user's review. Connect the concrete goal, reasons for the choices, and the key design that serves that goal. Include the applicable horizon, included/excluded scope, genuinely unresolved material choices, evidence that would demonstrate success, and current authorization. Distinguish settled decisions from Agent recommendations. Lead with the direction in concise prose; omit empty categories rather than filling a template.
 
 If the user corrects the Summary, invalidate its dependent conclusions and present the revised Summary before finishing. Agreement with a Design Summary settles that direction only; it does not authorize Plan, Implement, or delivery. A later user message may both accept the shown direction and explicitly request another public outcome, in which case that capability has its own authorization. Mention Plan only as an optional way to persist settled work.

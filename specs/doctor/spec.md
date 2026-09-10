@@ -28,5 +28,5 @@ Verify: [checker contract](../../tests/checker.test.ts)
 
 ### Requirement: 报告区分事实、判断和 owner
 
-结果必须简要区分高置信 docs-vs-code finding、机械事实、实际 checks/重要 skips 和可能 follow-up owner；缺前置条件不阻塞无关 probe。宿主允许且有价值时可独立调查 claim groups 并保留来源。独立 audit 止于 advisory report，支持调用只返回 evidence，不启动修复或终止调用方已有任务。
+结果必须简要区分高置信 docs-vs-code finding、机械事实、实际 checks/重要 skips 和可能 follow-up owner；变更范围的审阅归 Review，指定结果的验证归 Verify，Doctor 不承接这两个入口的独立请求。缺前置条件不阻塞无关 probe。宿主允许且有价值时可独立调查 claim groups 并保留来源。独立 audit 止于 advisory report，支持调用只返回 evidence，不启动修复或终止调用方已有任务。
 Verify: manual(integration)
