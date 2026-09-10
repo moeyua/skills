@@ -18,7 +18,7 @@ Verify: manual(integration)
 
 ### Requirement: 摘要保留来源但不创造 authority
 
-handoff 必须在影响后续行为时区分 settled decision、Agent inference、evidence 和 unresolved authority。正式 acceptance 或关联 plan Assurance 仍相关时，保留 candidate stable basis、实际 producer/evidence、latest Check producer/reference 与 exact pair、basis 匹配情况及 finding/missing evidence。普通结果缺正式字段不被补造为验收。摘要与 artifact 不创造 authority，Implement 自报或 legacy done 缺 provenance 不证明 independent acceptance；已被否定的前提不得因仍在历史中出现而恢复。
+handoff 必须在影响后续行为时区分 settled decision、Agent inference、evidence 和 unresolved authority。正式 acceptance 或关联 plan Assurance 仍相关时，保留 candidate stable basis、实际 producer/evidence、latest applicable Verify producer/reference 与 exact pair、basis 匹配情况、冲突的 Review finding 及 missing evidence；冲突仍适用时不得沿用旧通过声明当前验收。历史 Check 记录保留原来源、字段和时间范围，不改写或反向补证。普通结果缺正式字段不被补造为验收。摘要与 artifact 不创造 authority，Implement 自报、普通 Review 或 legacy done 缺 provenance 不证明 independent acceptance；已被否定的前提不得因仍在历史中出现而恢复。
 Verify: manual(integration)
 
 ### Requirement: 不猜测不可见状态

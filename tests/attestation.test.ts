@@ -12,7 +12,7 @@ const IMPLEMENT = readFileSync(
   resolve(REPO_ROOT, "skills/implement/references/assurance.md"),
   "utf8",
 );
-const CHECK = readFileSync(resolve(REPO_ROOT, "skills/check/references/acceptance.md"), "utf8");
+const VERIFY = readFileSync(resolve(REPO_ROOT, "skills/verify/references/acceptance.md"), "utf8");
 
 interface Transition {
   event: string;
@@ -87,7 +87,7 @@ describe("attestation state contract", () => {
       },
       {
         event: "scoped-pass",
-        authority: "Check",
+        authority: "Verify",
         from: "candidate",
         to: "candidate",
         verdict: "pass",
@@ -95,7 +95,7 @@ describe("attestation state contract", () => {
       },
       {
         event: "findings",
-        authority: "Check",
+        authority: "Verify",
         from: "candidate",
         to: "candidate",
         verdict: "findings",
@@ -103,7 +103,7 @@ describe("attestation state contract", () => {
       },
       {
         event: "inconclusive",
-        authority: "Check",
+        authority: "Verify",
         from: "candidate",
         to: "candidate",
         verdict: "inconclusive",
@@ -111,7 +111,7 @@ describe("attestation state contract", () => {
       },
       {
         event: "acceptance-pass",
-        authority: "independent Check",
+        authority: "independent Verify",
         from: "candidate",
         to: "done",
         verdict: "pass",
@@ -127,7 +127,7 @@ describe("attestation state contract", () => {
       "Candidate basis",
       "Candidate producer",
       "Evidence and limitations",
-      "Check producer",
+      "Verify producer",
       "Verdict",
       "Acceptance",
     ]);
@@ -168,11 +168,13 @@ describe("attestation state contract", () => {
     ]);
   });
 
-  it("keeps findings read-only and acceptance basis-scoped", () => {
-    expect(IMPLEMENT).toContain("Check findings alone never create authorization");
-    expect(IMPLEMENT).toContain("`findings` leave it at `candidate`");
-    expect(CHECK).toContain("Report that basis and the Check producer/reference");
-    expect(CHECK).toContain("Check findings deny acceptance but do not authorize repair");
-    expect(CHECK).toContain("basis-matched `pass`");
+  it("routes implementation assurance to the formal acceptance owner", () => {
+    const acceptanceReference = "../../verify/references/acceptance.md";
+    expect(IMPLEMENT).toContain(acceptanceReference);
+    expect(VERIFY).toContain("`pass`");
+    expect(VERIFY).toContain("`findings`");
+    expect(VERIFY).toContain("`inconclusive`");
+    expect(VERIFY).toContain("attested for the exact current candidate");
+    expect(VERIFY).toContain("not established");
   });
 });

@@ -2,18 +2,18 @@
 
 ## Purpose
 
-shape 通过对话把不确定想法收敛为有事实基础、边界清楚的方向，不持久化产物或推进外部副作用。
+shape 通过可回答的追问帮助用户形成判断，逐步澄清意图及关键设计，得到有事实基础、边界清楚的方向，不持久化产物或推进外部副作用。
 
 ## Requirements
 
 ### Requirement: outcome-first 且严格只读
 
-shape 必须围绕用户想获得的结果工作，不得写 plan、Issue、spec、代码或其他项目文件，也不得自动进入实现或交付。
+shape 必须从具体困扰、期望结果及已知约束出发，不把用户提出的可能机制当作已定目标，不在意图尚未清楚时直接给完整方案。shape 不得写 plan、Issue、spec、代码或其他项目文件，也不得自动进入实现或交付。
 Verify: manual(integration)
 
 ### Requirement: 复用既定决定
 
-用户陈述、授权与已接受结论必须作为输入；没有新证据时不得重开、重复确认或制造新阶段。在适用宿主约束内显式用户指令优先于 skill 指导；因 skill 规则暂停时必须提供实际来源链接、短引文和适用原因，不得把 Agent 解释变成额外批准门槛。
+用户陈述、授权与已接受结论必须作为输入；每轮利用回答更新判断，仅重开依赖新信息或被纠正前提的选择，不重复未受影响的决定。已清楚的方向直接综合，不为完成流程强制访谈。推断、推荐、产物存在或沉默不能变成用户决定。在适用宿主约束内显式用户指令优先于 skill 指导；因 skill 规则暂停时必须提供实际来源链接、短引文和适用原因，不得把 Agent 解释变成额外批准门槛。
 Verify: manual(integration)
 
 ### Requirement: 事实缺口由 Agent 调查
@@ -23,12 +23,17 @@ Verify: manual(integration)
 
 ### Requirement: 只处理实质决策前沿
 
-只有会改变范围、可观察行为、难逆架构、风险或验收的选择才需要讨论；用户委托判断时必须给出推荐。失败、歧义或必要状态缺失不得被包装成已解决方向或未请求的替代路径。fallback、兼容层、迁移、双路径和 legacy path 属于需要 authority 的重大连续性选择；已授权 outcome 明确替换旧设计且没有权威连续性要求时，方向必须保持 clean break。主观结果只有在高保真 reference/preview 真能改变决定时才需要展示，不形成统一确认阶段。
+只有会改变目标、范围、可观察行为、难逆架构、风险或验收的选择才需要讨论。每轮必须一起提出所有互不依赖、当前可回答的实质问题；依赖尚未获得的答案的问题留到后续，不固定轮数或题数，不讨论机械实现细节。问题须联系用户情境、说明答案影响，选择存在时给出有理由的建议；目标与约束逐渐清楚后才形成暂定方向，并用有关使用或失败情境检验关键设计。失败、歧义或必要状态缺失不得被包装成已解决方向或未请求的替代路径。fallback、兼容层、迁移、双路径和 legacy path 属于需要 authority 的重大连续性选择；已授权 outcome 明确替换旧设计且没有权威连续性要求时，方向必须保持 clean break。
 Verify: manual(integration)
 
 ### Requirement: 会话结论必须通过 Design Summary 审阅
 
-shape 必须在结束或进入另一 public outcome 前输出可审阅的 Design Summary，并在该轮保持只读停止。内部 Explore context 支持调用不构成 public outcome 切换，不得触发提前结束 Shape、单独 Explore 报告或额外 Summary/确认轮次。Summary 必须按实际内容让 active outcome/horizon、included/excluded scope、已定重大决定、Agent recommendation、真正未决选择、与 outcome 匹配的 success evidence 及当前 authorization 可区分，空项必须省略。用户纠正 Summary 时，依赖被否定前提的结论必须失效并在 revised Summary 中重新呈现；对 Summary 的普通同意只确认方向，不授权 Plan、Implement 或交付，后续消息明确同时接受方向并请求另一 outcome 时才授权对应能力。
+shape 必须在结束或进入另一 public outcome 前输出可审阅的 Design Summary，并在该轮保持只读停止。Summary 必须说明具体目标、取舍原因与支持目标的关键设计的关系，让实际适用的 horizon、included/excluded scope、已定决定、Agent recommendation、真正未决选择、success evidence 及当前 authorization 可区分，空项省略。内部 Explore context 支持调用不构成 public outcome 切换，不得触发提前结束 Shape、单独 Explore 报告或额外 Summary/确认轮次。用户纠正 Summary 时，仅使依赖被否定前提的结论失效并呈现 revised Summary；对 Summary 的普通同意只确认方向，不授权 Plan、Implement 或交付，后续消息明确同时接受方向并请求另一 outcome 时才授权对应能力。
+Verify: manual(integration)
+
+### Requirement: 不确定回答通过具体情境继续澄清
+
+用户表示不知道、纠结或难以接话时，shape 必须帮助形成判断，用具体情境、反例、后果比较或确实有助决定的参考/预览，说明当前建议及理由，让用户能对具体后果作出反应，不要求用户先创造选项、掌握分类或自行设计方案。不得换种抽象表述重复原问题或将不确定视为同意。用户委托选择时由 Agent 作出判断并说明重大假设；预览不形成所有讨论必经的确认阶段。
 Verify: manual(integration)
 
 ### Requirement: 每次先 Explore 当前项目

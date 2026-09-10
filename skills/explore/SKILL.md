@@ -1,6 +1,6 @@
 ---
 name: explore
-description: 'Build fact-level understanding of a project or unfamiliar module for an explicit report or reliable downstream context. Use when entering a repo, facing an unfamiliar module, or the user says "look at this project" / "先看看" / "整体了解一下". Not for debugging or design decisions (use shape), writing an implementation plan (use plan), or checking docs against code (use doctor).'
+description: 'Build fact-level understanding of a project or unfamiliar module for an explicit report or reliable downstream context. Use when entering a repo, facing an unfamiliar module, or the user says "look at this project" / "先看看" / "整体了解一下". Not for diagnosing faults (use debug), unresolved intent or design decisions (use shape), writing an implementation plan (use plan), or checking docs against code (use doctor).'
 ---
 
 # Explore
@@ -28,6 +28,6 @@ Use the code, tests, configuration, history, and authoritative external sources 
 
 ## Boundaries
 
-Explore is strictly read-only. It does not diagnose a bug, audit documentation drift, make a product or architecture decision, edit files, or launch mutation. Those boundaries keep its facts reusable by shape, implement, check, docs, and doctor.
+Explore is strictly read-only. It does not diagnose a bug, audit documentation drift, make a product or architecture decision, edit files, or launch mutation. Debug investigates known deviations; Shape clarifies unresolved intent and design. Those boundaries keep Explore's facts reusable by the invoking capability.
 
 In report mode, return the structured understanding and stop. In context mode, return only relevant facts, source paths, and missing evidence to the invoking capability, which continues its authorized outcome; do not emit a second report or end that task.

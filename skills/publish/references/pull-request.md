@@ -19,7 +19,7 @@ For a new PR, derive the title and body from every branch commit and the merge-b
 - [ ] <reviewer-verifiable checks and actual evidence>
 ```
 
-Do not claim tests or Check ran without evidence. Use the repository's normal PR state and do not change draft/readiness unless the user explicitly asks.
+Do not claim tests, Review, or Verify ran without evidence. Use the repository's normal PR state and do not change draft/readiness unless the user explicitly asks.
 
 When a canonical same-repository Issue association is explicit or recorded in the plan, add `Closes #N`. No Issue association is a normal state: omit closing syntax and never search by title.
 

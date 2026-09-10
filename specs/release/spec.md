@@ -87,5 +87,5 @@ Verify: manual(integration)
 
 ### Requirement: release state 不替代实现验收
 
-release 只能 attest 已核验的 release metadata commit、tag 与 GitHub Release state；成功创建或复用 release identity 不得被升级为缺失的 implementation acceptance、Check pass 或产品 outcome 证明。 普通 upstream 结果不要求额外验收字段；正式验收相关时必须按实际 evidence 保留其适用性，不由 release state 推定。
+release 只能 attest 已核验的 release metadata commit、tag 与 GitHub Release state；成功创建或复用 release identity 不得被升级为缺失的 implementation acceptance、Verify pass 或产品 outcome 证明。普通 upstream 结果不要求额外验收字段；正式验收相关时必须保留实际 Verify 来源、basis 与 exact verdict + acceptance-field pair，以及 basis 变化或后续 Review/Verify 冲突证据对当前验收的限制，不由 release state 推定。历史 Check 记录保持原来源与时间范围，不改写为 Verify 证明。
 Verify: manual(integration)

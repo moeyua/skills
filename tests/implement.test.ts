@@ -10,7 +10,6 @@ const ASSURANCE = readFileSync(
   "utf8",
 );
 const IMPLEMENT_SPEC = readFileSync(resolve(REPO_ROOT, "specs/implement/spec.md"), "utf8");
-const CHECK = readFileSync(resolve(REPO_ROOT, "skills/check/SKILL.md"), "utf8");
 const DOCS = readFileSync(resolve(REPO_ROOT, "skills/docs/SKILL.md"), "utf8");
 
 describe("implement entry contract", () => {
@@ -34,13 +33,10 @@ describe("implement adaptive composition", () => {
 
   it("owns capability composition instead of forcing a chain or handing it to the user", () => {
     expect(IMPLEMENT_SPEC).toContain("自主组合");
-    expect(IMPLEMENT).toMatch(/check[\s\S]*docs/i);
     expect(IMPLEMENT).not.toContain("implement does not call either automatically");
-    expect(IMPLEMENT_SPEC).not.toContain("实现完成后自动运行 check");
   });
 
-  it("keeps check read-only and docs authority-bound", () => {
-    expect(CHECK).toMatch(/read-only|只读/i);
+  it("keeps docs authority-bound", () => {
     expect(DOCS).toMatch(/authoritative|authority|权威/i);
   });
 
