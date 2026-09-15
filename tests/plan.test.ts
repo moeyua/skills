@@ -4,13 +4,13 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vite-plus/test";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const FORMATS_PATH = resolve(REPO_ROOT, "skills/plan/references/issue-formats.md");
-const TEMPLATE_PATH = resolve(REPO_ROOT, "skills/plan/references/plan-template.md");
-const SKILL_PATH = resolve(REPO_ROOT, "skills/plan/SKILL.md");
+const FORMATS_PATH = resolve(REPO_ROOT, "skills/engineering/plan/references/issue-formats.md");
+const TEMPLATE_PATH = resolve(REPO_ROOT, "skills/engineering/plan/references/plan-template.md");
+const SKILL_PATH = resolve(REPO_ROOT, "skills/engineering/plan/SKILL.md");
 const TARGET_PATHS = {
-  local: resolve(REPO_ROOT, "skills/plan/references/target-local.md"),
-  issue: resolve(REPO_ROOT, "skills/plan/references/target-issue.md"),
-  both: resolve(REPO_ROOT, "skills/plan/references/target-both.md"),
+  local: resolve(REPO_ROOT, "skills/engineering/plan/references/target-local.md"),
+  issue: resolve(REPO_ROOT, "skills/engineering/plan/references/target-issue.md"),
+  both: resolve(REPO_ROOT, "skills/engineering/plan/references/target-both.md"),
 } as const;
 
 const EXPECTED_CHANGE_TYPES = ["fix", "feat", "refactor", "perf"] as const;

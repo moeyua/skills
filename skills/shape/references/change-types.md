@@ -1,1 +1,0 @@
-../../../rules/change-types.md

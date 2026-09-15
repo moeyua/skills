@@ -5,14 +5,17 @@ import { describe, expect, it } from "vite-plus/test";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const TEMPLATE = readFileSync(
-  resolve(REPO_ROOT, "skills/plan/references/plan-template.md"),
+  resolve(REPO_ROOT, "skills/engineering/plan/references/plan-template.md"),
   "utf8",
 );
 const IMPLEMENT = readFileSync(
-  resolve(REPO_ROOT, "skills/implement/references/assurance.md"),
+  resolve(REPO_ROOT, "skills/engineering/implement/references/assurance.md"),
   "utf8",
 );
-const VERIFY = readFileSync(resolve(REPO_ROOT, "skills/verify/references/acceptance.md"), "utf8");
+const VERIFY = readFileSync(
+  resolve(REPO_ROOT, "skills/engineering/verify/references/acceptance.md"),
+  "utf8",
+);
 
 interface Transition {
   event: string;

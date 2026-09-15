@@ -8,23 +8,38 @@ Skills 为现代 coding agent 提供清晰的能力接口、项目特有判断�
 
 产品原则见 [PRODUCT.md](./PRODUCT.md)，context flow 与内部结构见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
 
-## 13 个 Skill
+## 按分类浏览
 
-| Skill       | Outcome                                                             |
-| ----------- | ------------------------------------------------------------------- |
-| `explore`   | 只读建立项目/模块理解；固定 Overview 后再 scoped deep-dive          |
-| `shape`     | 通过可回答的追问澄清意图与关键设计，形成可审阅的方向                |
-| `plan`      | 本地计划、问题 Issues 或成对产物，生成后审计一轮并修订已授权问题    |
-| `debug`     | 从预期与实际偏差出发定位原因，明确证据与未知                        |
-| `implement` | 完成已授权变更，以相称证据验证并保持直接受影响的 durable truth 准确 |
-| `review`    | 对设计、计划或改动给出有证据、可操作的审阅结论                      |
-| `verify`    | 判断指定结果是否有足够证据，按需独立正式验收                        |
-| `docs`      | 把既定 truth 写入六类 catalog memory 或用户指定文档                 |
-| `publish`   | 从当前状态完成缺失的 commit、push 与 pull request                   |
-| `release`   | 已确认 release set、一个完整发布元数据提交、tags 与 Releases        |
-| `converge`  | 幂等地把整个 catalog 对齐到当前 memory formats                      |
-| `doctor`    | 只读的全项目文档漂移与健康审计                                      |
-| `handoff`   | 紧凑、host-neutral 的继续工作摘要                                   |
+13 个技能按用途组织。
+
+### [工程（Engineering）](./skills/engineering/README.md)
+
+开发、软件架构、测试与工程项目维护。
+
+| Skill                                                | 产出                                                                |
+| ---------------------------------------------------- | ------------------------------------------------------------------- |
+| [explore](./skills/engineering/explore/SKILL.md)     | 只读建立项目/模块理解；固定 Overview 后再 scoped deep-dive          |
+| [shape](./skills/engineering/shape/SKILL.md)         | 通过可回答的追问澄清意图与关键设计，形成可审阅的方向                |
+| [plan](./skills/engineering/plan/SKILL.md)           | 本地计划、问题 Issues 或成对产物，生成后审计一轮并修订已授权问题    |
+| [debug](./skills/engineering/debug/SKILL.md)         | 从预期与实际偏差出发定位原因，明确证据与未知                        |
+| [implement](./skills/engineering/implement/SKILL.md) | 完成已授权变更，以相称证据验证并保持直接受影响的 durable truth 准确 |
+| [review](./skills/engineering/review/SKILL.md)       | 对设计、计划或改动给出有证据、可操作的审阅结论                      |
+| [verify](./skills/engineering/verify/SKILL.md)       | 判断指定结果是否有足够证据，按需独立正式验收                        |
+| [docs](./skills/engineering/docs/SKILL.md)           | 把既定 truth 写入六类 catalog memory 或用户指定文档                 |
+| [publish](./skills/engineering/publish/SKILL.md)     | 从当前状态完成缺失的 commit、push 与 pull request                   |
+| [release](./skills/engineering/release/SKILL.md)     | 已确认 release set、一个完整发布元数据提交、tags 与 Releases        |
+| [converge](./skills/engineering/converge/SKILL.md)   | 幂等地把整个 catalog 对齐到当前 memory formats                      |
+| [doctor](./skills/engineering/doctor/SKILL.md)       | 只读的全项目文档漂移与健康审计                                      |
+
+### [通用工作（Productivity）](./skills/productivity/README.md)
+
+通用工作、学习与信息整理。
+
+| Skill                                             | 产出                              |
+| ------------------------------------------------- | --------------------------------- |
+| [handoff](./skills/productivity/handoff/SKILL.md) | 紧凑、host-neutral 的继续工作摘要 |
+
+`design` 是用于 UI/UX、交互、视觉、品牌与设计系统工作的同级分类；软件架构与设计转代码归入 `engineering`。`design`、`in-progress`（实验中）、`misc`（低频杂项）、`deprecated`（已弃用）均在有实际技能时才建立。
 
 ## 安装
 
@@ -33,6 +48,8 @@ npx skills add .
 ```
 
 `skills` 是外部安装 CLI；本仓库只提供能力内容。
+
+分类不改变技能名称；按名选装仍可使用 `npx skills add . --skill handoff`。
 
 常用参数：
 
@@ -63,7 +80,7 @@ Catalog 恰好包含六类：domain Specs、PRODUCT、ARCHITECTURE、DESIGN、RO
 pnpm check
 pnpm test
 pnpm lint
-node skills/doctor/scripts/checker.ts . --json
+node skills/engineering/doctor/scripts/checker.ts . --json
 ```
 
 以 GPT-6 Astra 为主要行为验收模型，Codex 与 Claude Code 使用同一套 Skills，通过实际会话验证行为；普通实现/检查简要报告，正式验收保留独立证据。

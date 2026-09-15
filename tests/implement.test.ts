@@ -4,13 +4,13 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vite-plus/test";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const IMPLEMENT = readFileSync(resolve(REPO_ROOT, "skills/implement/SKILL.md"), "utf8");
+const IMPLEMENT = readFileSync(resolve(REPO_ROOT, "skills/engineering/implement/SKILL.md"), "utf8");
 const ASSURANCE = readFileSync(
-  resolve(REPO_ROOT, "skills/implement/references/assurance.md"),
+  resolve(REPO_ROOT, "skills/engineering/implement/references/assurance.md"),
   "utf8",
 );
 const IMPLEMENT_SPEC = readFileSync(resolve(REPO_ROOT, "specs/implement/spec.md"), "utf8");
-const DOCS = readFileSync(resolve(REPO_ROOT, "skills/docs/SKILL.md"), "utf8");
+const DOCS = readFileSync(resolve(REPO_ROOT, "skills/engineering/docs/SKILL.md"), "utf8");
 
 describe("implement entry contract", () => {
   it("accepts a clear request without requiring a plan", () => {

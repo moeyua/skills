@@ -11,10 +11,10 @@ import {
 } from "./plan-paired-issue.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const SKILL_PATH = resolve(REPO_ROOT, "skills/plan/SKILL.md");
-const LOCAL_PATH = resolve(REPO_ROOT, "skills/plan/references/target-local.md");
-const ISSUE_PATH = resolve(REPO_ROOT, "skills/plan/references/target-issue.md");
-const BOTH_PATH = resolve(REPO_ROOT, "skills/plan/references/target-both.md");
+const SKILL_PATH = resolve(REPO_ROOT, "skills/engineering/plan/SKILL.md");
+const LOCAL_PATH = resolve(REPO_ROOT, "skills/engineering/plan/references/target-local.md");
+const ISSUE_PATH = resolve(REPO_ROOT, "skills/engineering/plan/references/target-issue.md");
+const BOTH_PATH = resolve(REPO_ROOT, "skills/engineering/plan/references/target-both.md");
 
 describe("plan paired Issue contract", () => {
   const skill = readFileSync(SKILL_PATH, "utf8");

@@ -11,11 +11,11 @@ function read(path: string): string {
 
 const PRODUCT = read("PRODUCT.md");
 const ARCHITECTURE = read("ARCHITECTURE.md");
-const SHAPE = read("skills/shape/SKILL.md");
-const PLAN = read("skills/plan/SKILL.md");
-const PLAN_TEMPLATE = read("skills/plan/references/plan-template.md");
-const IMPLEMENT = read("skills/implement/SKILL.md");
-const DOCS = read("skills/docs/SKILL.md");
+const SHAPE = read("skills/engineering/shape/SKILL.md");
+const PLAN = read("skills/engineering/plan/SKILL.md");
+const PLAN_TEMPLATE = read("skills/engineering/plan/references/plan-template.md");
+const IMPLEMENT = read("skills/engineering/implement/SKILL.md");
+const DOCS = read("skills/engineering/docs/SKILL.md");
 
 const SPECS = {
   shape: read("specs/shape/spec.md"),

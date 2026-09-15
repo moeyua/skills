@@ -18,6 +18,7 @@ import {
   checkResolverConsistency,
   checkSpecPairing,
   checkMemoryCatalog,
+  checkCategoryReadmes,
 } from "../checks.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -27,7 +28,7 @@ describe("repo skill verifier (smoke)", () => {
   const skills = checkSkillFiles(REPO_ROOT);
 
   it("checkSkillFiles: name <-> dir match, frontmatter parses", () => {
-    expect(skills.size).toBeGreaterThanOrEqual(7);
+    expect(skills.size).toBe(13);
   });
 
   it("checkDescriptionConformance: every description has Use when / Not for, 40-500 chars", () => {
@@ -50,11 +51,15 @@ describe("repo skill verifier (smoke)", () => {
     expect(() => checkResolverConsistency(REPO_ROOT, skills)).not.toThrow();
   });
 
+  it("checkCategoryReadmes: every category lists each of its skills once", () => {
+    expect(() => checkCategoryReadmes(REPO_ROOT)).not.toThrow();
+  });
+
   it("checkSpecPairing: every skill has a specs/<name>/spec.md and no spec is orphaned", () => {
     expect(() => checkSpecPairing(REPO_ROOT, skills)).not.toThrow();
   });
 
-  it("checkMemoryCatalog: rules/memory-catalog.md and skills/docs/references/formats/ stay in sync", () => {
+  it("checkMemoryCatalog: rules/memory-catalog.md and skills/engineering/docs/references/formats/ stay in sync", () => {
     expect(() => checkMemoryCatalog(REPO_ROOT)).not.toThrow();
   });
 });
