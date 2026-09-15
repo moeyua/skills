@@ -10,23 +10,24 @@
  */
 
 import { readdirSync, readFileSync, statSync, existsSync } from "node:fs";
-import { basename, dirname, join, resolve } from "node:path";
+import { basename, dirname, join, relative, resolve, sep } from "node:path";
 import { parseFrontmatter, type SkillFrontmatter } from "./frontmatter.ts";
 
 // ---------- skill file discovery ----------
 
 export function findSkillFiles(root: string): string[] {
   const skillsDir = join(root, "skills");
-  const entries = readdirSync(skillsDir);
   const result: string[] = [];
-  for (const entry of entries) {
-    const skillPath = join(skillsDir, entry, "SKILL.md");
-    try {
-      if (statSync(skillPath).isFile()) {
-        result.push(skillPath);
-      }
-    } catch {
-      // Not a skill directory (e.g. RESOLVER.md). Skip.
+  for (const category of readdirSync(skillsDir, { withFileTypes: true })) {
+    if (!category.isDirectory()) continue;
+    const categoryDir = join(skillsDir, category.name);
+    if (existsSync(join(categoryDir, "SKILL.md"))) {
+      throw new Error(`CATEGORY SKILL.md DISALLOWED: ${categoryDir}; would shadow nested skills`);
+    }
+    for (const skill of readdirSync(categoryDir, { withFileTypes: true })) {
+      if (!skill.isDirectory()) continue;
+      const skillPath = join(categoryDir, skill.name, "SKILL.md");
+      if (existsSync(skillPath) && statSync(skillPath).isFile()) result.push(skillPath);
     }
   }
   return result.sort();
@@ -35,7 +36,7 @@ export function findSkillFiles(root: string): string[] {
 export function checkSkillFiles(root: string): Map<string, SkillFrontmatter> {
   const skillFiles = findSkillFiles(root);
   if (skillFiles.length === 0) {
-    throw new Error("NO SKILLS FOUND: expected skills/*/SKILL.md");
+    throw new Error("NO SKILLS FOUND: expected skills/*/*/SKILL.md");
   }
   const out = new Map<string, SkillFrontmatter>();
   for (const path of skillFiles) {
@@ -43,6 +44,9 @@ export function checkSkillFiles(root: string): Map<string, SkillFrontmatter> {
     const fields = parseFrontmatter(path);
     if (fields.name !== skillDir) {
       throw new Error(`NAME MISMATCH: ${path} frontmatter name=${fields.name} dir=${skillDir}`);
+    }
+    if (out.has(skillDir)) {
+      throw new Error(`DUPLICATE SKILL NAME: ${skillDir} appears in multiple categories (${path})`);
     }
     out.set(skillDir, fields);
   }
@@ -163,17 +167,19 @@ export function checkMarkdownLinks(root: string, scanRoot: string = root): void 
 // ---------- no root SKILL.md ----------
 
 export function checkNoRootSkill(root: string): void {
-  const rootSkill = join(root, "SKILL.md");
-  if (existsSync(rootSkill)) {
-    throw new Error(
-      `ROOT SKILL.md DISALLOWED at ${rootSkill}; breaks 'npx skills add' nested discovery`,
-    );
+  for (const container of [root, join(root, "skills")]) {
+    const rootSkill = join(container, "SKILL.md");
+    if (existsSync(rootSkill)) {
+      throw new Error(
+        `ROOT SKILL.md DISALLOWED at ${rootSkill}; breaks 'npx skills add' nested discovery`,
+      );
+    }
   }
 }
 
 // ---------- resolver consistency ----------
 
-const SKILL_REF_RE = /skills\/([a-z][a-z0-9_-]*)\/SKILL\.md/g;
+const SKILL_REF_RE = /\bskills\/(?:[a-z][a-z0-9_-]*\/)+SKILL\.md/g;
 
 export function checkResolverConsistency(
   root: string,
@@ -184,11 +190,16 @@ export function checkResolverConsistency(
     throw new Error(`MISSING RESOLVER: ${resolverPath}`);
   }
   const text = readFileSync(resolverPath, "utf-8");
+  const actualPaths = new Set(
+    findSkillFiles(root).map((path) => relative(root, path).split(sep).join("/")),
+  );
   const referenced = new Set<string>();
+  const paths = new Set<string>();
   SKILL_REF_RE.lastIndex = 0;
   let match: RegExpExecArray | null;
   while ((match = SKILL_REF_RE.exec(text)) !== null) {
-    referenced.add(match[1]!);
+    referenced.add(basename(dirname(match[0])));
+    paths.add(match[0]);
   }
   const expected = new Set(skills.keys());
   const missing = [...expected].filter((s) => !referenced.has(s));
@@ -200,6 +211,43 @@ export function checkResolverConsistency(
     throw new Error(
       `RESOLVER STALE: RESOLVER.md references non-existent skills: ${stale.sort().join(", ")}`,
     );
+  }
+  for (const path of paths) {
+    if (!actualPaths.has(path)) {
+      throw new Error(`RESOLVER PATH MISMATCH: ${path} is not a discovered skill entry`);
+    }
+  }
+}
+
+// ---------- category navigation ----------
+
+export function checkCategoryReadmes(root: string): void {
+  const categories = new Map<string, Set<string>>();
+  for (const path of findSkillFiles(root)) {
+    const category = dirname(dirname(path));
+    if (!categories.has(category)) categories.set(category, new Set());
+    categories.get(category)!.add(resolve(path));
+  }
+  for (const [category, expected] of categories) {
+    const readme = join(category, "README.md");
+    if (!existsSync(readme)) throw new Error(`CATEGORY README MISSING: ${readme}`);
+    const referenced = new Set<string>();
+    LINK_RE.lastIndex = 0;
+    for (const match of readFileSync(readme, "utf8").matchAll(LINK_RE)) {
+      const target = match[1]!.trim().split(/[?#]/)[0]!;
+      if (!target.endsWith("/SKILL.md") && target !== "SKILL.md") continue;
+      const path = resolve(category, target);
+      if (!expected.has(path)) throw new Error(`CATEGORY README STALE: ${readme} -> ${target}`);
+      if (referenced.has(path))
+        throw new Error(`CATEGORY README DUPLICATE: ${readme} -> ${target}`);
+      referenced.add(path);
+    }
+    const missing = [...expected].filter((path) => !referenced.has(path));
+    if (missing.length > 0) {
+      throw new Error(
+        `CATEGORY README GAP: ${readme} is missing ${missing.map((path) => basename(dirname(path))).join(", ")}`,
+      );
+    }
   }
 }
 
@@ -246,7 +294,7 @@ export function checkMemoryCatalog(root: string): void {
   let match: RegExpExecArray | null;
   while ((match = FORMAT_REF_RE.exec(text)) !== null) referenced.add(match[1]!);
 
-  const formatsDir = join(root, "skills", "docs", "references", "formats");
+  const formatsDir = join(root, "skills", "engineering", "docs", "references", "formats");
   const actual = new Set<string>(
     existsSync(formatsDir) ? readdirSync(formatsDir).filter((f) => f.endsWith(".md")) : [],
   );
@@ -254,13 +302,13 @@ export function checkMemoryCatalog(root: string): void {
   const missing = [...referenced].filter((f) => !actual.has(f));
   if (missing.length > 0) {
     throw new Error(
-      `MEMORY FORMAT MISSING: catalog points to ${missing.sort().join(", ")} but no such file under skills/docs/references/formats/`,
+      `MEMORY FORMAT MISSING: catalog points to ${missing.sort().join(", ")} but no such file under skills/engineering/docs/references/formats/`,
     );
   }
   const orphan = [...actual].filter((f) => !referenced.has(f));
   if (orphan.length > 0) {
     throw new Error(
-      `MEMORY FORMAT ORPHAN: ${orphan.sort().join(", ")} under skills/docs/references/formats/ is not referenced by rules/memory-catalog.md`,
+      `MEMORY FORMAT ORPHAN: ${orphan.sort().join(", ")} under skills/engineering/docs/references/formats/ is not referenced by rules/memory-catalog.md`,
     );
   }
 }

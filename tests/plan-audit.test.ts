@@ -20,13 +20,13 @@ import {
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const TARGET_PATHS = {
-  local: resolve(REPO_ROOT, "skills/plan/references/target-local.md"),
-  issue: resolve(REPO_ROOT, "skills/plan/references/target-issue.md"),
-  both: resolve(REPO_ROOT, "skills/plan/references/target-both.md"),
+  local: resolve(REPO_ROOT, "skills/engineering/plan/references/target-local.md"),
+  issue: resolve(REPO_ROOT, "skills/engineering/plan/references/target-issue.md"),
+  both: resolve(REPO_ROOT, "skills/engineering/plan/references/target-both.md"),
 };
 
 describe("plan post-generation audit contract", () => {
-  const skill = readFileSync(resolve(REPO_ROOT, "skills/plan/SKILL.md"), "utf8");
+  const skill = readFileSync(resolve(REPO_ROOT, "skills/engineering/plan/SKILL.md"), "utf8");
 
   it("links Plan and all three target contracts to the shared audit reference", () => {
     expect(existsSync(AUDIT_PATH)).toBe(true);
@@ -41,8 +41,8 @@ describe("plan post-generation audit contract", () => {
     const links = [...audit.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)].map((match) =>
       resolve(dirname(AUDIT_PATH), match[1]!),
     );
-    expect(links).toContain(resolve(REPO_ROOT, "skills/review/SKILL.md"));
-    expect(existsSync(resolve(REPO_ROOT, "skills/review/SKILL.md"))).toBe(true);
+    expect(links).toContain(resolve(REPO_ROOT, "skills/engineering/review/SKILL.md"));
+    expect(existsSync(resolve(REPO_ROOT, "skills/engineering/review/SKILL.md"))).toBe(true);
   });
 
   it("defines correction results separately from permission to continue", () => {

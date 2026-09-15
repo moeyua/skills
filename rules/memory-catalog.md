@@ -2,7 +2,7 @@
 
 > 项目持久记忆的有界目录，也是 explore、docs、converge、doctor 共用的索引真源。
 >
-> 本文件只定义 artifact 的职责与格式入口；具体结构放在 `skills/docs/references/formats/`。用户明确指定的目录外项目文档可由 docs 维护，但不会因此进入默认 durable memory。
+> 本文件只定义 artifact 的职责与格式入口；具体结构放在 `skills/engineering/docs/references/formats/`。用户明确指定的目录外项目文档可由 docs 维护，但不会因此进入默认 durable memory。
 
 每节字段：**Purpose** / **Audience** (`internal` | `external`) / **When needed** / **Source** / **Boundary** / **Format**。
 

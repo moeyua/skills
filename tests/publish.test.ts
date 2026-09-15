@@ -4,16 +4,19 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vite-plus/test";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const ENTRY = readFileSync(resolve(REPO_ROOT, "skills/publish/SKILL.md"), "utf8");
+const ENTRY = readFileSync(resolve(REPO_ROOT, "skills/engineering/publish/SKILL.md"), "utf8");
 const GIT_STATE = readFileSync(
-  resolve(REPO_ROOT, "skills/publish/references/git-state.md"),
+  resolve(REPO_ROOT, "skills/engineering/publish/references/git-state.md"),
   "utf8",
 );
 const PULL_REQUEST = readFileSync(
-  resolve(REPO_ROOT, "skills/publish/references/pull-request.md"),
+  resolve(REPO_ROOT, "skills/engineering/publish/references/pull-request.md"),
   "utf8",
 );
-const RECOVERY = readFileSync(resolve(REPO_ROOT, "skills/publish/references/recovery.md"), "utf8");
+const RECOVERY = readFileSync(
+  resolve(REPO_ROOT, "skills/engineering/publish/references/recovery.md"),
+  "utf8",
+);
 const PUBLISH = [ENTRY, GIT_STATE, PULL_REQUEST, RECOVERY].join("\n");
 const SPEC = readFileSync(resolve(REPO_ROOT, "specs/publish/spec.md"), "utf8");
 

@@ -5,7 +5,7 @@ import { describe, expect, it } from "vite-plus/test";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const CATALOG = readFileSync(join(REPO_ROOT, "rules/memory-catalog.md"), "utf8");
-const DOCS_SKILL = readFileSync(join(REPO_ROOT, "skills/docs/SKILL.md"), "utf8");
+const DOCS_SKILL = readFileSync(join(REPO_ROOT, "skills/engineering/docs/SKILL.md"), "utf8");
 
 const MEMORY_TYPES = ["spec", "PRODUCT", "ARCHITECTURE", "DESIGN", "ROADMAP", "README"];
 const FORMAT_FILES = [
@@ -24,7 +24,7 @@ describe("durable memory architecture", () => {
   });
 
   it("keeps one format for every catalog memory type", () => {
-    const actual = readdirSync(join(REPO_ROOT, "skills/docs/references/formats"))
+    const actual = readdirSync(join(REPO_ROOT, "skills/engineering/docs/references/formats"))
       .filter((file) => file.endsWith(".md"))
       .sort();
     expect(actual).toEqual(FORMAT_FILES);

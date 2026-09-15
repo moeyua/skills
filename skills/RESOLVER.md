@@ -4,21 +4,23 @@
 
 ## Capability map
 
-| Skill     | Route here when the requested outcome is…                                      | Entry                       |
-| --------- | ------------------------------------------------------------------------------ | --------------------------- |
-| Explore   | reliable project/module understanding or facts for another capability          | `skills/explore/SKILL.md`   |
-| Shape     | resolving material uncertainty into a grounded direction                       | `skills/shape/SKILL.md`     |
-| Plan      | persisting and auditing local plans, bounded Issues, or paired artifacts       | `skills/plan/SKILL.md`      |
-| Implement | changing the project inside an authorized outcome                              | `skills/implement/SKILL.md` |
-| Debug     | locating the cause of a known deviation, with evidence and explicit unknowns   | `skills/debug/SKILL.md`     |
-| Review    | finding evidence-backed corrections in designs, planning artifacts, or changes | `skills/review/SKILL.md`    |
-| Verify    | establishing whether a claimed outcome has sufficient evidence                 | `skills/verify/SKILL.md`    |
-| Docs      | recording established truth in an authorized document target                   | `skills/docs/SKILL.md`      |
-| Publish   | completing missing commit, push, and PR actions                                | `skills/publish/SKILL.md`   |
-| Release   | publishing an exact GitHub release set and its repository metadata             | `skills/release/SKILL.md`   |
-| Converge  | aligning the whole durable-memory catalog idempotently                         | `skills/converge/SKILL.md`  |
-| Doctor    | auditing project-wide documentation drift and health, read-only                | `skills/doctor/SKILL.md`    |
-| Handoff   | compressing continuation-critical session context                              | `skills/handoff/SKILL.md`   |
+Browse [Engineering](./engineering/README.md) or [Productivity](./productivity/README.md) by purpose. Categories organize source directories; capability names and routing boundaries remain the same.
+
+| Skill     | Category       | Route here when the requested outcome is…                                      | Entry                                   |
+| --------- | -------------- | ------------------------------------------------------------------------------ | --------------------------------------- |
+| Explore   | `engineering`  | reliable project/module understanding or facts for another capability          | `skills/engineering/explore/SKILL.md`   |
+| Shape     | `engineering`  | resolving material uncertainty into a grounded direction                       | `skills/engineering/shape/SKILL.md`     |
+| Plan      | `engineering`  | persisting and auditing local plans, bounded Issues, or paired artifacts       | `skills/engineering/plan/SKILL.md`      |
+| Implement | `engineering`  | changing the project inside an authorized outcome                              | `skills/engineering/implement/SKILL.md` |
+| Debug     | `engineering`  | locating the cause of a known deviation, with evidence and explicit unknowns   | `skills/engineering/debug/SKILL.md`     |
+| Review    | `engineering`  | finding evidence-backed corrections in designs, planning artifacts, or changes | `skills/engineering/review/SKILL.md`    |
+| Verify    | `engineering`  | establishing whether a claimed outcome has sufficient evidence                 | `skills/engineering/verify/SKILL.md`    |
+| Docs      | `engineering`  | recording established truth in an authorized document target                   | `skills/engineering/docs/SKILL.md`      |
+| Publish   | `engineering`  | completing missing commit, push, and PR actions                                | `skills/engineering/publish/SKILL.md`   |
+| Release   | `engineering`  | publishing an exact GitHub release set and its repository metadata             | `skills/engineering/release/SKILL.md`   |
+| Converge  | `engineering`  | aligning the whole durable-memory catalog idempotently                         | `skills/engineering/converge/SKILL.md`  |
+| Doctor    | `engineering`  | auditing project-wide documentation drift and health, read-only                | `skills/engineering/doctor/SKILL.md`    |
+| Handoff   | `productivity` | compressing continuation-critical session context                              | `skills/productivity/handoff/SKILL.md`  |
 
 ## Common distinctions
 

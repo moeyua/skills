@@ -9,24 +9,46 @@ Skills is a set of 13 directly invokable Markdown capabilities whose concise ent
 ## Repository layout
 
 ```text
-skills/
-├── README.md / README.zh-CN.md      # user entry points
+skills/                              # repository root
+├── README.md / README.zh-CN.md       # user entry points and category navigation
 ├── PRODUCT.md                       # positioning, principles, boundaries
-├── ARCHITECTURE.md                  # current technical structure and decisions
+├── ARCHITECTURE.md                   # current technical structure and decisions
 ├── ROADMAP.md                       # maintainer-decided future items
 ├── package.json                     # development commands and Node constraints
 ├── skills/
 │   ├── RESOLVER.md                  # human-readable routing index
-│   ├── <name>/SKILL.md              # lightweight capability entry
-│   ├── <name>/references/           # conditionally loaded deep knowledge
-│   └── doctor/scripts/checker.ts     # installed deterministic health checker
+│   ├── engineering/
+│   │   ├── README.md                # category navigation
+│   │   ├── converge/
+│   │   ├── debug/
+│   │   ├── docs/
+│   │   ├── doctor/
+│   │   │   ├── SKILL.md
+│   │   │   └── scripts/checker.ts   # installed deterministic health checker
+│   │   ├── explore/
+│   │   ├── implement/
+│   │   ├── plan/
+│   │   ├── publish/
+│   │   ├── release/
+│   │   ├── review/
+│   │   ├── shape/
+│   │   └── verify/
+│   └── productivity/
+│       ├── README.md                # category navigation
+│       └── handoff/
 ├── rules/
-│   ├── change-types.md              # shared fix/feat/refactor/perf vocabulary
+│   ├── change-types.md               # shared fix/feat/refactor/perf vocabulary
 │   └── memory-catalog.md             # six durable-memory definitions
 ├── specs/<name>/spec.md              # observable behavior contracts
-├── plans/                             # point-in-time implementation handoffs
-└── tests/                             # deterministic interface/invariant checks
+├── plans/                           # point-in-time implementation handoffs
+└── tests/                           # deterministic interface/invariant checks
 ```
+
+Each skill owns its `skills/<category>/<name>/SKILL.md` entry and any `references/` or `scripts/` below it. Names remain globally unique across categories, and `specs/<name>/spec.md` pairs with that stable name. The two directory levels below `skills/` are category and skill; discovery does not descend into a skill's internal resources.
+
+`engineering` contains development, software architecture, testing, and engineering project maintenance. `productivity` contains general work, learning, and information organization. `design` is a peer category for UI/UX, interaction, visual, brand, and design-system work; turning designs into code belongs in `engineering`. The peer categories `in-progress`, `misc`, and `deprecated` hold experimental, infrequently used, and retired skills respectively. Categories are created only when they contain actual skills, so none of these four additional categories exists in the current tree. These names do not introduce installer filtering. Additional categories follow the same depth and navigation pattern without a category whitelist.
+
+The root READMEs link to the categories and every current skill. Each existing category has one English README with a link and a short description for every member. The Resolver retains the full capability map and routing distinctions.
 
 There is no production runtime package or generated workflow engine. The product surface is Markdown, conditional references, and Doctor's zero-dependency checker.
 
@@ -149,7 +171,7 @@ Notable reference families:
 - Release: release-set model, execution, and recovery.
 - Converge: per-document state/action model plus sibling Docs/Doctor assets.
 
-Shared symlinks remain only for true semantic sources: `change-types.md` is consumed by Shape, Plan, and Implement; `memory-catalog.md` is consumed by Explore and Docs.
+Five source symlinks share two semantic sources in root `rules/`: `change-types.md` is consumed by Shape, Plan, and Implement; `memory-catalog.md` is consumed by Explore and Docs. From each engineering skill's `references/` directory, these links traverse four levels to the root before entering `rules/`.
 
 ## Artifact and state flow
 
@@ -196,7 +218,7 @@ Release models authoritative version sources as release units, project-tool coor
 
 Verification has three layers:
 
-1. structure and interface tests: frontmatter, public inventory, references, resolver, Skill↔Spec pairing, memory formats, and Markdown links;
+1. structure and interface tests: two-level category/skill discovery, globally unique names, frontmatter, public inventory, references, resolver, Skill↔Spec pairing, memory formats, and Markdown links;
 2. deterministic project checks: Doctor's checker for Spec shape, links/anchors, placeholders, and file size;
 3. direct behavior observation: actual sessions establish whether a capability follows its contract; static tests alone do not prove model behavior.
 
@@ -206,16 +228,20 @@ Development commands come from `package.json`:
 pnpm check
 pnpm test
 pnpm lint
-node skills/doctor/scripts/checker.ts . --json
+node skills/engineering/doctor/scripts/checker.ts . --json
 ```
 
 ## Installation
 
-`npx skills add .` discovers `skills/<name>/SKILL.md`. The repository root must not contain `SKILL.md`, or the installer can collapse the repository into one capability. Installation is a snapshot; source changes require reinstalling. Shape requires Explore, and Plan requires Review plus a host capable of an independent audit context; install or update each support pair together. Missing Plan audit support produces an explicit `inconclusive` result with retained artifacts. Relative symlinks are used only for the two shared semantic sources, with `--copy` available where symlinks are unsuitable.
+`npx skills add .` discovers `skills/<category>/<name>/SKILL.md` with the existing installer; no extra depth flag is needed. The repository root, `skills/` root, and category directories contain no `SKILL.md`, so a parent entry cannot hide the individual skills. Category READMEs and the Resolver are navigation documents, not installable skills.
+
+Installation retains the original skill names without category prefixes; `npx skills add . --skill handoff` selects Handoff by name. The default shared-store symlink layout and `--copy` remain available. Installation is a snapshot; source changes require reinstalling.
+
+Shape requires Explore, and Plan requires Review plus a host capable of an independent audit context; install or update each support pair together. Missing Plan audit support produces an explicit `inconclusive` result with retained artifacts.
 
 ## Architecture invariants
 
-1. The installed surface is exactly the 13 Resolver entries and their 13 matching Specs.
+1. The installed surface is exactly the 13 Resolver entries and their 13 matching Specs; each skill has one canonical `skills/<category>/<name>/` directory and a globally unique name.
 2. Every capability is independently enterable; upstream artifact history is optional context.
 3. Main Skills remain capability guides and conditional routers, not copies of deep references or fixed global stages.
 4. Explore retains its fixed Overview and owns Shape's required project context; Review owns Plan's one independent planning audit; Release retains its high-consequence safety predicates.
@@ -223,7 +249,7 @@ node skills/doctor/scripts/checker.ts . --json
 6. Plan target and artifact semantics, Publish history safety, and Release confirmation/recovery identities do not drift.
 7. The durable-memory catalog contains exactly six types.
 8. `change-types.md` and `memory-catalog.md` each have one shared source.
-9. No `SKILL.md` exists at the repository root.
+9. No `SKILL.md` exists at the repository root, `skills/` root, or category level; categories are created only with actual skills and provide a README linking to every member.
 10. Artifacts preserve but do not create intent authority; capability outcomes cannot manufacture upstream authority or downstream acceptance; corrections reopen actual dependents, and completion claims do not exceed outcome-relevant evidence.
 11. Shape's reviewed Design Summary and Handoff's continuation snapshot improve state visibility without becoming mandatory upstream artifacts or a fixed capability chain.
 12. Each capability preserves fail-close and clean-break at its own boundary: no claim manufactures success from a required failure, ambiguity, or missing state, and no authorized replacement retains an unapproved continuity path.

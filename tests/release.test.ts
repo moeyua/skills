@@ -9,10 +9,10 @@ function read(path: string): string {
   return readFileSync(resolve(REPO_ROOT, path), "utf8");
 }
 
-const ENTRY = read("skills/release/SKILL.md");
-const MODEL = read("skills/release/references/model.md");
-const EXECUTION = read("skills/release/references/execution.md");
-const RECOVERY = read("skills/release/references/recovery.md");
+const ENTRY = read("skills/engineering/release/SKILL.md");
+const MODEL = read("skills/engineering/release/references/model.md");
+const EXECUTION = read("skills/engineering/release/references/execution.md");
+const RECOVERY = read("skills/engineering/release/references/recovery.md");
 const SPEC = read("specs/release/spec.md");
 const PRODUCT = read("PRODUCT.md");
 const ARCHITECTURE = read("ARCHITECTURE.md");

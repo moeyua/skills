@@ -8,23 +8,38 @@ Skills gives modern coding agents clear capability interfaces, project-specific 
 
 Read [PRODUCT.md](./PRODUCT.md) for product principles and [ARCHITECTURE.md](./ARCHITECTURE.md) for context flow and internals.
 
-## The 13 skills
+## Browse by category
 
-| Skill       | Outcome                                                                                                   |
-| ----------- | --------------------------------------------------------------------------------------------------------- |
-| `explore`   | Read-only project/module understanding; fixed Overview before scoped depth                                |
-| `shape`     | Intent and key design clarified through answerable questions                                              |
-| `plan`      | Local plans, problem-oriented Issues, or pairs, with one audit and authorized corrections                 |
-| `debug`     | Cause investigation from expected versus actual behavior, with evidence and explicit unknowns             |
-| `implement` | An authorized working change with proportional proof and accurate durable truth                           |
-| `review`    | Evidence-backed findings on designs, planning artifacts, or changes                                       |
-| `verify`    | A scoped verdict on whether the claimed outcome has sufficient evidence; formal acceptance when requested |
-| `docs`      | Established truth recorded in the six-type catalog or a named project document                            |
-| `publish`   | Missing commit, push, and pull-request actions completed from current state                               |
-| `release`   | A confirmed release set, one complete metadata commit, tags, and Releases                                 |
-| `converge`  | Idempotent catalog-wide alignment to current memory formats                                               |
-| `doctor`    | Read-only whole-project documentation drift and health audit                                              |
-| `handoff`   | A compact, host-neutral continuation summary                                                              |
+The 13 skills are organized by purpose.
+
+### [Engineering](./skills/engineering/README.md)
+
+Development, software architecture, testing, and engineering project maintenance.
+
+| Skill                                                | Outcome                                                                                                   |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| [explore](./skills/engineering/explore/SKILL.md)     | Read-only project/module understanding; fixed Overview before scoped depth                                |
+| [shape](./skills/engineering/shape/SKILL.md)         | Intent and key design clarified through answerable questions                                              |
+| [plan](./skills/engineering/plan/SKILL.md)           | Local plans, problem-oriented Issues, or pairs, with one audit and authorized corrections                 |
+| [debug](./skills/engineering/debug/SKILL.md)         | Cause investigation from expected versus actual behavior, with evidence and explicit unknowns             |
+| [implement](./skills/engineering/implement/SKILL.md) | An authorized working change with proportional proof and accurate durable truth                           |
+| [review](./skills/engineering/review/SKILL.md)       | Evidence-backed findings on designs, planning artifacts, or changes                                       |
+| [verify](./skills/engineering/verify/SKILL.md)       | A scoped verdict on whether the claimed outcome has sufficient evidence; formal acceptance when requested |
+| [docs](./skills/engineering/docs/SKILL.md)           | Established truth recorded in the six-type catalog or a named project document                            |
+| [publish](./skills/engineering/publish/SKILL.md)     | Missing commit, push, and pull-request actions completed from current state                               |
+| [release](./skills/engineering/release/SKILL.md)     | A confirmed release set, one complete metadata commit, tags, and Releases                                 |
+| [converge](./skills/engineering/converge/SKILL.md)   | Idempotent catalog-wide alignment to current memory formats                                               |
+| [doctor](./skills/engineering/doctor/SKILL.md)       | Read-only whole-project documentation drift and health audit                                              |
+
+### [Productivity](./skills/productivity/README.md)
+
+General work, learning, and information organization.
+
+| Skill                                             | Outcome                                      |
+| ------------------------------------------------- | -------------------------------------------- |
+| [handoff](./skills/productivity/handoff/SKILL.md) | A compact, host-neutral continuation summary |
+
+`design` is a peer category for UI/UX, interaction, visual, brand, and design-system work; software architecture and turning designs into code belong in `engineering`. Create it only when actual skills belong there. The same rule applies to `in-progress` for experimental skills, `misc` for infrequently used skills, and `deprecated` for retired skills.
 
 ## Install
 
@@ -33,6 +48,8 @@ npx skills add .
 ```
 
 `skills` is the external installer CLI; this repository supplies the capability content.
+
+Skills keep their original names across categories; select one with `npx skills add . --skill handoff`.
 
 Useful flags:
 
@@ -63,7 +80,7 @@ The catalog contains exactly six types: domain Specs, PRODUCT, ARCHITECTURE, DES
 pnpm check
 pnpm test
 pnpm lint
-node skills/doctor/scripts/checker.ts . --json
+node skills/engineering/doctor/scripts/checker.ts . --json
 ```
 
 GPT-6 Astra is the primary behavior evaluation model; Codex and Claude Code use the same Skill set. Behavior is verified through actual sessions. Ordinary implementation, review, and verification results stay concise, while formal acceptance retains independent evidence.

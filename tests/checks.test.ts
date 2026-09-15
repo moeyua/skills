@@ -19,12 +19,14 @@ import {
   checkNoRootSkill,
   checkResolverConsistency,
   checkSpecPairing,
+  checkCategoryReadmes,
 } from "./checks.ts";
 
 // ---------- fixture helper ----------
 
 interface SkillSpec {
   name: string;
+  category?: string;
   description?: string;
   body?: string;
 }
@@ -54,11 +56,20 @@ function makeRepo(skills: SkillSpec[], opts: RepoOpts = {}): string {
   const root = mkdtempSync(join(tmpdir(), "skills-fix-"));
   mkdirSync(join(root, "skills"), { recursive: true });
   for (const s of skills) {
-    const dir = join(root, "skills", s.name);
+    const dir = join(root, "skills", s.category ?? "engineering", s.name);
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, "SKILL.md"), buildFrontmatter(s) + (s.body ?? DEFAULT_BODY));
   }
-  const resolverBody = opts.resolver ?? skills.map((s) => `- skills/${s.name}/SKILL.md`).join("\n");
+  for (const category of new Set(skills.map((s) => s.category ?? "engineering"))) {
+    const links = skills
+      .filter((s) => (s.category ?? "engineering") === category)
+      .map((s) => `- [${s.name}](./${s.name}/SKILL.md): A fixture skill.`)
+      .join("\n");
+    writeFileSync(join(root, "skills", category, "README.md"), `# ${category}\n\n${links}\n`);
+  }
+  const resolverBody =
+    opts.resolver ??
+    skills.map((s) => `- skills/${s.category ?? "engineering"}/${s.name}/SKILL.md`).join("\n");
   writeFileSync(join(root, "skills", "RESOLVER.md"), `# Resolver\n\n${resolverBody}\n`);
   if (opts.rootSkill) {
     writeFileSync(join(root, "SKILL.md"), "should not be here");
@@ -85,8 +96,11 @@ afterEach(() => {
 // ---------- tests ----------
 
 describe("findSkillFiles", () => {
-  it("finds SKILL.md for each skill subdir", () => {
-    const root = repo([{ name: "a" }, { name: "b" }]);
+  it("finds skill entries across categories without a category whitelist", () => {
+    const root = repo([
+      { name: "a", category: "design" },
+      { name: "b", category: "research" },
+    ]);
     const files = findSkillFiles(root);
     expect(files).toHaveLength(2);
     expect(files[0]).toContain("a/SKILL.md");
@@ -97,6 +111,23 @@ describe("findSkillFiles", () => {
     const root = repo([{ name: "a" }]);
     const files = findSkillFiles(root);
     expect(files).toHaveLength(1);
+  });
+
+  it("does not discover examples nested inside a skill", () => {
+    const root = repo([{ name: "a" }]);
+    const nested = join(root, "skills", "engineering", "a", "references", "example");
+    mkdirSync(nested, { recursive: true });
+    writeFileSync(join(nested, "SKILL.md"), buildFrontmatter({ name: "example" }));
+    expect(findSkillFiles(root)).toHaveLength(1);
+  });
+
+  it("rejects a category entry that would shadow its skills", () => {
+    const root = repo([{ name: "a" }]);
+    writeFileSync(
+      join(root, "skills", "engineering", "SKILL.md"),
+      buildFrontmatter({ name: "engineering" }),
+    );
+    expect(() => findSkillFiles(root)).toThrow(/CATEGORY SKILL.md DISALLOWED/);
   });
 });
 
@@ -118,9 +149,14 @@ describe("checkSkillFiles", () => {
   it("throws when frontmatter name disagrees with dir", () => {
     const root = repo([{ name: "real" }]);
     // Sneak in a SKILL.md whose frontmatter name doesn't match the dir.
-    const sneaky = join(root, "skills", "real", "SKILL.md");
+    const sneaky = join(root, "skills", "engineering", "real", "SKILL.md");
     writeFileSync(sneaky, buildFrontmatter({ name: "different" }) + DEFAULT_BODY);
     expect(() => checkSkillFiles(root)).toThrow(/NAME MISMATCH/);
+  });
+
+  it("rejects names duplicated across categories instead of hiding one", () => {
+    const root = repo([{ name: "same" }, { name: "same", category: "design" }]);
+    expect(() => checkSkillFiles(root)).toThrow(/DUPLICATE SKILL NAME.*same/);
   });
 });
 
@@ -179,8 +215,8 @@ describe("checkReferencesExist", () => {
 
   it("passes when referenced file exists", () => {
     const root = repo([{ name: "x", body: `${DEFAULT_BODY}\nsee references/foo.md\n` }]);
-    mkdirSync(join(root, "skills", "x", "references"));
-    writeFileSync(join(root, "skills", "x", "references", "foo.md"), "# foo");
+    mkdirSync(join(root, "skills", "engineering", "x", "references"));
+    writeFileSync(join(root, "skills", "engineering", "x", "references", "foo.md"), "# foo");
     expect(() => checkReferencesExist(root)).not.toThrow();
   });
 
@@ -238,8 +274,8 @@ describe("checkMarkdownLinks", () => {
 
   it("still checks a nested plans/ dir (only the repo-root plans/ is exempt)", () => {
     const root = repo([{ name: "x" }]);
-    mkdirSync(join(root, "skills", "x", "plans"));
-    writeFileSync(join(root, "skills", "x", "plans", "p.md"), "[gone](./nope.md)\n");
+    mkdirSync(join(root, "skills", "engineering", "x", "plans"));
+    writeFileSync(join(root, "skills", "engineering", "x", "plans", "p.md"), "[gone](./nope.md)\n");
     expect(() => checkMarkdownLinks(root)).toThrow(/BROKEN MARKDOWN LINK/);
   });
 });
@@ -254,6 +290,12 @@ describe("checkNoRootSkill", () => {
     const root = repo([{ name: "x" }], { rootSkill: true });
     expect(() => checkNoRootSkill(root)).toThrow(/ROOT SKILL.md DISALLOWED/);
   });
+
+  it("fails when the skills container has its own SKILL.md", () => {
+    const root = repo([{ name: "x" }]);
+    writeFileSync(join(root, "skills", "SKILL.md"), buildFrontmatter({ name: "skills" }));
+    expect(() => checkNoRootSkill(root)).toThrow(/ROOT SKILL.md DISALLOWED/);
+  });
 });
 
 describe("checkResolverConsistency", () => {
@@ -265,7 +307,7 @@ describe("checkResolverConsistency", () => {
 
   it("fails when skill not listed in RESOLVER.md", () => {
     const root = repo([{ name: "a" }, { name: "b" }], {
-      resolver: "- skills/a/SKILL.md",
+      resolver: "- skills/engineering/a/SKILL.md",
     });
     const map = checkSkillFiles(root);
     expect(() => checkResolverConsistency(root, map)).toThrow(/RESOLVER GAP.*b/);
@@ -273,10 +315,46 @@ describe("checkResolverConsistency", () => {
 
   it("fails when RESOLVER.md references non-existent skill", () => {
     const root = repo([{ name: "a" }], {
-      resolver: "- skills/a/SKILL.md\n- skills/ghost/SKILL.md",
+      resolver: "- skills/engineering/a/SKILL.md\n- skills/engineering/ghost/SKILL.md",
     });
     const map = checkSkillFiles(root);
     expect(() => checkResolverConsistency(root, map)).toThrow(/RESOLVER STALE.*ghost/);
+  });
+
+  it.each(["skills/design/a/SKILL.md", "skills/a/SKILL.md"])(
+    "rejects a real name at an invalid path: %s",
+    (path) => {
+      const root = repo([{ name: "a" }], { resolver: `- ${path}` });
+      expect(() => checkResolverConsistency(root, checkSkillFiles(root))).toThrow(
+        /RESOLVER PATH MISMATCH/,
+      );
+    },
+  );
+});
+
+describe("checkCategoryReadmes", () => {
+  it("requires complete navigation for each populated category", () => {
+    const root = repo([{ name: "a" }, { name: "b", category: "design" }]);
+    expect(() => checkCategoryReadmes(root)).not.toThrow();
+  });
+
+  it("rejects a missing category README", () => {
+    const root = repo([{ name: "a" }]);
+    rmSync(join(root, "skills", "engineering", "README.md"));
+    expect(() => checkCategoryReadmes(root)).toThrow(/CATEGORY README MISSING/);
+  });
+
+  it.each([
+    ["omitted skills", ["./a/SKILL.md"], /CATEGORY README GAP.*b/],
+    ["cross-category entries", ["../design/c/SKILL.md"], /CATEGORY README STALE/],
+    ["duplicate entries", ["./a/SKILL.md", "./a/SKILL.md"], /CATEGORY README DUPLICATE/],
+  ])("rejects %s", (_case, targets, error) => {
+    const root = repo([{ name: "a" }, { name: "b" }, { name: "c", category: "design" }]);
+    writeFileSync(
+      join(root, "skills", "engineering", "README.md"),
+      `# Engineering\n\n${targets.map((target) => `- [skill](${target}): A skill.`).join("\n")}\n`,
+    );
+    expect(() => checkCategoryReadmes(root)).toThrow(error);
   });
 });
 

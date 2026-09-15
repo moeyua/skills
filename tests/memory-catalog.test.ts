@@ -26,7 +26,7 @@ function catalogRepo(catalogBody: string, formatFiles: string[]): string {
   const root = mkdtempSync(join(tmpdir(), "skills-cat-"));
   mkdirSync(join(root, "rules"), { recursive: true });
   writeFileSync(join(root, "rules", "memory-catalog.md"), catalogBody);
-  const fdir = join(root, "skills", "docs", "references", "formats");
+  const fdir = join(root, "skills", "engineering", "docs", "references", "formats");
   mkdirSync(fdir, { recursive: true });
   for (const f of formatFiles) writeFileSync(join(fdir, f), "# fmt\n");
   activeRoots.push(root);
