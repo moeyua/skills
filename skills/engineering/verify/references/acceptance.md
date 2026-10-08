@@ -1,22 +1,15 @@
-# Independent acceptance
+# Independent verification
 
-Use only when the requested claim or an authoritative project contract requires independent acceptance, `accepted`, or `done`. Ordinary verification reports its selected scope and proof without this protocol.
+Use only when the user requests independent verification. Ordinary verification reports its selected scope and proof without this protocol. The result is a record: it informs repair and reporting but never decides a plan's `done` status.
 
 ## Establish the claim independently
 
-Use a fresh context independent of the implementation trajectory. Independently establish a stable, recomputable basis for the complete claimed change. Read the original outcome and authorization boundary, candidate artifacts, local evidence and producer, and known limitations; select sufficient evidence independently, composing Review when relevant. A full-history fork, an Implement self-check, or a historical `done` without complete Assurance does not supply independence or missing evidence.
+Use a fresh context without the implementation history; a fresh subagent satisfies this. A full-history fork or an Implement self-check is not independent. Read the original outcome and authorization boundary, the changed artifacts, local evidence and its producer, and known limitations; select sufficient evidence independently, composing Review when relevant.
 
-If the basis cannot remain stable after the conversation moves, independent judgment is unavailable, or sufficient evidence cannot be obtained, return `inconclusive`. Do not reinterpret the request as ordinary scoped verification and return a pass for weaker proof.
+Observations that cannot be automated—real devices, real system UI, platform release gates—are reported as known limitations, not as reasons to withhold a verdict on what was observable. Cross-platform evidence is the PR CI; never suggest moving a session to another machine. If necessary evidence or independent judgment cannot be obtained, return `inconclusive`. Do not reinterpret the request as ordinary scoped verification and return a pass for weaker proof.
 
-## Report the attestation
+## Report the result
 
-Report the basis and `Verify producer` / reference with exactly one verdict (`pass`, `findings`, or `inconclusive`) and exactly one acceptance field:
+Report the Verify reference with exactly one verdict (`pass`, `findings`, or `inconclusive`), the scope covered, proof actually inspected or run, known limitations, and actionable findings.
 
-- `attested for the exact current candidate` only for a `pass` covering the original outcome, authorization, and complete current basis;
-- `not established` for findings, inconclusive evidence, or incomplete candidate coverage.
-
-Include proof actually inspected or run, limitations, and actionable findings. `not requested` describes ordinary verification outside this protocol; it is not a substitute when formal acceptance was requested.
-
-Only a basis-matched `pass` + `attested for the exact current candidate` pair may be mechanically projected by a caller into an associated plan's `done` state. Findings deny acceptance but do not authorize repair or produce an `approved` state. Verify does not edit the plan, and a caller cannot reinterpret or manufacture a result field.
-
-An attestation covers only the verified version. Repairs or other relevant edits require a new basis and another Verify to regain acceptance. A recorded plan result is a time-scoped snapshot: later applicable evidence supersedes it, including Review findings that contradict the attested claim. Consumers cannot continue claiming current acceptance while such a conflict remains unresolved; resolve the conflict with evidence or obtain a new applicable Verify. Current acceptance requires a basis match and the latest applicable result. Without those facts, report only the historical record or obtain a new Verify; never infer missing provenance or relabel an older producer as Verify.
+Verify does not edit the plan. The caller records the reference and verdict in the plan's Assurance without reinterpreting them. Findings do not authorize repair or change plan status; an authorized repair happens in the same delivery and is recorded there. A result covers only the version it inspected; later conflicting evidence stays visible rather than being overwritten by an older pass.

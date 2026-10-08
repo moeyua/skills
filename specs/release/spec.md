@@ -85,7 +85,7 @@ Verify: [release contract](../../tests/release.test.ts)
 origin 非 GitHub、gh 未认证、仓库不可访问或 default branch 无法解析时，release 必须在 release metadata transaction、commit、push、tag 与 Release 前停止并报告。
 Verify: manual(integration)
 
-### Requirement: release state 不替代实现验收
+### Requirement: release state 不替代实现证据
 
-release 只能 attest 已核验的 release metadata commit、tag 与 GitHub Release state；成功创建或复用 release identity 不得被升级为缺失的 implementation acceptance、Verify pass 或产品 outcome 证明。普通 upstream 结果不要求额外验收字段；正式验收相关时必须保留实际 Verify 来源、basis 与 exact verdict + acceptance-field pair，以及 basis 变化或后续 Review/Verify 冲突证据对当前验收的限制，不由 release state 推定。历史 Check 记录保持原来源与时间范围，不改写为 Verify 证明。
+release 只能 attest 已核验的 release metadata commit、tag 与 GitHub Release state；成功创建或复用 release identity 不得被升级为缺失的实现证据、Verify pass 或产品 outcome 证明。上游 Review 或 Verify 结果按记录转述，包括后续冲突证据，不由 release state 推定。历史 Check 记录保持原来源与时间范围，不改写为 Verify 证明。
 Verify: manual(integration)

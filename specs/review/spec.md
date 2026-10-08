@@ -23,5 +23,5 @@ Verify: manual(integration)
 
 ### Requirement: 审阅结论限定范围并返回调用方
 
-review 必须对实际范围返回恰好一个 pass、findings 或 inconclusive，报告适用版本、实际命令或观察及重要缺口。pass 仅说明所阅范围未发现可操作问题，不证明运行结果或实现验收；findings 表示已有证据支持的问题，inconclusive 表示必要判断无法建立。其他范围未覆盖不能抹去已成立的发现。规划审阅结果返回 Plan 修订；修订后的定向核对不能扩展原独立 verdict 到新版本、冒充新的独立 pass、递归启动 Plan、升级 draft 或产生 candidate、accepted、done。普通 review 仅提供证据，正式验收属于 Verify。
+review 必须对实际范围返回恰好一个 pass、findings 或 inconclusive，报告适用版本、实际命令或观察及重要缺口。pass 仅说明所阅范围未发现可操作问题，不证明运行结果；findings 表示已有证据支持的问题，inconclusive 表示必要判断无法建立。其他范围未覆盖不能抹去已成立的发现。规划审阅结果返回 Plan 修订；修订后的定向核对不能扩展原独立 verdict 到新版本、冒充新的独立 pass、递归启动 Plan、升级 draft 或改变 plan 状态。普通 review 仅提供证据。
 Verify: manual(integration)

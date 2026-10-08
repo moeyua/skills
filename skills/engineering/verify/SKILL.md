@@ -1,6 +1,6 @@
 ---
 name: verify
-description: 'Determine whether a claimed result has sufficient evidence through tests, real behavior, and relevant review. Use when the user says "run the tests" / "check this works" / "验证", requests a pre-merge gate, or requires formal acceptance. Not for fixing failures, writing implementation/tests, or standalone design/code review (use review).'
+description: 'Determine whether a claimed result has sufficient evidence through tests, real behavior, and relevant review. Use when the user says "run the tests" / "check this works" / "验证", requests a pre-merge gate, or asks for independent verification. Not for fixing failures, writing implementation/tests, or standalone design/code review (use review).'
 ---
 
 # Verify
@@ -17,7 +17,7 @@ When the claim needs review evidence, compose [Review](../review/SKILL.md) from 
 
 Treat compatibility as a constraint only when the original outcome or authoritative contract establishes it. Within the selected scope, masked failures, unauthorized fallback, compatibility layer, migration, dual path or legacy path, and superseded paths retained after an authorized replacement are findings. When the claim depends on this boundary and evidence cannot establish it, return `inconclusive`; do not broaden an ordinary scoped verification to prove its global absence.
 
-Read [independent acceptance](references/acceptance.md) only when the request or an authoritative project contract requires formal independent acceptance, `accepted`, or `done`. Ordinary verification, including a broad gate, needs no complete-candidate identity or attestation form unless the claim requires it.
+Read [independent verification](references/acceptance.md) only when the user requests independent verification. Ordinary verification, including a broad gate, needs no independent context or extra record form.
 
 ## Verdict and boundary
 
@@ -27,7 +27,7 @@ Return exactly one verdict for the selected claim:
 - `findings` — evidence establishes defects or scope/intent conflicts that prevent the claim;
 - `inconclusive` — necessary evidence or judgment could not be obtained.
 
-Report scope, actual commands and observations, actionable findings, and material missing evidence. Distinguish a demonstrated failure from an unavailable environment, preserving both when present. Never shrink the user's original claim after evidence fails so that a narrower result can be called a pass. A scoped pass cannot produce `accepted` or `done`; formal acceptance adds only the fields required by its reference.
+Report scope, actual commands and observations, actionable findings, and material missing evidence. Distinguish a demonstrated failure from an unavailable environment, preserving both when present. Never shrink the user's original claim after evidence fails so that a narrower result can be called a pass. No verdict changes a plan's status; Implement records a requested independent result in the plan's Assurance.
 
 Verify is read-only: it does not edit source, tests, plans, Issues or docs, stage, commit, push, or fix findings. Tests and user-path observations may run the project; startup failure is evidence, not permission to patch. If guidance prevents requested verification, link and quote the relevant instruction and explain the exact limitation while completing unaffected observations.
 
