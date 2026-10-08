@@ -20,7 +20,7 @@ For documentation drift:
 - extract checkable claims from README, ARCHITECTURE, and other prose; leave uncheckable rationale undecided;
 - report only high-confidence contradictions, clearly separating the document claim from observed code/configuration.
 
-Independent claim groups may be investigated in parallel when the host permits it and results retain their source evidence. Run dependency, CI, or history probes only when the requested scope includes them and the project exposes the required manifest, remote, or history. A missing prerequisite is a named skip, not a failure.
+Independent claim groups may be investigated in parallel when the host permits it and results retain their source evidence; check each returned result's evidence before accepting it into the report. Run dependency, CI, or history probes only when the requested scope includes them and the project exposes the required manifest, remote, or history. A missing prerequisite is a named skip, not a failure.
 
 ## Boundary and report
 

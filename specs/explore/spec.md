@@ -23,7 +23,7 @@ Verify: manual(integration)
 
 ### Requirement: 来源可区分且不猜测
 
-文档 claim 必须标注来源并与代码/配置观察区分；证据不存在时必须明确说明，来源冲突时同时报告，不得发明事实或替用户决定 truth。
+文档 claim 必须标注来源并与代码/配置观察区分；证据不存在时必须明确说明并指出已查找的位置，来源冲突时同时报告，不得发明事实或替用户决定 truth。
 Verify: manual(integration)
 
 ### Requirement: 报告与上下文使用同一事实基础
