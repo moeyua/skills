@@ -16,20 +16,20 @@ The 13 skills are organized by purpose.
 
 Development, software architecture, testing, and engineering project maintenance.
 
-| Skill                                                | Outcome                                                                                                   |
-| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| [explore](./skills/engineering/explore/SKILL.md)     | Read-only project/module understanding; fixed Overview before scoped depth                                |
-| [shape](./skills/engineering/shape/SKILL.md)         | Intent and key design clarified through answerable questions                                              |
-| [plan](./skills/engineering/plan/SKILL.md)           | Local plans, problem-oriented Issues, or pairs, with one audit and authorized corrections                 |
-| [debug](./skills/engineering/debug/SKILL.md)         | Cause investigation from expected versus actual behavior, with evidence and explicit unknowns             |
-| [implement](./skills/engineering/implement/SKILL.md) | An authorized working change with proportional proof and accurate durable truth                           |
-| [review](./skills/engineering/review/SKILL.md)       | Evidence-backed findings on designs, planning artifacts, or changes                                       |
-| [verify](./skills/engineering/verify/SKILL.md)       | A scoped verdict on whether the claimed outcome has sufficient evidence; formal acceptance when requested |
-| [docs](./skills/engineering/docs/SKILL.md)           | Established truth recorded in the six-type catalog or a named project document                            |
-| [publish](./skills/engineering/publish/SKILL.md)     | Missing commit, push, and pull-request actions completed from current state                               |
-| [release](./skills/engineering/release/SKILL.md)     | A confirmed release set, one complete metadata commit, tags, and Releases                                 |
-| [converge](./skills/engineering/converge/SKILL.md)   | Idempotent catalog-wide alignment to current memory formats                                               |
-| [doctor](./skills/engineering/doctor/SKILL.md)       | Read-only whole-project documentation drift and health audit                                              |
+| Skill                                                | Outcome                                                                                                          |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| [explore](./skills/engineering/explore/SKILL.md)     | Read-only project/module understanding; fixed Overview before scoped depth                                       |
+| [shape](./skills/engineering/shape/SKILL.md)         | Intent and key design clarified through answerable questions                                                     |
+| [plan](./skills/engineering/plan/SKILL.md)           | Local plans, problem-oriented Issues, or pairs, with one audit and authorized corrections                        |
+| [debug](./skills/engineering/debug/SKILL.md)         | Cause investigation from expected versus actual behavior, with evidence and explicit unknowns                    |
+| [implement](./skills/engineering/implement/SKILL.md) | An authorized working change with proportional proof and accurate durable truth                                  |
+| [review](./skills/engineering/review/SKILL.md)       | Evidence-backed findings on designs, planning artifacts, or changes                                              |
+| [verify](./skills/engineering/verify/SKILL.md)       | A scoped verdict on whether the claimed outcome has sufficient evidence; independent verification when requested |
+| [docs](./skills/engineering/docs/SKILL.md)           | Established truth recorded in the six-type catalog or a named project document                                   |
+| [publish](./skills/engineering/publish/SKILL.md)     | Missing commit, push, and pull-request actions completed from current state                                      |
+| [release](./skills/engineering/release/SKILL.md)     | A confirmed release set, one complete metadata commit, tags, and Releases                                        |
+| [converge](./skills/engineering/converge/SKILL.md)   | Idempotent catalog-wide alignment to current memory formats                                                      |
+| [doctor](./skills/engineering/doctor/SKILL.md)       | Read-only whole-project documentation drift and health audit                                                     |
 
 ### [Productivity](./skills/productivity/README.md)
 
@@ -66,7 +66,7 @@ Enter the Skill that matches the requested outcome; there is no required precedi
 
 Plan supports `local`, `issue`, and `both` (the default). After generation, it runs one independent Review, automatically corrects clear findings within the selected target's permissions, and verifies those corrections. It reports generation, audit, and revision results separately, preserving unresolved decisions and evidence gaps. New local plans remain `draft`; planning review does not authorize implementation.
 
-Shape asks currently answerable, independent questions together and uses concrete situations to help when the user is unsure. Debug establishes causes; Implement retains responsibility for an authorized repair, its regression checks, and affected truth. Review asks what needs correction and why; Verify asks whether the original claim is supported. Both may read code or run checks, and both leave repairs to the authorized caller. Ordinary review or verification does not imply independent acceptance.
+Shape asks currently answerable, independent questions together and uses concrete situations to help when the user is unsure. Debug establishes causes; Implement retains responsibility for an authorized repair, its regression checks, and affected truth. Review asks what needs correction and why; Verify asks whether the original claim is supported. Both may read code or run checks, and both leave repairs to the authorized caller. A plan is `done` when its implementation lands in the same PR; review and verification results are recorded, not gates.
 
 See the [Resolver](./skills/RESOLVER.md) for route distinctions and [Architecture](./ARCHITECTURE.md) for context topology and side-effect ownership.
 
@@ -83,7 +83,7 @@ pnpm lint
 node skills/engineering/doctor/scripts/checker.ts . --json
 ```
 
-GPT-6 Astra is the primary behavior evaluation model; Codex and Claude Code use the same Skill set. Behavior is verified through actual sessions. Ordinary implementation, review, and verification results stay concise, while formal acceptance retains independent evidence.
+GPT-6 Astra is the primary behavior evaluation model; Codex and Claude Code use the same Skill set. Behavior is verified through actual sessions. Ordinary implementation, review, and verification results stay concise, while a requested independent verification runs in a fresh context.
 
 ## Acknowledgements
 

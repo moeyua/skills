@@ -1,6 +1,6 @@
 ---
 name: review
-description: 'Find evidence-backed problems in a design, planning artifact, or code change. Use when the user says "review" / "审阅" / "把关", asks what needs correction, or Plan requests its independent planning audit. Not for fixing findings, proving a claimed result (use verify), or formal implementation acceptance.'
+description: 'Find evidence-backed problems in a design, planning artifact, or code change. Use when the user says "review" / "审阅" / "把关", asks what needs correction, or Plan requests its independent planning audit. Not for fixing findings or proving a claimed result, including independent verification (use verify).'
 ---
 
 # Review
@@ -35,4 +35,4 @@ Lead with high-confidence findings ordered by impact, or the bounded conclusion 
 
 Review is read-only: it does not edit source, tests, plans, Issues or docs, stage, commit, push, or repair findings. Running the project to observe it is permitted; startup failure does not authorize a configuration patch. Findings grant no repair authority. If guidance prevents requested work, link and quote the relevant instruction and explain the limitation while completing unaffected review.
 
-A standalone Review ends with its scoped result. Inside Plan or Implement, return evidence to that caller so it can continue its already-authorized work. Review never recursively invokes Plan, upgrades a draft, establishes an implementation candidate, or produces `accepted` / `done`. Formal acceptance belongs to Verify; an ordinary review pass supplies only review evidence.
+A standalone Review ends with its scoped result. Inside Plan or Implement, return evidence to that caller so it can continue its already-authorized work. Review never recursively invokes Plan, upgrades a draft, or changes a plan's status. An ordinary review pass supplies only review evidence.

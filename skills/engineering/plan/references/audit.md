@@ -14,11 +14,11 @@ If Review, independent execution, artifact access, or necessary evidence is unav
 
 Review checks local plans for fidelity to the request and decisions, factual grounding, bounded scope, feasible ordering and dependencies, and verification that can distinguish the requested outcome. For Issues, review the bounded problem, known evidence, constraints and observable outcome; an unknown solution or incomplete acceptance is valid for `issue`. For `both`, also check semantic consistency while preserving the plan/problem-record distinction. Report actionable defects, not stylistic preferences or adjacent improvements.
 
-Review returns one `pass`, `findings`, or `inconclusive`, the inspected artifact versions and scope, concrete findings and material evidence gaps. This is planning review, not implementation acceptance; do not load Verify's implementation acceptance protocol or create candidate/Assurance fields.
+Review returns one `pass`, `findings`, or `inconclusive`, the inspected artifact versions and scope, concrete findings and material evidence gaps. This is planning review, not implementation verification; do not load Verify's independent verification protocol or create Assurance fields.
 
 Plan then corrects findings grounded in the original request, settled decisions and project facts within its artifact authorization. Resolve repository-answerable facts directly. For a new requirement, consequential trade-off or unresolved evidence conflict, expose the specific decision and complete unrelated, clearly authorized corrections while awaiting it. Findings do not authorize implementation or edits outside the selected target.
 
-Reread the corrected artifacts and verify the findings and affected relationships. Preserve the original audit verdict and distinguish this targeted verification from another independent review; changing the inspected content invalidates the old verdict's coverage of the new version. Do not relabel an original `findings` as independent `pass`, loop through full audits, or recursively invoke Plan. Report any remaining defects. A new local plan stays `draft`; planning review never grants `approved`, `candidate`, `accepted` or `done`.
+Reread the corrected artifacts and verify the findings and affected relationships. Preserve the original audit verdict and distinguish this targeted verification from another independent review; changing the inspected content invalidates the old verdict's coverage of the new version. Do not relabel an original `findings` as independent `pass`, loop through full audits, or recursively invoke Plan. Report any remaining defects. A new local plan stays `draft`; planning review never grants `approved` or `done`.
 
 ## Correction ownership
 

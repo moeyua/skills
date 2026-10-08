@@ -15,7 +15,7 @@ Inspect project instructions, working tree, target code, and verification entry 
 
 State the observable outcome and affected paths. Resolve repository-answerable facts and mechanical choices yourself. New product semantics, dependencies, external side effects, or scope expansion need authority. Fallbacks, compatibility layers, migrations, dual paths, and legacy paths are not mechanical safety; they require explicit user authority or authoritative project intent. An authorized replacement removes superseded code, configuration, tests, and directly affected durable truth.
 
-When an associated plan needs lifecycle maintenance or the outcome requires formal acceptance, read `references/assurance.md` before the first relevant edit or claim. Ordinary work without a plan or formal acceptance needs no assurance artifact or complete-diff identity.
+When an associated plan needs lifecycle maintenance or the user requests independent verification, read `references/assurance.md` before the first relevant edit or claim. Ordinary work without either needs no assurance record.
 
 ## Build and verify
 
@@ -29,9 +29,9 @@ Run required checks and the smallest evidence that can disprove the change; broa
 
 Compose Debug to investigate uncertain causes, Review to identify actionable defects, Verify to establish evidence for the requested result, and Docs for an explicit document target, Spec delta, or directly affected false claim whose correction is already authorized. Their results return to the active implementation; they do not end it or require the user to authorize the same repair again. Use only the support the outcome needs, without a fixed sequence.
 
-Implement owns persistent code changes, regression tests, and necessary durable-truth updates. Debug supplies causal evidence and regression scenarios; temporary probes use the task's existing authority. The same agent can diagnose and implement. If expected behavior itself needs a consequential choice, use Shape for that choice and continue independent authorized work. Review and Verify stay read-only; Docs records only established truth. After repairing an evidenced cause, verify the regression and replay the original trigger. Rerun only affected proof after further repair or documentation changes. Formal acceptance additionally follows `references/assurance.md`; an ordinary Review or Verify pass is not an acceptance attestation.
+Implement owns persistent code changes, regression tests, and necessary durable-truth updates. Debug supplies causal evidence and regression scenarios; temporary probes use the task's existing authority. The same agent can diagnose and implement. If expected behavior itself needs a consequential choice, use Shape for that choice and continue independent authorized work. Review and Verify stay read-only; Docs records only established truth. After repairing an evidenced cause, verify the regression and replay the original trigger. Rerun only affected proof after further repair or documentation changes. A user-requested independent Verify additionally follows `references/assurance.md`.
 
-When the host permits delegation, delegate a bounded, independent investigation or verification if it saves time or improves judgment. Give it the required raw context, expected deliverable, and edit ownership; continue independent work and inspect its result. Keep tightly dependent edits local. A full-history fork does not establish independent acceptance.
+When the host permits delegation, delegate a bounded, independent investigation or verification if it saves time or improves judgment. Give it the required raw context, expected deliverable, and edit ownership; continue independent work and inspect its result. Keep tightly dependent edits local. A full-history fork is not an independent verification context.
 
 Retry a command once only when evidence suggests a transient failure. Repeated failure ends blind retries, not diagnosis: inspect new evidence, revise the hypothesis, and repair within scope. Ask only when the next action needs changed intent, scope, dependency or document authority, or cannot proceed with available access. Finish unaffected authorized work while that action waits. If a skill instruction causes a pause, link its source, quote the relevant instruction, and explain why it applies rather than inventing a new approval gate.
 
@@ -39,6 +39,6 @@ A failed, ambiguous, or missing required state remains its exact non-success res
 
 ## Result
 
-Lead with what works, then give relevant changed paths, actual verification and important limitations. Ordinary results need no producer/acceptance form. If a plan or formal acceptance is involved, preserve the required record and report its actual state through `references/assurance.md`; do not self-attest acceptance or imply that an unperformed supporting capability occurred.
+Lead with what works, then give relevant changed paths, actual verification and important limitations. Ordinary results need no assurance form. If a plan is involved, report its status and Assurance record through `references/assurance.md`; do not imply that an unperformed supporting capability occurred.
 
 Implementation does not authorize commit, push, PR, release, deployment, or other delivery. Continue those outcomes only when separately authorized through their owning capability.

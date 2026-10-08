@@ -41,7 +41,7 @@ Verify: [publish state machine](../../tests/publish.test.ts)
 commit、push、PR 任一步失败不得撤销此前成功状态；模糊 PR create 只按 exact head 查询一次，非 GitHub remote 在安全 push 后提供 manual PR/MR handoff。
 Verify: [publish state machine](../../tests/publish.test.ts)
 
-### Requirement: 发布状态不升级实现验收
+### Requirement: 发布状态不升级实现证据
 
-publish 只能 attest 实际 commit、push 与 PR state。普通 upstream 结果不要求额外验收字段；涉及正式 acceptance 或已记录 plan assurance 时，必须准确转述 candidate stable basis、evidence、Verify producer/reference、exact verdict + acceptance-field pair 及 verified basis 是否仍匹配 published candidate，并保留相冲突的 Review finding 与适用的后续 Verify 结果，不沿用旧通过声明当前验收。历史 Check 记录保留原字段、来源及时间范围，不改写为 Verify 证明。发布 candidate、PR 可 review、重复测试结果或缺少完整 Assurance 的 legacy done 不得被升级为 independent acceptance、Verify pass 或 done。
+publish 只能 attest 实际 commit、push 与 PR state；发布或重复测试结果不得被升级为 Verify pass。关联 plan 的状态与 Assurance 改动属于本次交付的相关路径，必须与代码一起提交、进入同一个 PR。Review finding 与 Verify 结果按记录转述，不升级。历史 Check 记录保留原字段、来源及时间范围，不改写为 Verify 证明。
 Verify: manual(integration)

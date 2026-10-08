@@ -27,7 +27,7 @@ Browse [Engineering](./engineering/README.md) or [Productivity](./productivity/R
 - Explore maps facts; Doctor judges project-wide drift; Review examines a scoped design, change, or planning artifact for actionable problems; Verify establishes evidence for a specified result.
 - Shape helps clarify intent and key design through answerable questions; Plan records bounded problems or persists implementation-ready work; Implement changes the project.
 - Debug investigates known deviations. When expected behavior itself is unresolved, Shape clarifies it; in an authorized repair, Implement uses Debug and continues through the fix and original symptom verification.
-- Review and Verify may both inspect code and run relevant observations. They stay read-only and return findings or evidence to the authorized caller; unit, integration, and E2E tests are methods, not public routes. Only formal Verify acceptance requires its complete independent attestation.
+- Review and Verify may both inspect code and run relevant observations. They stay read-only and return findings or evidence to the authorized caller; unit, integration, and E2E tests are methods, not public routes. Only a user-requested independent Verify requires a fresh context without the implementation history.
 - Docs writes focused established truth; Converge batch-aligns the catalog; Doctor only reports.
 - Publish creates reviewable branch/PR state; Release creates version/repository-metadata/tag/Release state.
 - Handoff is transient conversation context, not project documentation.

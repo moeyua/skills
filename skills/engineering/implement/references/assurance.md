@@ -1,34 +1,22 @@
-# Plan state and formal acceptance
+# Plan state and independent verification
 
-Read this reference when maintaining an associated plan or when the requested outcome requires formal independent acceptance. Ordinary implementation without either trigger reports behavior, proof, and limitations directly.
+Read this reference when maintaining an associated plan or when the user requests independent verification. Ordinary implementation without either trigger reports behavior, proof, and limitations directly.
 
 ## Maintain an associated plan
 
-Explicit implementation authorization moves an associated `draft` or unaccepted `candidate` plan to `approved` before the first implementation edit. When Debug, Review, or Verify is composed inside the active Implement invocation, that authorization remains available for in-scope repair. Findings alone never create authorization or an `approved` state. A `done` plan is never silently replayed or reopened; new work needs explicit implementation authorization. Legacy `done` without complete Assurance is historical completion, not independent acceptance. Preserve historical Check records with their original source and time scope; do not relabel them as Verify results or backfill provenance.
+Explicit implementation authorization moves an associated `draft` plan to `approved` before the first implementation edit. When Debug, Review, or Verify is composed inside the active Implement invocation, that authorization remains available for in-scope repair. Findings alone never create authorization or an `approved` state. A `done` plan is never silently replayed or reopened; new work needs explicit implementation authorization.
 
-Once the outcome is implemented and local evidence and limitations are known, identify the complete claimed change by a stable, independently recomputable basis. In a git worktree, use the base revision plus a deterministic identity for the complete claimed diff, excluding this plan's own status and Assurance projection. Use an equivalent immutable identity for another surface. Mark the associated `approved` plan `candidate` and replace its one `## Assurance` snapshot:
+Once the described implementation is complete and the project's required automated verification passes, mark the associated plan `done` and replace its one `## Assurance` record in the working tree, beside the code changes. Implement does not commit; Publish delivers the plan with the code in the same PR. Nothing after merge changes the status.
 
-- `Candidate basis`: the stable identity;
-- `Candidate producer`: Implement;
-- `Evidence and limitations`: proof actually produced and material gaps;
-- `Verify producer`: the independent Verify reference, otherwise `none`;
-- `Verdict`: `pass`, `findings`, `inconclusive`, or `not run`;
-- `Acceptance`: `attested for the exact current candidate`, `not requested`, or `not established`.
+- `Evidence and limitations`: tests and checks actually run, Review results, and known limitations;
+- `Verify`: the optional independent Verify reference and its verdict, otherwise `not run`.
 
-For an ordinary scoped Verify, record its actual verdict locally. A scoped `pass` records `not requested`; `findings` and `inconclusive` record `not established`, following the plan's lifecycle matrix. This projection does not fabricate a Verify attestation. Record Review outcomes under `Evidence and limitations`; they do not populate `Verify producer` or `Verdict`. If Verify did not run, keep `Verdict: not run`. Missing requested acceptance stays `not established`. Without a plan, report formal acceptance evidence in the conversation and do not create an artifact.
+Observations that cannot be automated—real devices, real system UI, platform release gates—go into known limitations and never block `done`. Cross-platform evidence is the PR CI: name it as the source without waiting for its result or adding a later commit, and never suggest moving a session to another machine. If CI or an optional Verify reports problems before merge and the repair is authorized, fix them in the same PR and update the Assurance record; the status stays `done`.
 
-## Obtain independent acceptance
+Read a legacy plan whose implementation has merged as `done`, following the plan template's legacy status table. Missing records never make a plan incomplete; do not rewrite or backfill legacy plans. Without a plan, report evidence in the conversation and do not create an artifact.
 
-Formal acceptance is triggered by a request for independent acceptance, `accepted` / `done`, or an authoritative project contract requiring that claim. A broad diff or pre-merge check requires the requested proof, but does not by itself create an acceptance claim.
+## Optional independent Verify
 
-Obtain Verify in a fresh context independent of the implementation trajectory, using the [Verify acceptance protocol](../../verify/references/acceptance.md). Give the original outcome and authorization, complete candidate basis, raw artifacts, local evidence, Review findings and known limitations. Let the verifier establish scope and proof independently; do not supply the intended verdict or treat a full-history fork as independence. The result must identify its stable basis and Verify producer/reference, exactly one verdict, and an explicit acceptance field. If independent judgment is unavailable, report the candidate and missing acceptance honestly.
+Run an independent Verify only when the user requests one. Obtain it in a fresh context without the implementation history—a fresh subagent satisfies this—using the [Verify independent protocol](../../verify/references/acceptance.md). Give it the original outcome and authorization, the changed artifacts, local evidence, Review findings, and known limitations; do not supply an intended verdict. Record its reference and verdict in the plan's Assurance. The result informs repair and reporting; it does not decide `done`.
 
-Consume the exact Verify result mechanically:
-
-- A `pass` moves the associated plan to `done` only with `attested for the exact current candidate` and a matching stable basis.
-- `findings` leave it at `candidate` with acceptance not established. When the active Implement authorization covers repair, move it to `approved` before editing and complete the repair; otherwise the finding does not authorize changes.
-- `inconclusive` leaves it at `candidate` and identifies missing evidence. A scoped pass or absent formal fields cannot be converted into an acceptance result.
-
-A repair or other relevant change creates a new basis; the earlier pass does not attest it. A plan's `done`/Assurance is a time-scoped snapshot. Current acceptance requires basis match and the latest applicable Verify result available in context. A later Verify finding supersedes an older pass wherever available. A conflicting Review finding also prevents claiming current acceptance: resolve the conflict with evidence or obtain a new applicable Verify. Read-only Review and Verify do not rewrite or reopen the plan; repair needs active or new implementation authorization. Never backfill missing provenance or create a global validity ledger.
-
-Report the candidate or accepted state, stable basis, actual evidence and producer, applicable Verify producer/reference and exact verdict + acceptance-field pair, whether its basis matches, and material limitations, including conflicting Review evidence. Do not claim independent acceptance from Implement's own tests, dogfood, delivery state, ordinary Review, or judgment.
+Report the plan status, the evidence actually produced and its producer, any Verify reference and verdict, and material limitations. Do not present Implement's own tests or judgment as an independent Verify.

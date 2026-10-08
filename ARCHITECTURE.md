@@ -121,16 +121,16 @@ Shape and Handoff are visible checkpoints, not mandatory upstream stages. Shape 
 | Explore    | keep documentation claims, observed facts, and source conflicts distinguishable                     |
 | Shape      | expose the active outcome, failed or unresolved conditions, continuity choices, and recommendations |
 | Plan       | persist settled direction; audit outputs and revise within authority without upgrading the verdict  |
-| Implement  | deliver behavior with proof; identify a candidate when a plan or formal acceptance requires it      |
+| Implement  | deliver behavior with proof; mark an associated plan `done` with its Assurance in the same delivery |
 | Debug      | establish causal evidence without acquiring repair authority                                        |
 | Review     | expose actionable problems against source intent and actual artifacts                               |
-| Verify     | judge outcome evidence; attest formal acceptance only for a matching complete basis                 |
+| Verify     | judge outcome evidence; run independently in a fresh context only when the user requests it         |
 | Docs       | record authoritative current truth without carrying a superseded design through a clean break       |
-| Publish    | attest exact commit/push/PR state without upgrading implementation assurance                        |
-| Release    | attest the exact authorized release state without substituting for implementation acceptance        |
+| Publish    | attest exact commit/push/PR state; deliver an associated plan's status with the code in one PR      |
+| Release    | attest the exact authorized release state without substituting for implementation evidence          |
 | Converge   | preserve authored meaning and stop on source conflict or missing authority                          |
 | Doctor     | separate deterministic facts from model judgment and evidence                                       |
-| Handoff    | carry active, superseded, candidate, evidenced, and pending-attestation state without settling it   |
+| Handoff    | carry active, superseded, completed, evidenced, and pending state without settling it               |
 
 Fail-close and clean-break do not create stages or a generic recovery framework. Each capability applies the canonical boundary only to its own claim, artifact, or side effect.
 
@@ -156,7 +156,7 @@ After its selected target's generation phase ends, Plan locates Review in the sa
 | commit, push, PR                                                                                                | Publish outcome                    |
 | version/dependency and version-bound repository release metadata, default-branch release commit, tags, Releases | Release outcome                    |
 
-Review and Verify remain read-only and Docs remains authority-bound when composed; neither grants new implementation repair, Publish, or Release. The active caller retains its existing authorization and continues applicable work after a support result. Plan's audit verdict covers the inspected artifact version; its own subsequent verification cannot turn that verdict into a new independent pass. Formal implementation acceptance separately permits a caller to mechanically project only an exact Verify result whose producer and stable candidate basis remain applicable, without reinterpreting or manufacturing any field. Ordinary Review and Verify do not require a separate agent merely because Plan's audit does; formal Verify acceptance has its own independence requirement.
+Review and Verify remain read-only and Docs remains authority-bound when composed; neither grants new implementation repair, Publish, or Release. The active caller retains its existing authorization and continues applicable work after a support result. Plan's audit verdict covers the inspected artifact version; its own subsequent verification cannot turn that verdict into a new independent pass. A caller records a Verify result as reported, without reinterpreting or manufacturing any field. Ordinary Review and Verify do not require a separate agent merely because Plan's audit does; a user-requested independent Verify has its own fresh-context requirement.
 
 ## Progressive reference topology
 
@@ -164,8 +164,8 @@ Notable reference families:
 
 - Explore: scoped deep-dive and report interface.
 - Plan: one target contract (`local`, `issue`, or `both`); local plans load the selected change-type/template, every Issue uses the shared problem-record schema, and `both` additionally loads the managed-envelope rules for paired synchronization. All targets load `references/audit.md` for the final audit and revision boundary. Remote transaction mechanics live in the target references and shared audit reference: targets define ownership and generation transactions, while the audit reference defines remote corrections and their outcomes.
-- Implement: associated plan state and formal acceptance consumption load from `references/assurance.md` only when triggered.
-- Verify: test and e2e methods load when needed; review evidence may be composed from Review. Only formal implementation acceptance loads `references/acceptance.md`.
+- Implement: associated plan state and optional independent Verify load from `references/assurance.md` only when triggered.
+- Verify: test and e2e methods load when needed; review evidence may be composed from Review. Only a user-requested independent verification loads `references/acceptance.md`.
 - Docs: the memory catalog indexes six target-specific formats.
 - Publish: git state, PR construction, and recovery.
 - Release: release-set model, execution, and recovery.
@@ -175,36 +175,31 @@ Five source symlinks share two semantic sources in root `rules/`: `change-types.
 
 ## Artifact and state flow
 
-| artifact/state                                | producer           | useful consumers                       | absence/failure                                                                 |
-| --------------------------------------------- | ------------------ | -------------------------------------- | ------------------------------------------------------------------------------- |
-| reviewed conversational direction             | Shape + user       | Plan, Implement, Docs, Handoff         | absent for direct entry; agreement does not authorize another public outcome    |
-| local implementation plan                     | Plan               | Implement, Publish, Docs               | clear requests may proceed without it                                           |
-| canonical Issue problem record/URL            | Plan/user          | Plan `both`, Publish                   | omit closing reference if absent; unmanaged or conflicted content is not edited |
-| identifiable candidate + local evidence       | Implement          | Review, Verify, Docs, Publish, Handoff | valid lower-assurance result; does not imply independent acceptance             |
-| causal evidence + remaining unknowns          | Debug              | Implement, user                        | does not turn a hypothesis into a root cause or grant repair authority          |
-| scoped review findings + actual evidence      | Review             | Plan, Implement, Verify, Handoff       | covers the inspected version; does not establish acceptance or authorize repair |
-| scoped verification verdict + actual evidence | Verify             | Implement, Publish, Handoff            | covers the specified claim; ordinary pass does not establish acceptance         |
-| formal attestation: basis + producer + pair   | independent Verify | Implement, Publish, Handoff            | missing evidence leaves acceptance unestablished                                |
-| durable memories                              | Docs/Converge      | all fact-gathering capabilities        | load only applicable targets                                                    |
-| branch/upstream/PR state                      | Publish            | reviewers                              | partial success is preserved                                                    |
-| release basis/metadata commit/tags/Releases   | Release            | users/GitHub                           | resume from verified canonical state                                            |
+| artifact/state                                | producer      | useful consumers                       | absence/failure                                                                 |
+| --------------------------------------------- | ------------- | -------------------------------------- | ------------------------------------------------------------------------------- |
+| reviewed conversational direction             | Shape + user  | Plan, Implement, Docs, Handoff         | absent for direct entry; agreement does not authorize another public outcome    |
+| local implementation plan                     | Plan          | Implement, Publish, Docs               | clear requests may proceed without it                                           |
+| canonical Issue problem record/URL            | Plan/user     | Plan `both`, Publish                   | omit closing reference if absent; unmanaged or conflicted content is not edited |
+| implementation + plan `done` and Assurance    | Implement     | Review, Verify, Docs, Publish, Handoff | without a plan, evidence is reported in the conversation only                   |
+| causal evidence + remaining unknowns          | Debug         | Implement, user                        | does not turn a hypothesis into a root cause or grant repair authority          |
+| scoped review findings + actual evidence      | Review        | Plan, Implement, Verify, Handoff       | covers the inspected version; does not authorize repair                         |
+| scoped verification verdict + actual evidence | Verify        | Implement, Publish, Handoff            | covers the specified claim; recorded in Assurance, never gates `done`           |
+| durable memories                              | Docs/Converge | all fact-gathering capabilities        | load only applicable targets                                                    |
+| branch/upstream/PR state                      | Publish       | reviewers                              | partial success is preserved                                                    |
+| release basis/metadata commit/tags/Releases   | Release       | users/GitHub                           | resume from verified canonical state                                            |
 
 An associated local plan projects this flow without becoming its authority source:
 
 ```text
 draft --explicit implementation request--> approved
-approved --Implement candidate-----------> candidate
-candidate --Verify findings---------------> candidate
-candidate --Verify inconclusive-----------> candidate
-candidate --Verify acceptance pass--------> done
-candidate --active/new Implement auth----> approved
+approved --Implement delivered + checks---> done   (same PR as the code)
 ```
 
-Plan's generation audit and automatic revisions leave a new local plan at `draft`. They produce no implementation candidate or formal acceptance and do not enter the implementation-only `## Assurance` snapshot. The final planning report keeps the generation result, original audit verdict, revision checks, unresolved findings, and uncovered scope separate.
+Plan's generation audit and automatic revisions leave a new local plan at `draft`. They produce no `approved` or `done` state and do not enter the implementation-only `## Assurance` record. The final planning report keeps the generation result, original audit verdict, revision checks, unresolved findings, and uncovered scope separate.
 
-Without a plan or formal acceptance request, results and Handoff retain only relevant behavior, actual verification and limitations; no complete-diff identity or producer/acceptance form is required. Formal acceptance without a plan keeps its complete basis and provenance in the conversation. Associated plans record the current Assurance fields, including `Verify producer` and its `Verdict`; an ordinary scoped verdict may record the local fact `not requested` but cannot fabricate an attestation. Only an independent Verify `pass` paired with `attested for the exact current candidate` and the same stable basis is an acceptance pass. Findings leave the candidate unaccepted; a still-active Implement authorization or a new explicit implementation request—not the finding—authorizes repair and moves an associated plan to `approved`. Any repair produces a new basis and invalidates the old result.
+Without a plan, results and Handoff retain only relevant behavior, actual verification and limitations; no assurance form is required. Implement marks an associated plan `done` once the implementation is complete and the project's required automated verification passes; the status and its Assurance record (`Evidence and limitations`, `Verify`) sit beside the code and Publish delivers them in the same PR. Nothing changes the status after merge: there is no merge hook, bot commit, or separate acceptance. Observations that cannot be automated stay known limitations, and cross-platform evidence is the PR CI. A user-requested independent Verify runs in a fresh context and is recorded in Assurance; its findings inform an authorized repair in the same delivery and never authorize repair by themselves.
 
-A plan's Assurance is the last authorized, time-scoped projection for its exact basis, not a globally current acceptance oracle. A consumer must establish that the basis still matches and use the latest applicable Verify result available in its current context before claiming current acceptance; otherwise it reports only the historical snapshot or obtains a new Verify. A legacy `done` plan with no complete Assurance is historical implementation completion with acceptance not established; consumers never invent or backfill its missing basis, producer, verdict, or acceptance. Later Review findings that contradict a Verify pass prevent continuing to claim current acceptance until the conflict is resolved or an applicable new Verify result is obtained. A later finding against a closed done plan supersedes the older result in any context or Handoff that carries it, but Review and Verify remain read-only: the finding neither rewrites the plan, reopens it, nor authorizes repair. Persisting globally latest validity would require a separate authorized writer or ledger, which this architecture intentionally does not provide.
+A legacy `approved` or `candidate` plan whose implementation has merged—shown by git history or a merged PR—reads as `done`; an unmerged `candidate` reads as `approved`. Missing records never make a plan incomplete, and consumers do not rewrite or backfill legacy files.
 
 Plan target semantics are stable: omitted target is `both`; `both` writes and validates local before Issue mutation, including audit revisions; `issue` accepts 1–20 explicitly bounded same-repository problems; no target silently falls back to another. Every Issue projection rendered by Plan remains a problem record even when paired with a local plan, and only the local artifact carries implementation decisions, path-level scope, ordering, and verification. A paired Issue created by `both` wraps its Plan-owned title/type/body projection in a versioned SHA-256 managed envelope. Later `both` revisions keep the canonical URL stable, skip implementation-only changes, update a validated projection for the same bounded problem, preserve content outside the block and unrelated labels, and fail closed on ownership, digest, or identity conflicts. Audit revisions additionally require the current managed projection to match the audit baseline and preserve the outside content observed immediately before writing.
 
@@ -250,17 +245,21 @@ Shape requires Explore, and Plan requires Review plus a host capable of an indep
 7. The durable-memory catalog contains exactly six types.
 8. `change-types.md` and `memory-catalog.md` each have one shared source.
 9. No `SKILL.md` exists at the repository root, `skills/` root, or category level; categories are created only with actual skills and provide a README linking to every member.
-10. Artifacts preserve but do not create intent authority; capability outcomes cannot manufacture upstream authority or downstream acceptance; corrections reopen actual dependents, and completion claims do not exceed outcome-relevant evidence.
+10. Artifacts preserve but do not create intent authority; capability outcomes cannot manufacture upstream authority or a downstream independent verdict; corrections reopen actual dependents, and completion claims do not exceed outcome-relevant evidence.
 11. Shape's reviewed Design Summary and Handoff's continuation snapshot improve state visibility without becoming mandatory upstream artifacts or a fixed capability chain.
 12. Each capability preserves fail-close and clean-break at its own boundary: no claim manufactures success from a required failure, ambiguity, or missing state, and no authorized replacement retains an unapproved continuity path.
 
 ## Key decisions
 
+### 2026-10-08: a plan is done when its implementation lands
+
+Requiring an independent, post-merge Verify attestation before `done` left delivered plans permanently at `candidate` or `approved`, forced an extra PR just to change a status stored in the repository, and turned real-device or platform observations into blockers. The lifecycle is now `draft → approved → done`: Implement marks `done` once the implementation is complete and required automated checks pass, and the status lands with the code in the same PR. Assurance keeps tests, CI, Review, optional Verify results, and known limitations as a record, not a gate. Independent Verify runs only on request. Legacy plans whose implementation merged read as `done` without rewriting.
+
+Earlier dated decisions below record their original terminology and sources. Their former capability names and producer fields are historical; current calls and newly written Assurance records follow the contracts above. Historical plans and attestation records retain their original provenance and do not supply a current acceptance claim without the present basis and evidence.
+
 ### 2026-09-10: clarification, diagnosis, review, and verification have distinct responsibilities
 
 Shape now uses answerable rounds to help form judgments about intent and key design, retaining Explore and its read-only Design Summary boundary. Debug supplies diagnosis while Implement retains authorized repair ownership. Review and Verify replace the prior combined entry: Plan uses independent Review for artifact quality, and formal acceptance is produced by independent Verify with `Verify producer` provenance. The public surface has 13 entries and no compatibility route for the removed capability.
-
-Earlier dated decisions below record their original terminology and sources. Their former capability names and producer fields are historical; current calls and newly written Assurance records follow the contracts above. Historical plans and attestation records retain their original provenance and do not supply a current acceptance claim without the present basis and evidence.
 
 ### 2026-09-07: Astra calibration and conditional acceptance
 

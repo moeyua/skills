@@ -43,12 +43,12 @@ Verify: [plan artifact contract](../../tests/plan.test.ts)
 
 ### Requirement: 产物生成后必须完成一轮规划审计
 
-`local`、`issue` 和 `both` 必须在本次产物生成阶段到达终点后、最终汇报前，自动调用 Review 在新的独立上下文中审计已核实可读的实际产物；部分生成失败时仍须审查可读部分并说明缺口，没有可读产物时报告未执行及原始原因。审计必须提供原始用户需求、明确决定与纠正、约束和非目标、相关项目证据、target、实际产物及可定位版本、生成结果和限制；不得使用完整历史 fork 或只提供 Plan 自己的摘要。Review 必须独立读取所需事实和产物，对本地方案审查保真、范围、事实、顺序依赖、可实施性与有效验证，对 Issue 审查问题、身份、事实、约束和可观察结果，对 `both` 额外审查语义一致性；纯 `issue` 不得因未知方案或完整验收而产生缺陷。优先从同安装集合加载 Review，缺失时查找宿主 Skill；缺少 Review、独立上下文、必需证据或产物访问能力时报告 `inconclusive` 及受影响范围，保留产物，不静默自检、不自动安装。每次 Plan 调用仅有一轮完整审计，内部修订不得递归 Plan 或再次启动完整审计；规划审计不加载实现 acceptance 协议、不写 `## Assurance`，新计划保持 `draft`。
+`local`、`issue` 和 `both` 必须在本次产物生成阶段到达终点后、最终汇报前，自动调用 Review 在新的独立上下文中审计已核实可读的实际产物；部分生成失败时仍须审查可读部分并说明缺口，没有可读产物时报告未执行及原始原因。审计必须提供原始用户需求、明确决定与纠正、约束和非目标、相关项目证据、target、实际产物及可定位版本、生成结果和限制；不得使用完整历史 fork 或只提供 Plan 自己的摘要。Review 必须独立读取所需事实和产物，对本地方案审查保真、范围、事实、顺序依赖、可实施性与有效验证，对 Issue 审查问题、身份、事实、约束和可观察结果，对 `both` 额外审查语义一致性；纯 `issue` 不得因未知方案或完整验收而产生缺陷。优先从同安装集合加载 Review，缺失时查找宿主 Skill；缺少 Review、独立上下文、必需证据或产物访问能力时报告 `inconclusive` 及受影响范围，保留产物，不静默自检、不自动安装。每次 Plan 调用仅有一轮完整审计，内部修订不得递归 Plan 或再次启动完整审计；规划审计不加载独立验证协议、不写 `## Assurance`，新计划保持 `draft`。
 Verify: manual(integration)
 
 ### Requirement: Plan 自动修订有证据且已获授权的审计发现
 
-Review 必须只读并返回实际审查范围、版本、恰好一个 `pass`、`findings` 或 `inconclusive`、可追溯到原始目标或项目契约的具体发现及缺失证据。Plan 必须利用既有产物授权直接修订项目事实和已定需求足以确定的问题，无需用户另行调用 Review 或逐项批准。新需求、重大取舍或无法解决的证据冲突必须保留为具体待决项，同时完成其他独立且确定的修订；finding 自身不得扩张写入权限。修订后仅回读并定向核对原发现及受影响的关联内容，分别报告原审计 verdict 与修订验证结果。旧版本 verdict 不覆盖修订版本，不得把定向自检改称新独立 `pass`，未解决缺陷或证据不足必须继续可见；规划审计和修订不得生成 implementation candidate、正式 acceptance 或 `done`。
+Review 必须只读并返回实际审查范围、版本、恰好一个 `pass`、`findings` 或 `inconclusive`、可追溯到原始目标或项目契约的具体发现及缺失证据。Plan 必须利用既有产物授权直接修订项目事实和已定需求足以确定的问题，无需用户另行调用 Review 或逐项批准。新需求、重大取舍或无法解决的证据冲突必须保留为具体待决项，同时完成其他独立且确定的修订；finding 自身不得扩张写入权限。修订后仅回读并定向核对原发现及受影响的关联内容，分别报告原审计 verdict 与修订验证结果。旧版本 verdict 不覆盖修订版本，不得把定向自检改称新独立 `pass`，未解决缺陷或证据不足必须继续可见；规划审计和修订不得产生 `approved` 或 `done`。
 Verify: manual(integration)
 
 ### Requirement: 仅 local 与 both 产出本地方案
@@ -58,9 +58,9 @@ Verify: manual(integration)
 (Previously: `plan 始终先产出本地方案` 要求所有调用先写本地方案。)
 Verify: manual(integration)
 
-### Requirement: local plan 区分实施授权、candidate 与独立验收
+### Requirement: local plan 随交付完成
 
-本地 plan 必须支持 `draft → approved → candidate → done`：新 plan 是 draft；显式用户请求或仍处于执行中的 Implement authorization 产生 approved；Implement 记录可稳定复算的 candidate basis、本地 evidence 与限制后产生 candidate；只有 acceptance-scoped Verify 对同一 basis 返回 pass 与 `attested for the exact current candidate` 才产生 done。普通 scoped Verify 的 pass、findings 或 inconclusive 必须保持 candidate；Review 或 Verify finding 只否定 acceptance，不得产生 approved 或 repair authority。candidate/done plan 必须保存一个最后获授权投影的 time-scoped Assurance snapshot，包含 basis、Implement producer、evidence/limitations、Verify producer、verdict 和 acceptance，授权投影变化时替换而不追加 ledger。Verdict 只记录实际 Verify 结果，Review 结果置于 evidence/limitations，未运行 Verify 保持 not run；普通 Review 不得写成 Verify 结果。任何状态都只是其有权 producer event 的投影，不得由 plan artifact 自行产生 authority。legacy `done` 缺少完整 Assurance 时只能解释为 historical implementation completion、acceptance not established，不得从状态或 artifact existence 伪造/回填 basis、producer、verdict 或 acceptance。历史 Check 记录保留原字段、来源和时间范围，不改写为 Verify 证明，也不建立旧字段写入兼容层。带完整 Assurance 的 done 也是 exact accepted candidate 的历史 closed record，不证明不存在 later result；消费者声明 current acceptance 前必须核对 basis，并使用当前上下文可得的 latest applicable Verify result，无法建立 applicability 时只能报告历史 snapshot 或重新 Verify。后来 Verify finding 在携带它的上下文/Handoff 中 supersede 旧结果；相冲突的 Review finding 也阻止继续声明当前验收，须以证据解决冲突或取得新的适用 Verify。两者不得修改/静默重开 plan 或授权修复；持久化 globally latest validity 需要另行授权 writer/ledger，不属于本契约。无关联 plan 的直接 Implement 不得为了记录这些状态自动创建 plan。普通 scoped Verify 可省略正式 provenance/acceptance 字段，caller 只能记录实际 verdict 和未请求验收这一事实，不能补造 attestation 或投影 done；关联计划仍维持完整 Assurance schema。
+本地 plan 只支持 `draft → approved → done`：新 plan 是 draft；显式用户请求或仍处于执行中的 Implement authorization 产生 approved；Implement 在计划描述的实现完成且项目要求的自动化验证通过后产生 done，计划状态与 Assurance 改动和代码并存于工作区，由 Publish 随同一个 PR 交付。done 的含义是实现已完成并随同一交付落地，不需要合并后的独立验收；不得引入合并 hook、机器人提交或任何合并后修改状态的流程。done plan 必须保存一个 `## Assurance` 记录，仅包含 `Evidence and limitations`（实际运行的测试与检查、Review 结果、已知限制）和 `Verify`（可选独立 Verify 的出处与 verdict，未运行为 not run），作为记录而非门槛，变化时替换而不追加 ledger。实机、真实系统 UI、平台门禁等无法自动化的观察只写入已知限制，绝不阻断 done；跨平台证据以 PR CI 为准，不等待其结果补提交，不得建议在不同机器之间迁移 session。合并前 CI 或可选 Verify 发现问题且修复已获授权时，在同一 PR 内修复并更新 Assurance，状态保持 done。Review 或 Verify finding 不得产生 approved 或 repair authority，done plan 不得被静默重放或重开。任何状态都只是其有权 producer event 的投影，不得由 plan artifact 自行产生 authority。遗留 approved 或 candidate plan 的实现已合并（以 git 历史或已合并 PR 为证；关联 Issue 仅在被已合并 PR 以 completed 关闭时计入）时按 done 解读，未合并的 candidate 按 approved 解读，任何 plan 不得因缺少验收记录被判为未完成；只解读不回写遗留文件。无关联 plan 的直接 Implement 不得为了记录这些状态自动创建 plan。
 Verify: [lifecycle transition contract](../../tests/attestation.test.ts)
 
 ### Requirement: plan 不要求先运行 shape
