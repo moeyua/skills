@@ -24,7 +24,7 @@ After the Overview, follow the user's scope and the risk of the invoking task. W
 
 Read `references/deep-dive.md` when a module, behavior, or high-risk cross-cutting area needs detailed mapping. Read `references/report.md` only when exploration itself is the deliverable.
 
-Use the code, tests, configuration, history, and authoritative external sources that can answer the actual question. If evidence is absent, say so. If docs and code conflict, report both sources without deciding which product truth should win.
+Use the code, tests, configuration, history, and authoritative external sources that can answer the actual question. If evidence is absent, say so and name where you looked. If docs and code conflict, report both sources without deciding which product truth should win.
 
 ## Boundaries
 

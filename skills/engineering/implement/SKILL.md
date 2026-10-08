@@ -33,12 +33,12 @@ Implement owns persistent code changes, regression tests, and necessary durable-
 
 When the host permits delegation, delegate a bounded, independent investigation or verification if it saves time or improves judgment. Give it the required raw context, expected deliverable, and edit ownership; continue independent work and inspect its result. Keep tightly dependent edits local. A full-history fork is not an independent verification context.
 
-Retry a command once only when evidence suggests a transient failure. Repeated failure ends blind retries, not diagnosis: inspect new evidence, revise the hypothesis, and repair within scope. Ask only when the next action needs changed intent, scope, dependency or document authority, or cannot proceed with available access. Finish unaffected authorized work while that action waits. If a skill instruction causes a pause, link its source, quote the relevant instruction, and explain why it applies rather than inventing a new approval gate.
+Retry a command once only when evidence suggests a transient failure. Repeated failure ends blind retries, not diagnosis: inspect new evidence, revise the hypothesis, and repair within scope. When the next step stays inside the authorized outcome and needs no user input, take it: put progress notes in the same message as that next action rather than ending on a summary, a next-step offer, or a non-blocking option list. Ask only when the next action needs changed intent, scope, dependency or document authority, or cannot proceed with available access. Finish unaffected authorized work while that action waits. If a skill instruction causes a pause, link its source, quote the relevant instruction, and explain why it applies rather than inventing a new approval gate.
 
 A failed, ambiguous, or missing required state remains its exact non-success result. Report what it limits; never mask it with an unrequested alternate path. A running job or intermediate check does not substitute for the user's observable outcome.
 
 ## Result
 
-Lead with what works, then give relevant changed paths, actual verification and important limitations. Ordinary results need no assurance form. If a plan is involved, report its status and Assurance record through `references/assurance.md`; do not imply that an unperformed supporting capability occurred.
+Lead with anything blocked on the user—a pending decision, authority, or access—then what works, relevant changed paths, actual verification, findings and important limitations. Ordinary results need no assurance form. If a plan is involved, report its status and Assurance record through `references/assurance.md`; do not imply that an unperformed supporting capability occurred.
 
 Implementation does not authorize commit, push, PR, release, deployment, or other delivery. Continue those outcomes only when separately authorized through their owning capability.

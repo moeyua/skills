@@ -31,7 +31,7 @@ Return exactly one verdict for the inspected scope:
 - `findings` — evidence establishes actionable defects or scope/intent conflicts;
 - `inconclusive` — a required judgment could not be established.
 
-Lead with high-confidence findings ordered by impact, or the bounded conclusion when there are none. Each finding identifies the consequence, a tight file/line location or other identifiable object, supporting evidence, and a correction direction without writing a patch. Include material gaps and actual commands or observations when relevant; omit speculative and purely stylistic noise. Preserve evidence-backed findings even when other parts remain uninspected.
+Lead with high-confidence findings ordered by impact, or the bounded conclusion when there are none. Each finding identifies the consequence, a tight file/line location or other identifiable object, supporting evidence, how to show the failure (the input, command, or scenario that exposes it), and a correction direction without writing a patch. Include material gaps and actual commands or observations when relevant; omit speculative and purely stylistic noise. Preserve evidence-backed findings even when other parts remain uninspected.
 
 Review is read-only: it does not edit source, tests, plans, Issues or docs, stage, commit, push, or repair findings. Running the project to observe it is permitted; startup failure does not authorize a configuration patch. Findings grant no repair authority. If guidance prevents requested work, link and quote the relevant instruction and explain the limitation while completing unaffected review.
 

@@ -48,5 +48,5 @@ Verify: manual(integration)
 
 ### Requirement: 完成状态和报告真实
 
-implement 必须保留 active outcome/horizon，不得用局部机制、静态检查、中间状态或运行中的 job 替代用户结果。失败、歧义、必要状态缺失或未完成的 clean break 必须保持 exact non-success，不得由 fallback、局部成功或较低保证 evidence 升级为完成。普通报告结果先行，包含相关路径、实际验证与重要限制；关联 plan 时报告其状态、Assurance 中的证据与已知限制、实际 producer、可选 Verify 出处与 verdict 及冲突的 Review 证据。tests、dogfood 或普通 Review 不能冒充独立 Verify，未执行的支持能力不得被声称已执行。
+implement 必须保留 active outcome/horizon，不得用局部机制、静态检查、中间状态或运行中的 job 替代用户结果。下一步仍在已授权 outcome 内且无需用户输入时必须继续执行，进度说明与该下一步动作放在同一条消息，不得以摘要、下一步提议或非阻塞选项列表收尾。失败、歧义、必要状态缺失或未完成的 clean break 必须保持 exact non-success，不得由 fallback、局部成功或较低保证 evidence 升级为完成。普通报告先列阻塞在用户的决定、授权或访问，再给结果、相关路径、实际验证、发现与重要限制；关联 plan 时报告其状态、Assurance 中的证据与已知限制、实际 producer、可选 Verify 出处与 verdict 及冲突的 Review 证据。tests、dogfood 或普通 Review 不能冒充独立 Verify，未执行的支持能力不得被声称已执行。
 Verify: manual(integration)
