@@ -24,7 +24,7 @@ Skills 为现代 coding agent 提供清晰的能力接口、项目特有判断�
 | [debug](./skills/engineering/debug/SKILL.md)         | 从预期与实际偏差出发定位原因，明确证据与未知                        |
 | [implement](./skills/engineering/implement/SKILL.md) | 完成已授权变更，以相称证据验证并保持直接受影响的 durable truth 准确 |
 | [review](./skills/engineering/review/SKILL.md)       | 对设计、计划或改动给出有证据、可操作的审阅结论                      |
-| [verify](./skills/engineering/verify/SKILL.md)       | 判断指定结果是否有足够证据，按需独立验证                            |
+| [verify](./skills/engineering/verify/SKILL.md)       | 实际使用受影响功能并比较预期与观察，按需独立验证                    |
 | [docs](./skills/engineering/docs/SKILL.md)           | 把既定 truth 写入六类 catalog memory 或用户指定文档                 |
 | [publish](./skills/engineering/publish/SKILL.md)     | 从当前状态完成缺失的 commit、push 与 pull request                   |
 | [release](./skills/engineering/release/SKILL.md)     | 已确认 release set、一个完整发布元数据提交、tags 与 Releases        |
@@ -66,7 +66,7 @@ npx skills add .
 
 Plan 支持 `local`、`issue` 和默认的 `both`。生成产物后自动进行一轮独立 Review，在所选 target 的权限内修订明确问题并定向核对；生成结果、审计结论和修订结果分别报告，未决取舍与证据缺口继续保留。新本地计划保持 `draft`，规划审计不授予实施权限。
 
-Shape 每轮一起提出当前可回答、互不依赖的问题；用户不知道如何选择时，用具体情境帮助判断。Debug 建立原因证据，Implement 继续负责已授权修复、回归验证和受影响的 truth。Review 判断哪里需要纠正及原因，Verify 判断原主张是否有足够证据；两者都可读代码或运行检查，修订仍由有权限的调用方完成。计划在实现随同一个 PR 落地时即为 `done`，审阅与验证结果只作记录，不作门槛。
+Shape 每轮一起提出当前可回答、互不依赖的问题；用户不知道如何选择时，用具体情境帮助判断。Debug 建立原因证据，Implement 继续负责已授权修复、回归验证和受影响的 truth。Review 判断哪里需要纠正及原因；Verify 默认实际使用受影响功能，将观察到的结果与预期比较，测试和相关审阅提供补充证据。明确只跑测试时遵守该限定，修订仍由有权限的调用方完成。计划在实现随同一个 PR 落地时即为 `done`，审阅与验证结果只作记录，不作门槛。
 
 路由差异见 [Resolver](./skills/RESOLVER.md)，context topology 与副作用归属见 [Architecture](./ARCHITECTURE.md)。
 
