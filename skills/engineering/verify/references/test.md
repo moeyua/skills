@@ -1,6 +1,6 @@
 # Test Method
 
-Detect the project's real test command from its manifest, task runner, or instructions. Start with the narrowest command that covers the claim; broaden when interaction risk or the user's requested gate requires it.
+Detect the project's real test command from its manifest, task runner, or instructions. For feature verification, use tests to support actual use and cover relevant risks; passing internal tests does not complete the feature claim. When the user explicitly asks only to run tests, limit the result to those tests. Start with the narrowest command that covers the required checks; broaden when interaction risk or the user's requested gate requires it.
 
 Report the exact command, result, and pass/fail/skipped counts when available. Group failures by likely shared cause and distinguish failures related to the change from clearly unrelated ones without hiding either.
 

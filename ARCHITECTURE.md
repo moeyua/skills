@@ -124,7 +124,7 @@ Shape and Handoff are visible checkpoints, not mandatory upstream stages. Shape 
 | Implement  | deliver behavior with proof; mark an associated plan `done` with its Assurance in the same delivery |
 | Debug      | establish causal evidence without acquiring repair authority                                        |
 | Review     | expose actionable problems against source intent and actual artifacts                               |
-| Verify     | judge outcome evidence; run independently in a fresh context only when the user requests it         |
+| Verify     | use the affected feature and compare results; fresh independent context only when requested         |
 | Docs       | record authoritative current truth without carrying a superseded design through a clean break       |
 | Publish    | attest exact commit/push/PR state; deliver an associated plan's status with the code in one PR      |
 | Release    | attest the exact authorized release state without substituting for implementation evidence          |
@@ -144,7 +144,7 @@ Shape groups material questions by current answerability: questions that depend 
 
 Debug investigates expected versus actual behavior using local contracts, observable fault signals, falsifiable hypotheses, and discriminating experiments. In an authorized repair, Implement applies that method and retains edits, regression checks, original-path replay, and directly affected documents. Standalone Debug reports evidence and unknowns within its requested diagnosis scope. Temporary probes use existing task authority; there is no mandatory agent handoff or extra edit permission from invoking Debug.
 
-Review and Verify distinguish questions rather than tools. Review identifies corrections and reasons; Verify establishes evidence for the original outcome claim and may compose Review when necessary. Either may inspect code or execute relevant observations. Neither writes a repair, weakens evidence, or narrows the original claim merely to report success.
+Review and Verify distinguish questions rather than tools. Review identifies corrections and reasons; Verify uses the affected feature through its real entry point and compares observed behavior with the original expectation. The main Verify entry establishes this default responsibility; its end-to-end reference supplies the method for the relevant surface. Tests and relevant Review support actual use, while an explicit request to run only tests remains scoped to those results. Neither writes a repair, weakens evidence, or narrows the original claim merely to report success.
 
 After its selected target's generation phase ends, Plan locates Review in the same installed collection first, then in host-provided skill locations. It supplies original requirements and decisions, relevant project evidence, target, actual artifact versions, and generation results to a fresh independent context, without a full-history fork. Review reads the source evidence and artifacts and returns one read-only verdict. Plan retains write ownership, resolves clear authorized findings, and checks only those findings and affected content afterward. Missing Review, independent execution, artifact access, or required evidence yields `inconclusive`; no readable artifact yields an explicit not-run result. Partial generation still permits review of readable outputs. No path installs support automatically, recursively calls Plan, or starts a second full audit.
 
@@ -165,7 +165,7 @@ Notable reference families:
 - Explore: scoped deep-dive and report interface.
 - Plan: one target contract (`local`, `issue`, or `both`); local plans load the selected change-type/template, every Issue uses the shared problem-record schema, and `both` additionally loads the managed-envelope rules for paired synchronization. All targets load `references/audit.md` for the final audit and revision boundary. Remote transaction mechanics live in the target references and shared audit reference: targets define ownership and generation transactions, while the audit reference defines remote corrections and their outcomes.
 - Implement: associated plan state and optional independent Verify load from `references/assurance.md` only when triggered.
-- Verify: test and e2e methods load when needed; review evidence may be composed from Review. Only a user-requested independent verification loads `references/acceptance.md`.
+- Verify: ordinary feature verification loads the e2e method for actual use; the test method supports required checks or an explicit request limited to tests, and relevant review evidence may be composed from Review. Only a user-requested independent verification loads `references/acceptance.md`; independence preserves the same responsibility to use the feature.
 - Docs: the memory catalog indexes six target-specific formats.
 - Publish: git state, PR construction, and recovery.
 - Release: release-set model, execution, and recovery.
