@@ -83,7 +83,7 @@ Deliberate capability constraints preserve correctness rather than uniformity:
 - Explore always completes a fixed Overview and reads necessary architecture/global documents before scoped depth.
 - Shape always consumes Explore context for the current target project before forming project-related directions, comparisons, or its Design Summary; Explore remains the sole source of the exploration method.
 - Plan audits generated artifacts once through Review in an independent context, then owns authorized revisions and targeted verification; the audit does not change the implementation lifecycle.
-- Release retains strict predicates for public, difficult-to-reverse state, but separates modeling, execution, and recovery into conditional references.
+- Release retains strict predicates for public, difficult-to-reverse state, while project policy, onboarding, shared-CI contracts, deployment evidence, modeling, execution and recovery load conditionally.
 
 ## Intent fidelity and attestation flow
 
@@ -126,8 +126,8 @@ Shape and Handoff are visible checkpoints, not mandatory upstream stages. Shape 
 | Review     | expose actionable problems against source intent and actual artifacts                               |
 | Verify     | use the affected feature and compare results; fresh independent context only when requested         |
 | Docs       | record authoritative current truth without carrying a superseded design through a clean break       |
-| Publish    | attest exact commit/push/PR state; deliver an associated plan's status with the code in one PR      |
-| Release    | attest the exact authorized release state without substituting for implementation evidence          |
+| Publish    | attest commit/push/PR, current checks and requested rebase merge; deliver the plan with code        |
+| Release    | establish project release rules and attest release/deployment observations within their evidence    |
 | Converge   | preserve authored meaning and stop on source conflict or missing authority                          |
 | Doctor     | separate deterministic facts from model judgment and evidence                                       |
 | Handoff    | carry active, superseded, completed, evidenced, and pending state without settling it               |
@@ -148,13 +148,13 @@ Review and Verify distinguish questions rather than tools. Review identifies cor
 
 After its selected target's generation phase ends, Plan locates Review in the same installed collection first, then in host-provided skill locations. It supplies original requirements and decisions, relevant project evidence, target, actual artifact versions, and generation results to a fresh independent context, without a full-history fork. Review reads the source evidence and artifacts and returns one read-only verdict. Plan retains write ownership, resolves clear authorized findings, and checks only those findings and affected content afterward. Missing Review, independent execution, artifact access, or required evidence yields `inconclusive`; no readable artifact yields an explicit not-run result. Partial generation still permits review of readable outputs. No path installs support automatically, recursively calls Plan, or starts a second full audit.
 
-| mutation                                                                                                        | owning authorization               |
-| --------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| local plan                                                                                                      | Plan target `local` or `both`      |
-| GitHub Issue                                                                                                    | Plan target `issue` or `both`      |
-| project implementation/docs                                                                                     | explicit authorized change outcome |
-| commit, push, PR                                                                                                | Publish outcome                    |
-| version/dependency and version-bound repository release metadata, default-branch release commit, tags, Releases | Release outcome                    |
+| mutation                                                                                              | owning authorization               |
+| ----------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| local plan                                                                                            | Plan target `local` or `both`      |
+| GitHub Issue                                                                                          | Plan target `issue` or `both`      |
+| project implementation/docs                                                                           | explicit authorized change outcome |
+| commit, push, PR and explicitly requested rebase merge                                                | Publish outcome                    |
+| project release configuration, version metadata, direct default-branch release commit, tags, Releases | Release outcome                    |
 
 Review and Verify remain read-only and Docs remains authority-bound when composed; neither grants new implementation repair, Publish, or Release. The active caller retains its existing authorization and continues applicable work after a support result. Plan's audit verdict covers the inspected artifact version; its own subsequent verification cannot turn that verdict into a new independent pass. A caller records a Verify result as reported, without reinterpreting or manufacturing any field. Ordinary Review and Verify do not require a separate agent merely because Plan's audit does; a user-requested independent Verify has its own fresh-context requirement.
 
@@ -167,26 +167,26 @@ Notable reference families:
 - Implement: associated plan state and optional independent Verify load from `references/assurance.md` only when triggered.
 - Verify: ordinary feature verification loads the e2e method for actual use; the test method supports required checks or an explicit request limited to tests, and relevant review evidence may be composed from Review. Only a user-requested independent verification loads `references/acceptance.md`; independence preserves the same responsibility to use the feature.
 - Docs: the memory catalog indexes six target-specific formats.
-- Publish: git state, PR construction, and recovery.
-- Release: release-set model, execution, and recovery.
+- Publish: local git state, PR construction/current checks/authorized rebase merge, and recovery.
+- Release: project-policy and onboarding, MediaStorm CI contract, deployment evidence, release-set model, execution, and recovery.
 - Converge: per-document state/action model plus sibling Docs/Doctor assets.
 
 Five source symlinks share two semantic sources in root `rules/`: `change-types.md` is consumed by Shape, Plan, and Implement; `memory-catalog.md` is consumed by Explore and Docs. From each engineering skill's `references/` directory, these links traverse four levels to the root before entering `rules/`.
 
 ## Artifact and state flow
 
-| artifact/state                                | producer      | useful consumers                       | absence/failure                                                                 |
-| --------------------------------------------- | ------------- | -------------------------------------- | ------------------------------------------------------------------------------- |
-| reviewed conversational direction             | Shape + user  | Plan, Implement, Docs, Handoff         | absent for direct entry; agreement does not authorize another public outcome    |
-| local implementation plan                     | Plan          | Implement, Publish, Docs               | clear requests may proceed without it                                           |
-| canonical Issue problem record/URL            | Plan/user     | Plan `both`, Publish                   | omit closing reference if absent; unmanaged or conflicted content is not edited |
-| implementation + plan `done` and Assurance    | Implement     | Review, Verify, Docs, Publish, Handoff | without a plan, evidence is reported in the conversation only                   |
-| causal evidence + remaining unknowns          | Debug         | Implement, user                        | does not turn a hypothesis into a root cause or grant repair authority          |
-| scoped review findings + actual evidence      | Review        | Plan, Implement, Verify, Handoff       | covers the inspected version; does not authorize repair                         |
-| scoped verification verdict + actual evidence | Verify        | Implement, Publish, Handoff            | covers the specified claim; recorded in Assurance, never gates `done`           |
-| durable memories                              | Docs/Converge | all fact-gathering capabilities        | load only applicable targets                                                    |
-| branch/upstream/PR state                      | Publish       | reviewers                              | partial success is preserved                                                    |
-| release basis/metadata commit/tags/Releases   | Release       | users/GitHub                           | resume from verified canonical state                                            |
+| artifact/state                                                        | producer      | useful consumers                       | absence/failure                                                                 |
+| --------------------------------------------------------------------- | ------------- | -------------------------------------- | ------------------------------------------------------------------------------- |
+| reviewed conversational direction                                     | Shape + user  | Plan, Implement, Docs, Handoff         | absent for direct entry; agreement does not authorize another public outcome    |
+| local implementation plan                                             | Plan          | Implement, Publish, Docs               | clear requests may proceed without it                                           |
+| canonical Issue problem record/URL                                    | Plan/user     | Plan `both`, Publish                   | omit closing reference if absent; unmanaged or conflicted content is not edited |
+| implementation + plan `done` and Assurance                            | Implement     | Review, Verify, Docs, Publish, Handoff | without a plan, evidence is reported in the conversation only                   |
+| causal evidence + remaining unknowns                                  | Debug         | Implement, user                        | does not turn a hypothesis into a root cause or grant repair authority          |
+| scoped review findings + actual evidence                              | Review        | Plan, Implement, Verify, Handoff       | covers the inspected version; does not authorize repair                         |
+| scoped verification verdict + actual evidence                         | Verify        | Implement, Publish, Handoff            | covers the specified claim; recorded in Assurance, never gates `done`           |
+| durable memories                                                      | Docs/Converge | all fact-gathering capabilities        | load only applicable targets                                                    |
+| branch/upstream/PR/check/merge state                                  | Publish       | reviewers                              | partial success is preserved                                                    |
+| release rules/basis/metadata commit/tags/Releases/deployment evidence | Release       | users/GitHub                           | resume from verified canonical state                                            |
 
 An associated local plan projects this flow without becoming its authority source:
 
@@ -205,7 +205,11 @@ Plan target semantics are stable: omitted target is `both`; `both` writes and va
 
 `local` never mutates GitHub. Pure `issue` reuse remains read-only; after an explicitly successful original batch, each Issue definitively created by that invocation may receive at most one audit revision, only when its canonical title, complete body, and one change-type label match the invocation's write snapshot. Its batch marker establishes invocation identity, not permanent ownership. Both remote targets keep the original transaction and audit revisions bounded separately: a stopped original transaction never resumes through audit, every eligible Issue receives at most one additional edit and one canonical read-back, and the first revision conflict, failure, or ambiguous call stops later remote revisions even if read-back confirms the target. The original generation ledger, labels created in either phase, completed revisions, and unattempted revisions remain visible. These reads establish time-scoped observations, not an atomic GitHub compare-and-swap.
 
-Release models authoritative version sources as release units, project-tool coordination as version groups, exact tag/GitHub mappings as release identities, and any existing version-bound repository release metadata as an optional part of the confirmed release set. Derived or substantively expanded sets wait for next-turn confirmation. Every path re-resolves from the fetched default branch, runs one verified non-tagging/non-committing/non-publishing release metadata transaction, creates one commit containing the complete set, and publishes each identity recoverably. The same semantic predicate governs fresh execution, local recovery, and remote reuse without imposing one metadata filename, schema, or tool.
+Release models authoritative version sources as release units, project-tool coordination as version groups, exact tag/GitHub mappings as release identities, and any existing version-bound repository release metadata as an optional part of the confirmed release set. Derived or substantively expanded sets wait for next-turn confirmation. Each fresh release re-resolves from the fetched default branch, runs one verified non-tagging/non-committing/non-publishing release metadata transaction, directly pushes one commit containing the complete set, and publishes each identity recoverably. Existing remote sets are reconciled from their original release commit without replaying a transaction when the default branch advances. The same semantic predicate governs fresh execution, local recovery, and remote reuse without imposing one metadata filename, schema, or tool.
+
+Release reads the project-owned `RELEASE.md` on entry and establishes missing setup on a work branch, using Publish only within the authorized PR/merge scope. The document records rules; project callers bind actual events, parameters and targets; MediaStorm public CI executes deployment. New callers use final automatic events from the first setup PR. Dual mode verifies Preview after the branch event and Production at the first real version release. Branch-only, tag-only and no-runtime projects do not gain an extra environment. A version commit's own checks and applicable Preview evidence precede new tags; tag runs build that exact commit, and Release reports each target's actual verification separately.
+
+The onboarding and CI references replace the independent onboard-ci installation. They are self-contained in Release, including COS, Docker and developer-only mini-program contracts; the 13-skill inventory and six-type memory catalog remain unchanged. Installed copies must be updated through the existing installer, with the retired entry removed rather than kept as a compatibility route.
 
 ## Truth and verification
 

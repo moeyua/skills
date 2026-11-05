@@ -1,6 +1,6 @@
 # Git State and Commit
 
-Inspect status, unstaged/staged diff, current branch, upstream, remotes, recent history, resolved default branch, and commits relative to that base before mutation.
+Inspect status, unstaged/staged diff, current branch, upstream, remotes, recent history, resolved default branch, and commits relative to that base before a local commit or branch push. Inspecting or explicitly merging an existing PR uses pull-request.md without changing local files or branch state.
 
 Stop on detached HEAD, an in-progress merge/rebase/cherry-pick, or a branch named `main`, `master`, `develop`, or the resolved default branch. Do not move already-developed work automatically when branch intent or committed protected history is ambiguous.
 
