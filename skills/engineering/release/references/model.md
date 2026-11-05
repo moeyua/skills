@@ -13,13 +13,13 @@ Read this reference when release identity, version selection, or repository rele
 
 ## Resolve repository-owned truth
 
-Resolve topology and version policy from the fetched remote default branch: repository instructions, specifications, version/release documentation, code, tests, manifests, lockfiles, and committed release-tool configuration. History may validate a known tag template but must not invent topology, dependency propagation, metadata ownership, or version policy from filenames, tag increments, or commit-message patterns.
+Resolve topology and version policy from the fetched remote default branch: `RELEASE.md`, repository instructions, specifications, version/release documentation, code, tests, manifests, lockfiles, and committed release-tool configuration. Missing project rules route to project-policy.md and onboarding.md before a fresh release transaction. History may validate a known tag template but must not invent topology, dependency propagation, metadata ownership, or version policy from filenames, tag increments, or commit-message patterns.
 
 Determine whether the repository already defines version-bound repository release metadata and, when it does, resolve its unit/version mapping, existing structure and invariants, allowed paths, content basis or project generator, and validation evidence. Specifications, runtime consumption, tests, and release tooling can establish that relationship; a familiar changelog name or historical editing habit alone cannot.
 
 Require a unique mapping from each in-scope package/version source to one unit; exact current and target states; every identity's tag template and covered units; tool-specific affected subset and target rules for each group; dependency propagation; any required repository metadata; and a deterministic release metadata transaction whose expected paths, semantic result, and git side effects are known.
 
-Do not require a dedicated manifest, fixed filename, or shared schema. When the repository defines no version-bound repository release metadata, keep that part of the release set absent and do not create a file or placeholder. If applicable sources conflict, a package maps to multiple units, metadata ownership or content cannot be resolved, a tool hides the expected diff, or the topology cannot produce an exact set, report the sources and stop without mutation.
+Beyond the project rules entry `RELEASE.md`, do not require a dedicated version manifest, fixed filename, or shared schema. The rules document is setup configuration, not version-bound release metadata to rewrite with every version. When the repository defines no version-bound repository release metadata, keep that part of the release set absent and do not create a file or placeholder. If applicable sources conflict, a package maps to multiple units, metadata ownership or content cannot be resolved, a tool hides the expected diff, or the topology cannot produce an exact set, report the sources and stop without mutation.
 
 ## Select the set
 
@@ -55,7 +55,9 @@ Only a next user message that unambiguously confirms that candidate authorizes i
 
 ## Revalidate every path
 
-For every path, record the remote default-branch tip whose committed tree supplied the initial topology, policy, unit versions, identity baselines, repository-metadata rules/content, and release set. Fetch that exact branch before switching branches or changing release metadata.
+Reconcile an already-published or partial exact set with recovery.md before proposing fresh successors. A verified historical release commit is evaluated from its own committed topology and metadata, not treated as a new version transaction at the latest default tip. Report a conflict with current policy that affects a missing action instead of reinterpreting old identities.
+
+For every fresh release path, record the remote default-branch tip whose committed tree supplied the initial topology, policy, unit versions, identity baselines, repository-metadata rules/content, and release set. Fetch that exact branch before switching branches or changing release metadata.
 
 Immediately after fetch, re-resolve the topology, policy, unit versions, identity baselines, repository metadata, and release set from the fetched commit.
 

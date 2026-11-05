@@ -2,9 +2,13 @@
 
 Read this reference only after one exact release set is authorized and post-fetch revalidation succeeds.
 
+For an already-pushed release commit or existing identities, reconcile through recovery.md first and perform only missing authorized actions. Read-only recovery does not require changing the current local branch or files. The fresh/local-mutation preflight below must not manufacture a newer release commit merely because the default branch has advanced.
+
 ## Preflight
 
 Require an origin GitHub remote, working GitHub CLI authentication, a resolvable remote default branch, and a clean tree. A dirty tree or diverged default branch stops before mutation except for the validated recovery states in recovery.md.
+
+Require the committed `RELEASE.md` and matching setup to be ready, and verify the acting identity's effective permission to push the release commit directly under the repository's rules. If missing or uncertain, stop before the metadata transaction. Never switch to a version PR or alter branch protection to get past this condition. Setup/configuration files do not belong in the version transaction.
 
 Switch to the resolved default branch and reconcile it with the fetched remote tip:
 
@@ -56,6 +60,10 @@ Push and verify the exact default branch:
 
 Never create the tag until the remote default branch contains <release-commit>.
 
+## Verify the release commit
+
+Keep the exact release commit R as the target even if the default branch subsequently advances. Before any new tag, follow deployment-evidence.md: require R's project-defined checks and, in dual mode, R's successful Preview deployment and attributable target verification. Failed, waiting, cancelled or missing required evidence leaves R pushed but not yet tagged; retain it for recovery. A parent commit's CI or a newer Preview cannot substitute for R.
+
 ## Tags and GitHub Releases
 
 For each release identity in deterministic order:
@@ -75,3 +83,5 @@ For each release identity in deterministic order:
 Omit `--notes-start-tag` only for a verified first release. GitHub-generated notes remain the GitHub Release notes; they neither replace nor duplicate version-bound repository release metadata. Add prerelease state only when explicitly requested or required by authoritative policy.
 
 Record shared repository metadata and each identity independently. If one identity fails, preserve completed objects and resume only the missing state on a later run.
+
+After a tag push, observe that identity's expected CI run and actual target according to deployment-evidence.md. GitHub Release creation and deployment are separate outcomes; creation success does not imply Production success. Do not add a manual deployment or retag to complete the flow.

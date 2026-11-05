@@ -83,13 +83,17 @@ Supporting capabilities may be composed inside an authorized outcome, but one ou
 
 ### Unrequested project documents
 
-The six catalog memories are the default durable surface. A user may explicitly name another project document, but the agent does not invent a seventh catalog category, sibling guide, changelog, or release-notes file.
+The six catalog memories are the default durable surface. A user may explicitly name another project document, but the agent does not invent a seventh catalog category, sibling guide, changelog, or release-notes file. Release establishes the explicitly chosen project document `RELEASE.md`; it remains outside the six-type catalog.
 
 This boundary does not exclude version-bound repository release metadata that authoritative project facts already make part of a release. Release may update that existing surface with the target version; it still does not invent a new documentation system.
 
 ### Release-adjacent operations
 
-Release is intentionally narrower than deployment or distribution. It does not absorb rollback, registry publishing, artifact upload, arbitrary changelog creation, automatic PRs, or release-train management.
+Release owns project release setup and daily version publication. It establishes `RELEASE.md`, connects project callers to the existing MediaStorm reusable CI, and reports checks and deployment evidence. Publish owns PR publication/checks and rebase merges only when explicitly requested. Setup changes use the ordinary PR path; version metadata commits go directly to the default branch under verified permission.
+
+Projects choose branch deployment, tag deployment, or both; in dual mode those map to shared Preview and Production. The real branch event and first authorized version release verify onboarding without a manual deployment phase. A new tag in dual mode requires the version commit's own checks and attributable Preview verification. Version-only projects gain no deployment target; mini-program delivery remains developer-version upload.
+
+Project workflows select events and targets; public CI performs deployment and its required artifact/image delivery. Release observes those outcomes without absorbing manual deployment, rollback, standalone registry publishing, arbitrary artifact upload, arbitrary changelog creation, automatic PR merges, or release-train management. Tag/Release success cannot attest deployment success. The independent onboard-ci entry is replaced, not retained as an alias.
 
 As decided on 2026-08-11, Release owns an existing version-bound repository release metadata surface together with version and dependency metadata when repository authority makes them one release invariant. Its shape and mechanics remain repository-defined and Agent-resolved; repositories without that invariant gain no new file, schema, or confirmation ritual.
 

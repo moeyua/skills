@@ -26,8 +26,8 @@ Development, software architecture, testing, and engineering project maintenance
 | [review](./skills/engineering/review/SKILL.md)       | Evidence-backed findings on designs, planning artifacts, or changes                                                                 |
 | [verify](./skills/engineering/verify/SKILL.md)       | A verdict from actually using the affected feature and comparing results with expectations; independent verification when requested |
 | [docs](./skills/engineering/docs/SKILL.md)           | Established truth recorded in the six-type catalog or a named project document                                                      |
-| [publish](./skills/engineering/publish/SKILL.md)     | Missing commit, push, and pull-request actions completed from current state                                                         |
-| [release](./skills/engineering/release/SKILL.md)     | A confirmed release set, one complete metadata commit, tags, and Releases                                                           |
+| [publish](./skills/engineering/publish/SKILL.md)     | PR publication, current CI checks, and rebase merging only when requested                                                           |
+| [release](./skills/engineering/release/SKILL.md)     | Project release setup, exact version publication, and deployment evidence                                                           |
 | [converge](./skills/engineering/converge/SKILL.md)   | Idempotent catalog-wide alignment to current memory formats                                                                         |
 | [doctor](./skills/engineering/doctor/SKILL.md)       | Read-only whole-project documentation drift and health audit                                                                        |
 
@@ -69,6 +69,14 @@ Plan supports `local`, `issue`, and `both` (the default). After generation, it r
 Shape asks currently answerable, independent questions together and uses concrete situations to help when the user is unsure. Debug establishes causes; Implement retains responsibility for an authorized repair, its regression checks, and affected truth. Review asks what needs correction and why; Verify actually uses the affected feature and compares observed results with expectations. Tests and relevant review support that observation; an explicit request to run only tests remains limited to those tests. Both leave repairs to the authorized caller. A plan is `done` when its implementation lands in the same PR; review and verification results are recorded, not gates.
 
 See the [Resolver](./skills/RESOLVER.md) for route distinctions and [Architecture](./ARCHITECTURE.md) for context topology and side-effect ownership.
+
+## Project releases
+
+Use Release to establish `RELEASE.md` and connect the project's final branch/tag workflows to MediaStorm CI. Publish owns the setup PR and its checks; merge by rebase only when requested. In dual mode, the default branch deploys Preview and version tags deploy Production. Initial setup is verified through Preview and the first real release, without a separate manual deployment phase.
+
+For daily work, ask Publish to submit and check a PR, then request its merge when ready. Ask Release to publish the intended version: it pushes one version metadata commit directly to the default branch, verifies that commit's checks and applicable Preview evidence, and publishes exact tags and GitHub Releases. It reports CI and actual target results separately. Branch-only, tag-only and version-only projects retain their selected scope.
+
+For example: “Release, set up this project's Preview/Production release flow”; “Publish, submit this PR and check CI”; “Merge this PR”; “Release v1.3.0”. Each request carries its own authority. Release replaces the separate onboard-ci entry; install Publish and Release together for this flow.
 
 ## Durable memory
 

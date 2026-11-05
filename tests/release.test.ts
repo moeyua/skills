@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vite-plus/test";
@@ -24,6 +24,18 @@ describe("release progressive interface", () => {
     expect(ENTRY).toContain("references/model.md");
     expect(ENTRY).toContain("references/execution.md");
     expect(ENTRY).toContain("references/recovery.md");
+  });
+
+  it("ships project rules and onboarding knowledge without an external skill dependency", () => {
+    for (const name of ["project-policy", "onboarding", "ci-contract", "deployment-evidence"]) {
+      const path = `skills/engineering/release/references/${name}.md`;
+      expect(existsSync(resolve(REPO_ROOT, path)), path).toBe(true);
+      const reference = read(path);
+      expect(reference).not.toMatch(/\.agents\/skills|\.claude\/skills|onboard-ci\/SKILL\.md/);
+      expect(ENTRY).toContain(`references/${name}.md`);
+    }
+    expect(SPEC).toContain("### Requirement: 项目规则与首次接入");
+    expect(SPEC).toContain("### Requirement: 版本提交检查与部署证据");
   });
 
   it("models single-package and monorepo release state without guessing", () => {
@@ -126,9 +138,7 @@ describe("release progressive interface", () => {
 
   it("retains the bounded release exclusions", () => {
     expect(ENTRY).toMatch(/Never[\s\S]*deploy[\s\S]*registry package/i);
-    expect(RECOVERY).toMatch(
-      /no deployment, rollback, arbitrary changelog creation, artifact upload, registry publish, or automatic PR/i,
-    );
-    expect(requirementNames).toContain("通用发布仍排除部署与制品");
+    expect(RECOVERY).toMatch(/no rollback[\s\S]*registry publish[\s\S]*automatic PR/i);
+    expect(requirementNames).toContain("发布接入与执行职责边界");
   });
 });

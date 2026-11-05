@@ -26,8 +26,8 @@ Skills 为现代 coding agent 提供清晰的能力接口、项目特有判断�
 | [review](./skills/engineering/review/SKILL.md)       | 对设计、计划或改动给出有证据、可操作的审阅结论                      |
 | [verify](./skills/engineering/verify/SKILL.md)       | 实际使用受影响功能并比较预期与观察，按需独立验证                    |
 | [docs](./skills/engineering/docs/SKILL.md)           | 把既定 truth 写入六类 catalog memory 或用户指定文档                 |
-| [publish](./skills/engineering/publish/SKILL.md)     | 从当前状态完成缺失的 commit、push 与 pull request                   |
-| [release](./skills/engineering/release/SKILL.md)     | 已确认 release set、一个完整发布元数据提交、tags 与 Releases        |
+| [publish](./skills/engineering/publish/SKILL.md)     | 发布 PR、检查当前 CI，并在明确要求时 rebase 合并                    |
+| [release](./skills/engineering/release/SKILL.md)     | 项目首次发布设置、精确版本发布及部署结果核验                        |
 | [converge](./skills/engineering/converge/SKILL.md)   | 幂等地把整个 catalog 对齐到当前 memory formats                      |
 | [doctor](./skills/engineering/doctor/SKILL.md)       | 只读的全项目文档漂移与健康审计                                      |
 
@@ -69,6 +69,14 @@ Plan 支持 `local`、`issue` 和默认的 `both`。生成产物后自动进行�
 Shape 每轮一起提出当前可回答、互不依赖的问题；用户不知道如何选择时，用具体情境帮助判断。Debug 建立原因证据，Implement 继续负责已授权修复、回归验证和受影响的 truth。Review 判断哪里需要纠正及原因；Verify 默认实际使用受影响功能，将观察到的结果与预期比较，测试和相关审阅提供补充证据。明确只跑测试时遵守该限定，修订仍由有权限的调用方完成。计划在实现随同一个 PR 落地时即为 `done`，审阅与验证结果只作记录，不作门槛。
 
 路由差异见 [Resolver](./skills/RESOLVER.md)，context topology 与副作用归属见 [Architecture](./ARCHITECTURE.md)。
+
+## 项目发布
+
+首次用 Release 建立 `RELEASE.md`，将项目最终的分支/Tag 触发规则接入 MediaStorm 公共 CI。初始化 PR 及检查由 Publish 负责，只有明确要求时才 rebase 合并。双环境模式中默认分支部署 Preview，版本 Tag 部署 Production；通过真实 Preview 和第一次正式发版验证接入，不增加手动部署阶段。
+
+日常由 Publish 提交并检查 PR，需要合并时明确提出。发版时让 Release 发布目标版本：一个版本元数据提交直接进入默认分支，该提交的检查及适用 Preview 验证通过后创建精确 Tag 和 GitHub Release，并分别报告 CI 与实际目标结果。仅主分支、仅 Tag 或没有运行时部署的项目只执行已选范围。
+
+例如：“Release，设置这个项目的 Preview/Production 发布流程”；“Publish，提交 PR 并检查 CI”；“合并这个 PR”；“Release v1.3.0”。各请求保持各自的授权范围。Release 取代独立 onboard-ci 入口；使用这套流程时一并安装 Publish 和 Release。
 
 ## 持久记忆
 

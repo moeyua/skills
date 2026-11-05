@@ -66,4 +66,14 @@ describe("publish state machine", () => {
     expect(PUBLISH).toContain("Closes #N");
     expect(PUBLISH).toContain("No Issue association is a normal state");
   });
+
+  it("offers a rebase merge command tied to the inspected PR head", () => {
+    const commands = PULL_REQUEST.split("\n").filter((line) => /^\s+gh pr merge /.test(line));
+    expect(commands).toHaveLength(1);
+    expect(commands[0]).toContain("--rebase");
+    expect(commands[0]).toContain("--match-head-commit");
+    expect(commands[0]).not.toMatch(/--admin|--auto|--squash|--delete-branch/);
+    expect(SPEC).toContain("### Requirement: 当前 PR 检查");
+    expect(SPEC).toContain("### Requirement: 显式授权的 rebase 合并");
+  });
 });

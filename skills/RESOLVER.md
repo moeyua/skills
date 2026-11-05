@@ -16,8 +16,8 @@ Browse [Engineering](./engineering/README.md) or [Productivity](./productivity/R
 | Review    | `engineering`  | finding evidence-backed corrections in designs, planning artifacts, or changes | `skills/engineering/review/SKILL.md`    |
 | Verify    | `engineering`  | actually using affected functionality and comparing results with expectations  | `skills/engineering/verify/SKILL.md`    |
 | Docs      | `engineering`  | recording established truth in an authorized document target                   | `skills/engineering/docs/SKILL.md`      |
-| Publish   | `engineering`  | completing missing commit, push, and PR actions                                | `skills/engineering/publish/SKILL.md`   |
-| Release   | `engineering`  | publishing an exact GitHub release set and its repository metadata             | `skills/engineering/release/SKILL.md`   |
+| Publish   | `engineering`  | publishing/checking PRs and explicitly requested rebase merges                 | `skills/engineering/publish/SKILL.md`   |
+| Release   | `engineering`  | setting up project releases, publishing versions, and observing deployment     | `skills/engineering/release/SKILL.md`   |
 | Converge  | `engineering`  | aligning the whole durable-memory catalog idempotently                         | `skills/engineering/converge/SKILL.md`  |
 | Doctor    | `engineering`  | auditing project-wide documentation drift and health, read-only                | `skills/engineering/doctor/SKILL.md`    |
 | Handoff   | `productivity` | compressing continuation-critical session context                              | `skills/productivity/handoff/SKILL.md`  |
@@ -29,7 +29,7 @@ Browse [Engineering](./engineering/README.md) or [Productivity](./productivity/R
 - Debug investigates known deviations. When expected behavior itself is unresolved, Shape clarifies it; in an authorized repair, Implement uses Debug and continues through the fix and original symptom verification.
 - Verify defaults to actual use through the claimed entry point, supported by tests and relevant Review; an explicit request to run only tests stays within that scope. Review may also inspect code and run observations. Both stay read-only and return findings or evidence to the authorized caller; unit, integration, and E2E tests are methods, not public routes. Only a user-requested independent Verify requires a fresh context without the implementation history.
 - Docs writes focused established truth; Converge batch-aligns the catalog; Doctor only reports.
-- Publish creates reviewable branch/PR state; Release creates version/repository-metadata/tag/Release state.
+- Publish owns PR publication, current checks and explicitly requested rebase merges. Release establishes RELEASE.md and CI setup, directly pushes version commits, creates exact tags/Releases and observes deployment. Project callers map events to targets; public CI executes deployment.
 - Handoff is transient conversation context, not project documentation.
 
 Shape always uses Explore context for the current target project before forming a project-related direction, including familiar projects, simple requests, and settled directions. Explore retains its fixed Overview before scoped depth and allows current facts to be reused. This required support call returns to Shape without a separate report or review round; users invoke Shape directly, with Explore available in the installation. Missing Explore or target-project access remains an explicit gap. Other capabilities do not acquire this prerequisite.
