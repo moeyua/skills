@@ -26,8 +26,39 @@ describe("release progressive interface", () => {
     expect(ENTRY).toContain("references/recovery.md");
   });
 
+  it("stays provider-neutral and leaves CI wiring to the recorded provider", () => {
+    const names = ["project-policy", "onboarding", "ci-connection", "deployment-evidence"];
+    const sources = [
+      ENTRY,
+      SPEC,
+      ...names.map((name) => read(`skills/engineering/release/references/${name}.md`)),
+    ];
+    for (const source of sources) {
+      expect(source).not.toMatch(
+        /MediaStorm|storminfra|ci-v2|internal-deploy|TENCENT_SECRET|deploy-cos|deploy-docker|upload-miniapp|\bCOS\b|mini-program|小程序|AppID/i,
+      );
+    }
+    expect(
+      existsSync(resolve(REPO_ROOT, "skills/engineering/release/references/ci-contract.md")),
+    ).toBe(false);
+    const CONNECTION = read("skills/engineering/release/references/ci-connection.md");
+    const POLICY = read("skills/engineering/release/references/project-policy.md");
+    const EVIDENCE = read("skills/engineering/release/references/deployment-evidence.md");
+    expect(CONNECTION).toMatch(/tag run[s]? (does|do) not rerun quality checks or tests/i);
+    expect(CONNECTION).toMatch(/provider[\s\S]*published ref/i);
+    expect(CONNECTION).toMatch(/known limitation/i);
+    for (const gate of ["prefix", "reachab", "metadata", "validated version"]) {
+      expect(CONNECTION).toContain(gate);
+    }
+    expect(POLICY).toMatch(/CI provider/i);
+    expect(POLICY).toMatch(/light post-deploy confirmation/i);
+    expect(EVIDENCE).toMatch(/no test step[\s\S]*expected/i);
+    expect(EVIDENCE).toMatch(/light post-deploy confirmation/i);
+    expect(requirementNames).toContain("事件检查分工");
+  });
+
   it("ships project rules and onboarding knowledge without an external skill dependency", () => {
-    for (const name of ["project-policy", "onboarding", "ci-contract", "deployment-evidence"]) {
+    for (const name of ["project-policy", "onboarding", "ci-connection", "deployment-evidence"]) {
       const path = `skills/engineering/release/references/${name}.md`;
       expect(existsSync(resolve(REPO_ROOT, path)), path).toBe(true);
       const reference = read(path);
@@ -69,6 +100,26 @@ describe("release progressive interface", () => {
     );
     expect(MODEL).toContain("policy explicitly marks that unit unchanged");
     expect(requirementNames).toContain("项目权威版本策略优先于通用 SemVer");
+  });
+
+  it("follows SemVer stages for generic version selection", () => {
+    const POLICY = read("skills/engineering/release/references/project-policy.md");
+    expect(MODEL).not.toContain("breaking behavior or side effect → major");
+    expect(MODEL).toMatch(/0\.y\.z[\s\S]*breaking[^\n]*→ minor[\s\S]*→ patch/);
+    expect(MODEL).toMatch(/`1\.0\.0`[^\n]*only[^\n]*user (explicitly )?(declares|supplies)/i);
+    expect(MODEL).toMatch(/major only[^\n]*declared public API/i);
+    expect(MODEL).toMatch(/public API is undeclared[^\n]*(never|no) major[^\n]*minor or patch/i);
+    expect(MODEL).toMatch(/patch[^\n]*only[^\n]*bug fixes/i);
+    expect(MODEL).toMatch(/prerelease[^\n]*only when the project policy allows/i);
+    expect(MODEL).toMatch(/Version stage:/);
+    expect(MODEL).toMatch(/Public API source:/);
+    expect(EXECUTION).not.toContain(
+      "only when explicitly requested or required by authoritative policy",
+    );
+    expect(POLICY).toMatch(/version stage[\s\S]*public API[\s\S]*prerelease/i);
+    expect(requirementNames).toContain("通用 SemVer 区分 0.x、公开 API 与预发布");
+    expect(SPEC).not.toContain("breaking behavior/side effect 为 major");
+    expect(SPEC).not.toContain("prerelease 只来自用户显式要求或权威项目策略");
   });
 
   it("records and revalidates the exact candidate basis", () => {

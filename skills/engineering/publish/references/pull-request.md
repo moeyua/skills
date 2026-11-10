@@ -37,12 +37,20 @@ Follow active runs with bounded waits while progressing other authorized work. I
 
 ## Merge when requested
 
-Require explicit user authorization to merge this PR; existing authorization in the conversation is sufficient. Immediately before mutation, refresh the head, base, checks, required reviews, draft state, and mergeability. A changed head invalidates the previous check result. Require the refreshed conditions to pass and the repository to allow rebase merging without an incompatible merge queue.
+Require explicit user authorization to merge this PR; existing authorization in the conversation is sufficient. It covers either merge method below without another confirmation. Immediately before mutation, refresh the head, base, checks, required reviews, draft state, and mergeability. A changed head invalidates the previous check result. Require the refreshed conditions to pass without an incompatible merge queue.
 
-Use a merge request bound to the inspected head:
+Select the method from the refreshed state: the repository's `rebaseMergeAllowed` and `squashMergeAllowed`, and the PR's GraphQL `canBeRebased`, `mergeable`, and `mergeStateStatus`. When `mergeable` is `UNKNOWN`, re-read within the bounded wait; if it stays unknown, report it rather than guessing.
+
+Prefer rebase when the repository allows it and the PR can be rebased:
 
     gh pr merge <pr-url> --rebase --match-head-commit <checked-head-sha>
 
-Do not use `--admin`, `--auto`, squash, merge commits, branch deletion, or an implicit merge-queue route to evade an unmet condition. A head mismatch requires fresh inspection; conflicts or unsupported repository merge rules are reported rather than automatically repaired or reconfigured.
+Use squash only when the repository does not allow rebase merging or GitHub reports the PR cannot be rebased (for example, a branch updated by merging the base replays into conflicts), every other condition passes, and the repository allows squash:
+
+    gh pr merge <pr-url> --squash --match-head-commit <checked-head-sha>
+
+Keep GitHub's configured squash title and body. If a rebase call is definitively rejected because rebase itself is unavailable and the PR is still open at the same head, switch to squash once in the same request. A rejection caused by reviews, checks, or branch protection is reported as a blocker, never switch to squash for it.
+
+Do not use `--admin`, `--auto`, merge commits, branch deletion, or an implicit merge-queue route to evade an unmet condition. Do not update, rebase, or force-push the branch to make it rebaseable. A head mismatch requires fresh inspection. An actual conflict with the base (GitHub reports the PR not mergeable) blocks both methods: report it rather than repairing it or reconfiguring the repository. Report which method merged the PR and why squash was used when it was.
 
 Read back the exact PR and resulting base state. Report merged only when GitHub confirms the merge and identifies the resulting commit. A queued, open, failed, or ambiguous result remains that state. Preserve the PR and existing commits; follow recovery.md for an ambiguous mutation. Any deployment caused by the base update belongs to the project's configured CI, not to a new manual Publish deployment.

@@ -80,7 +80,7 @@ For each release identity in deterministic order:
 
    gh release create <tag> --verify-tag --generate-notes --title <tag> --notes-start-tag <identity-baseline-tag>
 
-Omit `--notes-start-tag` only for a verified first release. GitHub-generated notes remain the GitHub Release notes; they neither replace nor duplicate version-bound repository release metadata. Add prerelease state only when explicitly requested or required by authoritative policy.
+Omit `--notes-start-tag` only for a verified first release. GitHub-generated notes remain the GitHub Release notes; they neither replace nor duplicate version-bound repository release metadata. Add prerelease state only when the project policy allows prereleases and the user explicitly requested it or that policy requires it.
 
 Record shared repository metadata and each identity independently. If one identity fails, preserve completed objects and resume only the missing state on a later run.
 

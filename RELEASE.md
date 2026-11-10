@@ -21,7 +21,7 @@
 
 ## PR 与质量检查
 
-普通开发与发布规则设置通过 PR 进入 `main`。Publish 发布 PR 并检查当前提交；只有用户明确要求合并时，才绑定已检查的 head SHA 执行 rebase 合并。
+普通开发与发布规则设置通过 PR 进入 `main`。Publish 发布 PR 并检查当前提交；只有用户明确要求合并时，才绑定已检查的 head SHA 合并：优先 rebase，无法 rebase 时 squash。
 
 `.github/workflows/quality.yml` 的 `Quality` 工作流包含 `quality` job（显示名 `Quality`），对目标为 `main` 的 PR 和每次 `main` push 运行，不过滤版本文件或提交消息。Node 使用 24，pnpm 使用 `package.json` 的 `packageManager` 版本。
 

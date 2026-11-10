@@ -26,7 +26,7 @@ Development, software architecture, testing, and engineering project maintenance
 | [review](./skills/engineering/review/SKILL.md)       | Evidence-backed findings on designs, planning artifacts, or changes                                                                 |
 | [verify](./skills/engineering/verify/SKILL.md)       | A verdict from actually using the affected feature and comparing results with expectations; independent verification when requested |
 | [docs](./skills/engineering/docs/SKILL.md)           | Established truth recorded in the six-type catalog or a named project document                                                      |
-| [publish](./skills/engineering/publish/SKILL.md)     | PR publication, current CI checks, and rebase merging only when requested                                                           |
+| [publish](./skills/engineering/publish/SKILL.md)     | PR publication, current CI checks, and merging only when requested (rebase, else squash)                                            |
 | [release](./skills/engineering/release/SKILL.md)     | Project release setup, exact version publication, and deployment evidence                                                           |
 | [converge](./skills/engineering/converge/SKILL.md)   | Idempotent catalog-wide alignment to current memory formats                                                                         |
 | [doctor](./skills/engineering/doctor/SKILL.md)       | Read-only whole-project documentation drift and health audit                                                                        |
@@ -72,11 +72,11 @@ See the [Resolver](./skills/RESOLVER.md) for route distinctions and [Architectur
 
 ## Project releases
 
-Use Release to establish `RELEASE.md` and connect the project's final branch/tag workflows to MediaStorm CI. Publish owns the setup PR and its checks; merge by rebase only when requested. In dual mode, the default branch deploys Preview and version tags deploy Production. Initial setup is verified through Preview and the first real release, without a separate manual deployment phase.
+Use Release to establish `RELEASE.md` and connect the project's final branch/tag workflows to its CI, either its own workflows or a public CI provider recorded in `RELEASE.md`. Pull requests and default-branch commits run full quality checks; version tags validate, build, deploy and confirm without rerunning tests. Publish owns the setup PR and its checks; merge only when requested, by rebase or by squash when rebase is unavailable. In dual mode, the default branch deploys Preview and version tags deploy Production. Initial setup is verified through Preview and the first real release, without a separate manual deployment phase.
 
 For daily work, ask Publish to submit and check a PR, then request its merge when ready. Ask Release to publish the intended version: it pushes one version metadata commit directly to the default branch, verifies that commit's checks and applicable Preview evidence, and publishes exact tags and GitHub Releases. It reports CI and actual target results separately. Branch-only, tag-only and version-only projects retain their selected scope.
 
-For example: “Release, set up this project's Preview/Production release flow”; “Publish, submit this PR and check CI”; “Merge this PR”; “Release v1.3.0”. Each request carries its own authority. Release replaces the separate onboard-ci entry; install Publish and Release together for this flow.
+For example: “Release, set up this project's Preview/Production release flow”; “Publish, submit this PR and check CI”; “Merge this PR”; “Release v1.3.0”. Each request carries its own authority. Install Publish and Release together for this flow. Release works on its own; when a public CI provider ships its own integration guide or Skill, Release uses it for the provider-specific wiring.
 
 ## Durable memory
 

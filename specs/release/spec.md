@@ -24,7 +24,12 @@ Verify: [release contract](../../tests/release.test.ts)
 
 ### Requirement: 项目权威版本策略优先于通用 SemVer
 
-当前请求没有完整 tag set 时，release 必须用只读查询按 unit/identity 读取当前版本、最新 Release、此后的变化，以及适用的 RELEASE.md、仓库指令、版本/发布文档和已提交 release-tool 配置。存在可唯一应用的项目权威版本策略时必须优先遵循其 version-group affected subset/target、tag aggregation、bump、prerelease、初始版本与依赖传播规则；只有不存在适用策略且目标为不受 group 约束、可唯一映射的 unit 时，才按最高可观察影响回退通用 SemVer：breaking behavior/side effect 为 major，向后兼容 capability 为 minor，向后兼容 fix 为 patch。通用回退不得猜测 fixed/linked 等 version group 是否全员移动、哪些成员发布、目标版本是否同步或仓库发布元数据是否存在。不得仅从历史 tag 增量或 commit message 模式推断项目策略；无法唯一解析 workspace 变更或内部依赖影响时必须报告歧义并零 mutation。
+当前请求没有完整 tag set 时，release 必须用只读查询按 unit/identity 读取当前版本、最新 Release、此后的变化，以及适用的 RELEASE.md、仓库指令、版本/发布文档和已提交 release-tool 配置。存在可唯一应用的项目权威版本策略时必须优先遵循其 version-group affected subset/target、tag aggregation、bump、prerelease、初始版本与依赖传播规则；只有不存在适用策略且目标为不受 group 约束、可唯一映射的 unit 时，才按最高可观察影响与“通用 SemVer 区分 0.x、公开 API 与预发布”推导候选。通用回退不得猜测 fixed/linked 等 version group 是否全员移动、哪些成员发布、目标版本是否同步或仓库发布元数据是否存在。不得仅从历史 tag 增量或 commit message 模式推断项目策略；无法唯一解析 workspace 变更或内部依赖影响时必须报告歧义并零 mutation。
+Verify: [release contract](../../tests/release.test.ts)
+
+### Requirement: 通用 SemVer 区分 0.x、公开 API 与预发布
+
+通用回退遵循 Semantic Versioning 2.0.0：0.x 阶段破坏性变更为 minor、其余为 patch；`1.0.0` 只来自用户明确宣布或明确给出，不由变更推导；1.0 之后只有对项目声明的公开 API 的不兼容变更为 major，仅含向后兼容缺陷修复为 patch，其余为 minor；未声明公开 API 时不提出 major，按同一规则给出 minor 或 patch 并在候选依据中报告；预发布仅在项目规则允许时使用（用户显式要求也不例外），版本先后按 SemVer 比较。候选依据记录版本阶段与公开 API 来源。首次设置必须在 `RELEASE.md` 记录版本阶段、公开 API 范围与预发布许可。
 Verify: [release contract](../../tests/release.test.ts)
 
 ### Requirement: 候选 release set 跨轮确认后才允许 mutation
@@ -61,7 +66,7 @@ Verify: [release contract](../../tests/release.test.ts)
 
 每个 identity 的 local tag、remote tag 与 GitHub Release 必须独立核验和记录，仓库发布元数据作为共享 release state 单独记录；已完成状态必须保留，失败时停止在具体位置，重试只补缺失状态。已有 Release 返回 URL 与实际 state；tag 存在而 Release 缺失时只创建 Release。对完整或部分既有 set，任何成功/返回路径前都必须先确认所有既有 identity 指向同一经核验 release commit，且该 tree 满足完整 unit targets、group/propagation 与适用仓库发布元数据约束，否则停止。
 
-每个 GitHub Release 必须使用 `--verify-tag --generate-notes`；存在 identity baseline 时使用 `--notes-start-tag <identity-baseline-tag>`，first release 才省略。GitHub-generated notes 与版本绑定仓库发布元数据是不同输出，前者不得替代或重复后者；prerelease 只来自用户显式要求或权威项目策略。
+每个 GitHub Release 必须使用 `--verify-tag --generate-notes`；存在 identity baseline 时使用 `--notes-start-tag <identity-baseline-tag>`，first release 才省略。GitHub-generated notes 与版本绑定仓库发布元数据是不同输出，前者不得替代或重复后者；prerelease 须在项目规则允许范围内，并来自用户显式要求或权威项目策略。
 
 (Previously: 幂等状态只覆盖 unit targets、tags、GitHub Releases 与 GitHub-generated notes。)
 Verify: [release contract](../../tests/release.test.ts)
@@ -75,7 +80,7 @@ Verify: [release contract](../../tests/release.test.ts)
 
 ### Requirement: 发布接入与执行职责边界
 
-Release 负责发布规则、首次 CI 接入、版本/Tag/GitHub Release 及部署证据观察；项目 caller 决定触发与目标，公共 CI 执行构建、制品传递和部署。初始化 PR 由 Publish 在已有授权范围内交付；Release 不合并分支，版本提交不转成 PR。不新增手动部署、回滚、独立 artifact/registry 发布或 release-train 管理，不为没有版本绑定元数据的项目发明 changelog/log 体系。小程序公共路径只上传开发版，不提交审核或正式发布。
+Release 负责发布规则、与提供方无关的 CI 连接、版本/Tag/GitHub Release 及部署证据观察；项目 caller 决定触发与目标，CI（项目自身 workflow 或 RELEASE.md 记录的公共 CI 提供方）执行检查、构建、制品传递和部署。初始化 PR 由 Publish 在已有授权范围内交付；Release 不合并分支，版本提交不转成 PR。不新增手动部署、回滚、独立 artifact/registry 发布或 release-train 管理，不为没有版本绑定元数据的项目发明 changelog/log 体系。非面向用户的交付按实际交付如实记录，不称为正式上线。
 
 (Previously: 所有 repo changelog/release-note 文件无条件排除在 release outcome 外。)
 Verify: [release contract](../../tests/release.test.ts)
@@ -92,19 +97,24 @@ Verify: manual(integration)
 
 ### Requirement: 项目规则与首次接入
 
-首次使用必须检查仓库和 GitHub 现状，缺少 RELEASE.md 时在工作分支建立项目规则并准备必要 caller。文档记录版本/单元/Tag 对应、版本事务与允许路径、PR 检查和 rebase 约定、版本提交直推权限、触发方式、环境用途/机制/非敏感目标、命令、公共 CI ref、Secret 引用与验证恢复方式；不记录凭据或每次运行日志。已有文档须与真实配置核对，冲突不猜，未合并配置不算可日常发版。初始化配置与版本提交分离，配置 PR 的合并及首次正式版本需要各自既有授权。
+首次使用必须检查仓库和 GitHub 现状，缺少 RELEASE.md 时在工作分支建立项目规则并准备必要 caller。文档记录版本/单元/Tag 对应、版本事务与允许路径、PR 检查和合并方式约定（优先 rebase，无法 rebase 时 squash）、版本提交直推权限、触发方式、环境用途/机制/非敏感目标、命令、CI 提供方及其已发布 ref 与接入文档、各事件的检查分工、上线确认方式、Secret 引用与验证恢复方式；不记录凭据或每次运行日志。已有文档须与真实配置核对，冲突不猜，未合并配置不算可日常发版。初始化配置与版本提交分离，配置 PR 的合并及首次正式版本需要各自既有授权。
 
-接入继续复用选定已发布 MediaStorm 公共 CI，读取真实接口、保留项目工具链、逐项映射 Secrets，先核对会触发部署所需的外部权限与目标。caller 一开始即使用最终自动事件，不引入手动部署阶段、试验正式 Tag 或第二个启用自动化 PR。双环境先通过真实默认分支事件验证 Preview，再通过第一次获授权真实发版验证 Production；期间准确报告 Production 待验证。文件存在或配置检查通过不代表完整接入成功，重入根据实际配置与证据续接。
+接入使用项目自身 workflow 或 RELEASE.md 记录的 CI 提供方已发布 ref，读取其真实接口与提供方接入文档、保留项目工具链、逐项映射 Secrets，先核对会触发部署所需的外部权限与目标。caller 一开始即使用最终自动事件，不引入手动部署阶段、试验正式 Tag 或第二个启用自动化 PR。双环境先通过真实默认分支事件验证 Preview，再通过第一次获授权真实发版验证 Production；期间准确报告 Production 待验证。文件存在或配置检查通过不代表完整接入成功，重入根据实际配置与证据续接。
 Verify: manual(integration)
 
 ### Requirement: 项目部署配置
 
-有部署需求时支持仅默认分支、仅 Tag、两者同时触发；两者同时存在时默认分支部署 Preview、Tag 部署 Production，Preview 为共享主分支环境。仅一种触发不增加另一环境，网络位置不决定模式。无运行时目标的仓库只建立版本发布约定，不创造部署资源；小程序只记录开发版上传事实。每个独立单元有独立的 Tag、产物和目标并发范围。Tag 的格式、版本/单元对应及提交可达性必须在构建、上传和部署前验证，后续构建绑定精确 Tag commit。
+有部署需求时支持仅默认分支、仅 Tag、两者同时触发；两者同时存在时默认分支部署 Preview、Tag 部署 Production，Preview 为共享主分支环境。仅一种触发不增加另一环境，网络位置不决定模式。无运行时目标的仓库只建立版本发布约定，不创造部署资源；非面向用户的交付按实际交付如实记录。Tag 触发的运行只做 Tag 校验、目标构建、部署与轻量上线确认，不重跑质量检查与测试；提供方强制保留的步骤记为已知限制。每个独立单元有独立的 Tag、产物和目标并发范围。Tag 的格式、版本/单元对应及提交可达性必须在构建、上传和部署前验证，后续构建绑定精确 Tag commit。
 Verify: manual(integration)
 
 ### Requirement: 版本提交检查与部署证据
 
-release commit R 直推后，必须把项目检查及部署 run 的 workflow、event/ref、head SHA、run/attempt、产物/镜像身份与 R 对齐。双环境的新 Tag 必须等待 R 的检查、Preview 部署及实际目标验证；其他提交或过期/取消/缺失结果不可替代。Preview 被后续提交覆盖且没有 R 的有效观察时，停在缺失证据处，不验证更新后的页面作为 R，也不强制锁仓或手动部署。无 Preview 的配置只遵循自身验证要求。
+release commit R 直推后，必须把项目检查及部署 run 的 workflow、event/ref、head SHA、run/attempt、产物/镜像身份与 R 对齐。双环境的新 Tag 必须等待 R 的检查、Preview 部署及实际目标验证；其他提交或过期/取消/缺失结果不可替代。Preview 被后续提交覆盖且没有 R 的有效观察时，停在缺失证据处，不验证更新后的页面作为 R，也不强制锁仓或手动部署。无 Preview 的配置只遵循自身验证要求。R 的默认分支检查通过是 Tag 阶段跳过测试的前提。
 
-Tag 后按每个 exact identity/ref 观察真实部署和实际目标，不读取 latest main 作为发布对象，不把同 SHA 的其他 Tag/run 当成当前发布。默认分支前进不改变 R 或既有 Tag；远程历史发布恢复核验原 committed tree 和可达性，不要求 R 等于最新 tip，不重新 bump。检查、Tag、Release、部署分别保留部分状态；现存 Tag 本身不是检查/部署证明，也不因补 GitHub notes 强制重部署。相同代码的基础设施重跑须有相应授权并复核 ref/commit/目标及预期载荷；代码修复走新 PR 与后续版本，不能移动旧 Tag。等待环境审批、排队或目标不可观察都报告真实未完成状态。
+Tag 后按每个 exact identity/ref 观察真实部署和实际目标，不读取 latest main 作为发布对象，不把同 SHA 的其他 Tag/run 当成当前发布。默认分支前进不改变 R 或既有 Tag；远程历史发布恢复核验原 committed tree 和可达性，不要求 R 等于最新 tip，不重新 bump。检查、Tag、Release、部署分别保留部分状态；现存 Tag 本身不是检查/部署证明，也不因补 GitHub notes 强制重部署。相同代码的基础设施重跑须有相应授权并复核 ref/commit/目标及预期载荷；代码修复走新 PR 与后续版本，不能移动旧 Tag。Tag 后观察到运行结束并完成记录的轻量上线确认及项目声明的额外 Production 验证后再报告；Tag 运行中没有测试步骤不视为证据缺失。等待环境审批、排队或目标不可观察都报告真实未完成状态。
 Verify: manual(integration)
+
+### Requirement: 事件检查分工
+
+PR 与默认分支提交（包括版本提交 R）运行完整质量检查；双环境下默认分支再构建、部署并验证 Preview。版本 Tag 不重跑质量检查和测试，只做 Tag 校验、目标构建、部署与轻量上线确认；CI 提供方当前接口强制的步骤保留并记为已知限制，不阻断接入或发版。
+Verify: [release contract](../../tests/release.test.ts)

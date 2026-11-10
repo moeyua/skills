@@ -12,7 +12,7 @@ Development, software architecture, testing, and engineering project maintenance
 | [review](./review/SKILL.md)       | Evidence-backed findings on designs, planning artifacts, or changes.                                                                 |
 | [verify](./verify/SKILL.md)       | A verdict from actually using the affected feature and comparing results with expectations; independent verification when requested. |
 | [docs](./docs/SKILL.md)           | Established truth recorded in the six-type catalog or a named project document.                                                      |
-| [publish](./publish/SKILL.md)     | PR publication, current CI checks, and explicitly requested rebase merging.                                                          |
+| [publish](./publish/SKILL.md)     | PR publication, current CI checks, and explicitly requested merging (rebase first, squash fallback).                                 |
 | [release](./release/SKILL.md)     | Project release setup, exact version publication, and deployment evidence.                                                           |
 | [converge](./converge/SKILL.md)   | Idempotent catalog-wide alignment to current memory formats.                                                                         |
 | [doctor](./doctor/SKILL.md)       | Read-only whole-project documentation drift and health audit.                                                                        |
