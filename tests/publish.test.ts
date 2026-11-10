@@ -67,13 +67,27 @@ describe("publish state machine", () => {
     expect(PUBLISH).toContain("No Issue association is a normal state");
   });
 
-  it("offers a rebase merge command tied to the inspected PR head", () => {
+  it("prefers rebase and falls back to squash only when rebase is unavailable", () => {
     const commands = PULL_REQUEST.split("\n").filter((line) => /^\s+gh pr merge /.test(line));
-    expect(commands).toHaveLength(1);
-    expect(commands[0]).toContain("--rebase");
-    expect(commands[0]).toContain("--match-head-commit");
-    expect(commands[0]).not.toMatch(/--admin|--auto|--squash|--delete-branch/);
+    expect(commands).toHaveLength(2);
+    expect(commands.filter((command) => command.includes("--rebase"))).toHaveLength(1);
+    expect(commands.filter((command) => command.includes("--squash"))).toHaveLength(1);
+    for (const command of commands) {
+      expect(command).toContain("--match-head-commit");
+      expect(command).not.toMatch(/--admin|--auto|--delete-branch|--merge\b/);
+    }
+    expect(PULL_REQUEST).toMatch(/canBeRebased/);
+    expect(PULL_REQUEST).toMatch(
+      /squash[\s\S]*only when[\s\S]*(cannot be rebased|does not allow rebase)/i,
+    );
+    expect(PULL_REQUEST).toMatch(
+      /reviews?, checks?, (or )?branch protection[\s\S]*not[\s\S]*squash|never switch to squash/i,
+    );
+    expect(PULL_REQUEST).toMatch(/actual conflict[\s\S]*report/i);
+    expect(RECOVERY).toMatch(/ambiguous rebase[\s\S]*(do not|never) (fall back|switch) to squash/i);
+    expect(ENTRY).not.toContain("rebase merge is the sole merge operation");
     expect(SPEC).toContain("### Requirement: 当前 PR 检查");
-    expect(SPEC).toContain("### Requirement: 显式授权的 rebase 合并");
+    expect(SPEC).toContain("### Requirement: 显式授权的合并：优先 rebase，必要时 squash");
+    expect(SPEC).not.toContain("显式授权的 rebase 合并");
   });
 });

@@ -31,9 +31,17 @@ Classify required repository metadata as already matching, user-supplied, projec
 
 When the user did not provide a tag, resolve the authoritative project version policy applicable to every unit from repository instructions, versioning or release documentation, and committed release-tool configuration. That policy takes precedence over the generic SemVer mapping.
 
-Only when no applicable authoritative project policy exists and ungrouped unit mapping is unambiguous, use highest observable impact: breaking behavior or side effect → major; backward-compatible capability → minor; backward-compatible fix → patch. Derive one candidate tag with SemVer for each resulting tag identity from changes since the latest release. Generic fallback must not invent group, aggregate, unchanged-member, or repository-metadata semantics.
+Only when no applicable authoritative project policy exists and ungrouped unit mapping is unambiguous, derive one candidate tag per resulting tag identity from the highest observable impact since the latest release, following Semantic Versioning 2.0.0:
 
-An explicit tag chooses an exact target; it does not waive version validity. Validate the identity's version/sequence and every changed unit target against current and released versions plus project successor, prerelease, initial-version, group, and propagation rules. Under generic SemVer, each changed unit target must be strictly greater than both its current version and latest released unit version.
+- `0.y.z` is initial development (SemVer §4): a breaking change → minor; every other change → patch. SemVer does not prescribe increments below 1.0; this is the common caret-range convention.
+- A `1.0.0` target declares the public API (SemVer §5). Use it only when the user explicitly declares or supplies it; never derive `1.0.0` from changes.
+- From `1.0.0`: major only for an incompatible change to the declared public API (SemVer §8); patch only when the changes are all backward-compatible bug fixes (SemVer §6); otherwise minor. The public API is whatever the project declares in `RELEASE.md` or authoritative docs; Release does not decide on its own that a page, route, or behavior is public.
+- When the public API is undeclared, propose no major; apply the same rule to give a minor or patch candidate, and report the missing declaration in the basis.
+- Use a prerelease identity (SemVer §9) only when the project policy allows prereleases; an explicit user request outside that permission stops without mutation. Order versions by SemVer §11 precedence.
+
+Generic fallback must not invent group, aggregate, unchanged-member, or repository-metadata semantics.
+
+An explicit tag chooses an exact target; it does not waive version validity. Validate the identity's version/sequence and every changed unit target against current and released versions plus project successor, prerelease, initial-version, group, and propagation rules. A prerelease target is valid only when the project policy allows prereleases, and precedence follows SemVer §11. Under generic SemVer, each changed unit target must be strictly greater than both its current version and latest released unit version.
 
 A covered member may equal its current version only when the authoritative project policy explicitly marks that unit unchanged; this does not count as identity-version reuse. Generic fallback must not invent aggregate or unchanged-member semantics. An unapproved equal target, lower target, or reused new identity version stops without mutation.
 
@@ -45,6 +53,8 @@ Put the candidate in the final response with:
 - every identity: tag → covered units;
 - applicable version-bound repository release metadata: target, state, exact substantive content when Agent-derived, and source identity; omit this item when not applicable;
 - Version policy: <project sources | generic SemVer fallback>;
+- Version stage: <0.y.z initial development | 1.0.0 and later | 1.0.0 declared by the user>;
+- Public API source: <declaring project source | undeclared>;
 - the remote default-branch tip;
 - latest Release identity for every tag identity and its peeled target, or first-release marker;
 - unit targets and topology/policy/metadata source identities;

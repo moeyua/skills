@@ -6,11 +6,11 @@ Read when `RELEASE.md` is missing, CI connection is requested, or prior setup is
 
 Read project-policy.md, inspect existing project files and GitHub state, and identify independently releasable units. Resolve the real install/check/test/build commands, artifact roots, version sources, current workflows, environments, targets and repository permissions. Ask only for material facts unavailable from those sources, such as the destination the user intends to use.
 
-Read ci-contract.md and the selected published reusable workflow definitions when deployment is needed. Determine only this project's actual path. Preserve its framework, package manager, build tools, runtime configuration and persistent data. An unsupported target is a reported gap, not a reason to insert arbitrary deployment scripts.
+Read ci-connection.md and, when the project uses a public CI provider, its selected published workflow definitions and documentation when deployment is needed. Determine only this project's actual path. Preserve its framework, package manager, build tools, runtime configuration and persistent data. An unsupported target is a reported gap, not a reason to insert arbitrary deployment scripts.
 
-Prepare `RELEASE.md` and the necessary caller/Docker/Compose changes on a work branch. Use existing project tools for versioning. Keep the initial rules and CI changes separate from the later version metadata transaction.
+Prepare `RELEASE.md` and the necessary caller and deployment-configuration changes on a work branch. Use existing project tools for versioning. Keep the initial rules and CI changes separate from the later version metadata transaction.
 
-Configure checks that run for PRs and for the release commit on the default branch. PR quality checks must work without deployment credentials. Ensure version-only changes are not excluded by path or commit-message filters from a check or deployment that Release must observe.
+Configure full quality checks for PRs and for every default-branch commit, including the release commit, and tag runs without quality checks or tests, following the event check division in ci-connection.md (a provider's mandatory step is a recorded known limitation). PR quality checks must work without deployment credentials. Ensure version-only changes are not excluded by path or commit-message filters from a check or deployment that Release must observe.
 
 Create the final branch/tag triggers immediately. A dual-mode caller maps branch updates to Preview and version tags to Production; enforce ref/identity validation before side effects. Do not start with manual-only callers, require a manual proof deployment, create a sacrificial release tag, or require a second PR to activate automation. Ordinary retry of a failed real run is not an onboarding stage.
 
@@ -20,9 +20,9 @@ Check the actor's effective ability to push a version commit directly to the act
 
 Before an authorized merge that will trigger deployment, establish the required Secrets' existence and repository access, runner readiness, target configuration and trust. Never request or print Secret values. Configure only the external settings included in the user's setup authority; missing administrator authority leaves that preparation incomplete rather than creating a bypass. Preserve existing environment approval rules.
 
-Validate the local changes with the project's real frozen install, checks, tests and build. Do not invent a test command; when no suite exists, record the skip and pass an empty test command only where the shared interface permits it. Check artifact containment and non-empty output, Docker/mini-program conditions when applicable, run actionlint on changed callers, and check the diff for placeholders, secret values and invalid public-CI references.
+Validate the local changes with the project's real frozen install, checks, tests and build. Do not invent a test command; when no suite exists, record the skip. Check artifact containment and non-empty output, the target-specific conditions documented by the CI provider, run actionlint on changed callers, and check the diff for placeholders, secret values and invalid CI references.
 
-Compose Publish within the already-authorized commit/push/PR scope. Merge remains explicitly requested and uses Publish's current-head checks and rebase operation. A setup or release request alone is not merge authority. Continue authorized local preparation when an external prerequisite blocks the dependent merge or deployment.
+Compose Publish within the already-authorized commit/push/PR scope. Merge remains explicitly requested and uses Publish's current-head checks and merge method (rebase preferred, squash when rebase is unavailable). A setup or release request alone is not merge authority. Continue authorized local preparation when an external prerequisite blocks the dependent merge or deployment.
 
 ## Verify through real events
 

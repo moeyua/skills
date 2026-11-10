@@ -2,7 +2,7 @@
 
 ## Purpose
 
-publish 根据 canonical git/GitHub 状态完成缺失的 commit、push 和 pull request，检查当前 PR，并在用户明确要求时执行 rebase 合并；分别保留各阶段的实际结果。
+publish 根据 canonical git/GitHub 状态完成缺失的 commit、push 和 pull request，检查当前 PR，并在用户明确要求时合并（优先 rebase，无法 rebase 时 squash）；分别保留各阶段的实际结果。
 
 ## Requirements
 
@@ -23,7 +23,7 @@ Verify: [publish state machine](../../tests/publish.test.ts)
 
 ### Requirement: 保护本地和远程历史
 
-detached、in-progress git operation 或 protected/default branch 必须在本地 commit/branch push 前停止；禁止 force push、删除 remote branch、修改 git/gh config 或推送 protected history。该限制不禁止用户明确授权且满足当前条件的 GitHub rebase 合并，也不授权为合并重写本地分支。
+detached、in-progress git operation 或 protected/default branch 必须在本地 commit/branch push 前停止；禁止 force push、删除 remote branch、修改 git/gh config 或推送 protected history。该限制不禁止用户明确授权且满足当前条件的 GitHub rebase 或 squash 合并，也不授权为合并重写本地或远程分支。
 Verify: [publish state machine](../../tests/publish.test.ts)
 
 ### Requirement: PR 来自整条分支
@@ -51,7 +51,7 @@ Verify: manual(integration)
 publish 必须读取 exact PR 的当前 head、base、draft、必需 CI、评审要求和可合并性；检查需匹配 head 和适用 run attempt。等待、失败、取消、缺失、过期或不可读证据不能算通过，skipped/neutral 只能按项目实际契约解释。没有 required checks 时应明确记录该事实并检查项目约定的验证，不发明成功结果。检查不授权自动修复或重跑有部署副作用的 Workflow。
 Verify: manual(integration)
 
-### Requirement: 显式授权的 rebase 合并
+### Requirement: 显式授权的合并：优先 rebase，必要时 squash
 
-只有用户明确要求合并该 PR 时，publish 才可刷新 head/base/检查/评审/draft/可合并性，在全部条件满足且仓库允许 rebase 时，使用绑定已检查 head 的 rebase 合并。head 变化使旧证据失效；不得转 squash、merge commit、管理员绕过、自动合并或不兼容的 merge queue，也不自动解决冲突或删除分支。合并后读取真实 PR 与结果 commit，queued/open/unknown 不得报告为 merged。
+只有用户明确要求合并该 PR 时，publish 才可刷新 head/base/检查/评审/draft/可合并性，并读取仓库 `rebaseMergeAllowed`/`squashMergeAllowed` 与 PR 的 `canBeRebased`/`mergeable`/`mergeStateStatus`。全部条件满足、仓库允许 rebase 且 PR 可 rebase 时，使用绑定已检查 head 的 rebase 合并；仓库不允许 rebase 或 GitHub 判定 PR 无法 rebase 时，在仓库允许 squash 的前提下使用绑定同一 head 的 squash 合并，无需再次确认。rebase 因不可 rebase 或仓库不允许 rebase 被明确拒绝且 PR 保持原状时可改用一次 squash；评审、检查、分支保护等其他原因的拒绝或结果模糊时不改用。head 变化使旧证据失效；不使用 merge commit、管理员绕过、自动合并或不兼容的 merge queue，不自动解决冲突、不更新或重写分支、不删除分支；与 base 的真实冲突照常报告阻塞。报告实际合并方式与原因；合并后读取真实 PR 与结果 commit，queued/open/unknown 不得报告为 merged。
 Verify: [publish state machine](../../tests/publish.test.ts)

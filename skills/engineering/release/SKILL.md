@@ -1,15 +1,15 @@
 ---
 name: release
-description: "Set up project release rules and MediaStorm CI, then publish exact GitHub versions and observe deployment results. Use when the user requests first-time release setup, CI onboarding, a tag, or a release. Read or establish RELEASE.md; derived or expanded release sets need next-turn confirmation. Not for PR checks/merges (use publish), manual deployment, rollback, or standalone registry publishing."
+description: "Set up project release rules and CI connection, then publish exact GitHub versions and observe deployment results. Use when the user requests first-time release setup, CI onboarding, a tag, or a release. Read or establish RELEASE.md; derived or expanded release sets need next-turn confirmation. Not for PR checks/merges (use publish), manual deployment, rollback, or standalone registry publishing."
 ---
 
 # Release
 
-Release establishes a project's release rules and CI connection, then turns an exact authorized release set into a verified default-branch metadata commit, tags, and GitHub Releases with separate deployment evidence. Project workflows map events to targets; MediaStorm's reusable workflows execute deployment.
+Release establishes a project's release rules and CI connection, then turns an exact authorized release set into a verified default-branch metadata commit, tags, and GitHub Releases with separate deployment evidence. Project workflows map events to targets; the project's CI, or a public CI provider recorded in `RELEASE.md`, executes checks, builds and deployment.
 
 ## Resolve project readiness
 
-Read `references/project-policy.md` and the project's `RELEASE.md` on every invocation. When the document is absent or setup is incomplete, read `references/onboarding.md`; for CI integration, also read `references/ci-contract.md`. Establish rules and final automatic triggers on a work branch, preserving the project's real toolchain. Setup changes use Publish within authorized PR/merge scope; a release request never silently authorizes a merge.
+Read `references/project-policy.md` and the project's `RELEASE.md` on every invocation. When the document is absent or setup is incomplete, read `references/onboarding.md`; for CI integration, also read `references/ci-connection.md`. Establish rules and final automatic triggers on a work branch, preserving the project's real toolchain. Setup changes use Publish within authorized PR/merge scope; a release request never silently authorizes a merge.
 
 Initialize once, then resume from actual configuration and run evidence. In the dual-environment mode, default-branch updates deploy Preview and version tags deploy Production. Verify Preview through the real branch event and Production through the first real release, without an extra manual deployment phase. A document's existence is not proof of completed onboarding.
 

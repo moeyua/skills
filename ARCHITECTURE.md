@@ -116,21 +116,21 @@ the snapshot does not create authority.
 
 Shape and Handoff are visible checkpoints, not mandatory upstream stages. Shape first obtains Explore context, then ends by presenting a Design Summary for review; agreement settles that direction but does not select another public capability. Its internal Explore support call returns to the same outcome and does not trigger an early Summary or review. Handoff preserves continuation-critical state when context moves. Every other capability remains directly enterable and reconstructs only the state its outcome needs from the current request and authoritative project facts.
 
-| capability | intent-fidelity and attestation responsibility                                                      |
-| ---------- | --------------------------------------------------------------------------------------------------- |
-| Explore    | keep documentation claims, observed facts, and source conflicts distinguishable                     |
-| Shape      | expose the active outcome, failed or unresolved conditions, continuity choices, and recommendations |
-| Plan       | persist settled direction; audit outputs and revise within authority without upgrading the verdict  |
-| Implement  | deliver behavior with proof; mark an associated plan `done` with its Assurance in the same delivery |
-| Debug      | establish causal evidence without acquiring repair authority                                        |
-| Review     | expose actionable problems against source intent and actual artifacts                               |
-| Verify     | use the affected feature and compare results; fresh independent context only when requested         |
-| Docs       | record authoritative current truth without carrying a superseded design through a clean break       |
-| Publish    | attest commit/push/PR, current checks and requested rebase merge; deliver the plan with code        |
-| Release    | establish project release rules and attest release/deployment observations within their evidence    |
-| Converge   | preserve authored meaning and stop on source conflict or missing authority                          |
-| Doctor     | separate deterministic facts from model judgment and evidence                                       |
-| Handoff    | carry active, superseded, completed, evidenced, and pending state without settling it               |
+| capability | intent-fidelity and attestation responsibility                                                              |
+| ---------- | ----------------------------------------------------------------------------------------------------------- |
+| Explore    | keep documentation claims, observed facts, and source conflicts distinguishable                             |
+| Shape      | expose the active outcome, failed or unresolved conditions, continuity choices, and recommendations         |
+| Plan       | persist settled direction; audit outputs and revise within authority without upgrading the verdict          |
+| Implement  | deliver behavior with proof; mark an associated plan `done` with its Assurance in the same delivery         |
+| Debug      | establish causal evidence without acquiring repair authority                                                |
+| Review     | expose actionable problems against source intent and actual artifacts                                       |
+| Verify     | use the affected feature and compare results; fresh independent context only when requested                 |
+| Docs       | record authoritative current truth without carrying a superseded design through a clean break               |
+| Publish    | attest commit/push/PR, current checks and requested merge (rebase, else squash); deliver the plan with code |
+| Release    | establish project release rules and attest release/deployment observations within their evidence            |
+| Converge   | preserve authored meaning and stop on source conflict or missing authority                                  |
+| Doctor     | separate deterministic facts from model judgment and evidence                                               |
+| Handoff    | carry active, superseded, completed, evidenced, and pending state without settling it                       |
 
 Fail-close and clean-break do not create stages or a generic recovery framework. Each capability applies the canonical boundary only to its own claim, artifact, or side effect.
 
@@ -153,7 +153,7 @@ After its selected target's generation phase ends, Plan locates Review in the sa
 | local plan                                                                                            | Plan target `local` or `both`      |
 | GitHub Issue                                                                                          | Plan target `issue` or `both`      |
 | project implementation/docs                                                                           | explicit authorized change outcome |
-| commit, push, PR and explicitly requested rebase merge                                                | Publish outcome                    |
+| commit, push, PR and explicitly requested merge                                                       | Publish outcome                    |
 | project release configuration, version metadata, direct default-branch release commit, tags, Releases | Release outcome                    |
 
 Review and Verify remain read-only and Docs remains authority-bound when composed; neither grants new implementation repair, Publish, or Release. The active caller retains its existing authorization and continues applicable work after a support result. Plan's audit verdict covers the inspected artifact version; its own subsequent verification cannot turn that verdict into a new independent pass. A caller records a Verify result as reported, without reinterpreting or manufacturing any field. Ordinary Review and Verify do not require a separate agent merely because Plan's audit does; a user-requested independent Verify has its own fresh-context requirement.
@@ -167,8 +167,8 @@ Notable reference families:
 - Implement: associated plan state and optional independent Verify load from `references/assurance.md` only when triggered.
 - Verify: ordinary feature verification loads the e2e method for actual use; the test method supports required checks or an explicit request limited to tests, and relevant review evidence may be composed from Review. Only a user-requested independent verification loads `references/acceptance.md`; independence preserves the same responsibility to use the feature.
 - Docs: the memory catalog indexes six target-specific formats.
-- Publish: local git state, PR construction/current checks/authorized rebase merge, and recovery.
-- Release: project-policy and onboarding, MediaStorm CI contract, deployment evidence, release-set model, execution, and recovery.
+- Publish: local git state, PR construction/current checks/authorized merge (rebase, else squash), and recovery.
+- Release: project-policy and onboarding, provider-neutral CI connection, deployment evidence, release-set model, execution, and recovery.
 - Converge: per-document state/action model plus sibling Docs/Doctor assets.
 
 Five source symlinks share two semantic sources in root `rules/`: `change-types.md` is consumed by Shape, Plan, and Implement; `memory-catalog.md` is consumed by Explore and Docs. From each engineering skill's `references/` directory, these links traverse four levels to the root before entering `rules/`.
@@ -207,9 +207,9 @@ Plan target semantics are stable: omitted target is `both`; `both` writes and va
 
 Release models authoritative version sources as release units, project-tool coordination as version groups, exact tag/GitHub mappings as release identities, and any existing version-bound repository release metadata as an optional part of the confirmed release set. Derived or substantively expanded sets wait for next-turn confirmation. Each fresh release re-resolves from the fetched default branch, runs one verified non-tagging/non-committing/non-publishing release metadata transaction, directly pushes one commit containing the complete set, and publishes each identity recoverably. Existing remote sets are reconciled from their original release commit without replaying a transaction when the default branch advances. The same semantic predicate governs fresh execution, local recovery, and remote reuse without imposing one metadata filename, schema, or tool.
 
-Release reads the project-owned `RELEASE.md` on entry and establishes missing setup on a work branch, using Publish only within the authorized PR/merge scope. The document records rules; project callers bind actual events, parameters and targets; MediaStorm public CI executes deployment. New callers use final automatic events from the first setup PR. Dual mode verifies Preview after the branch event and Production at the first real version release. Branch-only, tag-only and no-runtime projects do not gain an extra environment. A version commit's own checks and applicable Preview evidence precede new tags; tag runs build that exact commit, and Release reports each target's actual verification separately.
+Release reads the project-owned `RELEASE.md` on entry and establishes missing setup on a work branch, using Publish only within the authorized PR/merge scope. The document records rules; project callers bind actual events, parameters and targets; the project's CI or its recorded public CI provider executes checks, builds and deployment. Pull requests and default-branch commits run full quality checks; version tags validate, build, deploy and confirm without rerunning tests. New callers use final automatic events from the first setup PR. Dual mode verifies Preview after the branch event and Production at the first real version release. Branch-only, tag-only and no-runtime projects do not gain an extra environment. A version commit's own checks and applicable Preview evidence precede new tags; tag runs build that exact commit, and Release reports each target's actual verification separately.
 
-The onboarding and CI references replace the independent onboard-ci installation. They are self-contained in Release, including COS, Docker and developer-only mini-program contracts; the 13-skill inventory and six-type memory catalog remain unchanged. Installed copies must be updated through the existing installer, with the retired entry removed rather than kept as a compatibility route.
+The onboarding and CI-connection references are self-contained in Release and provider-neutral: a public CI provider's interfaces, Secrets and target contracts belong to that provider's own documentation or Skill, which Release follows when the project records that provider. The 13-skill inventory and six-type memory catalog remain unchanged. Installed copies must be updated through the existing installer, with the retired entry removed rather than kept as a compatibility route.
 
 ## Truth and verification
 
