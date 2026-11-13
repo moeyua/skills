@@ -1,38 +1,89 @@
 ---
 name: review
-description: 'Find evidence-backed problems in a design, planning artifact, or code change. Use when the user says "review" / "审阅" / "把关", asks what needs correction, or Plan requests its independent planning audit. Not for fixing findings or proving a claimed result, including independent verification (use verify).'
+description: 'Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo''s documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Runs both reviews in parallel sub-agents and reports them side by side. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to "review since X".'
+metadata:
+  credits: "Adapted from https://github.com/mattpocock/skills/tree/main/skills/engineering/code-review (MIT)"
 ---
 
-# Review
+Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
 
-Review answers what needs correction and why. Judge the actual artifacts against the original outcome and applicable contracts; a plausible proposal or passing test is evidence to examine, not proof that the whole change is sound.
+- **Standards**: does the code conform to this repo's documented coding standards?
+- **Spec**: does the code faithfully implement the originating issue / spec?
 
-## Inspect the change
+Both axes run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings. Start every sub-agent with a fresh context window.
 
-Read the relevant project instructions, complete relevant diff or design, and enough surrounding sources to understand consequences. Include relevant untracked files. Reuse valid project facts and investigate gaps directly; Explore is available for unfamiliar structure, not a mandatory preflight. A plan is useful context when present, not an entry gate or a replacement for the user's request and corrections.
+## Process
 
-Concentrate on the risks the request and change actually introduce: correctness, failure and edge handling, intent and scope fidelity, coverage that distinguishes the behavior, and unnecessary complexity or duplication. These are judgment lenses, not a checklist of report sections. Run relevant tests or observe behavior when that can substantiate a suspected problem; choose the project's actual commands and preserve their results. Do not require a separate agent for ordinary review or run unrelated checks for completeness.
+### 1. Pin the fixed point
 
-Treat compatibility as a constraint only when the requested outcome or authoritative contract establishes it. Within the inspected scope, report masked failures, unauthorized fallback, compatibility layer, migration, dual path or legacy path, and superseded paths retained after an authorized replacement. If a necessary boundary cannot be established, preserve that gap; do not expand a scoped review to prove a global absence.
+Whatever the user said is the fixed point (a commit SHA, branch name, tag, `main`, `HEAD~5`, etc.). If they didn't specify one, use the merge-base with the default branch, and include uncommitted changes when there are any.
 
-## Review planning artifacts
+Capture the diff command once: `git diff <fixed-point>...HEAD` (three-dot, so the comparison is against the merge-base). Also note the list of commits via `git log <fixed-point>..HEAD --oneline`.
 
-For a local plan, Issue, or paired output, read the actual full artifacts even when untracked or outside a code diff. Compare them with the original request and corrections, settled decisions, relevant project sources, and generation results. Identify the inspected versions and missing or unattempted artifacts; partial generation permits review of the readable scope, not a claim about absent content.
+Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and the diff is non-empty. A bad ref or empty diff should fail here, not inside two parallel sub-agents.
 
-Assess a local plan's factual grounding, decision fidelity, bounded scope, feasible dependencies and ordering, and verification that can distinguish the outcome. An Issue is a bounded problem record: assess its identity, evidence, constraints and observable resolved state when known, without demanding an unknown solution, technical approach or complete acceptance. Paired artifacts must describe the same problem while keeping implementation responsibilities in the plan. Judge whether proposed checks are applicable; do not run future implementation tests merely to produce a test count.
+### 2. Identify the spec source
 
-Plan's required audit uses a fresh context independent of authoring, with original evidence and actual artifacts. A full-history fork or the author's summary alone does not establish that independence. If this supporting call lacks independence, required source evidence or artifact access, return `inconclusive` for the affected scope. This requirement belongs to Plan's audit; ordinary Review does not require it. Return the result to Plan for authorized corrections and targeted verification. Those corrections do not extend the original verdict to a new version or create another independent pass.
+Look for the originating spec, in this order:
 
-## Findings and result
+1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.), fetched with `gh issue view`.
+2. A path the user passed as an argument.
+3. A plan under `plans/`, or a spec under `specs/`, matching the branch name or feature.
+4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
 
-Return exactly one verdict for the inspected scope:
+### 3. Identify the standards sources
 
-- `pass` — no actionable problem was found within the scope actually reviewed;
-- `findings` — evidence establishes actionable defects or scope/intent conflicts;
-- `inconclusive` — a required judgment could not be established.
+Search the repo for every file that documents how code should be written. When `CODING_STANDARDS.md` or `CONTRIBUTING.md` exists, it must be on the list.
 
-Lead with high-confidence findings ordered by impact, or the bounded conclusion when there are none. Each finding identifies the consequence, a tight file/line location or other identifiable object, supporting evidence, how to show the failure (the input, command, or scenario that exposes it), and a correction direction without writing a patch. Include material gaps and actual commands or observations when relevant; omit speculative and purely stylistic noise. Preserve evidence-backed findings even when other parts remain uninspected.
+On top of whatever the repo documents, the Standards axis always carries the **smell baseline** below: a fixed set of Fowler code smells (_Refactoring_, ch.3) that applies even when a repo documents nothing. Two rules bind it:
 
-Review is read-only: it does not edit source, tests, plans, Issues or docs, stage, commit, push, or repair findings. Running the project to observe it is permitted; startup failure does not authorize a configuration patch. Findings grant no repair authority. If guidance prevents requested work, link and quote the relevant instruction and explain the limitation while completing unaffected review.
+- **The repo overrides.** A documented repo standard always wins; where it endorses something the baseline would flag, suppress the smell.
+- **Always a judgement call.** Each smell is a labelled heuristic ("possible Feature Envy"), never a hard violation. Like any standard here, skip anything tooling already enforces.
 
-A standalone Review ends with its scoped result. Inside Plan or Implement, return evidence to that caller so it can continue its already-authorized work. Review never recursively invokes Plan, upgrades a draft, or changes a plan's status. An ordinary review pass supplies only review evidence.
+Each smell reads _what it is_ → _how to fix_; match it against the diff:
+
+- **Mysterious Name**: a function, variable, or type whose name doesn't reveal what it does or holds. → rename it; if no honest name comes, the design's murky.
+- **Duplicated Code**: the same logic shape appears in more than one hunk or file in the change. → extract the shared shape, call it from both.
+- **Feature Envy**: a method that reaches into another object's data more than its own. → move the method onto the data it envies.
+- **Data Clumps**: the same few fields or params keep travelling together (a type wanting to be born). → bundle them into one type, pass that.
+- **Primitive Obsession**: a primitive or string standing in for a domain concept that deserves its own type. → give the concept its own small type.
+- **Repeated Switches**: the same `switch`/`if`-cascade on the same type recurs across the change. → replace with polymorphism, or one map both sites share.
+- **Shotgun Surgery**: one logical change forces scattered edits across many files in the diff. → gather what changes together into one module.
+- **Divergent Change**: one file or module is edited for several unrelated reasons. → split so each module changes for one reason.
+- **Speculative Generality**: abstraction, parameters, or hooks added for needs the spec doesn't have. → delete it; inline back until a real need shows.
+- **Message Chains**: long `a.b().c().d()` navigation the caller shouldn't depend on. → hide the walk behind one method on the first object.
+- **Middle Man**: a class or function that mostly just delegates onward. → cut it, call the real target direct.
+- **Refused Bequest**: a subclass or implementer that ignores or overrides most of what it inherits. → drop the inheritance, use composition.
+
+### 4. Spawn both sub-agents in parallel
+
+Issue both sub-agent calls together, in the foreground, and aggregate the reports they return.
+
+**Standards sub-agent prompt** should include:
+
+- The full diff command and commit list.
+- The list of standards-source files you found in step 3, **plus the smell baseline from step 3** pasted in full (the sub-agent has no other access to it).
+- The brief: "Report, per file/hunk where relevant, (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls: documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything tooling enforces. Under 400 words."
+
+**Spec sub-agent prompt** should include:
+
+- The diff command and commit list.
+- The path or fetched contents of the spec.
+- The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
+
+If the spec is missing, skip the Spec sub-agent and note this in the final report.
+
+### 5. Aggregate
+
+Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings, because the two axes are deliberately separate (see _Why two axes_).
+
+End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
+
+## Why two axes
+
+A change can pass one axis and fail the other:
+
+- Code that follows every standard but implements the wrong thing → **Standards pass, Spec fail.**
+- Code that does exactly what the issue asked but breaks the project's conventions → **Spec pass, Standards fail.**
+
+Reporting them separately stops one axis from masking the other.

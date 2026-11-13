@@ -12,10 +12,10 @@ Add a short dated amendment next to the affected principle/boundary only when th
 
 ## Source
 
-Maintainer or user decisions already made, including grounded shape conclusions and explicit corrections to existing PRODUCT truth. Existing PRODUCT prose remains authoritative unless the source explicitly changes it.
+Maintainer or user decisions already made, including conclusions the user confirmed during shape and explicit corrections to existing PRODUCT truth. Existing PRODUCT prose remains authoritative unless the source explicitly changes it.
 
 ## Boundary
 
-- Docs records decisions; it does not decide positioning, value, philosophy, or scope.
+- Record decisions; never decide positioning, value, philosophy, or scope.
 - Do not infer product intent from code, market convention, or agent preference.
 - Keep implementation architecture in ARCHITECTURE, behavior contracts in specs, visual identity in DESIGN, and future work in ROADMAP.

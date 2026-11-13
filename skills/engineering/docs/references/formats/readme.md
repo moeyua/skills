@@ -25,4 +25,4 @@ Use `PRODUCT.md` for established positioning and `ARCHITECTURE.md` for structure
 
 - A one-time synthesis of the entry, **not** ongoing ownership of external marketing copy.
 - No invented positioning or selling claims beyond established maintainer intent and authoritative project sources.
-- Not changelog / release notes / API reference — those are out of scope (PRODUCT.md boundary #2/#3).
+- Not changelog / release notes / API reference.

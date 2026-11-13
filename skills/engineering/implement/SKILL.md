@@ -1,44 +1,65 @@
 ---
 name: implement
-description: 'Implement an authorized change, verify it in proportion to risk, and keep directly affected durable truth accurate. Use when the user says "implement" / "build it" / "实现" / "落实", whether or not a plan exists. Not for shaping unresolved intent, publishing git history, releasing, or expanding the requested scope.'
+description: "Build an agreed change test-first, slice by slice, committing each slice, and finish by showing the user it works. Use when the user says implement / build it / 实现 / 落实, or approves a plan."
+metadata:
+  credits: "The test-first section is adapted from https://github.com/mattpocock/skills/tree/main/skills/engineering/tdd (MIT)"
 ---
 
 # Implement
 
-Implement owns the authorized outcome from edit through working behavior and proportionate evidence. A plan is optional context, not an entry gate; a clear request to make or fix something authorizes the work needed within that scope.
+## Start
 
-## Ground the change
+Open with one or two sentences: the user's goal in your own words, and the smallest change you expect to meet it. Don't wait for confirmation. If what you find in the code rules out the change they asked for, show the evidence and stop.
 
-Use the user's current request, settled decisions, and corrections to determine the outcome. Explicit user instructions take precedence over skill guidance, within applicable host constraints. An artifact carries the authority of its sources; it does not settle an undisclosed product choice. Read an associated plan in full, but do not let it override a later correction. When a premise is rejected, revisit only the work that depended on it; answer side questions without losing the active task.
+If a plan exists, read it and work its slices in order. Anything still "awaiting confirmation" is open: ask about it before building on it. Read `GLOSSARY.md` if it exists, and name things in its terms.
 
-Inspect project instructions, working tree, target code, and verification entry points. Obtain Explore context when missing project facts would make the change unreliable. Preserve separable user changes; stop only the edits that overlap work of ambiguous ownership. Never stash, discard, stage, or commit that work to proceed. Before editing on `main`, `master`, `develop`, the remote default branch, or detached HEAD, use a working branch; reuse an existing same-task branch and follow stricter repository isolation policy.
+Work on a branch, never on the default branch.
 
-State the observable outcome and affected paths. Resolve repository-answerable facts and mechanical choices yourself. New product semantics, dependencies, external side effects, or scope expansion need authority. Fallbacks, compatibility layers, migrations, dual paths, and legacy paths are not mechanical safety; they require explicit user authority or authoritative project intent. An authorized replacement removes superseded code, configuration, tests, and directly affected durable truth.
+## Build each slice test-first
 
-When an associated plan needs lifecycle maintenance or the user requests independent verification, read `references/assurance.md` before the first relevant edit or claim. Ordinary work without either needs no assurance record.
+A slice ends in something you can run, not in "the code is written". For a bug, use the `debug` skill until you have a loop that goes red on it.
 
-## Build and verify
+A **seam** is the public boundary you test at: the interface where you observe behavior without reaching inside. Tests live at seams, never against internals. Test only at seams the user agreed to, usually in the plan. If none were agreed, propose them before writing tests, in plain terms: the function, command, endpoint, or page each test drives, and one line on what it catches and what it misses. Prefer the highest seam that still gives a tight signal.
 
-Read `references/change-types.md` when it helps select proof. For a fix, establish expected versus actual behavior and use Debug when the cause is uncertain. Diagnose against project contracts and local evidence before patching; an already supported cause needs only the missing evidence. For a feature, cover its observable interface; for a refactor, preserve behavior and side-effect invariants; for performance work, compare the same metric before and after.
+The loop, per slice:
 
-Use TDD when a red-to-green test is cheap, stable, and distinguishes the correction. Otherwise use existing tests or the narrowest falsifiable observation. Avoid tests that merely restate implementation or require ceremonial infrastructure. Reshape the touched range coherently, follow local style, and leave unrelated improvements alone.
+1. **Red.** Write one test at the seam for the behavior this slice adds. Run it and watch it fail for the right reason.
+2. **Green.** Write only enough code to pass it. Don't anticipate later tests or add speculative features.
+3. Repeat for the next behavior in the slice. One test, one minimal implementation at a time.
 
-Run required checks and the smallest evidence that can disprove the change; broaden for actual interaction risk or the requested gate. Once those checks pass, broaden or repeat only for new edits, failures, or unresolved concerns. Never weaken tests, add skips or ignore directives, bypass hooks, force operations, or repeat a failure until it happens to pass. Keep credential values on the project's normal secret/configuration path, out of code, tests, logs, plans, docs, and reports.
+A good test reads like a specification ("user can check out with a valid cart") and survives a refactor because it only touches the public interface. Watch for:
 
-## Continue through supporting work
+- **Implementation-coupled**: mocks internal collaborators, tests private methods, or checks through a side channel (querying the database instead of using the interface). The tell: it breaks when you refactor but behavior hasn't changed.
+- **Tautological**: the assertion recomputes the expected value the way the code does, so it can never disagree with it. Expected values come from an independent source: a known-good literal, a worked example, the spec.
+- **Horizontal slicing**: writing all tests first, then all code. Those tests check imagined behavior. Go one test at a time instead.
 
-Compose Debug to investigate uncertain causes, Review to identify actionable defects, Verify to establish evidence for the requested result, and Docs for an explicit document target, Spec delta, or directly affected false claim whose correction is already authorized. Their results return to the active implementation; they do not end it or require the user to authorize the same repair again. Use only the support the outcome needs, without a fixed sequence.
+See [references/tests.md](references/tests.md) for examples and [references/mocking.md](references/mocking.md) for when to mock. When a test at a real seam would be expensive or flaky, say so and check the slice another way (a script, a request, a screenshot).
 
-Implement owns persistent code changes, regression tests, and necessary durable-truth updates. Debug supplies causal evidence and regression scenarios; temporary probes use the task's existing authority. The same agent can diagnose and implement. If expected behavior itself needs a consequential choice, use Shape for that choice and continue independent authorized work. Review and Verify stay read-only; Docs records only established truth. After repairing an evidenced cause, verify the regression and replay the original trigger. Rerun only affected proof after further repair or documentation changes. A user-requested independent Verify additionally follows `references/assurance.md`.
+Run the typechecker and the single test file often. Run the full suite once at the end.
 
-When the host permits delegation, delegate a bounded, independent investigation or verification if it saves time or improves judgment. Give it the required raw context, expected deliverable, and edit ownership; continue independent work and inspect its result. Keep tightly dependent edits local. A full-history fork is not an independent verification context.
+## Keep the change small and clean
 
-Retry a command once only when evidence suggests a transient failure. Repeated failure ends blind retries, not diagnosis: inspect new evidence, revise the hypothesis, and repair within scope. When the next step stays inside the authorized outcome and needs no user input, take it: put progress notes in the same message as that next action rather than ending on a summary, a next-step offer, or a non-blocking option list. Ask only when the next action needs changed intent, scope, dependency or document authority, or cannot proceed with available access. Finish unaffected authorized work while that action waits. If a skill instruction causes a pause, link its source, quote the relevant instruction, and explain why it applies rather than inventing a new approval gate.
+- Make the smallest change that solves the problem. Leave code you aren't changing alone.
+- When you replace something, delete what it replaced: old code, old tests, old docs. No fallback or compatibility path unless the user asked for one.
+- If the change makes one of the project's long-lived docs wrong (README, ARCHITECTURE, specs, GLOSSARY, ...), fix it in the same slice, in the format the `docs` skill gives.
+- When a decision is hard to reverse, would surprise someone without the context, and came from a real trade-off between alternatives, ask the user whether to record it as an ADR. Write it only if they agree, in the format the `docs` skill gives.
 
-A failed, ambiguous, or missing required state remains its exact non-success result. Report what it limits; never mask it with an unrequested alternate path. A running job or intermediate check does not substitute for the user's observable outcome.
+## Commit each slice
 
-## Result
+When a slice's tests pass, commit it on the work branch. Stage explicit paths, never `git add -A`; never stage secrets or stray generated files. Match the message style in `git log`, or use a conventional commit. Don't push, amend, or skip hooks.
 
-Lead with anything blocked on the user—a pending decision, authority, or access—then what works, relevant changed paths, actual verification, findings and important limitations. Ordinary results need no assurance form. If a plan is involved, report its status and Assurance record through `references/assurance.md`; do not imply that an unperformed supporting capability occurred.
+## Decide or ask
 
-Implementation does not authorize commit, push, PR, release, deployment, or other delivery. Continue those outcomes only when separately authorized through their owning capability.
+Decide reversible implementation details yourself and keep going. Write each one down as you go.
+
+Stop and ask only for a choice that changes what the user will see, adds a dependency, or is hard to undo. Finish the work that doesn't depend on the answer first.
+
+## Finish
+
+Run the `verify` skill on the result. Then reply, in the user's language, with:
+
+1. **See it yourself.** The one command, URL, or step that shows the change working, and what you saw when you ran it.
+2. **Decisions I made.** Every choice the user didn't make, one line each, so they can veto any of them.
+3. **Not done or not checked.** Plainly. "Not tested on Windows" beats silence.
+
+Update the plan: mark finished slices and add any decisions you made under "awaiting confirmation".

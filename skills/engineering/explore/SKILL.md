@@ -1,33 +1,38 @@
 ---
 name: explore
-description: 'Build fact-level understanding of a project or unfamiliar module for an explicit report or reliable downstream context. Use when entering a repo, facing an unfamiliar module, or the user says "look at this project" / "先看看" / "整体了解一下". Not for diagnosing faults (use debug), unresolved intent or design decisions (use shape), writing an implementation plan (use plan), or checking docs against code (use doctor).'
+description: "Build an accurate picture of a project or module, docs first, then code. Use when entering a repo, facing an unfamiliar module, before shaping or planning project work, or when the user says 先看看 / 整体了解一下 / look at this project."
 ---
 
 # Explore
 
-Explore builds a trustworthy map of a project before answering a broad understanding question or grounding another capability. It has two outputs: a user-facing report when exploration is the request, and silent context when another capability needs facts.
+## 1. Read what the project says about itself
 
-## Start with the fixed Overview
+In this order, skipping what doesn't exist:
 
-Complete this skeleton before a scoped deep-dive, reusing already-read facts that remain current:
+1. `README.md`, `CLAUDE.md`, and `AGENTS.md`. They're often the same; read both anyway, and note where they differ.
+2. The project's long-lived docs: `GLOSSARY.md` (or `GLOSSARY-MAP.md`), `PRODUCT.md`, `ARCHITECTURE.md`, `DESIGN.md`, `ROADMAP.md`, `specs/`, and the ADRs in `docs/adr/` (titles first, then the ones touching your question). The `docs` skill says what each one is for.
+3. The manifest (`package.json`, `pyproject.toml`, `Cargo.toml`, ...) for the stack and the run, test, and build commands.
 
-1. Confirm the project root and identity.
-2. Read the root README, the ecosystem manifest, and every applicable project instruction file.
-3. Scan the documentation inventory, then read in full and in sequence the architecture and other global documents needed to understand the system. When the project uses the Skills memory catalog, read `references/memory-catalog.md` before interpreting its artifacts.
-4. Map top-level responsibilities, key entry points, and the commands for running and verifying the project.
+Use the glossary's words from here on.
 
-The Overview is fixed; its depth is not. “Necessary global documents” means documents whose claims affect the project skeleton or the current scope, not every Markdown file by default. Attribute documentation claims (`per README`, `per ARCHITECTURE`) so they remain distinguishable from observed code and live configuration.
+## 2. Read the code that matters
 
-## Deepen progressively
+Map the top-level directories, the entry points, and how the main pieces connect. Then go deep only where the current question points. Search before opening files, and stop when more reading won't change the answer. For several independent modules, send subagents in parallel, one question each.
 
-After the Overview, follow the user's scope and the risk of the invoking task. Where the host allows it, independent modules may be investigated in parallel with clear questions and source-backed results; keep the shared project skeleton consistent. Locate evidence with file listings and search before opening files, avoid rereading unchanged material, and stop when more reading is unlikely to change the answer.
+## 3. Keep sources apart
 
-Read `references/deep-dive.md` when a module, behavior, or high-risk cross-cutting area needs detailed mapping. Read `references/report.md` only when exploration itself is the deliverable.
+Say where each fact came from: "per ARCHITECTURE", "in `src/server.ts`", "from `package.json`". When a doc and the code disagree, report both and say which is newer. Don't decide which one is right; that's the user's call, and the fix is a separate change.
 
-Use the code, tests, configuration, history, and authoritative external sources that can answer the actual question. If evidence is absent, say so and name where you looked. If docs and code conflict, report both sources without deciding which product truth should win.
+Explore only reads.
 
-## Boundaries
+## Output
 
-Explore is strictly read-only. It does not diagnose a bug, audit documentation drift, make a product or architecture decision, edit files, or launch mutation. Debug investigates known deviations; Shape clarifies unresolved intent and design. Those boundaries keep Explore's facts reusable by the invoking capability.
+When another skill called you, hand back the relevant facts with their sources and what you couldn't find, then let that skill continue.
 
-In report mode, return the structured understanding and stop. In context mode, return only relevant facts, source paths, and missing evidence to the invoking capability, which continues its authorized outcome; do not emit a second report or end that task.
+When the user asked to look at the project, report in their language:
+
+- **What it is**: one or two sentences, with the source.
+- **Stack and commands**: how to run, test, and build it.
+- **Structure**: top-level parts and entry points, one line each.
+- **Docs**: which long-lived docs exist, and any that contradict the code.
+- **What I'm not sure about**: and where you looked.

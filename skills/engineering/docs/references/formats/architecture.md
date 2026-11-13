@@ -1,13 +1,12 @@
 # Architecture format — `ARCHITECTURE.md`
 
-The project's technical architecture: structure, stack choices, data flow, and the decisions behind them. Audience is developers and collaborating agents, not end users.
+The project's current technical architecture: structure, stack, and data flow. Decisions and their reasons live in ADRs (`docs/adr/`), not here. Audience is developers and collaborating agents, not end users.
 
 ## Sections
 
 - **目录结构 / Directory layout** — the tree + one line per top-level dir on its responsibility. The cheap, stable map of where things live.
-- **技术栈 / Tech stack** — language / framework / key tooling, each with the reason it was chosen (and notable "deliberately not used").
+- **技术栈 / Tech stack** — language / framework / key tooling. When a choice has an ADR, link it instead of explaining it here.
 - **数据流 / Data flow** — how the main pieces connect; an ASCII diagram when more than ~3 components exchange data.
-- **关键设计决策记录 / Decision records** — ADR-shaped entries: context → the decision → its consequences/trade-offs, dated when it's a revision. The only element a formal standard (ISO/IEC/IEEE 42010) actually mandates; may also live as separate append-only records.
 - **(可选) 架构不变量 / Architecture invariants** — the rules the architecture holds itself to, especially "this must never happen" constraints (e.g. "no SKILL.md at the repo root"). The most durable, lowest-maintenance thing to record — it changes far less often than code.
 
 Use only the sections the project needs; a small project may have just structure + stack.
@@ -16,9 +15,9 @@ A guiding principle (per matklad's `ARCHITECTURE.md` convention): **record what 
 
 ## Source
 
-Read the code for current structure and use stated maintainer decisions or an authoritative plan for rationale. Code cannot establish why a choice was made. When a claim lacks its required source, omit it or ask about that claim while completing other grounded content; do not invent rationale or require a plan merely to record known mechanics.
+Read the code and configuration for current structure. When a claim lacks its source, omit it or ask about that claim while completing other grounded content.
 
 ## Boundary
 
 - **Only what currently holds** — no future / deferred / "v2" items; those go to `ROADMAP.md`. A `## 未来规划` section may exist _only_ as a one-line pointer to ROADMAP, never as the content itself.
-- Not UI design (that's `DESIGN.md`); not the behavior contract (that's `specs/`); not step-by-step how a single change was made (that's the plan).
+- Not UI design (that's `DESIGN.md`); not the behavior contract (that's `specs/`); not step-by-step how a single change was made (that's the plan); not why a decision was made (that's an ADR).

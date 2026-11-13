@@ -2,105 +2,61 @@
 
 [English](./README.md) | 简体中文
 
-> 面向软件开发与项目持久记忆的聚焦、轻量能力集。
+我自己用的 Claude Code / Codex skills。每个 skill 只做一件事，写的是具体怎么做、产出长什么样。
 
-Skills 为现代 coding agent 提供清晰的能力接口、项目特有判断、按条件加载的深层资料，以及高后果副作用边界；它不强加固定全局工作流。
+## 日常流程
 
-产品原则见 [PRODUCT.md](./PRODUCT.md)，context flow 与内部结构见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
+```
+setup（每个项目一次）
+explore → shape → plan → implement → verify → release
+                           ↘ debug / review（随时调用）
+```
 
-## 按分类浏览
+任何一步都可以单独用，不必按顺序走。
 
-13 个技能按用途组织。
+| Skill                                                | 做什么                                                                                               | 什么时候用                                 |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| [setup](./skills/engineering/setup/SKILL.md)         | 补齐项目文档；问清计划存在哪里，写进 CLAUDE.md 和 AGENTS.md；没有 RELEASE.md 的项目搭好发版规则和 CI | 新项目接入，或 skill 更新后，手动 `/setup` |
+| [explore](./skills/engineering/explore/SKILL.md)     | 先读项目文档再读代码，文档和代码冲突时两边都报                                                       | "先看看这个项目"                           |
+| [shape](./skills/engineering/shape/SKILL.md)         | 一轮轮追问，每个问题附推荐答案，回"是"就推进；定下的术语写进 GLOSSARY                                | "想想"、"我也不知道"、"怎么设计"           |
+| [plan](./skills/engineering/plan/SKILL.md)           | 一屏以内的计划：目标、已定的决定（附来源）、待确认的决定（附理由）、可演示的切片                     | "写个计划"                                 |
+| [implement](./skills/engineering/implement/SKILL.md) | 先复述目标；逐个切片测试先行，每个切片 commit；最后告诉你怎么亲眼看到效果、我替你做了哪些决定        | "实现"、"落实"                             |
+| [verify](./skills/engineering/verify/SKILL.md)       | 真的去用一遍，逐条对照预期，每条标明实测、推断还是猜测                                               | "验证一下"、"跑测试"                       |
+| [debug](./skills/engineering/debug/SKILL.md)         | 先造一个能复现 bug 的回路，再假设、插桩、修复、补回归测试                                            | "这里坏了"、"报错了"、"变慢了"             |
+| [review](./skills/engineering/review/SKILL.md)       | 两个子 agent 并行审阅：是否合项目规范、是否合需求                                                    | "review 一下这个分支"                      |
+| [release](./skills/engineering/release/SKILL.md)     | 按 RELEASE.md 发版、打 tag、建 GitHub Release，确认部署结果                                          | "发版"                                     |
+| [docs](./skills/engineering/docs/SKILL.md)           | 八类项目文档的格式（specs、PRODUCT、ARCHITECTURE、DESIGN、ROADMAP、README、GLOSSARY、ADR）           | 其他 skill 读写项目文档时自动查阅          |
+| [handoff](./skills/productivity/handoff/SKILL.md)    | 把当前会话压缩成交接文档                                                                             | 换会话前，手动 `/handoff`                  |
+| [explain](./skills/productivity/explain/SKILL.md)    | 换个直白的说法重讲刚才那段                                                                           | 没看懂时，手动 `/explain`                  |
 
-### [工程（Engineering）](./skills/engineering/README.md)
+## 项目文档
 
-开发、软件架构、测试与工程项目维护。
-
-| Skill                                                | 产出                                                                   |
-| ---------------------------------------------------- | ---------------------------------------------------------------------- |
-| [explore](./skills/engineering/explore/SKILL.md)     | 只读建立项目/模块理解；固定 Overview 后再 scoped deep-dive             |
-| [shape](./skills/engineering/shape/SKILL.md)         | 通过可回答的追问澄清意图与关键设计，形成可审阅的方向                   |
-| [plan](./skills/engineering/plan/SKILL.md)           | 本地计划、问题 Issues 或成对产物，生成后审计一轮并修订已授权问题       |
-| [debug](./skills/engineering/debug/SKILL.md)         | 从预期与实际偏差出发定位原因，明确证据与未知                           |
-| [implement](./skills/engineering/implement/SKILL.md) | 完成已授权变更，以相称证据验证并保持直接受影响的 durable truth 准确    |
-| [review](./skills/engineering/review/SKILL.md)       | 对设计、计划或改动给出有证据、可操作的审阅结论                         |
-| [verify](./skills/engineering/verify/SKILL.md)       | 实际使用受影响功能并比较预期与观察，按需独立验证                       |
-| [docs](./skills/engineering/docs/SKILL.md)           | 把既定 truth 写入六类 catalog memory 或用户指定文档                    |
-| [publish](./skills/engineering/publish/SKILL.md)     | 发布 PR、检查当前 CI，并在明确要求时合并（优先 rebase，不行则 squash） |
-| [release](./skills/engineering/release/SKILL.md)     | 项目首次发布设置、精确版本发布及部署结果核验                           |
-| [converge](./skills/engineering/converge/SKILL.md)   | 幂等地把整个 catalog 对齐到当前 memory formats                         |
-| [doctor](./skills/engineering/doctor/SKILL.md)       | 只读的全项目文档漂移与健康审计                                         |
-
-### [通用工作（Productivity）](./skills/productivity/README.md)
-
-通用工作、学习与信息整理。
-
-| Skill                                             | 产出                              |
-| ------------------------------------------------- | --------------------------------- |
-| [handoff](./skills/productivity/handoff/SKILL.md) | 紧凑、host-neutral 的继续工作摘要 |
-
-`design` 是用于 UI/UX、交互、视觉、品牌与设计系统工作的同级分类；软件架构与设计转代码归入 `engineering`。`design`、`in-progress`（实验中）、`misc`（低频杂项）、`deprecated`（已弃用）均在有实际技能时才建立。
+八类文档是项目的长期记忆：implement、shape、setup 写，explore 读，格式统一由 docs 提供。哪类文档管什么，见 [memory-catalog](./skills/engineering/docs/references/memory-catalog.md)。
 
 ## 安装
 
 ```bash
-npx skills add .
+pnpm install
 ```
 
-`skills` 是外部安装 CLI；本仓库只提供能力内容。
+`install` 脚本会执行 `skills add . -g -a claude-code -a codex -y`，全局安装到 Claude Code 和 Codex。只装某一个：
 
-分类不改变技能名称；按名选装仍可使用 `npx skills add . --skill handoff`。
-
-常用参数：
-
-- `-g` 全局安装；否则为 project 级。
-- `-a claude-code` 或 `-a codex` 选择 agent。
-- `-y` 跳过安装器确认。
-- `--copy` 避免默认 shared-store symlink 布局。
-
-安装结果是快照；源码变更后需要重新安装。Shape 需要 Explore；Plan 需要 Review，以及能建立独立审计上下文的宿主。请一并安装或更新各自的支持 Skill。Plan 缺少审计能力时会保留产物，报告 `inconclusive` 及具体缺口。
-
-## 使用方式
-
-直接进入与请求 outcome 匹配的 Skill，无需先走固定链路。Frontmatter description 负责路由，主指南只在需要时加载深层 reference。每次 Shape 都先使用 Explore context 探索当前目标项目，复用仍有效的事实并补齐缺口，再形成方向。无需单独调用 Explore：上下文返回后，Shape 继续讨论，最终提交 Design Summary 审阅。
-
-Plan 支持 `local`、`issue` 和默认的 `both`。生成产物后自动进行一轮独立 Review，在所选 target 的权限内修订明确问题并定向核对；生成结果、审计结论和修订结果分别报告，未决取舍与证据缺口继续保留。新本地计划保持 `draft`，规划审计不授予实施权限。
-
-Shape 每轮一起提出当前可回答、互不依赖的问题；用户不知道如何选择时，用具体情境帮助判断。Debug 建立原因证据，Implement 继续负责已授权修复、回归验证和受影响的 truth。Review 判断哪里需要纠正及原因；Verify 默认实际使用受影响功能，将观察到的结果与预期比较，测试和相关审阅提供补充证据。明确只跑测试时遵守该限定，修订仍由有权限的调用方完成。计划在实现随同一个 PR 落地时即为 `done`，审阅与验证结果只作记录，不作门槛。
-
-路由差异见 [Resolver](./skills/RESOLVER.md)，context topology 与副作用归属见 [Architecture](./ARCHITECTURE.md)。
-
-## 项目发布
-
-首次用 Release 建立 `RELEASE.md`，将项目最终的分支/Tag 触发规则接入项目的 CI（项目自身 workflow，或 `RELEASE.md` 记录的公共 CI 提供方）。PR 与默认分支提交运行完整质量检查；版本 Tag 只做校验、构建、部署和上线确认，不重跑测试。初始化 PR 及检查由 Publish 负责，只有明确要求时才合并，优先 rebase，无法 rebase 时 squash。双环境模式中默认分支部署 Preview，版本 Tag 部署 Production；通过真实 Preview 和第一次正式发版验证接入，不增加手动部署阶段。
-
-日常由 Publish 提交并检查 PR，需要合并时明确提出。发版时让 Release 发布目标版本：一个版本元数据提交直接进入默认分支，该提交的检查及适用 Preview 验证通过后创建精确 Tag 和 GitHub Release，并分别报告 CI 与实际目标结果。仅主分支、仅 Tag 或没有运行时部署的项目只执行已选范围。
-
-例如：“Release，设置这个项目的 Preview/Production 发布流程”；“Publish，提交 PR 并检查 CI”；“合并这个 PR”；“Release v1.3.0”。各请求保持各自的授权范围。使用这套流程时一并安装 Publish 和 Release。Release 可以独立工作；公共 CI 提供方自带接入指南或 Skill 时，Release 按它完成提供方相关的接线。
-
-## 持久记忆
-
-Catalog 恰好包含六类：domain Specs、PRODUCT、ARCHITECTURE、DESIGN、ROADMAP、README。Docs 只从权威来源记录既定 truth。详见 [rules/memory-catalog.md](./rules/memory-catalog.md)。
+```bash
+npx skills add . --skill plan
+```
 
 ## 开发
 
 ```bash
 pnpm check
 pnpm test
-pnpm lint
-node skills/engineering/doctor/scripts/checker.ts . --json
 ```
 
-以 GPT-6 Astra 为主要行为验收模型，Codex 与 Claude Code 使用同一套 Skills，通过实际会话验证行为；普通实现/检查简要报告，按需的独立验证在全新上下文中执行。
+测试只检查结构：skill 名和目录名一致、有 description、相对链接指向的文件存在。行为好不好，要实际用了才知道。改 skill 之前先读 [CONTRIBUTING.md](./CONTRIBUTING.md)。
 
 ## 致谢
 
-- [Waza](https://github.com/tw93/Waza)
-- [superpowers](https://www.skills.sh/obra/superpowers/brainstorming)
-- [Shape Up](https://basecamp.com/shapeup)
-- [OpenSpec](https://github.com/Fission-AI/OpenSpec)
-- [feature-dev](https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev)
-- [design.md](https://github.com/google-labs-code/design.md)
+多个 skill 改编自 [mattpocock/skills](https://github.com/mattpocock/skills)，部分写法参考了 [backnotprop/pstack](https://github.com/backnotprop/pstack)。详见 [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)。
 
 ## License
 

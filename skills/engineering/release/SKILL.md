@@ -1,40 +1,51 @@
 ---
 name: release
-description: "Set up project release rules and CI connection, then publish exact GitHub versions and observe deployment results. Use when the user requests first-time release setup, CI onboarding, a tag, or a release. Read or establish RELEASE.md; derived or expanded release sets need next-turn confirmation. Not for PR checks/merges (use publish), manual deployment, rollback, or standalone registry publishing."
+description: "Cut a version (bump, tag, GitHub Release) following the project's RELEASE.md, then confirm CI deployed it. Use when the user says release / tag / 发版."
 ---
 
 # Release
 
-Release establishes a project's release rules and CI connection, then turns an exact authorized release set into a verified default-branch metadata commit, tags, and GitHub Releases with separate deployment evidence. Project workflows map events to targets; the project's CI, or a public CI provider recorded in `RELEASE.md`, executes checks, builds and deployment.
+`RELEASE.md` at the repo root is the project's release rulebook: where the version lives, what a tag looks like, which checks must pass, what deploys where. Read it from the freshly fetched default branch every time. When it disagrees with the actual workflows or config, report the conflict instead of picking whichever side is convenient.
 
-## Resolve project readiness
+No `RELEASE.md`? Stop and tell the user to run `/setup` first. A release request doesn't skip setup.
 
-Read `references/project-policy.md` and the project's `RELEASE.md` on every invocation. When the document is absent or setup is incomplete, read `references/onboarding.md`; for CI integration, also read `references/ci-connection.md`. Establish rules and final automatic triggers on a work branch, preserving the project's real toolchain. Setup changes use Publish within authorized PR/merge scope; a release request never silently authorizes a merge.
+## 1. Pick the version
 
-Initialize once, then resume from actual configuration and run evidence. In the dual-environment mode, default-branch updates deploy Preview and version tags deploy Production. Verify Preview through the real branch event and Production through the first real release, without an extra manual deployment phase. A document's existence is not proof of completed onboarding.
+Find the last released tag and list what landed since: `git log <last-tag>..origin/<default>`.
 
-## Resolve the release set
+Propose a version using the rule in `RELEASE.md`. Without one, use SemVer by stage:
 
-Once project setup has landed, inspect the remote default branch's `RELEASE.md` and repository-owned release/version configuration before release mutation.
+- **0.y.z**: breaking change → bump minor, anything else → bump patch.
+- **1.0.0 and later**: breaking → major, feature → minor, fix → patch.
+- Only the user declares `1.0.0`.
 
-- A supplied exact tag may execute in the current turn only when repository policy makes it a legal successor and its mapping visibly determines every unit, identity, and required version-bound repository release metadata. Existing, user-supplied, or project-deterministic metadata does not add confirmation by itself.
-- Any derived or expanded unit, identity, or substantive user-visible repository metadata—including a propagated unit without its own tag—must be shown as a complete set and confirmed in the next user message.
-- A missing identity requires a project-policy-first candidate. Show every unit, identity, applicable repository metadata, reason, and canonical basis with `Mutation: none`, then stop.
-- A repository without version-bound release metadata keeps the version-only path; never invent a changelog system merely to release.
-- Existing or partial state is reusable only when it satisfies the same release predicates.
+Show the version, the commits that justify it, and the commit you'll release from. If the user named an exact valid version, go ahead. Otherwise stop and wait for their OK.
 
-Read `references/model.md` whenever identity, topology, version selection, propagation, repository release metadata, or confirmation basis is not a trivial repository-defined mapping.
+## 2. Bump and push the version commit
 
-## Revalidate and execute
+From a clean default branch in sync with the remote:
 
-Before fresh release mutation, fetch the remote default branch and re-resolve the exact set from that commit. A cross-turn candidate requires its recorded basis to be unchanged exactly; a current-turn exact tag may continue only when refreshed mapping and successor validity still determine the same complete set. Reconcile already-published or partial state through recovery before proposing another version transaction.
+1. Change the version with the project's own tooling (for npm: `npm version <v> --no-git-tag-version --ignore-scripts`). The diff must be only the version fields `RELEASE.md` names.
+2. Commit as `chore(release): v<version>` and push straight to the default branch. Version commits don't go through PRs. If branch protection blocks the push, stop and say so. Don't open a PR or change protection to get around it.
+3. Wait for the checks `RELEASE.md` requires to pass **on that exact commit**. A green parent or a later commit doesn't count. In a dual-environment project this includes the Preview deploy.
 
-An already-confirmed exact set needs no additional prose approval; unresolved or expanded identities still follow their stated confirmation rule. After authorization and revalidation, read `references/execution.md`. It owns the verified non-tagging, non-committing, non-publishing metadata transaction, direct default-branch release commit, tags, and GitHub Releases. Read `references/deployment-evidence.md` for the release commit's required checks, Preview verification before tags, and per-target deployment results.
+Push with the user's own credentials, never an Actions `GITHUB_TOKEN`: pushes made with that token don't trigger the next workflow.
 
-Read `references/recovery.md` when any release metadata diff, commit, push, tag, or Release may already exist or a stage fails. Preserve valid partial success and resume only verified missing state.
+## 3. Tag and release
 
-## Boundaries and result
+1. Create an annotated tag `v<version>` on the version commit and push only that tag.
+2. Check the remote tag points at the version commit.
+3. Create the GitHub Release with notes generated from the previous tag: `gh release create v<version> --verify-tag --generate-notes --notes-start-tag <previous-tag>`.
+4. If tags deploy (Production), watch that run and do the light check `RELEASE.md` describes: is the site up, does it serve this version.
 
-Never guess an ambiguous release identity or metadata contract, invent a changelog, mutate a release before required confirmation, force-push, rewrite history, move/delete a tag or Release, merge a PR, manually deploy or roll back, or independently upload artifacts or publish a registry package. Version commits never go through PRs. CI performs the project's configured build/upload/deployment effects. A verified tag or GitHub Release attests exact release state only; it does not establish deployment success, missing implementation evidence, or a Verify pass. Report upstream Review or Verify results as recorded, including conflicting later evidence. Preserve historical Check records with their original source and time scope; never relabel them as Verify evidence.
+## When something fails halfway
 
-Lead with setup prepared, partially verified, proposed, created, existing, partial, or no-op state as applicable. Include the relevant project rules, release set/basis, commit, tags/Releases, exact checks and deployment observations, and recovery point. Report Production as awaiting first release until it has actually been verified. Omit inapplicable fields; a proposed set still includes its confirmation basis. When a rule requires a pause, link and quote it with the observed condition.
+Keep what succeeded. Never move or delete a tag, force-push, or rewrite history.
+
+- Version commit pushed but checks failed: don't tag. The fix goes through a normal PR, then release a new version.
+- Tag pushed but Release creation failed: create just the Release.
+- An existing tag points somewhere else: stop and report.
+
+## Report
+
+Version, version commit, check run links, tag, Release link, and the deploy result for each environment. "Production: not checked" is a valid line; "deployed" without evidence is not.

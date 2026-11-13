@@ -1,52 +1,70 @@
 ---
 name: plan
-description: "Persist local implementation plans, bounded development problems as GitHub Issues, or both, with a final audit and in-scope corrections. Use when the user asks to plan, capture implementation work, or create Issues from a clear problem. Not for exploring product direction (use shape), executing changes (use implement), arbitrary Issue maintenance, or managing Projects and task status."
+description: "Turn the current conversation into a one-screen plan the user can read and veto: their goal, decisions split into settled and awaiting confirmation, and tracer-bullet slices. Use when the user asks for a plan, wants to write down what was agreed before building, or wants the work filed as GitHub issues."
 ---
 
 # Plan
 
-Plan persists implementation-ready work or bounded development problems through one of three public targets:
+A plan exists so the user can check, in one read, that you understood them and that nothing got decided behind their back. If they don't want to read it, it failed.
 
-- `local` — one implementation plan in `plans/`;
-- `issue` — 1–20 explicitly separated, problem-oriented GitHub Issues in one repository;
-- `both` — one local plan followed by at most one matching problem record, created or synchronized.
+Work from what is already in the conversation. Don't interview. If you can't state the user's goal in one sentence they'd agree with, run the `shape` skill first. Open choices with a sensible default (a limit, a name, a tool) don't need shaping: make the call and put it under "awaiting confirmation".
 
-Resolve the artifact target before any side effect. When the target is omitted, use `both`. If the user supplies conflicting targets, stop before side effects. Never infer, recommend, or switch the target from repository state, GitHub availability, worktree conditions, task size, or expected failure. Do not fall back to or retry through a different artifact target.
+## 1. Look before you write
 
-Once the target and its required repository and item boundaries are explicit, the invocation authorizes that target's artifacts; execute without a second confirmation or prose-approval gate. Apply the user's explicit instructions over skill guidance within host constraints. If a target rule blocks an action, link and quote that rule, name the missing condition, and complete only the preparation its contract still permits. Load exactly one target contract:
+Read the code the change touches, enough to name the real modules and spot the obvious seam. Read `GLOSSARY.md` if it exists and use its terms. Facts you can look up are your job, never the user's.
 
-- `references/target-local.md`
-- `references/target-issue.md`
-- `references/target-both.md`
+## 2. Sort the decisions
 
-## Ground the work
+List every decision the plan depends on, in two groups:
 
-Do not require shape or another artifact to have run. Reuse the current conversation and inspect only repository facts needed by the selected artifact. Treat what the user explicitly decided or agreed—including constraints and non-goals—as artifact constraints; inferred preferences are not settled decisions. A Design Summary, plan, code change, or merged artifact carries only the authority of the sources it records; its existence does not settle an undisclosed consequential preference. Do not silently revise, reinterpret, or reopen settled decisions. When the user rejects a premise, discard it and revisit only artifact content that actually depended on it.
+- **Settled**: the user said it or agreed to it. Give the source: a close paraphrase of what they said.
+- **Awaiting confirmation**: you chose it. Give your reason. A plausible default is still your choice, not theirs.
 
-During grounding, classify new findings before the initial artifact write:
+Include where the tests go, named concretely: the function, command, endpoint, or page each test drives, and what stays untested from outside ("tests call `createOrder()`, not its internal helpers"). `implement` writes tests only where this says. Say it in those plain terms; don't make the user learn the word "seam".
 
-- Include necessary facts that support the settled direction only in proportion to the selected artifact. Resolve repository-answerable facts and reversible implementation choices directly without asking for confirmation.
-- Exclude adjacent problems and optional improvements; artifact completeness does not authorize new scope.
-- When inspected repository facts, existing contracts, or authoritative sources show a settled decision is infeasible, contradictory, or materially risky, stop before any artifact mutation. State the settled decision, new evidence, and impact, then wait for the decision to be settled again. This is unresolved intent, not a second confirmation or prose-approval gate. A more complete alternative or agent preference is not new evidence.
+Leave out what nobody needs to decide: local naming, file layout inside a module, the order of mechanical edits.
 
-Treat whether a fallback, compatibility layer, migration, dual path, or legacy path exists as consequential continuity scope rather than a reversible implementation detail. Do not add one without an explicit user decision or authoritative project intent; when the authorized direction replaces or removes an old design, keep the plan a clean break.
+## 3. Slice it
 
-`local` and `both` require one implementation-ready change. Resolve gaps that could change outcome, scope, public behavior, hard-to-reverse architecture, or acceptance; never put unresolved intent in the local plan as `TODO` or `TBD`.
+Break the work into **tracer bullets**: each slice cuts a narrow but complete path through every layer it touches and is demoable on its own. Give each slice one line on **how you'll see it work**: a command, a screen, a request, a test name. If you can't say how you'd see it, the slice is wrong.
 
-`issue` requires only a bounded development problem that can be stated factually and distinguished from adjacent items. Its solution, target architecture, and complete acceptance may remain unknown. Inspect facts needed to establish the problem, evidence, impact, repository identity, and item boundary; never invent a solution or turn an unknown into an implementation task merely to make the Issue look actionable.
+Most changes are one to three slices. One is fine.
 
-The targets have different cardinality: `local` and `both` accept one coherent change; `issue` accepts 1–20 explicitly separated work items for the same repository. Never auto-split, merge, regroup, or reroute work to fit a target.
+## 4. Write it
 
-Select one type per work item from `references/change-types.md`: `fix`, `feat`, `refactor`, or `perf`. For a local plan, load only the matching `references/mode-fix.md`, `references/mode-feat.md`, `references/mode-refactor.md`, or `references/mode-perf.md`. Load `references/issue-formats.md` only for Issue creation or `both` synchronization, and use the user's current language for every user-visible Issue field. Every Plan-rendered Issue projection records the problem, why it matters, and the observable resolved state when known; it never carries the technical approach, target architecture, path-level changes, or implementation steps from a local plan.
+Check the `## Skills` section of `CLAUDE.md` or `AGENTS.md` for where plans go. Without one, write a local file. Local plans go to `plans/<YYYY-MM-DD>-<slug>.md`.
 
-## Identity and result
+Write in the user's language. The plan must fit on one screen: about 40 lines. Cut until it does. Cut exposition first, never the decisions. Use these headings, translated into the user's language:
 
-Each local plan and Issue work item has at most one GitHub Issue identity. A user-supplied or already recorded canonical URL is that identity: verify and reuse it when the selected target permits, never search by title, and never create a replacement merely because verification failed. The canonical identity stays stable while `both` may update a verified Plan-managed problem record for that same bounded problem; content revision is not identity replacement. The `local` target never mutates GitHub, and `issue` continues to reuse existing identities without editing them.
+```markdown
+# <title>
 
-Plan writes only the selected artifacts, including their authorized audit corrections. It never implements, commits, pushes, opens a pull request, or treats a Design Summary or planning artifact as implementation approval.
+**Goal.** <one or two sentences: what the user wants and why>
 
-After the selected target reaches its generation result, including partial results, read [the audit contract](references/audit.md). Before the final report, always obtain one planning audit from Review in a fresh independent context, then automatically correct evidenced findings within the selected target's write boundary and verify the affected items. Review stays read-only; Plan owns corrections. Use the original request, settled decisions, project evidence, and actual artifacts, not the plan's claims alone. Missing audit capability or evidence stays explicit; artifact creation and self-checking do not substitute for this audit. Internal corrections do not start another Plan invocation or full audit.
+## Settled
 
-For lifecycle details, load `references/plan-template.md` only when a local artifact is involved. A newly written local plan starts as `draft`. Later states are projections of outcomes produced elsewhere: an explicit or still-active implementation authorization yields `approved`, and Implement marks `done` once the described implementation is complete and the project's required automated verification passes, so the status lands with the code in the same PR. No post-merge acceptance, hook, or follow-up change is part of the lifecycle. Findings do not authorize repair or produce `approved`. The plan's Assurance records evidence and known limitations; it is a record, not a gate. Read a legacy `approved` or `candidate` plan whose implementation has merged as `done`; never judge a plan incomplete for missing acceptance records, and never rewrite legacy files.
+- <decision>. Source: <what the user said>
 
-Report the selected target and every artifact's exact generation result, followed by the audit verdict, verified corrections, unresolved findings and uninspected scope. Include only paths and canonical URLs verified to exist, preserve partial success as its target contract defines, and never convert failure into an unrequested fallback. A generated artifact is not proof that planning closeout succeeded. When serving an already-authorized broader outcome, return these results to its caller; they supply no further authorization.
+## Awaiting confirmation
+
+- <decision>. Reason: <one line>
+
+## Slices
+
+1. <what works after this slice>. See it: <command / screen / test>
+2. ...
+
+## Not doing
+
+- <adjacent thing you deliberately left out>
+```
+
+In decisions, no file paths or code unless a snippet states a decision more exactly than prose (a type shape, a state machine). The "See it" lines may name any command, test, or path. No background section, no risk matrix, no restating the conversation.
+
+## 5. Hand it over
+
+Paste the whole plan into your message, give the file path, and stop. Write each item awaiting confirmation as a statement of your choice, so "yes" accepts it and anything else changes it. When the user answers, move each item to "Settled" with their answer as its source, or rewrite it, and update the plan. Building starts only when they say so.
+
+## GitHub issues
+
+When plans go to GitHub issues, or the user asks for issues, file one issue per slice with `gh issue create`, blockers first so later issues can reference earlier ones. Each body: the goal, what works after this slice, how to see it, the settled decisions it depends on, and `Blocked by: #N` or `None`. File only after every item awaiting confirmation has been answered. With "both", also keep the local file and add the issue links to it.

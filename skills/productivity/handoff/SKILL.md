@@ -1,30 +1,18 @@
 ---
 name: handoff
-description: "Generate a self-contained handoff summary so work can continue in a fresh session or with another agent. Use when the current session is ending, context is getting long, or the user asks to preserve what matters for continuation. Not for project documentation (use docs), whole-project exploration (use explore), or automatically creating new sessions."
+description: Compact the current conversation into a handoff document for another agent to pick up.
+argument-hint: "What will the next session be used for?"
+disable-model-invocation: true
+metadata:
+  credits: "Adapted from https://github.com/mattpocock/skills/tree/main/skills/productivity/handoff (MIT)"
 ---
 
-# Handoff
+Write a handoff document summarising the current conversation so a fresh agent can continue the work. Save to the temporary directory of the user's OS (`$TMPDIR`, else `/tmp`; `%TEMP%` on Windows) - not the current workspace.
 
-Handoff packages what a fresh session needs to continue without rereading the whole conversation. The output stays in the conversation and must remain trustworthy, portable, and compact.
+Include a "suggested skills" section in the document, naming which skills the next agent should call the Skill tool for.
 
-## Select continuation-critical context
+Do not duplicate content already captured in other artifacts (plans, issues, commits, diffs). Reference them by path or URL instead.
 
-Start with current git/task state when relevant. Include only information that changes what the next session should understand or do:
+Redact any sensitive information, such as API keys, passwords, or personally identifiable information.
 
-- the user's active request and final goal;
-- the current horizon and the authority attached to any pending next outcome;
-- work completed, with evidence, its producer, and known limitations;
-- current branch, working-tree state, and active artifact status;
-- pending work in useful order;
-- important decisions, explicit constraints, superseded premises whose removal affects continuation, and exact blockers;
-- up to ten key workspace-relative files whose roles matter.
-
-Keep settled decisions, Agent inferences, actual evidence, and unresolved authority distinguishable when collapsing them would change the next session's behavior. For an ordinary task, describe results, evidence, limitations and pending work without inventing an assurance form. When an associated plan is relevant, preserve its status, the evidence and known limitations in its Assurance, any Verify reference and verdict, conflicting Review findings, and pending work. Historical Check records retain their actual source and time scope, without relabeling or backfilling. Implement self-report or ordinary Review is not an independent Verify result. Preserve the user's wording where nuance is consequential. A handoff is a continuation cache: its summary or an artifact it mentions does not create authority for an undisclosed preference, and a superseded premise does not become active again merely because it appears in history. Mark genuinely unavailable facts as unavailable and empty facts as none; do not reconstruct hidden turns, raw transcripts, host memory, or task state that cannot be observed.
-
-Omit credential values and private configuration. Keep the non-sensitive fact that a secret is required or was intentionally omitted when continuation depends on it.
-
-## Boundary and output
-
-Handoff is read-only. It does not write a file, create a session, edit project memory, commit, push, or launch another capability. If there is no substantive work to transfer, say so instead of filling a template.
-
-Use clear plain-text sections suited to the actual task rather than forcing a large fixed form. End with one host-neutral instruction: paste the summary into a fresh session and continue from the pending work.
+If the user passed arguments, treat them as a description of what the next session will focus on and tailor the doc accordingly.

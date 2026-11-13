@@ -2,105 +2,63 @@
 
 English | [简体中文](./README.zh-CN.md)
 
-> Focused, lightweight capabilities for software development and durable project memory.
+The Claude Code / Codex skills I use. Each skill does one job and says how to do it and what the output looks like.
 
-Skills gives modern coding agents clear capability interfaces, project-specific judgment, conditional deep references, and safe boundaries around consequential side effects. It does not impose a fixed global workflow.
+## The usual flow
 
-Read [PRODUCT.md](./PRODUCT.md) for product principles and [ARCHITECTURE.md](./ARCHITECTURE.md) for context flow and internals.
+```
+setup (once per project)
+explore → shape → plan → implement → verify → release
+                           ↘ debug / review (any time)
+```
 
-## Browse by category
+Every step works on its own. There is no required order.
 
-The 13 skills are organized by purpose.
+| Skill                                                | What it does                                                                                         |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| [setup](./skills/engineering/setup/SKILL.md)         | Fill in project docs, record where plans go in CLAUDE.md and AGENTS.md, set up releases and CI       |
+| [explore](./skills/engineering/explore/SKILL.md)     | Read the project's docs, then its code; report where they disagree                                   |
+| [shape](./skills/engineering/shape/SKILL.md)         | Interview in rounds, each question with a recommended answer; record settled terms                   |
+| [plan](./skills/engineering/plan/SKILL.md)           | A one-screen plan: goal, settled decisions with sources, decisions awaiting confirmation, slices     |
+| [implement](./skills/engineering/implement/SKILL.md) | Restate the goal, build test-first slice by slice, commit each, show how to see it work              |
+| [verify](./skills/engineering/verify/SKILL.md)       | Actually use it; label each claim measured, inferred, or guess                                       |
+| [debug](./skills/engineering/debug/SKILL.md)         | Build a loop that goes red on the bug before forming hypotheses                                      |
+| [review](./skills/engineering/review/SKILL.md)       | Two parallel reviewers: project standards and the spec                                               |
+| [release](./skills/engineering/release/SKILL.md)     | Version, tag, and GitHub Release per `RELEASE.md`; confirm the deploy                                |
+| [docs](./skills/engineering/docs/SKILL.md)           | Formats for eight project docs: specs, PRODUCT, ARCHITECTURE, DESIGN, ROADMAP, README, GLOSSARY, ADR |
+| [handoff](./skills/productivity/handoff/SKILL.md)    | Compact the session into a handoff doc                                                               |
+| [explain](./skills/productivity/explain/SKILL.md)    | Re-explain the last message plainly                                                                  |
 
-### [Engineering](./skills/engineering/README.md)
+`setup`, `handoff`, and `explain` are user-invoked only. The rest can also be picked up by the model.
 
-Development, software architecture, testing, and engineering project maintenance.
+## Project docs
 
-| Skill                                                | Outcome                                                                                                                             |
-| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| [explore](./skills/engineering/explore/SKILL.md)     | Read-only project/module understanding; fixed Overview before scoped depth                                                          |
-| [shape](./skills/engineering/shape/SKILL.md)         | Intent and key design clarified through answerable questions                                                                        |
-| [plan](./skills/engineering/plan/SKILL.md)           | Local plans, problem-oriented Issues, or pairs, with one audit and authorized corrections                                           |
-| [debug](./skills/engineering/debug/SKILL.md)         | Cause investigation from expected versus actual behavior, with evidence and explicit unknowns                                       |
-| [implement](./skills/engineering/implement/SKILL.md) | An authorized working change with proportional proof and accurate durable truth                                                     |
-| [review](./skills/engineering/review/SKILL.md)       | Evidence-backed findings on designs, planning artifacts, or changes                                                                 |
-| [verify](./skills/engineering/verify/SKILL.md)       | A verdict from actually using the affected feature and comparing results with expectations; independent verification when requested |
-| [docs](./skills/engineering/docs/SKILL.md)           | Established truth recorded in the six-type catalog or a named project document                                                      |
-| [publish](./skills/engineering/publish/SKILL.md)     | PR publication, current CI checks, and merging only when requested (rebase, else squash)                                            |
-| [release](./skills/engineering/release/SKILL.md)     | Project release setup, exact version publication, and deployment evidence                                                           |
-| [converge](./skills/engineering/converge/SKILL.md)   | Idempotent catalog-wide alignment to current memory formats                                                                         |
-| [doctor](./skills/engineering/doctor/SKILL.md)       | Read-only whole-project documentation drift and health audit                                                                        |
-
-### [Productivity](./skills/productivity/README.md)
-
-General work, learning, and information organization.
-
-| Skill                                             | Outcome                                      |
-| ------------------------------------------------- | -------------------------------------------- |
-| [handoff](./skills/productivity/handoff/SKILL.md) | A compact, host-neutral continuation summary |
-
-`design` is a peer category for UI/UX, interaction, visual, brand, and design-system work; software architecture and turning designs into code belong in `engineering`. Create it only when actual skills belong there. The same rule applies to `in-progress` for experimental skills, `misc` for infrequently used skills, and `deprecated` for retired skills.
+The eight kinds of docs are a project's long-term memory: implement, shape, and setup write them, explore reads them, and docs holds their formats. See the [memory catalog](./skills/engineering/docs/references/memory-catalog.md).
 
 ## Install
 
 ```bash
-npx skills add .
+pnpm install
 ```
 
-`skills` is the external installer CLI; this repository supplies the capability content.
+The `install` script runs `skills add . -g -a claude-code -a codex -y`. To add one skill:
 
-Skills keep their original names across categories; select one with `npx skills add . --skill handoff`.
+```bash
+npx skills add . --skill plan
+```
 
-Useful flags:
-
-- `-g` installs globally; otherwise installation is project-level.
-- `-a claude-code` or `-a codex` selects an agent.
-- `-y` skips installer confirmation.
-- `--copy` avoids the default shared-store symlink layout.
-
-Installation is a snapshot. Re-run it after changing this repository. Shape requires Explore; Plan requires Review and a host that can run its audit in an independent context. Install or update each support pair together. If Plan's audit support is unavailable, it retains the artifacts and reports `inconclusive` with the missing capability.
-
-## Usage model
-
-Enter the Skill that matches the requested outcome; there is no required preceding chain. Its frontmatter description provides routing, and its main guide loads deeper references only when needed. Every Shape invocation first uses Explore context for the current target project, reusing still-valid facts and filling gaps before forming a direction. You do not need to invoke Explore separately: its context returns to Shape, which continues to the Design Summary for review.
-
-Plan supports `local`, `issue`, and `both` (the default). After generation, it runs one independent Review, automatically corrects clear findings within the selected target's permissions, and verifies those corrections. It reports generation, audit, and revision results separately, preserving unresolved decisions and evidence gaps. New local plans remain `draft`; planning review does not authorize implementation.
-
-Shape asks currently answerable, independent questions together and uses concrete situations to help when the user is unsure. Debug establishes causes; Implement retains responsibility for an authorized repair, its regression checks, and affected truth. Review asks what needs correction and why; Verify actually uses the affected feature and compares observed results with expectations. Tests and relevant review support that observation; an explicit request to run only tests remains limited to those tests. Both leave repairs to the authorized caller. A plan is `done` when its implementation lands in the same PR; review and verification results are recorded, not gates.
-
-See the [Resolver](./skills/RESOLVER.md) for route distinctions and [Architecture](./ARCHITECTURE.md) for context topology and side-effect ownership.
-
-## Project releases
-
-Use Release to establish `RELEASE.md` and connect the project's final branch/tag workflows to its CI, either its own workflows or a public CI provider recorded in `RELEASE.md`. Pull requests and default-branch commits run full quality checks; version tags validate, build, deploy and confirm without rerunning tests. Publish owns the setup PR and its checks; merge only when requested, by rebase or by squash when rebase is unavailable. In dual mode, the default branch deploys Preview and version tags deploy Production. Initial setup is verified through Preview and the first real release, without a separate manual deployment phase.
-
-For daily work, ask Publish to submit and check a PR, then request its merge when ready. Ask Release to publish the intended version: it pushes one version metadata commit directly to the default branch, verifies that commit's checks and applicable Preview evidence, and publishes exact tags and GitHub Releases. It reports CI and actual target results separately. Branch-only, tag-only and version-only projects retain their selected scope.
-
-For example: “Release, set up this project's Preview/Production release flow”; “Publish, submit this PR and check CI”; “Merge this PR”; “Release v1.3.0”. Each request carries its own authority. Install Publish and Release together for this flow. Release works on its own; when a public CI provider ships its own integration guide or Skill, Release uses it for the provider-specific wiring.
-
-## Durable memory
-
-The catalog contains exactly six types: domain Specs, PRODUCT, ARCHITECTURE, DESIGN, ROADMAP, and README. Docs records only established truth from an authoritative source. See [rules/memory-catalog.md](./rules/memory-catalog.md).
-
-## Development
+## Develop
 
 ```bash
 pnpm check
 pnpm test
-pnpm lint
-node skills/engineering/doctor/scripts/checker.ts . --json
 ```
 
-GPT-6 Astra is the primary behavior evaluation model; Codex and Claude Code use the same Skill set. Behavior is verified through actual sessions. Ordinary implementation, review, and verification results stay concise, while a requested independent verification runs in a fresh context.
+Tests check structure only: names match directories, descriptions exist, relative links resolve. Read [CONTRIBUTING.md](./CONTRIBUTING.md) before editing a skill.
 
-## Acknowledgements
+## Credits
 
-- [Waza](https://github.com/tw93/Waza)
-- [superpowers](https://www.skills.sh/obra/superpowers/brainstorming)
-- [Shape Up](https://basecamp.com/shapeup)
-- [OpenSpec](https://github.com/Fission-AI/OpenSpec)
-- [feature-dev](https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev)
-- [design.md](https://github.com/google-labs-code/design.md)
+Several skills are adapted from [mattpocock/skills](https://github.com/mattpocock/skills), with ideas from [backnotprop/pstack](https://github.com/backnotprop/pstack). See [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md).
 
 ## License
 
