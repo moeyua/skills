@@ -46,7 +46,20 @@ Run the typechecker and the single test file often. Run the full suite once at t
 
 ## Commit each slice
 
-When a slice's tests pass, commit it on the work branch. Stage explicit paths, never `git add -A`; never stage secrets or stray generated files. Match the message style in `git log`, or use a conventional commit. Don't push, amend, or skip hooks.
+When a slice's tests pass, commit it on the work branch. Stage explicit paths, never `git add -A`; never stage secrets or stray generated files. Match the message style in `git log`, or use a conventional commit. Don't amend or skip hooks.
+
+Before the last slice's commit, run the full checks `RELEASE.md` lists for before a push (or the project's full suite if it has none). In that commit's body, write which checks ran and their result. A check you didn't run is listed as not run.
+
+## Push
+
+Push only when the user says so in this conversation. Finishing the work is not permission to push. When they say so, follow `RELEASE.md`:
+
+1. If commits landed after the checks ran, run them again.
+2. Land the change the way it says: rebase onto the freshly fetched default branch and push there, or push the work branch and open a PR. Apply its special cases.
+3. If the push is rejected (branch protection, a required PR, a failing hook), stop and tell the user. Don't change settings to get around it.
+4. After a push to the default branch, watch the CI run on that commit. If it goes red, fixing it comes before anything else.
+
+No `RELEASE.md`? Push only the work branch and suggest `/setup`.
 
 ## Decide or ask
 

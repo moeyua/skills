@@ -17,7 +17,7 @@ _避免_：任务、步骤、tracer bullet（英文里可以用，中文里统�
 _避免_：测试边界、测试层
 
 **项目文档**：
-项目的长期记忆，共八类：specs、PRODUCT、ARCHITECTURE、DESIGN、ROADMAP、README、GLOSSARY、ADR。格式由 docs 提供。
+项目的长期记忆，共九类：specs、PRODUCT、ARCHITECTURE、DESIGN、ROADMAP、README、GLOSSARY、ADR、RELEASE。格式由 docs 提供。
 _避免_：durable memory、catalog memory
 
 **已定**：

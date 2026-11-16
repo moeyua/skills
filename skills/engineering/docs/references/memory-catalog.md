@@ -1,8 +1,8 @@
 # Memory Catalog
 
-> 项目的长期记忆：八类文档，上一个会话写下的，下一个会话能读到。explore 读，implement、shape、setup 写。
+> 项目的长期记忆：九类文档，上一个会话写下的，下一个会话能读到。explore 读，implement、shape、setup 写。
 >
-> 本文件定义每类文档管什么；具体结构见 `formats/` 下对应文件。用户指定的其他项目文档照常维护，但不算进这八类。
+> 本文件定义每类文档管什么；具体结构见 `formats/` 下对应文件。用户指定的其他项目文档照常维护，但不算进这九类。
 
 每节字段：**Purpose** / **Audience** (`internal` | `external`) / **When needed** / **Source** / **Boundary** / **Format**。
 
@@ -79,3 +79,12 @@
 - **Source**:用户作出或确认的决定；写之前先问用户要不要记。
 - **Boundary**:只记录决策，不描述当前结构（归 ARCHITECTURE）；已有 ADR 不改写，决定变了就写一条新的并标注取代关系。
 - **Format**:`formats/adr.md`
+
+## RELEASE
+
+- **Purpose**:本项目的改动怎么进默认分支、怎么发版：直接推还是走 PR、推送前跑哪些检查、有哪些环境、版本号写在哪、发版步骤。implement 推送和 release 发版都照它做。
+- **Audience**:internal
+- **When needed**:项目要推送改动或发版本时，几乎所有项目；由 setup 起草。
+- **Source**:仓库能查到的事实（manifest、workflow、分支保护、部署配置）和用户作出的选择。
+- **Boundary**:只写当前规则；不写凭据、发版日志或 changelog，规则背后的理由归 ADR。
+- **Format**:`formats/release.md`

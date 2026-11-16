@@ -6,7 +6,7 @@ Before adding or editing a skill, read [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 - Skills live in `skills/<category>/<name>/SKILL.md`; the directory name is the skill name.
 - `pnpm check` formats, lints, and typechecks. `pnpm test` checks skill structure.
-- Release rules are in [RELEASE.md](./RELEASE.md).
+- How changes land and releases ship: [RELEASE.md](./RELEASE.md).
 
 ## Skills
 

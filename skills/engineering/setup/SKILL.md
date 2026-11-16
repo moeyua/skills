@@ -1,6 +1,6 @@
 ---
 name: setup
-description: "Set a project up for these skills: its long-lived docs, where plans go, and release rules with CI. Run once per project, or again after the skills change."
+description: "Set a project up for these skills: its long-lived docs, where plans go, and RELEASE.md (how changes land and versions ship) with CI. Run once per project, or again after the skills change."
 disable-model-invocation: true
 ---
 
@@ -12,7 +12,7 @@ Run the `explore` skill first if you haven't explored this project in this sessi
 
 ## 1. Project docs
 
-For each of the eight kinds of docs in the `docs` skill's catalog, decide one of:
+For each kind of doc in the `docs` skill's catalog except RELEASE (part 3 covers it), decide one of:
 
 - **Fine**: exists and roughly follows its format. Leave it.
 - **Reshape**: exists but in a different shape. Propose moving its content into the format. Keep every true statement; drop nothing silently.
@@ -39,9 +39,9 @@ Write the answer into both `CLAUDE.md` and `AGENTS.md` (create whichever is miss
 
 If one of the two files just imports the other (for example `@AGENTS.md`), write it once in the imported file.
 
-## 3. Releases
+## 3. RELEASE.md
 
-If the project has no `RELEASE.md`, or the user asks to connect releases to CI, follow [references/release.md](references/release.md). Skip this part for a project that doesn't ship versions; say so in one line.
+`implement` pushes and `release` cuts versions only the way `RELEASE.md` says, so every project that pushes changes gets one, even one that never ships versions (its versions section then says so). If it's missing, out of date, or the user asks to connect releases to CI, follow [references/release.md](references/release.md).
 
 ## Report
 

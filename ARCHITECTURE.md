@@ -10,7 +10,7 @@ docs/adr/               # 本仓库的架构决策记录
 tests/skills.test.ts    # 结构检查
 CONTRIBUTING.md         # 怎么写 skill
 AGENTS.md               # 给 agent 的仓库说明（CLAUDE.md 只导入它）
-RELEASE.md              # 发版规则
+RELEASE.md              # 改动怎么进 main、怎么发版
 THIRD_PARTY_NOTICES.md  # 改编来源与许可证
 ```
 
@@ -34,8 +34,9 @@ explore ──读──▶  项目文档  ◀──写── shape / implement /
                   docs
 ```
 
-- **docs** 是共用的格式库，八类项目文档的格式只在这里存一份。它可以被模型自动调用，所以其他 skill 都能调到它。
+- **docs** 是共用的格式库，九类项目文档的格式只在这里存一份。它可以被模型自动调用，所以其他 skill 都能调到它。
 - **setup**、**handoff**、**explain** 只能手动调用，不占常驻上下文。
+- **implement** 推送和 **release** 发版都照项目的 RELEASE.md 做，skill 里不写死 PR、预览、版本号这类按项目变化的选择。
 - **implement** 会调用 debug 和 verify；**shape** 结束时会提议用 plan 把结论写下来。
 
 ## 架构不变量
