@@ -29,6 +29,8 @@ That OK, or the exact version they named, also covers this release's pushes: the
 
 The checks `RELEASE.md` requires must have passed **on the release commit** itself: a green parent or a later commit doesn't count. If it names a deploy to check first (a Preview, say), that too.
 
+Look the runs up by the full SHA: `gh run list --commit "$(git rev-parse <release-commit>)" --json name,status,conclusion,url`. A short SHA matches nothing. An empty result means no run was found, not that the checks passed; stop and find out why.
+
 **Only if `RELEASE.md` requires a version commit** (for example a monorepo whose packages version together), from a clean default branch in sync with the remote:
 
 1. Change the version with the tooling `RELEASE.md` names. The diff must be only the version fields it lists.
