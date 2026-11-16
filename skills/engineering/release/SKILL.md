@@ -41,7 +41,9 @@ Push with the user's own credentials, never an Actions `GITHUB_TOKEN`: pushes ma
 
 1. Create an annotated tag in the format `RELEASE.md` gives on the release commit and push only that tag.
 2. Check the remote tag points at the release commit.
-3. If `RELEASE.md` says so, create the GitHub Release with notes generated from the previous tag: `gh release create v<version> --verify-tag --generate-notes --notes-start-tag <previous-tag>`.
+3. If `RELEASE.md` says so, create the GitHub Release with notes from where `RELEASE.md` says:
+   - **Changes pushed directly**: from the commit log, since GitHub's generated notes only list merged PRs. Write `git log --no-merges --format='- %s (%h)' <previous-tag>..<new-tag>` to a file, add a `**Full Changelog**: <compare URL>` line, and run `gh release create <tag> --verify-tag --title <tag> --notes-file <file>`.
+   - **Changes land through PRs**: `gh release create <tag> --verify-tag --generate-notes --notes-start-tag <previous-tag>`.
 4. If tags deploy (Production), watch that run and do the light check `RELEASE.md` describes: is the site up, does it serve this version.
 
 ## When something fails halfway

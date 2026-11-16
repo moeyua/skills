@@ -32,7 +32,7 @@ CI：`.github/workflows/quality.yml` 的 `Quality` 在每次推送到 `main`（�
 | Tag      | `v<version>`，annotated，不复用                                                              |
 | 版本规则 | SemVer：skill 的调用方式或必需流程不兼容变化升 major；向后兼容的新能力升 minor；修复升 patch |
 
-只发稳定的 `X.Y.Z`。没有 CHANGELOG，发布说明由 GitHub 从上一个 Tag 起生成。
+只发稳定的 `X.Y.Z`。没有 CHANGELOG，发布说明由上一个 Tag 以来的 commit 标题生成（改动直接推送，不经 PR，GitHub 自动生成的说明会漏掉它们）。
 
 ## 发版步骤
 
@@ -40,7 +40,7 @@ CI：`.github/workflows/quality.yml` 的 `Quality` 在每次推送到 `main`（�
 
 1. 选定 `main` 上要发布的 commit，确认它自己的 `Quality` 已经跑绿。父提交或更新的 commit 绿了不算。
 2. 在这个 commit 上打 annotated tag，只推这一个 tag，确认远程 tag 指向它。
-3. `gh release create v<version> --verify-tag --generate-notes --notes-start-tag <上一个 tag>`。
+3. 建 GitHub Release，说明由 `git log --no-merges --format='- %s (%h)' <上一个 tag>..v<version>` 生成，末尾附 compare 链接：`gh release create v<version> --verify-tag --title v<version> --notes-file <文件>`。
 
 用用户自己的凭据推送，不用 Actions 的 `GITHUB_TOKEN`。
 
