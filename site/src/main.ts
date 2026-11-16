@@ -31,20 +31,63 @@ function groups(list: Skill[]): Map<string, Skill[]> {
   return map;
 }
 
-function renderSidebar(current?: string): void {
-  const sections = [...groups(skills)].map(
-    ([category, list]) => `
+sidebar.innerHTML = `
+  <h1><a href="#/">Skills</a></h1>
+  <input id="search" type="search" placeholder="搜索名字或描述" autocomplete="off" />
+  <nav id="skill-list"></nav>`;
+const search = sidebar.querySelector<HTMLInputElement>("#search")!;
+const skillList = sidebar.querySelector<HTMLElement>("#skill-list")!;
+let currentSkill: string | undefined;
+
+function matches(skill: Skill, query: string): boolean {
+  const q = query.trim().toLowerCase();
+  return !q || skill.name.toLowerCase().includes(q) || skill.description.toLowerCase().includes(q);
+}
+
+function renderSidebar(): void {
+  const visible = skills.filter((s) => matches(s, search.value));
+  if (visible.length === 0) {
+    skillList.innerHTML = `<p class="empty">没有匹配的 skill</p>`;
+    return;
+  }
+  skillList.innerHTML = [...groups(visible)]
+    .map(
+      ([category, list]) => `
       <section>
         <h2>${escape(category)}</h2>
         <ul>${list
           .map(
             (s) =>
-              `<li><a href="#/${s.name}" class="${s.name === current ? "active" : ""}">${escape(s.name)}</a>${badges(s)}</li>`,
+              `<li><a href="#/${s.name}" class="${s.name === currentSkill ? "active" : ""}">${escape(s.name)}</a>${badges(s)}</li>`,
           )
           .join("")}</ul>
       </section>`,
-  );
-  sidebar.innerHTML = `<h1><a href="#/">Skills</a></h1>${sections.join("")}`;
+    )
+    .join("");
+}
+
+search.addEventListener("input", renderSidebar);
+
+function renderOverview(): void {
+  content.innerHTML = `
+    <header class="skill-header">
+      <h1>全部 skill</h1>
+      <p class="description">共 ${skills.length} 个，按分类列出。</p>
+    </header>
+    ${[...groups(skills)]
+      .map(
+        ([category, list]) => `
+        <section class="overview">
+          <h2>${escape(category)}</h2>
+          <dl>${list
+            .map(
+              (s) =>
+                `<dt><a href="#/${s.name}">${escape(s.name)}</a> ${badges(s)}</dt><dd>${escape(s.description)}</dd>`,
+            )
+            .join("")}</dl>
+        </section>`,
+      )
+      .join("")}`;
 }
 
 const SKILL_FILE = "SKILL.md";
@@ -107,9 +150,10 @@ function renderSkill(skill: Skill, path: string): void {
 function route(): void {
   const [name = "", ...rest] = decodeURIComponent(location.hash.replace(/^#\/?/, "")).split("/");
   const skill = skills.find((s) => s.name === name);
-  renderSidebar(skill?.name);
+  currentSkill = skill?.name;
+  renderSidebar();
   if (skill) renderSkill(skill, rest.join("/"));
-  else content.innerHTML = "";
+  else renderOverview();
   window.scrollTo(0, 0);
 }
 

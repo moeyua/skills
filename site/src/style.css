@@ -11,6 +11,21 @@
   color-scheme: light;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --bg-sidebar: #161b22;
+    --bg-code: #1f242c;
+    --text: #e6edf3;
+    --muted: #8d96a0;
+    --border: #30363d;
+    --accent: #4493f8;
+    --badge-bg: #3d2e00;
+    --badge-text: #f2cc60;
+    color-scheme: dark;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -210,4 +225,44 @@ pre.plain {
   border-color: var(--accent);
   background: var(--accent);
   color: var(--bg);
+}
+
+#search {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+
+#search:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.empty {
+  margin: 16px 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.overview h2 {
+  margin: 28px 0 8px;
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.overview dt {
+  margin-top: 14px;
+  font-weight: 600;
+}
+
+.overview dd {
+  margin: 2px 0 0;
+  color: var(--muted);
 }

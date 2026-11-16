@@ -54,7 +54,15 @@ pnpm check
 pnpm test
 ```
 
-Tests check structure only: names match directories, descriptions exist, relative links resolve. Read [CONTRIBUTING.md](./CONTRIBUTING.md) before editing a skill.
+Tests check structure only: names match directories, descriptions exist, relative links resolve. One more test covers how the browsing site parses skills. Read [CONTRIBUTING.md](./CONTRIBUTING.md) before editing a skill.
+
+## Browse the skills
+
+```bash
+pnpm dev
+```
+
+Opens a local site listing every skill with its description, `SKILL.md`, and the files under `references/` and `scripts/`; it reloads as skills change. `pnpm build:site` writes a static copy to `site/dist/` that can be hosted anywhere.
 
 ## Credits
 

@@ -52,7 +52,15 @@ pnpm check
 pnpm test
 ```
 
-测试只检查结构：skill 名和目录名一致、有 description、相对链接指向的文件存在。行为好不好，要实际用了才知道。改 skill 之前先读 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+测试只检查结构：skill 名和目录名一致、有 description、相对链接指向的文件存在。另有一个测试，检查浏览站怎么解析 skill。行为好不好，要实际用了才知道。改 skill 之前先读 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+
+## 浏览全部 skill
+
+```bash
+pnpm dev
+```
+
+在本地打开一个网页，列出每个 skill 的描述、`SKILL.md`，以及 `references/`、`scripts/` 下的文件。改了 skill 会自动刷新。`pnpm build:site` 会把静态文件输出到 `site/dist/`，可以部署到任何静态托管上。
 
 ## 致谢
 
