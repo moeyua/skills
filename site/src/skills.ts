@@ -7,6 +7,13 @@ export interface Skill {
   manualOnly: boolean;
   credits?: string;
   body: string;
+  /** Files besides SKILL.md, with paths relative to the skill directory. */
+  files: SkillFile[];
+}
+
+export interface SkillFile {
+  path: string;
+  content: string;
 }
 
 interface Frontmatter {
@@ -24,6 +31,7 @@ export function parseSkills(files: Record<string, string>): Skill[] {
     if (parts.length !== 3 || parts[2] !== "SKILL.md") continue;
     const [category = "", dir = ""] = parts;
     const match = /^---\n([\s\S]*?)\n---\n?/.exec(text);
+    const prefix = `${category}/${dir}/`;
     const meta = (match ? parse(match[1] ?? "") : {}) as Frontmatter;
     skills.push({
       name: meta.name ?? dir,
@@ -32,6 +40,10 @@ export function parseSkills(files: Record<string, string>): Skill[] {
       manualOnly: meta["disable-model-invocation"] === true,
       credits: meta.metadata?.credits,
       body: text.slice(match?.[0].length ?? 0).trimStart(),
+      files: Object.entries(files)
+        .filter(([p]) => p.startsWith(prefix) && p !== `${prefix}SKILL.md`)
+        .map(([p, content]) => ({ path: p.slice(prefix.length), content }))
+        .sort((a, b) => a.path.localeCompare(b.path)),
     });
   }
   return skills.sort(

@@ -37,6 +37,12 @@ describe("parseSkills", () => {
     expect(byName("explain")).toMatchObject({ category: "productivity", manualOnly: true });
   });
 
+  it("lists each skill's other files by path inside the skill", () => {
+    expect(byName("docs")?.files.map((f) => f.path)).toContain("references/formats/adr.md");
+    expect(byName("debug")?.files.map((f) => f.path)).toEqual(["scripts/hitl-loop.template.sh"]);
+    expect(byName("shape")?.files).toEqual([]);
+  });
+
   it("keeps the body without frontmatter", () => {
     const body = byName("shape")?.body ?? "";
     expect(body.startsWith("---")).toBe(false);

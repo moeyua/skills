@@ -183,3 +183,31 @@ pre.plain {
     padding: 20px 16px 60px;
   }
 }
+
+.files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.files span {
+  margin-right: 4px;
+  color: var(--muted);
+}
+
+.files a {
+  padding: 1px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.files a.active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+}
