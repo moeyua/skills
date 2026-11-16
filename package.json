@@ -9,14 +9,18 @@
     "test": "vp test run",
     "check": "vp check --fix",
     "lint": "vp lint",
-    "format": "vp fmt"
+    "format": "vp fmt",
+    "dev": "vp dev site",
+    "build:site": "vp build site"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
+    "marked": "^18.2.0",
     "skills": "^1.5.10",
     "typescript": "^6.0.3",
     "vite": "^8.0.16",
-    "vite-plus": "^0.1.24"
+    "vite-plus": "^0.1.24",
+    "yaml": "^2.9.1"
   },
   "engines": {
     "node": ">=24"
