@@ -14,20 +14,20 @@ explore → shape → plan → implement → verify → release
 
 任何一步都可以单独用，不必按顺序走。
 
-| Skill                                                | 做什么                                                                                                         | 什么时候用                                 |
-| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| [setup](./skills/engineering/setup/SKILL.md)         | 补齐项目文档；问清计划存在哪里，写进 CLAUDE.md 和 AGENTS.md；写好 RELEASE.md（改动怎么进 main、怎么发版）和 CI | 新项目接入，或 skill 更新后，手动 `/setup` |
-| [explore](./skills/engineering/explore/SKILL.md)     | 先读项目文档再读代码，文档和代码冲突时两边都报                                                                 | "先看看这个项目"                           |
-| [shape](./skills/engineering/shape/SKILL.md)         | 一轮轮追问，每个问题附推荐答案，回"是"就推进；定下的术语写进 GLOSSARY                                          | "想想"、"我也不知道"、"怎么设计"           |
-| [plan](./skills/engineering/plan/SKILL.md)           | 一屏以内的计划：目标、已定的决定（附来源）、待确认的决定（附理由）、可演示的切片                               | "写个计划"                                 |
-| [implement](./skills/engineering/implement/SKILL.md) | 先复述目标；逐个切片测试先行，每个切片 commit；最后告诉你怎么亲眼看到效果、我替你做了哪些决定                  | "实现"、"落实"                             |
-| [verify](./skills/engineering/verify/SKILL.md)       | 真的去用一遍，逐条对照预期，每条标明实测、推断还是猜测                                                         | "验证一下"、"跑测试"                       |
-| [debug](./skills/engineering/debug/SKILL.md)         | 先造一个能复现 bug 的回路，再假设、插桩、修复、补回归测试                                                      | "这里坏了"、"报错了"、"变慢了"             |
-| [review](./skills/engineering/review/SKILL.md)       | 两个子 agent 并行审阅：是否合项目规范、是否合需求                                                              | "review 一下这个分支"                      |
-| [release](./skills/engineering/release/SKILL.md)     | 按 RELEASE.md 打 tag、建 GitHub Release，确认部署结果                                                          | "发版"                                     |
-| [docs](./skills/engineering/docs/SKILL.md)           | 九类项目文档的格式（specs、PRODUCT、ARCHITECTURE、DESIGN、ROADMAP、README、GLOSSARY、ADR、RELEASE）            | 其他 skill 读写项目文档时自动查阅          |
-| [handoff](./skills/productivity/handoff/SKILL.md)    | 把当前会话压缩成交接文档                                                                                       | 换会话前，手动 `/handoff`                  |
-| [explain](./skills/productivity/explain/SKILL.md)    | 换个直白的说法重讲刚才那段                                                                                     | 没看懂时，手动 `/explain`                  |
+| Skill                                                | 做什么                                                                                                                                      | 什么时候用                                 |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| [setup](./skills/engineering/setup/SKILL.md)         | 补齐项目文档；在 CLAUDE.md / AGENTS.md 的 `## Skills` 里列出计划位置、发版规则、编码规范；写好 RELEASE.md（改动怎么进 main、怎么发版）和 CI | 新项目接入，或 skill 更新后，手动 `/setup` |
+| [explore](./skills/engineering/explore/SKILL.md)     | 先读项目文档再读代码，文档和代码冲突时两边都报                                                                                              | "先看看这个项目"                           |
+| [shape](./skills/engineering/shape/SKILL.md)         | 一轮轮追问，每个问题附推荐答案，回"是"就推进；定下的术语写进 GLOSSARY                                                                       | "想想"、"我也不知道"、"怎么设计"           |
+| [plan](./skills/engineering/plan/SKILL.md)           | 一屏以内的计划：目标、已定的决定（附来源）、待确认的决定（附理由）、可演示的切片                                                            | "写个计划"                                 |
+| [implement](./skills/engineering/implement/SKILL.md) | 先复述目标；逐个切片测试先行，每个切片 commit；最后告诉你怎么亲眼看到效果、我替你做了哪些决定                                               | "实现"、"落实"                             |
+| [verify](./skills/engineering/verify/SKILL.md)       | 真的去用一遍，逐条对照预期，每条标明实测、推断还是猜测                                                                                      | "验证一下"、"跑测试"                       |
+| [debug](./skills/engineering/debug/SKILL.md)         | 先造一个能复现 bug 的回路，再假设、插桩、修复、补回归测试                                                                                   | "这里坏了"、"报错了"、"变慢了"             |
+| [review](./skills/engineering/review/SKILL.md)       | 两个子 agent 并行审阅：是否合项目规范、是否合需求                                                                                           | "review 一下这个分支"                      |
+| [release](./skills/engineering/release/SKILL.md)     | 按 RELEASE.md 打 tag、建 GitHub Release，确认部署结果                                                                                       | "发版"                                     |
+| [docs](./skills/engineering/docs/SKILL.md)           | 九类项目文档的格式（specs、PRODUCT、ARCHITECTURE、DESIGN、ROADMAP、README、GLOSSARY、ADR、RELEASE）                                         | 其他 skill 读写项目文档时自动查阅          |
+| [handoff](./skills/productivity/handoff/SKILL.md)    | 把当前会话压缩成交接文档                                                                                                                    | 换会话前，手动 `/handoff`                  |
+| [explain](./skills/productivity/explain/SKILL.md)    | 换个直白的说法重讲刚才那段                                                                                                                  | 没看懂时，手动 `/explain`                  |
 
 ## 项目文档
 

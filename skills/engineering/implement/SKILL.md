@@ -48,6 +48,8 @@ Run the typechecker and the single test file often. Run the full suite once at t
 
 When a slice's tests pass, commit it on the work branch. Stage explicit paths, never `git add -A`; never stage secrets or stray generated files. Match the message style in `git log`, or use a conventional commit. Don't amend or skip hooks.
 
+`RELEASE.md` here means the file the `Release rules` line in the `## Skills` section of `CLAUDE.md` or `AGENTS.md` points to; without that line, `RELEASE.md` at the repo root.
+
 Before the last slice's commit, run the full checks `RELEASE.md` lists for before a push (or the project's full suite if it has none). In that commit's body, write which checks ran and their result. A check you didn't run is listed as not run.
 
 ## Push

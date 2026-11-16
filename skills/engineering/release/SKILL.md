@@ -5,7 +5,7 @@ description: "Cut a version (tag a green commit, GitHub Release) following the p
 
 # Release
 
-`RELEASE.md` at the repo root is the project's release rulebook: how changes land, where the version lives (the tag alone by default), what a tag looks like, which checks must pass, what deploys where. Read it from the freshly fetched default branch every time. When it disagrees with the actual workflows or config, report the conflict instead of picking whichever side is convenient.
+`RELEASE.md` is the project's release rulebook: the file the `Release rules` line in the `## Skills` section of `CLAUDE.md` or `AGENTS.md` points to, or `RELEASE.md` at the repo root without that line. It says how changes land, where the version lives (the tag alone by default), what a tag looks like, which checks must pass, what deploys where. Read it from the freshly fetched default branch every time. When it disagrees with the actual workflows or config, report the conflict instead of picking whichever side is convenient.
 
 No `RELEASE.md`? Stop and tell the user to run `/setup` first. A release request doesn't skip setup.
 

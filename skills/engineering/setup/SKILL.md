@@ -1,6 +1,6 @@
 ---
 name: setup
-description: "Set a project up for these skills: its long-lived docs, where plans go, and RELEASE.md (how changes land and versions ship) with CI. Run once per project, or again after the skills change."
+description: "Set a project up for these skills: its long-lived docs, the Skills section of CLAUDE.md and AGENTS.md, and RELEASE.md (how changes land and versions ship) with CI. Run once per project, or again after the skills change."
 disable-model-invocation: true
 ---
 
@@ -25,19 +25,23 @@ Show one line per kind of doc with its verdict and a one-line reason. After the 
 
 Running setup again is safe: docs that are already fine stay untouched.
 
-## 2. Where plans go
+## 2. The Skills section
 
-Ask where the `plan` skill should put plans: local files in `plans/`, GitHub issues, or both. Recommend local unless the project already tracks work in issues.
-
-Write the answer into both `CLAUDE.md` and `AGENTS.md` (create whichever is missing), under a short section:
+The `## Skills` section of `CLAUDE.md` and `AGENTS.md` is the one place a project's skill settings are listed. Each line is either a short setting or a pointer to the file that holds a larger one. The skills read it before guessing.
 
 ```markdown
 ## Skills
 
 - Plans: local `plans/` | GitHub issues | both
+- Release rules: `RELEASE.md`
+- Coding standards: `CONTRIBUTING.md` | none documented
 ```
 
-If one of the two files just imports the other (for example `@AGENTS.md`), write it once in the imported file.
+- **Plans**: ask where the `plan` skill should put plans. Recommend local unless the project already tracks work in issues.
+- **Release rules**: the file part 3 writes, normally `RELEASE.md`.
+- **Coding standards**: list the files that say how code here should be written (`CONTRIBUTING.md`, `CODING_STANDARDS.md`, a style guide). Show the user what you found and confirm. If there are none, write "none documented"; don't invent a standards doc.
+
+Write it into both files (create whichever is missing). If one just imports the other (for example `@AGENTS.md`), write it once in the imported file. Keep lines the user added; a new setting another skill needs goes here as one more line.
 
 ## 3. RELEASE.md
 

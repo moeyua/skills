@@ -32,7 +32,7 @@ Most changes are one to three slices. One is fine.
 
 ## 4. Write it
 
-Check the `## Skills` section of `CLAUDE.md` or `AGENTS.md` for where plans go. Without one, write a local file. Local plans go to `plans/<YYYY-MM-DD>-<slug>.md`.
+Check the `Plans` line in the `## Skills` section of `CLAUDE.md` or `AGENTS.md` for where plans go. Without one, write a local file. Local plans go to `plans/<YYYY-MM-DD>-<slug>.md`.
 
 Write in the user's language. The plan must fit on one screen: about 40 lines. Cut until it does. Cut exposition first, never the decisions. Use these headings, translated into the user's language:
 
