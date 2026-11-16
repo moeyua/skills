@@ -22,7 +22,7 @@ function escape(text: string): string {
 }
 
 function badges(skill: Skill): string {
-  return skill.manualOnly ? `<span class="badge">只能手动调用</span>` : "";
+  return skill.manualOnly ? `<span class="badge">manual only</span>` : "";
 }
 
 function groups(list: Skill[]): Map<string, Skill[]> {
@@ -33,7 +33,7 @@ function groups(list: Skill[]): Map<string, Skill[]> {
 
 sidebar.innerHTML = `
   <h1><a href="#/">Skills</a></h1>
-  <input id="search" type="search" placeholder="搜索名字或描述" autocomplete="off" />
+  <input id="search" type="search" placeholder="Search name or description" autocomplete="off" />
   <nav id="skill-list"></nav>`;
 const search = sidebar.querySelector<HTMLInputElement>("#search")!;
 const skillList = sidebar.querySelector<HTMLElement>("#skill-list")!;
@@ -47,7 +47,7 @@ function matches(skill: Skill, query: string): boolean {
 function renderSidebar(): void {
   const visible = skills.filter((s) => matches(s, search.value));
   if (visible.length === 0) {
-    skillList.innerHTML = `<p class="empty">没有匹配的 skill</p>`;
+    skillList.innerHTML = `<p class="empty">No matching skills</p>`;
     return;
   }
   skillList.innerHTML = [...groups(visible)]
@@ -71,8 +71,8 @@ search.addEventListener("input", renderSidebar);
 function renderOverview(): void {
   content.innerHTML = `
     <header class="skill-header">
-      <h1>全部 skill</h1>
-      <p class="description">共 ${skills.length} 个，按分类列出。</p>
+      <h1>All skills</h1>
+      <p class="description">${skills.length} skills, grouped by category.</p>
     </header>
     ${[...groups(skills)]
       .map(
@@ -132,11 +132,11 @@ function renderSkill(skill: Skill, path: string): void {
       <p class="category">${escape(skill.category)}</p>
       <h1>${escape(skill.name)} ${badges(skill)}</h1>
       <p class="description">${escape(skill.description)}</p>
-      ${skill.credits ? `<p class="credits">改编来源：${escape(skill.credits)}</p>` : ""}
+      ${skill.credits ? `<p class="credits">${escape(skill.credits)}</p>` : ""}
     </header>
     ${
       paths.length > 1
-        ? `<nav class="files"><span>文件</span>${paths
+        ? `<nav class="files"><span>Files</span>${paths
             .map(
               (p) =>
                 `<a href="${fileHref(skill, p)}" class="${p === current ? "active" : ""}">${escape(p)}</a>`,
