@@ -120,7 +120,9 @@ a:hover {
 }
 
 #content {
-  max-width: 860px;
+  width: 100%;
+  max-width: 940px;
+  margin: 0 auto;
   padding: 32px 40px 80px;
 }
 
