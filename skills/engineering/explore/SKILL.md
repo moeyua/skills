@@ -1,6 +1,6 @@
 ---
 name: explore
-description: "Build an accurate picture of a project or module, docs first, then code. Use when entering a repo, facing an unfamiliar module, before shaping or planning project work, or when the user says 先看看 / 整体了解一下 / look at this project."
+description: "Build an accurate picture of a project or module, docs first, then code. Use when entering a repo, facing an unfamiliar module, before shaping or planning project work, or when the user says take a look first / give me an overview / look at this project."
 ---
 
 # Explore

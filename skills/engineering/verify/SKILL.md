@@ -1,6 +1,6 @@
 ---
 name: verify
-description: "Prove a change works by using it for real and comparing what happens with what the user asked for. Use when the user says verify / check it works / 验证 / run the tests, or before calling work done."
+description: "Prove a change works by using it for real and comparing what happens with what the user asked for. Use when the user says verify / check it works / run the tests, or before calling work done."
 ---
 
 # Verify

@@ -1,6 +1,6 @@
 ---
 name: shape
-description: "Interview the user in rounds until a plan, design, or idea is clear, each question with a recommended answer. Use when the user is unsure what they want, wants to stress-test a design, or says 想想 / 我也不知道 / 怎么设计 / grill me."
+description: "Interview the user in rounds until a plan, design, or idea is clear, each question with a recommended answer. Use when the user is unsure what they want, wants to stress-test a design, or says let me think / I don't know / how should we design this / grill me."
 metadata:
   credits: "Adapted from https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling (MIT)"
 ---

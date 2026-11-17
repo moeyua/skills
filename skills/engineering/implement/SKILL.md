@@ -1,6 +1,6 @@
 ---
 name: implement
-description: "Build an agreed change test-first, slice by slice, committing each slice, and finish by showing the user it works. Use when the user says implement / build it / 实现 / 落实, or approves a plan."
+description: "Build an agreed change test-first, slice by slice, committing each slice, and finish by showing the user it works. Use when the user says implement / build it / carry it out, or approves a plan."
 metadata:
   credits: "The test-first section is adapted from https://github.com/mattpocock/skills/tree/main/skills/engineering/tdd (MIT)"
 ---

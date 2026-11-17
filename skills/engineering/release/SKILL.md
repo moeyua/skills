@@ -1,6 +1,6 @@
 ---
 name: release
-description: "Cut a version (tag a green commit, GitHub Release) following the project's RELEASE.md, then confirm CI deployed it. Use when the user says release / tag / 发版."
+description: "Cut a version (tag a green commit, GitHub Release) following the project's RELEASE.md, then confirm CI deployed it. Use when the user says release / tag / cut a release."
 ---
 
 # Release
